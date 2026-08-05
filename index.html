@@ -519,6 +519,7 @@
         <div class="filters">
           <div class="field"><label for="qf-mes">Mes al que corresponde</label><select id="qf-mes"><option value="">Todos</option></select></div>
           <div class="field"><label for="qf-estado">Estado</label><select id="qf-estado"><option value="">Todos</option><option value="pend">Pendientes</option><option value="pag">Pagados</option></select></div>
+          <div class="field"><button class="ghost" type="button" id="btn-quitar-duplicados">Buscar y quitar duplicados</button></div>
         </div>
         <p class="note">Tocá el título de una columna para ordenar por ese dato; tocá de nuevo para invertir el orden.</p>
         <div id="fijoszone" class="tablacompacta"></div>
@@ -1123,11 +1124,12 @@ $('btn-fijos-go').addEventListener('click',async()=>{
   const mesCorr=mesActual();  // los gastos fijos se imputan siempre al mes en curso
   const mesTodos=$('fijos-mes-todos').value;  // mes de pago, opcional
   const vencTodos=$('fijos-venc-todos').value;  // fecha de vencimiento, opcional
-  // aviso de duplicado: ya se cargó la tanda de este mes
-  const yaHay = rows.some(r=>r.tipo==='gasto'&&r.fijo&&r.mesCorr===mesCorr);
-  if(yaHay && !confirm('Ya cargaste los gastos fijos de '+mesLabel(mesCorr)+'. ¿Querés agregar otra tanda igual (se duplicarán)?')) return;
+  // solo se cargan los que todavía no existen para este mes (evita duplicar si se aprieta más de una vez)
+  const yaCargados = new Set(rows.filter(r=>r.tipo==='gasto'&&r.fijo&&r.mesCorr===mesCorr).map(r=>r.item));
+  const faltantes = fijosTodos().filter(f=>!yaCargados.has(f.item));
+  if(!faltantes.length){ toast('Ya estaban cargados todos los gastos fijos de '+mesLabel(mesCorr)+'.'); return; }
   if(!(await asegurarUsuario())) return;
-  const nuevos=fijosTodos().map(f=>({
+  const nuevos=faltantes.map(f=>({
     id:uid(),tipo:'gasto',mesPago:mesTodos||'',mesCorr,rubro:f.rubro,item:f.item,bruto:0,
     moneda:'ARS',cotizacion:0,tipoFac:'No posee',iva:0,fact:'',pago:false,comp:true,detalle:'',fijo:true,fechaVenc:vencTodos||''
   }));
@@ -1334,11 +1336,12 @@ $('btn-add').addEventListener('click',async()=>{
   if(!rubroSel||rubroSel==='__nuevo'){toast('Elegí el rubro.');$('f-rubro').focus();return;}
   const item = modo==='ingreso' ? rubroSel : $('f-item').value.trim().toUpperCase();
   if(modo==='gasto'&&!item){toast('Falta el ítem.');$('f-item').focus();return;}
-  if(!(bruto>0)){toast('Cargá un importe.');$('f-bruto').focus();return;}
+  const sinImportePermitido = modo==='gasto' && !$('f-pago').checked;
+  if(!(bruto>0) && !sinImportePermitido){toast('Cargá un importe.');$('f-bruto').focus();return;}
   if(!$('f-mescorr').value){toast('Indicá el mes al que corresponde.');$('f-mescorr').focus();return;}
   const tipoFac = modo==='gasto'?$('f-tipo').value:'—';
-  const ivaManual = (modo==='gasto'&&tipoFac==='A | 27%')?ivaVal():0;
-  if(modo==='gasto'&&tipoFac==='A | 27%'){
+  const ivaManual = (modo==='gasto'&&tipoFac==='A | 27%'&&bruto>0)?ivaVal():0;
+  if(modo==='gasto'&&tipoFac==='A | 27%'&&bruto>0){
     if(!(ivaManual>0)){toast('Cargá el IVA a descontar.');$('f-iva').focus();return;}
     if(ivaManual>=bruto){toast('El IVA no puede ser igual o mayor al bruto.');$('f-iva').focus();return;}
   }
@@ -1786,6 +1789,37 @@ function syncSelectFijos(){
   sel.innerHTML='<option value="">Todos</option>'+vals.map(v=>`<option value="${v}"${v===cur?' selected':''}>${mesLabel(v)}</option>`).join('');
 }
 ['qf-mes','qf-estado'].forEach(id=>$(id).addEventListener('input',()=>renderFijos(filteredFijos())));
+// Gastos fijos duplicados: mismo mes al que corresponden + mismo ítem. Se conserva el que
+// tenga más datos cargados (pago, o con importe) y se ofrece borrar el resto.
+function encontrarFijosDuplicados(){
+  const grupos={};
+  rows.forEach(r=>{
+    if(r.tipo!=='gasto'||!r.fijo) return;
+    const clave=(r.mesCorr||'sin-mes')+'|'+r.item;
+    (grupos[clave]=grupos[clave]||[]).push(r);
+  });
+  const sobrantes=[];
+  Object.values(grupos).forEach(g=>{
+    if(g.length<2) return;
+    const puntaje=x=>(x.pago?2:0)+(x.bruto>0?1:0);
+    const ordenado=g.slice().sort((a,b)=>puntaje(b)-puntaje(a));
+    sobrantes.push(...ordenado.slice(1));
+  });
+  return sobrantes;
+}
+$('btn-quitar-duplicados').addEventListener('click',async()=>{
+  const sobrantes=encontrarFijosDuplicados();
+  if(!sobrantes.length){ toast('No se encontraron gastos fijos duplicados.'); return; }
+  const resumen=sobrantes.slice(0,8).map(r=>'• '+r.item+' ('+mesLabel(r.mesCorr)+')').join('\n')
+    + (sobrantes.length>8?'\n… y '+(sobrantes.length-8)+' más':'');
+  if(!confirm('Se van a eliminar '+sobrantes.length+' gastos fijos duplicados (se conserva, de cada uno, el que tenga más datos cargados o esté pago):\n\n'+resumen)) return;
+  if(!(await asegurarUsuario())) return;
+  const idsBorrar=new Set(sobrantes.map(r=>r.id));
+  rows=rows.filter(r=>!idsBorrar.has(r.id));
+  registrarHistorial('Quitó duplicados',null,sobrantes.length+' gastos fijos duplicados');
+  await save(); render();
+  toast(sobrantes.length+' duplicados eliminados');
+});
 
 
 // Fila de solo lectura con el desglose de pagos de un gasto dividido
@@ -1842,6 +1876,7 @@ document.addEventListener('click',async e=>{
   }
   if(d.cpOk){
     const r=rows.find(x=>x.id===d.cpOk); if(!r) return;
+    if(!(r.bruto>0)){ toast('Todavía no tiene importe cargado — completalo primero desde Modificar (✎).'); return; }
     const td=e.target.closest('td.cp');
     const inp=td&&td.querySelector('.cp-fecha-input');
     const fecha=(inp&&inp.value)||hoyISO();
