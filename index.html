@@ -1,0 +1,1909 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resultados y Devengamiento — Hotel Copahue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16211E; --ink-soft:#4A5A54;
+    --paper:#FBFAF7; --ledger:#E6EFE7;
+    --rule:#C7CFC8; --rule-strong:#8FA095;
+    --ok:#2F6B4F; --warn:#B0791C; --iva:#3B5F86;
+    --neg:#963A2C; --ing:#1F6B57;
+    --surface:#fff;
+    --tint-ing:#F2F8F5; --tint-warn:#FFF6E0; --tint-warn2:#FFFBF2; --tint-neutral:#F4F7F5;
+  }
+  body.dark{
+    --ink:#ECECEC; --ink-soft:#999999;
+    --paper:#121212; --ledger:#1B1B1B;
+    --rule:#333333; --rule-strong:#525252;
+    --ok:#4CAF7D; --warn:#D89B4A; --iva:#7BA3D6;
+    --neg:#E28577; --ing:#4FBF9C;
+    --surface:#1C1C1C;
+    --tint-ing:#1A1A1A; --tint-warn:#241F15; --tint-warn2:#221E17; --tint-neutral:#1B1B1B;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;transition:background-color .2s,color .2s}
+  .wrap{width:96%;max-width:1680px;margin:0 auto;padding:28px 20px 80px}
+  [hidden]{display:none!important}
+
+  header.masthead{border-bottom:3px double var(--rule-strong);padding-bottom:14px;margin-bottom:20px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px;justify-content:space-between}
+  .masthead h1{font-family:'Zilla Slab',Georgia,serif;font-weight:700;font-size:30px;line-height:1;margin:0;letter-spacing:-.01em}
+  .masthead .sub{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-top:6px}
+  .stamp{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);border:1px solid var(--rule);padding:6px 10px}
+
+  .periodo{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--rule)}
+  .pbloque{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;padding:8px 12px 10px;border:1px solid var(--rule);position:relative}
+  .pbloque.ing{border-left:3px solid var(--ing)}
+  .pbloque.gas{border-left:3px solid var(--ink-soft)}
+  .pbloque-tit{position:absolute;top:-9px;left:10px;background:var(--paper);padding:0 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+  .pbloque.ing .pbloque-tit{color:var(--ing)}
+  .pfield{display:flex;flex-direction:column;gap:4px}
+  .periodo label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+  .periodo select{width:auto;min-width:150px;font-family:'IBM Plex Mono',monospace;font-size:14px;border-color:var(--rule-strong);background:var(--surface)}
+  .periodo #btn-limpiar-per{padding:8px 12px;align-self:center}
+  .periodo-nota{font-size:13px;color:var(--ink-soft);align-self:center;flex-basis:100%}
+
+  .totals{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);margin-bottom:26px}
+  .tot{background:var(--paper);padding:12px;min-width:0;overflow:hidden}
+  .tot .lbl{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+  .tot .val{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:clamp(14px,1.55vw,20px);line-height:1.15;font-variant-numeric:tabular-nums;letter-spacing:-.02em;white-space:nowrap;margin-top:4px}
+  .tot .val.ing{color:var(--ing)} .tot .val.neg{color:var(--neg)} .tot .val.ok{color:var(--ok)} .tot .val.pend{color:var(--warn)} .tot .val.nc{color:var(--iva)}
+
+  h2.sec{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid var(--rule)}
+  .dash-head{cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px}
+  .dash-head:hover{color:var(--ink)}
+  .dash-head .chev{font-size:13px;display:inline-block;width:12px}
+  .dash-hint{font-weight:400;letter-spacing:.04em;text-transform:none;color:var(--ink-soft);font-size:11px;margin-left:6px}
+  .rrow.off{opacity:.5}
+  .rrow.off b{text-decoration:line-through;color:var(--ink-soft)}
+  .rrow input[type=checkbox]{width:15px;height:15px;vertical-align:-2px;margin-right:6px;accent-color:var(--ing)}
+  label.rrow{cursor:pointer}
+  .rgas label.rrow input,#rgas label.rrow input{accent-color:var(--ink-soft)}
+  .panel{margin-bottom:32px}
+
+  /* pestañas gasto / ingreso */
+  .tabs{display:flex;gap:0;margin-bottom:14px}
+  .tabs button{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:9px 18px;border:1px solid var(--rule-strong);background:transparent;color:var(--ink-soft);cursor:pointer}
+  .tabs button+button{border-left:none}
+  .tabs button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .tabs button.on.ing{background:var(--ing);border-color:var(--ing)}
+  #fijos-box{border:1px solid var(--ing);border-left:3px solid var(--ing);padding:14px;margin-bottom:16px;background:var(--tint-ing)}
+  .fijos-head{font-size:14px;margin-bottom:12px}
+  .fijos-row{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
+  .fijos-add{border-top:1px dashed var(--ing);margin:12px 0;padding-top:12px}
+  .fijos-add-tit{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ing);margin-bottom:8px}
+  .fijos-add-row{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
+  .fijos-add-row #fx-item{text-transform:uppercase}
+  .fijos-add-row #fx-item::placeholder{text-transform:none}
+  #fijos-extra-list{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+  .fx-chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--ing);padding:3px 8px;font-size:12px}
+  .fx-chip b{font-family:'IBM Plex Mono',monospace;font-weight:600}
+  .fx-chip .rb{color:var(--ink-soft);font-size:10px;font-family:'IBM Plex Mono',monospace}
+  .fx-chip button{background:none;border:none;color:var(--neg);cursor:pointer;font-size:14px;padding:0 2px;line-height:1}
+
+  .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;align-items:end}
+  /* en modo ingreso: sin Ítem, y Rubro a la izquierda del Importe */
+  .form-grid.ingreso{display:flex;flex-wrap:wrap}
+  .form-grid.ingreso .field{flex:1 1 150px;min-width:150px}
+  .form-grid.ingreso #wrap-item{display:none}
+  .form-grid.ingreso #wrap-tipo,.form-grid.ingreso #wrap-iva,.form-grid.ingreso #wrap-neto{display:none}
+  .form-grid.ingreso #wrap-rubro{order:3}
+  .form-grid.ingreso #wrap-bruto{order:4}
+  .form-grid.ingreso #wrap-moneda{order:5}
+  .form-grid.ingreso #wrap-cotizacion{order:6}
+  .form-grid.ingreso #wrap-fact{order:7}
+  .form-grid.ingreso #wrap-detalle{order:8}
+  .form-grid.ingreso #wrap-pago{order:9}
+  .form-grid.ingreso #wrap-fecha-real-pago{order:10}
+  .form-grid.ingreso #wrap-add{order:11}
+  .form-grid.ingreso #wrap-cancel{order:12}
+  .filters .rango{display:flex;align-items:end;gap:6px}
+  .filters .rango .field{min-width:110px}
+  .filters .rango-sep{font-size:11px;color:var(--ink-soft);padding-bottom:9px}
+  .form-grid.ingreso > div:nth-child(1){order:1}   /* mes cobro */
+  .form-grid.ingreso > div:nth-child(2){order:2}   /* mes corresponde */
+  .field{display:flex;flex-direction:column;gap:4px}
+  .field[hidden]{display:none!important}
+  .field label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+  input,select,textarea{font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:0;padding:8px 9px;width:100%}
+  #f-bruto,#f-iva{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;text-align:right}
+  input:focus,select:focus,button:focus-visible{outline:2px solid var(--ok);outline-offset:1px}
+  #f-item,#f-detalle{text-transform:uppercase}
+  #f-item::placeholder,#f-detalle::placeholder{text-transform:none}
+  #wrap-iva label{color:var(--iva)} #f-iva{border-color:var(--iva)}
+  .neto-preview{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;background:var(--ledger);border:1px solid var(--rule);padding:8px 9px;text-align:right;font-size:14px}
+  button{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:var(--paper);border:1px solid var(--ink);padding:10px 16px;cursor:pointer}
+  button:hover{background:var(--ok);border-color:var(--ok)}
+  button.ghost{background:transparent;color:var(--ink);border-color:var(--rule-strong)}
+  button.ghost:hover{background:var(--ledger);color:var(--ink)}
+  #vista-cargar.editando{background:var(--tint-warn);outline:2px solid var(--warn);outline-offset:10px}
+  .note{font-size:13px;color:var(--ink-soft);margin-top:8px}
+
+  .filters{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-bottom:12px}
+  .filters .field{min-width:125px}
+
+  .tablewrap{overflow-x:auto;border:1px solid var(--rule-strong)}
+  table{border-collapse:collapse;width:100%;background:var(--surface)}
+  .tablacompacta table{min-width:0;width:100%;table-layout:fixed}
+  thead th{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;text-align:left;padding:9px 10px;background:var(--ink);color:var(--paper);white-space:nowrap}
+  thead th.num{text-align:right}
+  .tablacompacta thead th{padding:6px 5px;font-size:9px;letter-spacing:.04em}
+  .tablacompacta thead th.th-help{cursor:help;text-decoration:underline dotted;text-underline-offset:2px}
+  .tablacompacta td.cp{white-space:nowrap}
+  .tablacompacta td.cp .cp-let{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:var(--ink-soft);margin-right:3px;vertical-align:1px}
+  .cuotas-toggle{background:none;border:1px solid var(--rule-strong);color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;font-size:10px;padding:1px 4px;cursor:pointer;white-space:nowrap;letter-spacing:0}
+  .cuotas-estado{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:1px 5px;border:1px solid var(--rule-strong);color:var(--ink-soft);white-space:nowrap;cursor:help}
+  .cuotas-estado.parcial{border-color:var(--warn);color:var(--warn)}
+  .cuotas-estado.ok{border-color:var(--ok);color:var(--ok)}
+  .cuotas-arrow{background:none;border:none;color:var(--ink-soft);cursor:pointer;font-size:11px;padding:0 2px;margin-left:2px;vertical-align:1px}
+  .cuotas-arrow.parcial{color:var(--warn)} .cuotas-arrow.ok{color:var(--ok)}
+  .cuotas-arrow:hover{color:var(--ink)}
+  .tablacompacta td.cp input[disabled]{opacity:.9}
+  tr.desglose-fila td{background:var(--tint-neutral);padding:0}
+  .desglose-box{padding:9px 14px}
+  .desglose-head{font-size:12px;color:var(--ink-soft);margin-bottom:6px}
+  .desg-edit{font-style:italic;color:var(--ink-soft)}
+  .desg-row{display:grid;grid-template-columns:70px 120px 1fr 90px;gap:12px;align-items:center;padding:4px 0;border-bottom:1px dashed var(--rule);font-size:13px}
+  .desg-row.pagada{color:var(--ok)}
+  .desg-n{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600}
+  .desg-imp{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;text-align:right}
+  .desg-fecha{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft)}
+  .desg-estado{font-family:'IBM Plex Mono',monospace;font-size:11px;text-align:right}
+  #cuotas-form{border:1px solid var(--warn);border-left:3px solid var(--warn);background:var(--tint-warn2);padding:12px 14px;margin:6px 0 4px}
+  .cuotas-form-head{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--warn);margin-bottom:10px}
+  .cuotas-form-head span{font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-soft)}
+  .cuotas-form-foot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:8px}
+  tr.parcial td:first-child{box-shadow:inset 3px 0 0 var(--warn)}
+  tr.cuotas-fila td{background:var(--tint-neutral);padding:0}
+  .cuotas-box{padding:10px 14px}
+  .cuotas-head{font-size:12px;color:var(--ink-soft);margin-bottom:8px}
+  .cuota-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:5px 0;border-bottom:1px dashed var(--rule)}
+  .cuota-n{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;min-width:60px}
+  .cuota-row label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);display:flex;flex-direction:column;gap:3px}
+  .cuota-row input[type=text],.cuota-row input[type=month]{font-family:'IBM Plex Mono',monospace;font-size:13px;padding:5px 7px;border:1px solid var(--rule);text-transform:none}
+  .cuota-row input.cuota-imp{text-align:right;width:120px}
+  .cuota-pago{flex-direction:row!important;align-items:center;gap:5px!important}
+  .cuota-pago input{width:16px;height:16px}
+  .cuota-del{background:none;border:none;color:var(--neg);font-size:16px;cursor:pointer;padding:0 4px;margin-left:auto}
+  .cuotas-foot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:8px}
+  .cuota-add{font-size:11px;padding:5px 10px}
+  .cuota-aviso{font-size:12px;color:var(--neg)}
+  .cuota-ok{font-size:12px;color:var(--ok)}
+  .tablacompacta tbody td{padding:4px 5px;font-size:12px;vertical-align:middle}
+  .tablacompacta tbody td.detalle{font-size:11px}
+  .tablacompacta .tag{font-size:9px;padding:0 3px;letter-spacing:0}
+  .tablacompacta td.mono{font-size:11px}
+  .tablacompacta .ivanota{font-size:9px}
+  .tablacompacta input[type=checkbox]{width:15px;height:15px}
+  .tablacompacta td.item{font-size:11px;overflow:hidden;text-overflow:ellipsis}
+  .tablacompacta td.rubro{font-size:10px;overflow:hidden;text-overflow:ellipsis}
+  .tablacompacta .detalle{max-width:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  tbody td{padding:8px 10px;border-bottom:1px solid var(--rule);vertical-align:top;font-size:14px}
+  tbody tr:nth-child(odd){background:var(--ledger)}
+  tbody tr.paid td:first-child{box-shadow:inset 3px 0 0 var(--ok)}
+  tbody tr.unpaid td:first-child{box-shadow:inset 3px 0 0 var(--warn)}
+  tbody tr.editing{background:var(--tint-warn);outline:2px solid var(--warn);outline-offset:-2px}
+  tbody tr.nocomp td.item,tbody tr.nocomp td.num{color:var(--iva);font-style:italic}
+  tbody tr.nocomp td:first-child{box-shadow:inset 3px 0 0 var(--iva)!important}
+  td.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+  td.num.ing{color:var(--ing);font-weight:500}
+  td.mono{font-family:'IBM Plex Mono',monospace;font-size:13px;white-space:nowrap}
+  td.item{text-transform:uppercase;font-weight:500}
+  td.rubro{font-size:13px;color:var(--ink-soft);white-space:nowrap}
+  .detalle{color:var(--ink-soft);font-size:13px;max-width:210px;text-transform:uppercase}
+  td.acciones{white-space:nowrap}
+  .tag{font-family:'IBM Plex Mono',monospace;font-size:11px;border:1px solid var(--rule-strong);padding:1px 6px;letter-spacing:.06em;white-space:nowrap}
+  .tag.A{border-color:var(--iva);color:var(--iva)}
+  .tag.IN{border-color:var(--ing);color:var(--ing);font-weight:600}
+  .tag.EG{border-color:var(--ink-soft);color:var(--ink-soft)}
+  .tag.fa{border-color:var(--ing);color:var(--ing)}
+  .tag.nf{border-color:var(--warn);color:var(--warn)}
+  .ivanota{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--iva);margin-top:3px;white-space:nowrap}
+  input[type=checkbox]{width:18px;height:18px;accent-color:var(--ok);cursor:pointer}
+  .rowbtn{background:none;border:1px solid var(--rule-strong);color:var(--ink-soft);padding:1px 0;width:20px;font-size:11px;font-weight:600;letter-spacing:0;cursor:pointer;line-height:1.3}
+  .rowbtn:hover{background:var(--neg);border-color:var(--neg);color:var(--paper)}
+  .rowbtn.edit:hover{background:var(--ok);border-color:var(--ok);color:var(--paper)}
+  .rowbtn.warn{color:var(--neg);border-color:var(--neg);font-weight:600;width:auto;padding:1px 4px}
+  .rowbtn.plain{color:var(--ink);border-color:var(--rule-strong);font-size:12px}
+  .rowbtn.plain:hover{background:var(--ledger);border-color:var(--ink-soft);color:var(--ink)}
+  .fx-sub{display:block;font-size:9px;color:var(--ink-soft);font-weight:400;white-space:nowrap}
+  td.num.dual{white-space:normal;line-height:1.3}
+  .tablacompacta thead th{white-space:normal}
+  .cp-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.02em;background:none;border:1px solid var(--rule-strong);color:var(--ink-soft);padding:2px 6px;cursor:pointer;white-space:nowrap}
+  .cp-badge.pendiente{border-color:var(--warn);color:var(--warn)}
+  .cp-badge.pendiente:hover{background:var(--warn);color:var(--paper)}
+  .cp-badge.pagado{border-color:var(--ok);color:var(--ok)}
+  .cp-badge.pagado:hover{background:var(--ok);color:var(--paper)}
+  .tablacompacta td.cp{position:relative}
+  .cp-editor{position:absolute;z-index:30;top:50%;left:0;transform:translateY(-50%);display:flex;align-items:center;gap:3px;background:var(--surface);border:1px solid var(--rule-strong);box-shadow:0 3px 10px rgba(0,0,0,.25);padding:4px 5px;white-space:nowrap}
+  .cp-fecha-input{width:118px;font-size:11px;padding:3px 5px;display:inline-block}
+  .cp-metodo-input{max-width:160px;font-size:11px;padding:3px 5px;display:inline-block}
+  .cp-ok,.cp-cancel{background:none;border:1px solid var(--rule-strong);color:var(--ink-soft);cursor:pointer;font-size:11px;padding:2px 5px;line-height:1}
+  .cp-ok:hover{background:var(--ok);border-color:var(--ok);color:var(--paper)}
+  .cp-cancel:hover{background:var(--neg);border-color:var(--neg);color:var(--paper)}
+  th.th-orden{cursor:pointer;user-select:none}
+  th.th-orden.th-help{cursor:pointer}
+  th.th-orden:hover{background:var(--ok)}
+  .tablacompacta td.computable{text-align:center}
+  .add-confirm{margin-top:12px;padding:10px 12px;border:1px solid var(--ok);background:var(--tint-ing);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;opacity:1;transition:opacity 1.1s ease}
+  .add-confirm.fade{opacity:0}
+  .add-confirm span{font-size:13px;color:var(--ink)}
+  @keyframes flashRow{0%{background:var(--tint-warn)}100%{background:transparent}}
+  .tablacompacta tr.flash td{animation:flashRow 2.4s ease}
+  .icon-btn{display:inline-flex;align-items:center;justify-content:center;background:none;border:1px solid var(--rule-strong);color:var(--ink-soft);padding:8px 10px;cursor:pointer;line-height:1}
+  .icon-btn:hover{border-color:var(--ink-soft);color:var(--ink)}
+  .icon-btn.identificado{color:var(--ink);border-color:var(--ink-soft)}
+  .firebase-warning{background:var(--tint-warn);border:1px solid var(--warn);color:var(--ink);padding:10px 14px;margin-bottom:16px;font-size:13px}
+  .usuario-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px}
+  .usuario-box{background:var(--paper);border:1px solid var(--rule-strong);box-shadow:0 8px 30px rgba(0,0,0,.35);padding:22px;max-width:360px;width:100%}
+  .usuario-box h3{margin:0 0 8px;font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
+  .usuario-box input{margin-top:4px}
+  .login-error{margin-top:10px;padding:8px 10px;background:var(--tint-warn);border:1px solid var(--neg);color:var(--neg);font-size:12px}
+  .usuario-box a{color:var(--iva)}
+  .historial-popover{position:fixed;top:64px;right:20px;width:360px;max-width:calc(100vw - 40px);max-height:70vh;overflow-y:auto;background:var(--paper);border:1px solid var(--rule-strong);box-shadow:0 10px 34px rgba(0,0,0,.35);z-index:180}
+  .historial-popover-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--rule-strong);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);position:sticky;top:0;background:var(--paper)}
+  .historial-popover-head button{background:none;border:1px solid var(--rule-strong);color:var(--ink-soft);cursor:pointer;font-size:11px;padding:2px 7px;line-height:1.6}
+  .historial-popover-head button:hover{border-color:var(--ink-soft);color:var(--ink)}
+  .historial-popover .empty{border:none;background:none;padding:20px 14px}
+  .historial-row{padding:8px 12px;border-bottom:1px solid var(--rule);font-size:12px}
+  .historial-top{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+  .historial-item{font-size:13px;color:var(--ink)}
+  .historial-rubro{font-size:10px;color:var(--ink-soft)}
+  .historial-fecha{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-soft);white-space:nowrap}
+  .historial-bottom{margin-top:2px;color:var(--ink-soft)}
+  .historial-usuario{font-weight:600;color:var(--ink)}
+  .tablacompacta td.acciones{white-space:nowrap;text-align:center}
+  .tablacompacta td.acciones .rowbtn+.rowbtn{margin-left:3px}
+  tfoot td{padding:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;border-top:2px solid var(--ink);background:var(--paper)}
+
+  /* dashboard de resultados */
+  #resultados table{min-width:640px}
+  #resultados td.num{font-weight:500}
+  .pos{color:var(--ing)} .negv{color:var(--neg)}
+  .barcell{width:34%;padding:8px 10px}
+  .bar{height:12px;background:var(--ledger);position:relative;overflow:hidden}
+  .bar i{position:absolute;top:0;bottom:0;display:block}
+  .bar i.g{background:var(--ing)} .bar i.p{background:var(--neg)}
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:22px}
+  .split h3{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 8px;font-weight:600}
+  .rlist{display:grid;gap:1px}
+  .rrow{display:grid;grid-template-columns:1fr auto;gap:10px;padding:6px 0;border-bottom:1px solid var(--rule);font-size:14px}
+  .rrow b{font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums}
+  .rrow small{font-family:'IBM Plex Mono',monospace;color:var(--ink-soft);margin-left:8px}
+
+  .empty{padding:26px;text-align:center;color:var(--ink-soft);background:var(--surface);border:1px dashed var(--rule-strong)}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:12px;padding:10px 18px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9}
+  .toast.on{opacity:1}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+  @media (max-width:700px){.masthead h1{font-size:23px}.split{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div id="firebase-warning" class="firebase-warning" hidden>
+    ⚠️ Firebase todavía no está configurado — lo que cargues <b>no se va a guardar</b>. Abrí el archivo y completá "CONFIGURACIÓN DE FIREBASE" al principio del &lt;script&gt;.
+  </div>
+
+  <header class="masthead">
+    <div>
+      <h1>Resultados y Devengamiento</h1>
+      <div class="sub">Hotel Copahue · Saavedra 80, Junín</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button type="button" id="usuario-chip" class="icon-btn" title="Cerrar sesión">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+      </button>
+      <button type="button" id="btn-historial" class="icon-btn" title="Ver historial de cambios">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="17" height="17"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+      </button>
+      <div id="historial-popover" class="historial-popover" hidden>
+        <div class="historial-popover-head">
+          <span>Historial de cambios</span>
+          <button type="button" id="historial-cerrar" title="Cerrar">✕</button>
+        </div>
+        <div id="historialzone"></div>
+      </div>
+      <button class="icon-btn" id="btn-tema" type="button" title="Cambiar modo claro/oscuro">🌙</button>
+      <div class="stamp" id="stamp"></div>
+    </div>
+  </header>
+
+  <div id="login-overlay" class="usuario-overlay">
+    <div class="usuario-box">
+      <!-- ---- Ingresar ---- -->
+      <div id="login-vista-signin">
+        <h3>Ingresar</h3>
+        <p class="note" id="login-signin-nota">Iniciá sesión con el usuario y clave que te dio el administrador.</p>
+        <label for="login-email" style="font-size:12px;color:var(--ink-soft)">Correo</label>
+        <input type="email" id="login-email" placeholder="usuario@hotelcopahue.com" autocomplete="username">
+        <label for="login-password" style="font-size:12px;color:var(--ink-soft);margin-top:8px;display:block">Clave</label>
+        <input type="password" id="login-password" placeholder="Clave" autocomplete="current-password">
+        <div id="login-signin-error" class="login-error" hidden></div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button type="button" id="login-signin-btn">Ingresar</button>
+        </div>
+        <p class="note" style="margin-top:14px">¿Sos administrador? <a href="#" id="link-admin-gate">Crear una cuenta nueva</a></p>
+      </div>
+      <!-- ---- Verificación de administrador ---- -->
+      <div id="login-vista-admin-gate" hidden>
+        <h3>Acceso de administrador</h3>
+        <p class="note">Ingresá el CUIT de la empresa y la clave de administrador para poder crear cuentas nuevas.</p>
+        <label for="admin-cuit" style="font-size:12px;color:var(--ink-soft)">CUIT</label>
+        <input type="text" id="admin-cuit" placeholder="CUIT de la empresa" autocomplete="off">
+        <label for="admin-clave" style="font-size:12px;color:var(--ink-soft);margin-top:8px;display:block">Clave de administrador</label>
+        <input type="password" id="admin-clave" placeholder="Clave" autocomplete="off">
+        <div id="admin-gate-error" class="login-error" hidden></div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button type="button" id="admin-gate-btn">Continuar</button>
+          <button type="button" class="ghost" id="admin-gate-volver">Volver</button>
+        </div>
+      </div>
+      <!-- ---- Crear cuenta (admin) ---- -->
+      <div id="login-vista-admin-crear" hidden>
+        <h3>Crear cuenta nueva</h3>
+        <p class="note">Se crea con Firebase Authentication. La persona va a poder ingresar con este correo y clave.</p>
+        <label for="admin-nuevo-nombre" style="font-size:12px;color:var(--ink-soft)">Nombre y apellido</label>
+        <input type="text" id="admin-nuevo-nombre" placeholder="Nombre y apellido" autocomplete="off">
+        <label for="admin-nuevo-email" style="font-size:12px;color:var(--ink-soft);margin-top:8px;display:block">Correo</label>
+        <input type="email" id="admin-nuevo-email" placeholder="usuario@hotelcopahue.com" autocomplete="off">
+        <label for="admin-nuevo-clave" style="font-size:12px;color:var(--ink-soft);margin-top:8px;display:block">Clave (mínimo 6 caracteres)</label>
+        <input type="password" id="admin-nuevo-clave" placeholder="Clave" autocomplete="off">
+        <div id="admin-crear-error" class="login-error" hidden></div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button type="button" id="admin-crear-btn">Crear cuenta</button>
+          <button type="button" class="ghost" id="admin-crear-otra">Crear otra</button>
+          <button type="button" class="ghost" id="admin-crear-volver">Volver a ingresar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ DASHBOARD (colapsable) ============ -->
+  <section class="panel" id="resultados">
+    <h2 class="sec dash-head" id="dash-toggle" role="button" tabindex="0" aria-expanded="true">
+      <span class="chev" id="dash-chev">▾</span> Dashboard de resultados
+      <span class="dash-hint" id="dash-hint"></span>
+    </h2>
+    <div id="dash-body">
+      <div class="periodo">
+        <div class="pbloque ing">
+          <span class="pbloque-tit">Ingresos</span>
+          <div class="pfield"><label for="qi-cobro">Mes de cobro</label><select id="qi-cobro"><option value="">Todos</option></select></div>
+          <div class="pfield"><label for="qi-corr">Mes al que corresponde</label><select id="qi-corr"><option value="">Todos</option></select></div>
+        </div>
+        <div class="pbloque gas">
+          <span class="pbloque-tit">Gastos</span>
+          <div class="pfield"><label for="qg-pago">Mes de pago</label><select id="qg-pago"><option value="">Todos</option></select></div>
+          <div class="pfield"><label for="qg-corr">Mes al que corresponde</label><select id="qg-corr"><option value="">Todos</option></select></div>
+        </div>
+        <button class="ghost" id="btn-limpiar-per" hidden>Limpiar</button>
+        <span class="periodo-nota" id="periodo-nota"></span>
+      </div>
+      <div class="totals" id="totals"></div>
+      <div id="reszone"></div>
+      <div class="split">
+        <div><h3>Ingresos por rubro</h3><div class="rlist" id="ring"></div></div>
+        <div><h3>Gastos por rubro</h3><div class="rlist" id="rgas"></div></div>
+      </div>
+      <p class="note">El resultado se arma por mes devengado y es independiente de los filtros de Movimientos Registrados. Destildá un rubro para ver cómo impacta en el resultado.</p>
+    </div>
+  </section>
+
+  <!-- ============ MOVIMIENTOS (colapsable, con sub-vistas) ============ -->
+  <section class="panel" id="panel-movs">
+    <h2 class="sec dash-head" id="movs-toggle" role="button" tabindex="0" aria-expanded="true">
+      <span class="chev" id="movs-chev">▾</span> Movimientos
+      <span class="dash-hint" id="movs-hint"></span>
+    </h2>
+    <div id="movs-body">
+      <div class="tabs">
+        <button id="subtab-cargar" class="on">Cargar nuevos</button>
+        <button id="subtab-registrados">Registrados</button>
+        <button id="subtab-fijos">Fijos mensuales</button>
+      </div>
+
+      <!-- ---- Sub-vista: Cargar nuevos ---- -->
+      <div id="vista-cargar">
+        <p id="titulo-carga" style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 10px"></p>
+        <div class="tabs">
+          <button id="tab-gasto" class="on">Gasto</button>
+          <button id="tab-ingreso">Ingreso</button>
+        </div>
+        <div class="form-grid" id="form-grid">
+          <div class="field"><label for="f-mespago" id="lbl-mespago">Mes de pago</label><input type="month" id="f-mespago"></div>
+          <div class="field"><label for="f-mescorr">Mes al que corresponde</label><input type="month" id="f-mescorr"></div>
+          <div class="field" id="wrap-fechapago"><label for="f-fechapago" id="lbl-fechapago">Fecha de vencimiento</label><input type="date" id="f-fechapago"></div>
+          <div class="field" id="wrap-item"><label for="f-item">Ítem</label><input type="text" id="f-item" placeholder="Ej. Provisión SAC"></div>
+          <div class="field" id="wrap-bruto"><label for="f-bruto" id="lbl-bruto">Importe bruto</label><input type="text" id="f-bruto" inputmode="numeric" autocomplete="off" placeholder="0"></div>
+          <div class="field" id="wrap-moneda"><label for="f-moneda">Moneda</label>
+            <select id="f-moneda"><option value="ARS" selected>ARS</option><option value="USD">USD</option></select>
+          </div>
+          <div class="field" id="wrap-cotizacion" hidden><label for="f-cotizacion">Cotización (1 USD = $)</label><input type="text" id="f-cotizacion" inputmode="numeric" autocomplete="off" placeholder="0"></div>
+          <div class="field" id="wrap-tipo"><label for="f-tipo">Tipo de factura</label>
+            <select id="f-tipo">
+              <option value="A">A</option><option value="A | 27%">A | 27%</option>
+              <option value="B">B</option><option value="C">C</option><option value="No posee" selected>No posee</option>
+            </select>
+          </div>
+          <div class="field" id="wrap-iva" hidden><label for="f-iva">IVA a descontar</label><input type="text" id="f-iva" inputmode="numeric" autocomplete="off" placeholder="0"></div>
+          <div class="field" id="wrap-neto"><label>Importe neto</label><div class="neto-preview" id="f-neto">0</div></div>
+          <div class="field" id="wrap-rubro"><label for="f-rubro">Rubro</label><select id="f-rubro"></select></div>
+          <div class="field" id="wrap-fact" hidden><label for="f-fact">Facturación</label>
+            <select id="f-fact"><option value="Facturado">Facturado</option><option value="No Facturado">No Facturado</option></select>
+          </div>
+          <div class="field" id="wrap-detalle"><label for="f-detalle" id="lbl-detalle">Detalle</label><input type="text" id="f-detalle" placeholder="Proveedor, comprobante, observaciones"></div>
+          <div class="field" id="wrap-pago"><label for="f-pago" id="lbl-pago">¿Está pago?</label><div style="padding:8px 0"><input type="checkbox" id="f-pago"></div></div>
+          <div class="field" id="wrap-fecha-real-pago" hidden><label for="f-fecha-real-pago" id="lbl-fecha-real-pago">Fecha en que se pagó</label><input type="date" id="f-fecha-real-pago"></div>
+          <div class="field" id="wrap-metodo-pago" hidden><label for="f-metodo-pago">Método de pago</label><select id="f-metodo-pago"></select></div>
+          <div class="field" id="wrap-comp"><label for="f-comp">Computable</label><div style="padding:8px 0"><input type="checkbox" id="f-comp" checked></div></div>
+          <div class="field" id="wrap-dividido"><label for="f-dividido" id="lbl-dividido" title="Dividir el pago de este gasto en varias cuotas con su propia fecha">Pago dividido</label><div style="padding:8px 0"><input type="checkbox" id="f-dividido"></div></div>
+          <div class="field" id="wrap-add"><button id="btn-add">Agregar</button></div>
+          <div class="field" id="wrap-cancel" hidden><button class="ghost" id="btn-cancel">Cancelar</button></div>
+        </div>
+        <div id="cuotas-form" hidden>
+          <div class="cuotas-form-head">Pagos parciales <span id="cuotas-form-resumen"></span></div>
+          <div id="cuotas-form-list"></div>
+          <div class="cuotas-form-foot">
+            <button class="ghost" id="btn-cuota-add-form" type="button">+ Agregar cuota</button>
+            <span id="cuotas-form-aviso"></span>
+          </div>
+        </div>
+        <p class="note" id="nota-form"></p>
+        <div id="add-confirm" class="add-confirm" hidden>
+          <span id="add-confirm-txt"></span>
+          <button type="button" class="ghost" id="add-confirm-ver">Ver en Registrados</button>
+        </div>
+      </div>
+
+      <!-- ---- Sub-vista: Registrados ---- -->
+      <div id="vista-registrados" hidden>
+        <div class="filters">
+          <div class="field"><label for="q-tipo">Tipo</label><select id="q-tipo"><option value="">Todos</option><option value="ingreso">Ingresos</option><option value="gasto">Gastos</option></select></div>
+          <div class="field"><label for="q-rubro">Rubro</label><select id="q-rubro"><option value="">Todos</option></select></div>
+          <div class="field"><label for="q-estado">Estado</label><select id="q-estado"><option value="">Todos</option><option value="pend">Pendientes</option><option value="pag">Cobrados / pagos</option></select></div>
+          <div class="field"><label for="q-texto">Buscar</label><input type="text" id="q-texto" placeholder="Ítem o detalle"></div>
+          <div class="rango">
+            <div class="field"><label for="qt-pago-desde">Mes de pago/cobro, desde</label><input type="month" id="qt-pago-desde"></div>
+            <span class="rango-sep">–</span>
+            <div class="field"><label for="qt-pago-hasta">hasta</label><input type="month" id="qt-pago-hasta"></div>
+          </div>
+          <div class="rango">
+            <div class="field"><label for="qt-corr-desde">Mes al que corresponde, desde</label><input type="month" id="qt-corr-desde"></div>
+            <span class="rango-sep">–</span>
+            <div class="field"><label for="qt-corr-hasta">hasta</label><input type="month" id="qt-corr-hasta"></div>
+          </div>
+          <div class="rango">
+            <div class="field"><label for="qt-fecha-desde">Fecha de pago exacta, desde</label><input type="date" id="qt-fecha-desde"></div>
+            <span class="rango-sep">–</span>
+            <div class="field"><label for="qt-fecha-hasta">hasta</label><input type="date" id="qt-fecha-hasta"></div>
+          </div>
+          <div class="field"><button class="ghost" id="btn-limpiar-filtros">Limpiar filtros</button></div>
+          <div class="field"><button class="ghost" id="btn-csv">Exportar CSV</button></div>
+        </div>
+        <p class="note">Tocá el título de una columna para ordenar por ese dato; tocá de nuevo para invertir el orden.</p>
+        <div id="tablezone" class="tablacompacta"></div>
+      </div>
+
+      <!-- ---- Sub-vista: Fijos mensuales ---- -->
+      <div id="vista-fijos" hidden>
+        <div id="fijos-box">
+          <div class="fijos-head">
+            <span>Se cargarán <b id="fijos-n"></b> gastos fijos correspondientes a <b id="fijos-mes-actual"></b>, con importe en blanco. Después, en cada línea, completás el importe y el mes de pago.</span>
+          </div>
+          <div class="fijos-add">
+            <span class="fijos-add-tit">Agregar o quitar un rubro de gasto fijo, y sumar un ítem a la lista (queda guardado para todos los meses)</span>
+            <div class="fijos-add-row">
+              <div class="field"><label for="fx-item">Ítem</label><input type="text" id="fx-item" placeholder="Ej. SEGURO INCENDIO"></div>
+              <div class="field"><label for="fx-rubro">Rubro</label><select id="fx-rubro"></select></div>
+              <div class="field"><button class="ghost" id="btn-fx-rubro-quitar" type="button" title="Quitar de la lista el rubro elegido (solo los que agregaste vos)">Quitar rubro</button></div>
+              <div class="field"><button class="ghost" id="btn-fx-add">Sumar ítem a la lista</button></div>
+            </div>
+            <div id="fijos-extra-list"></div>
+          </div>
+          <div class="fijos-row">
+            <div class="field"><label for="fijos-mes-todos">Mes de pago para todos (opcional)</label><input type="month" id="fijos-mes-todos"></div>
+            <div class="field"><label for="fijos-venc-todos">Fecha de vencimiento para todos (opcional)</label><input type="date" id="fijos-venc-todos"></div>
+            <div class="field"><button id="btn-fijos-go">Cargar en el libro</button></div>
+          </div>
+          <p class="note">Quedan imputados automáticamente al mes en curso. Si completás "mes de pago" o "fecha de vencimiento" se aplican a todas las líneas; si los dejás vacíos, los asignás en cada línea, abajo.</p>
+        </div>
+        <div class="filters">
+          <div class="field"><label for="qf-mes">Mes al que corresponde</label><select id="qf-mes"><option value="">Todos</option></select></div>
+          <div class="field"><label for="qf-estado">Estado</label><select id="qf-estado"><option value="">Todos</option><option value="pend">Pendientes</option><option value="pag">Pagados</option></select></div>
+        </div>
+        <p class="note">Tocá el título de una columna para ordenar por ese dato; tocá de nuevo para invertir el orden.</p>
+        <div id="fijoszone" class="tablacompacta"></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- ============ FIREBASE ============
+SDK de Firebase (Firestore), para que los datos se guarden en la nube y estén disponibles
+desde cualquier dispositivo/PC de recepción. Instrucciones de configuración más abajo,
+dentro del bloque de JavaScript, en la sección "CONFIGURACIÓN DE FIREBASE".
+-->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<script>
+/* ======================================================================
+   CONFIGURACIÓN DE FIREBASE — completar esto para que el sitio guarde datos
+   ======================================================================
+   1. Andá a https://console.firebase.google.com , creá un proyecto (gratis,
+      no pide tarjeta si te quedás en el plan gratuito "Spark").
+   2. Dentro del proyecto: "Compilación" → "Firestore Database" → "Crear base
+      de datos". Elegí una ubicación (ej. "southamerica-east1") y arrancá en
+      cualquiera de los dos modos, es indistinto porque en el paso 3 pisamos
+      la regla igual.
+   3. Andá a la pestaña "Reglas" (dentro de Firestore Database) y REEMPLAZÁ
+      todo el contenido por esto — a diferencia de la regla de "modo de
+      prueba" que pone Firebase por default, ESTA NO VENCE NUNCA, y además
+      exige haber iniciado sesión (ver paso 4) para poder leer o escribir:
+
+        rules_version = '2';
+        service cloud.firestore {
+          match /databases/{database}/documents {
+            match /{document=**} { allow read, write: if request.auth != null; }
+          }
+        }
+
+      Dale a "Publicar".
+   4. Andá a "Compilación" → "Authentication" → "Comenzar" (Get started) →
+      en la pestaña "Sign-in method" habilitá el proveedor "Correo
+      electrónico/contraseña" (Email/Password). No hace falta crear ningún
+      usuario ahí a mano: la app misma tiene un panel para crear cuentas
+      (botón "¿Sos administrador? Crear una cuenta nueva" en la pantalla de
+      login), protegido con el CUIT de la empresa y una clave fijados en el
+      código (buscá "ADMIN_CUIT" y "ADMIN_CLAVE" más abajo). Cambiá esos
+      valores si querés otra clave de administrador.
+   5. Andá a "Configuración del proyecto" (el engranaje) → pestaña "General" →
+      bajá hasta "Tus apps" → ícono </> ("Agregar app" → Web) → registrá la
+      app (no hace falta Firebase Hosting). Te va a mostrar un objeto
+      "firebaseConfig".
+   6. Copiá esos valores y pegalos ACÁ ABAJO, reemplazando los que dicen "TU_...".
+   7. Subí este archivo a Netlify como siempre. Lo que cargues desde cualquier
+      compu/celular con este link va a quedar guardado en la misma base de
+      datos, siempre y cuando quien lo use haya iniciado sesión.
+
+   ¿SE VA A LLENAR O CORTAR CON EL TIEMPO? Con la regla de arriba, no: no
+   vence. Sobre límites de uso, el plan gratuito de Firestore incluye 50.000
+   lecturas y 20.000 escrituras por día — un hotel cargando movimientos a
+   mano no se acerca ni de lejos a eso. El único límite real de Firestore es
+   1 MB por documento individual; por eso los movimientos y el historial se
+   guardan separados POR AÑO (un documento para 2026, otro para 2027, etc.),
+   así que ningún documento crece sin límite y esto funciona para siempre sin
+   necesidad de tocar nada.
+
+   SEGURIDAD DEL PANEL DE ADMINISTRADOR: el CUIT y la clave de más abajo se
+   verifican en el navegador (no hay servidor propio), así que alguien con
+   conocimientos técnicos que revise el código fuente podría encontrarlos.
+   No reemplazan la seguridad real (que es la regla de Firestore de arriba,
+   "if request.auth != null"): solo evitan que cualquiera vea el botón de
+   crear cuentas a simple vista. Para más seguridad, cambiá estos valores por
+   los que quieras y no los compartas.
+   ====================================================================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyDtSk1UWI6Ebx4o7GZwUv5T9q7vOpV533E",
+  authDomain: "devengamiento-hotel-copahue.firebaseapp.com",
+  projectId: "devengamiento-hotel-copahue",
+  storageBucket: "devengamiento-hotel-copahue.firebasestorage.app",
+  messagingSenderId: "275258733031",
+  appId: "1:275258733031:web:5fb4a513208fa7c3d48d42"
+};
+const FIREBASE_LISTO = !!(firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith('TU_'));
+let db=null;
+if(FIREBASE_LISTO){
+  try{ firebase.initializeApp(firebaseConfig); db=firebase.firestore(); }
+  catch(e){ console.error('Error al iniciar Firebase:',e); }
+}
+// Colección donde se guarda todo, con la MISMA forma que tenía window.storage
+// (get/set por clave), para no tener que tocar el resto del código.
+const FS_COLECCION='copahue_kv';
+window.storage = {
+  async get(key){
+    if(!db) throw new Error('Firebase no está configurado');
+    const snap = await db.collection(FS_COLECCION).doc(key).get();
+    if(!snap.exists) throw new Error('no existe');
+    return { key, value: (snap.data()||{}).value };
+  },
+  async set(key,value){
+    if(!db) throw new Error('Firebase no está configurado');
+    await db.collection(FS_COLECCION).doc(key).set({value});
+    return { key, value };
+  },
+  async delete(key){
+    if(!db) throw new Error('Firebase no está configurado');
+    await db.collection(FS_COLECCION).doc(key).delete();
+    return { key, deleted:true };
+  }
+};
+
+const KEY='copahue:devengamiento:v3';
+const MESES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const RUBROS={
+  gasto:['RRHH','ALQUILER HOTEL','ALQUILER COCHERA 1','ALQUILER COCHERA 2','SERVICIOS','GASTOS MANTENIMIENTO','INSUMOS','IMPUESTOS','TASAS MUNICIPALES','MARKETING','DESAYUNOS','LAVADERO','IVA','INVERSIONES','OTROS'],
+  ingreso:['ALOJAMIENTO','COCHERAS','EVENTOS','COMISIONES']
+};
+// Métodos de pago de gastos (lista base + los que se agreguen). E-cheq: el pago se
+// considera efectuado en la fecha de pago indicada, que es cuando se debitará el gasto.
+const METODOS_PAGO_BASE=['Efectivo','Débito automático','Pago de servicios','Transferencia','E-cheq',
+  'Tarjeta de crédito de Feli','Tarjeta de crédito de Nora','Tarjeta de crédito de José','Tarjeta de débito','Mercado Pago de Nora'];
+// Gastos fijos recurrentes (item + rubro). Importe se completa cada mes.
+// Orden: RRHH, Alquileres, Impuestos, Lavadero, Marketing, Desayunos, Servicios, Tasas Municipales, IVA.
+const GASTOS_FIJOS=[
+  // RRHH
+  ['SUELDOS','RRHH'],
+  ['SUELDOS VIP','RRHH'],
+  ['SUELDO NORA','RRHH'],
+  ['AGUINALDOS','RRHH'],
+  ['AGUINALDOS VIP','RRHH'],
+  ['AGUINALDO NORA','RRHH'],
+  ['ARCA HOTEL (VEP - APORTES)','RRHH'],
+  ['UTHGRA - FONDO CONVENIO FEGHRA','RRHH'],
+  ['UTHGRA - CONTRIBUCIÓN SOLIDARIA','RRHH'],
+  ['UTHGRA - CUOTA SINDICAL','RRHH'],
+  ['UTHGRA - SEGURO DE VIDA Y SEPELIO','RRHH'],
+  ['IGOILLO JOSÉ IGNACIO','RRHH'],
+  ['MACARI GEORGINA','RRHH'],
+  // Alquileres
+  ['ALQUILER JUAN HOTEL','ALQUILER HOTEL'],
+  ['ALQUILER JUAN COCHERA','ALQUILER COCHERA 1'],
+  ['BRINGERI RAFAEL','ALQUILER COCHERA 2'],
+  // Impuestos
+  ['ARCA NORA','IMPUESTOS'],
+  ['IIBB','IMPUESTOS'],
+  // Lavadero
+  ['FWS DEL NOROESTE S.R.L.','LAVADERO'],
+  // Marketing
+  ['LUCHETTI GABRIEL','MARKETING'],
+  ['FEDERICO BRIZUELA','MARKETING'],
+  ['DE DIO BLANCO VALENTINA','MARKETING'],
+  ['JUNIN GOLF CLUB','MARKETING'],
+  ['HOTEL MANAGMENT S.A. (MARKETING)','MARKETING'],
+  // Desayunos
+  ['BENITO MANUEL (1)','DESAYUNOS'],
+  ['BENITO MANUEL (2)','DESAYUNOS'],
+  // Servicios
+  ['EDEN HOTEL','SERVICIOS'],
+  ['EDEN COCHERA 2','SERVICIOS'],
+  ['GAS JUNIN','SERVICIOS'],
+  ['MOVISTAR','SERVICIOS'],
+  ['PERSONAL','SERVICIOS'],
+  ['PAYWAY','SERVICIOS'],
+  ['ACERCA','SERVICIOS'],
+  ['INTERMED','SERVICIOS'],
+  ['SMG SEGUROS','SERVICIOS'],
+  ['HOTEL MANAGMENT S.A. (SERVICIOS)','SERVICIOS'],
+  ['PACCELA ATLIO RUBEN','SERVICIOS'],
+  ['CROSETTI JOSÉ ANTONIO','SERVICIOS'],
+  // Tasas Municipales
+  ['SERVICIOS SANITARIOS MEDIDOS 7460','TASAS MUNICIPALES'],
+  ['SERVICIOS SANITARIOS MEDIDOS 8350','TASAS MUNICIPALES'],
+  ['SERVICIOS SANITARIOS MEDIDOS 9251','TASAS MUNICIPALES'],
+  ['SERVICIOS PÚBLICOS URBANOS 7460','TASAS MUNICIPALES'],
+  ['SERVICIOS PÚBLICOS URBANOS 8350','TASAS MUNICIPALES'],
+  ['SERVICIOS PÚBLICOS URBANOS 9251','TASAS MUNICIPALES'],
+  // IVA
+  ['ARCA HOTEL (IVA)','IVA']
+];
+let rows=[], propios={gasto:[],ingreso:[]}, modo='gasto', editId=null, pendingDel=null;
+let fijosExtra=[];  // gastos fijos que el usuario suma a la lista base, persistidos
+let expandidas=new Set();  // ids de gastos divididos con el desglose de pagos abierto
+let historial=[];  // registro de quién hizo cada cambio, persistido
+let usuarioActual='';  // nombre y apellido de la cuenta con sesión iniciada (viene de Firebase Auth)
+let ultimoAgregadoId=null, addConfirmTimers=[];
+let cuotasForm=[];  // cuotas en edición dentro del formulario
+let rubrosOff={ingreso:new Set(),gasto:new Set()};  // rubros destildados en el dashboard
+
+const $=id=>document.getElementById(id);
+const money=n=>Math.round(n||0).toLocaleString('es-AR',{maximumFractionDigits:0});
+const mesLabel=v=>{if(!v)return '—';const[y,m]=v.split('-');return MESES[(+m)-1]+' '+y.slice(2);};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const mesActual=()=>{const h=new Date();return h.getFullYear()+'-'+String(h.getMonth()+1).padStart(2,'0');};
+const hoyISO=()=>{const h=new Date();return h.getFullYear()+'-'+String(h.getMonth()+1).padStart(2,'0')+'-'+String(h.getDate()).padStart(2,'0');};
+const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function neto(b,t,iva,tipoMov){
+  if(tipoMov==='ingreso') return b||0;
+  if(t==='A') return (b||0)/1.21;
+  if(t==='A | 27%') return Math.max(0,(b||0)-(iva||0));
+  return b||0;
+}
+const netoDe=r=>neto(r.bruto,r.tipoFac,r.iva,r.tipo);
+// Equivalente en pesos: si el movimiento está cargado en USD, lo convierte con su cotización.
+const brutoARS=r=>(r.moneda==='USD') ? (r.bruto||0)*(r.cotizacion||0) : (r.bruto||0);
+const netoARS=r=>(r.moneda==='USD') ? netoDe(r)*(r.cotizacion||0) : netoDe(r);
+
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1800);}
+
+/* ---------- Persistencia ---------- */
+const FACTURAS=['A','A | 27%','A Especial','B','C','No posee'];
+function normalizar(lista){
+  // Antes "tipo" guardaba el tipo de factura y todo era gasto.
+  return (lista||[]).map(r=>{
+    const o={...r};
+    if(FACTURAS.includes(o.tipo)){ o.tipoFac=o.tipo; o.tipo='gasto'; }
+    if(!o.tipo) o.tipo='gasto';
+    if(o.tipoFac==='A Especial') o.tipoFac='A | 27%';  // migración del nombre anterior
+    if(o.tipo==='gasto'&&!o.tipoFac) o.tipoFac='No posee';
+    if(o.tipo==='ingreso') o.tipoFac='—';
+    o.iva=o.iva||0;
+    if(!o.moneda) o.moneda='ARS';
+    o.cotizacion=o.cotizacion||0;
+    if(o.tipo==='gasto' && o.comp===undefined) o.comp=true;
+    if(o.tipo==='ingreso') o.comp=true;
+    // antes "fechaPago" se usaba tanto para el vencimiento estimado como para la fecha real de pago.
+    // si nunca se pagó, lo que había cargado era en realidad un vencimiento: lo migramos.
+    if(o.tipo==='gasto'){
+      if(!o.pago && o.fechaPago && !o.fechaVenc){ o.fechaVenc=o.fechaPago; o.fechaPago=''; }
+      if(o.fechaVenc===undefined) o.fechaVenc='';
+    }
+    if(o.tipo==='gasto' && o.dividido && Array.isArray(o.cuotas)){ sincronizarPagoDividido(o); } else if(o.dividido===undefined){ o.dividido=false; }
+    return o;
+  });
+}
+async function leer(k){
+  try{ const r=await window.storage.get(k); return r&&r.value?JSON.parse(r.value):null; }
+  catch(e){ return null; }
+}
+// Año a usar como "carpeta" de guardado. Los movimientos se agrupan por mes al que
+// corresponden (o de pago si falta); el historial, por la fecha del cambio.
+function añoDeMes(m){ return (m&&/^\d{4}/.test(m)) ? m.slice(0,4) : String(new Date().getFullYear()); }
+function añoDeISO(ts){ return (ts&&/^\d{4}/.test(ts)) ? ts.slice(0,4) : String(new Date().getFullYear()); }
+
+async function load(){
+  const indice = await leer('copahue:indice');
+  if(!indice){
+    // Primera carga con este esquema: migramos desde el formato viejo (un solo documento) si existe.
+    let d=await leer(KEY);
+    let migrado=false;
+    if(!d){ d=await leer('copahue:devengamiento:v2'); if(d) migrado=true; }
+    let rowsViejas=[];
+    if(Array.isArray(d)) rowsViejas=d;
+    else if(d){
+      rowsViejas=d.rows||[];
+      propios = d.propios || (d.rubros?{gasto:d.rubros,ingreso:[]}:{gasto:[],ingreso:[]});
+      fijosExtra = Array.isArray(d.fijosExtra) ? d.fijosExtra : [];
+      historial = Array.isArray(d.historial) ? d.historial : [];
+    }
+    rows = normalizar(rowsViejas);
+    if(!propios.gasto) propios.gasto=[];
+    if(!propios.ingreso) propios.ingreso=[];
+    if(!propios.metodos) propios.metodos=[];
+    if(rows.length||historial.length||migrado){ await save(); toast(migrado?'Gastos anteriores importados':'Datos pasados al nuevo formato de guardado (uno por año)'); }
+  }else{
+    const rowYears=indice.rowYears||[], histYears=indice.histYears||[];
+    const rowsPorAño=await Promise.all(rowYears.map(a=>leer('copahue:movs:'+a)));
+    rows = normalizar([].concat(...rowsPorAño.filter(Array.isArray)));
+    const histPorAño=await Promise.all(histYears.map(a=>leer('copahue:hist:'+a)));
+    historial = [].concat(...histPorAño.filter(Array.isArray));
+    const config = await leer('copahue:config') || {};
+    propios = config.propios || {gasto:[],ingreso:[]};
+    fijosExtra = Array.isArray(config.fijosExtra) ? config.fijosExtra : [];
+    if(!propios.gasto) propios.gasto=[];
+    if(!propios.ingreso) propios.ingreso=[];
+    if(!propios.metodos) propios.metodos=[];
+  }
+  fillRubros(); pintarFxRubros(); pintarFijosExtra(); pintarMetodosPago(); render();
+  const m=mesActual();
+  let mov=false;
+  if(rows.some(r=>r.tipo==='gasto'&&r.mesPago===m)){ $('qg-pago').value=m; mov=true; }
+  if(rows.some(r=>r.tipo==='ingreso'&&r.mesPago===m)){ $('qi-cobro').value=m; mov=true; }
+  if(mov) render();
+}
+async function save(){
+  try{
+    const rowsPorAño={};
+    rows.forEach(r=>{ const a=añoDeMes(r.mesCorr||r.mesPago); (rowsPorAño[a]=rowsPorAño[a]||[]).push(r); });
+    const histPorAño={};
+    historial.forEach(h=>{ const a=añoDeISO(h.ts); (histPorAño[a]=histPorAño[a]||[]).push(h); });
+    const rowYears=Object.keys(rowsPorAño), histYears=Object.keys(histPorAño);
+    const tareas=[
+      ...rowYears.map(a=>window.storage.set('copahue:movs:'+a, JSON.stringify(rowsPorAño[a]))),
+      ...histYears.map(a=>window.storage.set('copahue:hist:'+a, JSON.stringify(histPorAño[a]))),
+      window.storage.set('copahue:config', JSON.stringify({propios,fijosExtra})),
+      window.storage.set('copahue:indice', JSON.stringify({rowYears,histYears}))
+    ];
+    await Promise.all(tareas);
+  }
+  catch(e){ toast('No se pudo guardar. Reintentá.'); }
+}
+
+/* ---------- Tema claro/oscuro ---------- */
+const TEMA_KEY='copahue:tema';
+function aplicarTema(oscuro){
+  document.body.classList.toggle('dark',oscuro);
+  $('btn-tema').textContent = oscuro ? '☀' : '🌙';
+  $('btn-tema').title = oscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
+}
+async function cargarTema(){
+  let oscuro=false;
+  try{
+    const r=await window.storage.get(TEMA_KEY);
+    oscuro = r&&r.value==='dark';
+  }catch(e){}
+  aplicarTema(oscuro);
+}
+async function toggleTema(){
+  const oscuro=!document.body.classList.contains('dark');
+  aplicarTema(oscuro);
+  try{ await window.storage.set(TEMA_KEY, oscuro?'dark':'light'); }
+  catch(e){ toast('No se pudo guardar la preferencia de tema.'); }
+}
+$('btn-tema').addEventListener('click',toggleTema);
+
+/* ======================================================================
+   ADMINISTRADOR — clave para poder crear cuentas nuevas desde el login.
+   Se valida en el navegador (como todo en esta app, sin servidor propio),
+   así que no reemplaza la seguridad real: la seguridad real la da Firebase
+   Authentication + las reglas de Firestore ("if request.auth != null").
+   Esta clave solo evita que cualquiera vea el botón de crear cuentas.
+   ====================================================================== */
+const ADMIN_CUIT='33717567639';
+const ADMIN_CLAVE='Copahue';
+
+function actualizarUsuarioUI(){
+  const btn=$('usuario-chip');
+  const u = FIREBASE_LISTO ? firebase.auth().currentUser : null;
+  btn.title = u ? ('Conectado como '+(usuarioActual||u.email)+' — tocá para cerrar sesión') : 'Cerrar sesión';
+  btn.classList.toggle('identificado',!!u);
+}
+async function asegurarUsuario(){ return !!usuarioActual; }  // el login ya garantiza que hay alguien identificado
+$('usuario-chip').addEventListener('click',()=>{
+  if(!FIREBASE_LISTO) return;
+  if(!confirm('¿Cerrar sesión de '+(usuarioActual||'')+'?')) return;
+  firebase.auth().signOut();
+});
+
+/* ---------- Login ---------- */
+function mostrarVistaLogin(v){
+  ['signin','admin-gate','admin-crear'].forEach(k=>{ $('login-vista-'+k).hidden = (k!==v); });
+  $('login-signin-error').hidden=true; $('admin-gate-error').hidden=true; $('admin-crear-error').hidden=true;
+}
+function errorLegible(e){
+  const c=(e&&e.code)||'';
+  if(c==='auth/invalid-email') return 'El correo no es válido.';
+  if(c==='auth/user-not-found'||c==='auth/wrong-password'||c==='auth/invalid-credential') return 'Correo o clave incorrectos.';
+  if(c==='auth/too-many-requests') return 'Demasiados intentos. Probá de nuevo en un rato.';
+  if(c==='auth/email-already-in-use') return 'Ya existe una cuenta con ese correo.';
+  if(c==='auth/weak-password') return 'La clave tiene que tener al menos 6 caracteres.';
+  return (e&&e.message) || 'Ocurrió un error. Reintentá.';
+}
+$('login-signin-btn').addEventListener('click',async()=>{
+  if(!FIREBASE_LISTO){ $('login-signin-error').hidden=false; $('login-signin-error').textContent='Firebase todavía no está configurado (ver el comentario al principio del código).'; return; }
+  const email=$('login-email').value.trim(), pass=$('login-password').value;
+  if(!email||!pass){ $('login-signin-error').hidden=false; $('login-signin-error').textContent='Completá correo y clave.'; return; }
+  try{ await firebase.auth().signInWithEmailAndPassword(email,pass); }
+  catch(e){ $('login-signin-error').hidden=false; $('login-signin-error').textContent=errorLegible(e); }
+});
+$('login-password').addEventListener('keydown',e=>{ if(e.key==='Enter') $('login-signin-btn').click(); });
+
+$('link-admin-gate').addEventListener('click',e=>{ e.preventDefault(); mostrarVistaLogin('admin-gate'); });
+$('admin-gate-volver').addEventListener('click',()=>mostrarVistaLogin('signin'));
+$('admin-gate-btn').addEventListener('click',()=>{
+  const cuit=$('admin-cuit').value.trim();
+  const clave=$('admin-clave').value;
+  if(cuit===ADMIN_CUIT && clave===ADMIN_CLAVE){
+    $('admin-cuit').value=''; $('admin-clave').value='';
+    mostrarVistaLogin('admin-crear');
+  } else {
+    $('admin-gate-error').hidden=false; $('admin-gate-error').textContent='CUIT o clave incorrectos.';
+  }
+});
+
+// Crea la cuenta con una instancia SECUNDARIA de Firebase, así no se cierra la
+// sesión de quien está creándola (createUser normalmente firma como el nuevo usuario).
+async function crearCuentaAdmin(nombre,email,pass){
+  const app2=firebase.initializeApp(firebaseConfig,'admin-crear-'+Date.now());
+  try{
+    const cred=await app2.auth().createUserWithEmailAndPassword(email,pass);
+    await cred.user.updateProfile({displayName:nombre});
+    await app2.auth().signOut();
+  } finally { await app2.delete(); }
+}
+$('admin-crear-btn').addEventListener('click',async()=>{
+  if(!FIREBASE_LISTO){ $('admin-crear-error').hidden=false; $('admin-crear-error').textContent='Firebase todavía no está configurado.'; return; }
+  const nombre=$('admin-nuevo-nombre').value.trim();
+  const email=$('admin-nuevo-email').value.trim();
+  const pass=$('admin-nuevo-clave').value;
+  if(!nombre){ $('admin-crear-error').hidden=false; $('admin-crear-error').textContent='Falta el nombre y apellido.'; return; }
+  if(!email){ $('admin-crear-error').hidden=false; $('admin-crear-error').textContent='Falta el correo.'; return; }
+  if(!pass||pass.length<6){ $('admin-crear-error').hidden=false; $('admin-crear-error').textContent='La clave tiene que tener al menos 6 caracteres.'; return; }
+  $('admin-crear-btn').disabled=true;
+  try{
+    await crearCuentaAdmin(nombre,email,pass);
+    toast('Cuenta creada para '+nombre);
+    $('admin-nuevo-nombre').value=''; $('admin-nuevo-email').value=''; $('admin-nuevo-clave').value='';
+    mostrarVistaLogin('signin');
+    $('login-email').value=email;
+  } catch(e){
+    $('admin-crear-error').hidden=false; $('admin-crear-error').textContent=errorLegible(e);
+  } finally { $('admin-crear-btn').disabled=false; }
+});
+$('admin-crear-otra').addEventListener('click',()=>{
+  $('admin-nuevo-nombre').value=''; $('admin-nuevo-email').value=''; $('admin-nuevo-clave').value='';
+  $('admin-crear-error').hidden=true; $('admin-nuevo-nombre').focus();
+});
+$('admin-crear-volver').addEventListener('click',()=>mostrarVistaLogin('signin'));
+
+// Puerta principal: sin sesión iniciada no se ve ni se carga nada.
+function iniciarAuth(){
+  if(!FIREBASE_LISTO){
+    $('login-overlay').hidden=false;
+    $('login-signin-nota').textContent='Firebase todavía no está configurado — completá la sección "CONFIGURACIÓN DE FIREBASE" en el código para poder ingresar.';
+    return;
+  }
+  firebase.auth().onAuthStateChanged(user=>{
+    if(user){
+      usuarioActual = user.displayName || user.email || 'Usuario';
+      actualizarUsuarioUI();
+      $('login-overlay').hidden=true;
+      load();
+    } else {
+      usuarioActual='';
+      $('login-overlay').hidden=false;
+      mostrarVistaLogin('signin');
+    }
+  });
+}
+
+/* ---------- Historial de cambios ---------- */
+function registrarHistorial(accion,r,detalleExtra){
+  const nombre = r ? (r.tipo==='ingreso'?(r.rubro||'ingreso'):(r.item||'gasto')) : (detalleExtra||'');
+  historial.push({ ts:new Date().toISOString(), usuario:usuarioActual||'—', accion, item:nombre,
+    rubro:r?(r.rubro||''):'', tipo:r?r.tipo:'', monto:(r&&typeof r.bruto==='number')?r.bruto:null, moneda:r?r.moneda:'',
+    metodo:(r&&r.tipo==='gasto')?(r.metodoPago||''):'' });
+  if(historial.length>1000) historial=historial.slice(-1000);
+}
+function fmtFechaHora(iso){
+  const d=new Date(iso);
+  return d.toLocaleDateString('es-AR')+' '+d.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+}
+function renderHistorial(){
+  if(!historial.length){ $('historialzone').innerHTML='<div class="empty">Todavía no hay cambios registrados.</div>'; return; }
+  $('historialzone').innerHTML = historial.slice().reverse().map(h=>{
+    const monto = h.monto!=null ? ((h.moneda==='USD'?'U$S ':'$ ')+money(h.monto)) : '';
+    const rubroExtra = (h.rubro && h.rubro!==h.item) ? ` <span class="historial-rubro">(${esc(h.rubro)})</span>` : '';
+    return `<div class="historial-row">
+      <div class="historial-top"><b class="historial-item">${esc(h.item)||'—'}</b>${rubroExtra}<span class="historial-fecha">${fmtFechaHora(h.ts)}</span></div>
+      <div class="historial-bottom"><span class="historial-usuario">${esc(h.usuario)}</span> — ${esc(h.accion)}${monto?' · '+esc(monto):''}${h.metodo?' · '+esc(h.metodo):''}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- Confirmación al agregar un movimiento ---------- */
+function mostrarConfirmacionAgregado(r){
+  ultimoAgregadoId=r.id;
+  addConfirmTimers.forEach(clearTimeout); addConfirmTimers=[];
+  const nombre=r.tipo==='ingreso'?(r.rubro||'ingreso'):(r.item||'gasto');
+  const monto=(r.moneda==='USD'?'U$S ':'$ ')+money(r.bruto);
+  $('add-confirm-txt').textContent=`${r.tipo==='ingreso'?'Ingreso':'Gasto'} agregado: ${nombre} — ${monto}`;
+  const box=$('add-confirm');
+  box.hidden=false; box.classList.remove('fade');
+  addConfirmTimers.push(setTimeout(()=>box.classList.add('fade'),4000));
+  addConfirmTimers.push(setTimeout(()=>{ box.hidden=true; box.classList.remove('fade'); },5200));
+}
+function resaltarFila(id){
+  const tr=document.querySelector(`.tablacompacta tr[data-row-id="${id}"]`);
+  if(!tr) return;
+  tr.scrollIntoView({behavior:'smooth',block:'center'});
+  tr.classList.add('flash');
+  setTimeout(()=>tr.classList.remove('flash'),2400);
+}
+$('add-confirm-ver').addEventListener('click',()=>{
+  if(!ultimoAgregadoId) return;
+  $('add-confirm').hidden=true;
+  toggleMovs(true);
+  setVistaMov('registrados');
+  setTimeout(()=>resaltarFila(ultimoAgregadoId),60);
+});
+
+/* ---------- Modo gasto / ingreso ---------- */
+function setModo(m){
+  modo=m;
+  $('tab-gasto').className = m==='gasto'?'on':'';
+  $('tab-ingreso').className = m==='ingreso'?'on ing':'';
+  $('lbl-mespago').textContent = m==='gasto'?'Mes de pago':'Mes de cobro';
+  $('lbl-fechapago').textContent = m==='gasto'?'Fecha de vencimiento':'Fecha de cobro';
+  $('lbl-bruto').textContent = m==='gasto'?'Importe bruto':'Importe neto';
+  $('lbl-pago').textContent = m==='gasto'?'¿Está pago?':'¿Está cobrado?';
+  $('wrap-metodo-pago').hidden = !($('f-pago').checked && m==='gasto');
+  $('lbl-fecha-real-pago').textContent = m==='gasto'?'Fecha en que se pagó':'Fecha en que se cobró';
+  $('f-item').placeholder = m==='gasto'?'Ej. Provisión SAC':'Ej. Facturación del mes';
+  $('wrap-tipo').hidden = m==='ingreso';
+  $('wrap-neto').hidden = m==='ingreso';
+  $('wrap-fact').hidden = m==='gasto';
+  $('wrap-item').hidden = m==='ingreso';
+  $('wrap-comp').hidden = m==='ingreso';
+  $('wrap-dividido').hidden = m==='ingreso';
+  document.querySelector('.form-grid').classList.toggle('ingreso', m==='ingreso');
+  $('lbl-detalle').textContent = m==='gasto'?'Detalle':'Observaciones';
+  $('f-detalle').placeholder = m==='gasto'?'Proveedor, comprobante, observaciones':'Observaciones';
+  $('nota-form').textContent = m==='gasto'
+    ? 'Factura A: descuenta el 21% automáticamente. A | 27%: descuenta el IVA que cargues a mano. B, C o sin comprobante: el neto es igual al bruto.'
+    : 'Cargá el importe neto (sin IVA). El campo Facturado / No Facturado es solo informativo. Imputalo al mes de la estadía, cochera o evento, aunque el cobro caiga en otro mes.';
+  fillRubros(); previewNeto();
+}
+$('tab-gasto').addEventListener('click',()=>{ if(editId) return toast('Terminá o cancelá la edición.'); setModo('gasto'); $('f-rubro').value=''; });
+$('tab-ingreso').addEventListener('click',()=>{ if(editId) return toast('Terminá o cancelá la edición.'); setModo('ingreso'); $('f-rubro').value=''; });
+
+/* ---------- Gastos fijos del mes ---------- */
+function contarFijos(){ return GASTOS_FIJOS.length + fijosExtra.length; }
+function pintarFijosExtra(){
+  $('fijos-n').textContent = contarFijos();
+  $('fijos-mes-actual').textContent = mesLabel(mesActual());
+  const cont=$('fijos-extra-list');
+  if(!fijosExtra.length){ cont.innerHTML='<span style="color:var(--ink-soft);font-size:12px">Todavía no agregaste gastos fijos propios.</span>'; return; }
+  cont.innerHTML=fijosExtra.map((f,i)=>`<span class="fx-chip"><b>${esc(f.item)}</b><span class="rb">${esc(f.rubro)}</span><button data-fx-del="${i}" title="Quitar de la lista">×</button></span>`).join('');
+}
+/* ---------- Métodos de pago ---------- */
+function metodosPagoOptionsHtml(actual){
+  const todos=[...METODOS_PAGO_BASE, ...propios.metodos];
+  return '<option value="">Método de pago…</option>'
+    + todos.map(m=>`<option${m===actual?' selected':''}>${esc(m)}</option>`).join('')
+    + '<option value="__nuevo">+ Agregar otro método…</option>';
+}
+function pintarMetodosPago(){
+  const cur=$('f-metodo-pago').value;
+  $('f-metodo-pago').innerHTML=metodosPagoOptionsHtml('');
+  if(cur&&cur!=='__nuevo') $('f-metodo-pago').value=cur;
+}
+$('f-metodo-pago').addEventListener('change',async e=>{
+  if(e.target.value!=='__nuevo') return;
+  const nuevo=(prompt('Nombre del método de pago nuevo:')||'').trim();
+  if(nuevo&&!METODOS_PAGO_BASE.includes(nuevo)&&!propios.metodos.includes(nuevo)){
+    if(!(await asegurarUsuario())){ $('f-metodo-pago').value=''; return; }
+    propios.metodos.push(nuevo);
+    registrarHistorial('Agregó el método de pago',null,nuevo);
+    await save();
+  }
+  pintarMetodosPago(); $('f-metodo-pago').value=nuevo||'';
+});
+
+function pintarFxRubros(){
+  const cur=$('fx-rubro').value;
+  $('fx-rubro').innerHTML='<option value="">Rubro…</option>'+RUBROS.gasto.map(r=>`<option>${r}</option>`).join('')
+    + (propios.gasto.length?'<optgroup label="Agregados">'+propios.gasto.map(r=>`<option>${esc(r)}</option>`).join('')+'</optgroup>':'')
+    + '<optgroup label="—"><option value="__nuevo">+ Agregar un rubro nuevo…</option></optgroup>';
+  if(cur&&cur!=='__nuevo') $('fx-rubro').value=cur;
+}
+$('fx-rubro').addEventListener('change',async e=>{
+  if(e.target.value!=='__nuevo') return;
+  const nuevo=(prompt('Nombre del rubro nuevo:')||'').trim().toUpperCase();
+  if(nuevo&&!propios.gasto.includes(nuevo)&&!RUBROS.gasto.includes(nuevo)){
+    if(!(await asegurarUsuario())){ $('fx-rubro').value=''; return; }
+    propios.gasto.push(nuevo);
+    registrarHistorial('Agregó el rubro',null,nuevo);
+    await save();
+  }
+  pintarFxRubros(); $('fx-rubro').value=nuevo||'';
+});
+$('btn-fx-rubro-quitar').addEventListener('click',async()=>{
+  const r=$('fx-rubro').value;
+  if(!r||r==='__nuevo'){ toast('Elegí el rubro que querés quitar.'); return; }
+  if(!propios.gasto.includes(r)){ toast('Solo se pueden quitar rubros que agregaste vos.'); return; }
+  if(!confirm('¿Quitar el rubro "'+r+'" de la lista? Los gastos fijos que ya lo usan no se modifican.')) return;
+  if(!(await asegurarUsuario())) return;
+  propios.gasto = propios.gasto.filter(x=>x!==r);
+  registrarHistorial('Quitó el rubro',null,r);
+  await save(); pintarFxRubros(); toast('Rubro quitado de la lista');
+});
+$('btn-fx-add').addEventListener('click',async()=>{
+  const item=$('fx-item').value.trim().toUpperCase();
+  const rubro=$('fx-rubro').value;
+  if(!item){ toast('Escribí el ítem.'); $('fx-item').focus(); return; }
+  if(!rubro){ toast('Elegí el rubro.'); $('fx-rubro').focus(); return; }
+  const dup = GASTOS_FIJOS.some(f=>f[0]===item) || fijosExtra.some(f=>f.item===item);
+  if(dup && !confirm('Ya existe un gasto fijo "'+item+'". ¿Agregarlo igual?')) return;
+  if(!(await asegurarUsuario())) return;
+  fijosExtra.push({item,rubro});
+  registrarHistorial('Sumó a la lista de fijos',null,item+' ('+rubro+')');
+  await save();
+  $('fx-item').value=''; $('fx-rubro').value='';
+  pintarFijosExtra(); $('fx-item').focus();
+});
+document.addEventListener('click',async e=>{
+  const i=e.target.dataset&&e.target.dataset.fxDel;
+  if(i===undefined) return;
+  if(!(await asegurarUsuario())) return;
+  const f=fijosExtra[+i];
+  fijosExtra.splice(+i,1);
+  if(f) registrarHistorial('Quitó de la lista de fijos',null,f.item);
+  await save(); pintarFijosExtra();
+});
+$('btn-fijos-go').addEventListener('click',async()=>{
+  const mesCorr=mesActual();  // los gastos fijos se imputan siempre al mes en curso
+  const mesTodos=$('fijos-mes-todos').value;  // mes de pago, opcional
+  const vencTodos=$('fijos-venc-todos').value;  // fecha de vencimiento, opcional
+  // aviso de duplicado: ya se cargó la tanda de este mes
+  const yaHay = rows.some(r=>r.tipo==='gasto'&&r.fijo&&r.mesCorr===mesCorr);
+  if(yaHay && !confirm('Ya cargaste los gastos fijos de '+mesLabel(mesCorr)+'. ¿Querés agregar otra tanda igual (se duplicarán)?')) return;
+  if(!(await asegurarUsuario())) return;
+  const nuevos=fijosTodos().map(f=>({
+    id:uid(),tipo:'gasto',mesPago:mesTodos||'',mesCorr,rubro:f.rubro,item:f.item,bruto:0,
+    moneda:'ARS',cotizacion:0,tipoFac:'No posee',iva:0,fact:'',pago:false,comp:true,detalle:'',fijo:true,fechaVenc:vencTodos||''
+  }));
+  rows.push(...nuevos);
+  registrarHistorial('Cargó gastos fijos',null,nuevos.length+' gastos fijos de '+mesLabel(mesCorr));
+  await save();
+  $('fijos-mes-todos').value=''; $('fijos-venc-todos').value='';
+  ['qi-cobro','qi-corr','qg-pago','qg-corr'].forEach(id=>$(id).value='');
+  $('qg-corr').value=mesCorr;
+  if(mesTodos) $('qg-pago').value=mesTodos;
+  render();
+  toast(nuevos.length+' gastos fijos cargados para '+mesLabel(mesCorr)+(mesTodos?', a pagar en '+mesLabel(mesTodos):' — pendientes de asignarles mes de pago'));
+});
+
+function fillRubros(){
+  const sel=$('f-rubro'),cur=sel.value;
+  let html='<option value="">Elegir rubro…</option>'+RUBROS[modo].map(r=>`<option>${r}</option>`).join('');
+  if(propios[modo].length) html+='<optgroup label="Agregados">'+propios[modo].map(r=>`<option>${esc(r)}</option>`).join('')+'</optgroup>';
+  html+='<optgroup label="—"><option value="__nuevo">+ Agregar un rubro nuevo…</option></optgroup>';
+  sel.innerHTML=html;
+  if(cur&&cur!=='__nuevo') sel.value=cur;
+}
+$('f-rubro').addEventListener('change',async e=>{
+  if(e.target.value!=='__nuevo') return;
+  const nuevo=(prompt('Nombre del rubro nuevo:')||'').trim().toUpperCase();
+  if(nuevo&&!propios[modo].includes(nuevo)){
+    if(!(await asegurarUsuario())){ $('f-rubro').value=''; return; }
+    propios[modo].push(nuevo);
+    registrarHistorial('Agregó el rubro',null,nuevo);
+    await save();
+  }
+  fillRubros(); $('f-rubro').value=nuevo||'';
+});
+
+/* ---------- Importes con separador ---------- */
+const digitos=el=>{const d=el.value.replace(/\D/g,'');return d?parseInt(d,10):0;};
+const brutoVal=()=>digitos($('f-bruto'));
+const ivaVal=()=>digitos($('f-iva'));
+function formatCampo(el){
+  const antes=el.value.slice(0,el.selectionStart??el.value.length).replace(/\D/g,'').length;
+  const d=el.value.replace(/\D/g,'').replace(/^0+(?=\d)/,'');
+  el.value=d?parseInt(d,10).toLocaleString('es-AR'):'';
+  let pos=0,vistos=0;
+  while(pos<el.value.length&&vistos<antes){ if(/\d/.test(el.value[pos]))vistos++; pos++; }
+  try{el.setSelectionRange(pos,pos);}catch(e){}
+}
+$('f-bruto').addEventListener('input',()=>{formatCampo($('f-bruto'));previewNeto();});
+$('f-iva').addEventListener('input',()=>{formatCampo($('f-iva'));previewNeto();});
+$('f-tipo').addEventListener('input',()=>previewNeto());
+const cotizVal=()=>digitos($('f-cotizacion'));
+$('f-cotizacion').addEventListener('input',()=>{formatCampo($('f-cotizacion'));previewNeto();});
+$('f-pago').addEventListener('change',()=>{
+  const marcado=$('f-pago').checked;
+  $('wrap-fecha-real-pago').hidden=!marcado;
+  $('wrap-metodo-pago').hidden = !(marcado&&modo==='gasto');
+  if(marcado&&!$('f-fecha-real-pago').value) $('f-fecha-real-pago').value=hoyISO();
+});
+$('f-moneda').addEventListener('change',()=>{
+  const usd=$('f-moneda').value==='USD';
+  $('wrap-cotizacion').hidden=!usd;
+  if(usd && $('f-dividido').checked){ $('f-dividido').checked=false; $('f-dividido').dispatchEvent(new Event('change')); toast('El pago en cuotas todavía no admite USD; se cargó como pago único.'); }
+  $('f-dividido').disabled=usd;
+  $('lbl-dividido').title = usd ? 'El pago en cuotas todavía no está disponible para movimientos en USD.' : 'Dividir el pago de este gasto en varias cuotas con su propia fecha';
+  previewNeto();
+});
+function previewNeto(){
+  $('wrap-iva').hidden = !(modo==='gasto' && $('f-tipo').value==='A | 27%');
+  if($('wrap-iva').hidden) $('f-iva').value = editId?$('f-iva').value:'';
+  const usd=$('f-moneda').value==='USD';
+  const n=neto(brutoVal(),$('f-tipo').value,ivaVal(),modo);
+  const simbolo=usd?'U$S ':'$ ';
+  let txt=simbolo+money(n);
+  if(usd) txt += cotizVal()>0 ? ` ≈ $ ${money(n*cotizVal())}` : ' (cargá la cotización)';
+  $('f-neto').textContent=txt;
+}
+
+/* ---------- Cuotas dentro del formulario ---------- */
+$('f-dividido').addEventListener('change',()=>{
+  if($('f-dividido').checked){
+    if(!cuotasForm.length){ cuotasForm=[{importe:brutoVal(),mesPago:$('f-mespago').value||'',fecha:$('f-fechapago').value||hoyISO(),pago:$('f-pago').checked}]; }
+    $('cuotas-form').hidden=false;
+    $('wrap-fechapago').hidden=true;
+  } else {
+    cuotasForm=[]; $('cuotas-form').hidden=true;
+    $('wrap-fechapago').hidden = modo==='ingreso'?false:false;
+  }
+  renderCuotasForm();
+});
+function renderCuotasForm(){
+  if(!$('f-dividido').checked){ $('cuotas-form').hidden=true; return; }
+  $('cuotas-form').hidden=false;
+  $('cuotas-form-list').innerHTML=cuotasForm.map((c,i)=>`
+    <div class="cuota-row">
+      <span class="cuota-n">Cuota ${i+1}</span>
+      <label>Importe <input type="text" inputmode="numeric" class="cuota-imp" data-cf-imp="${i}" value="${c.importe?(+c.importe).toLocaleString('es-AR'):''}" placeholder="0"></label>
+      <label>Mes de pago <input type="month" data-cf-mes="${i}" value="${c.mesPago||''}"></label>
+      <label>Fecha de pago <input type="date" data-cf-fecha="${i}" value="${c.fecha||''}"></label>
+      <label class="cuota-pago"><input type="checkbox" data-cf-pago="${i}" ${c.pago?'checked':''}> Pago</label>
+      <button type="button" class="cuota-del" data-cf-del="${i}" title="Quitar cuota">×</button>
+    </div>`).join('');
+  const suma=cuotasForm.reduce((a,c)=>a+(+c.importe||0),0);
+  const pagas=cuotasForm.reduce((a,c)=>a+(c.pago?(+c.importe||0):0),0);
+  $('cuotas-form-resumen').textContent = `— ${cuotasForm.length} cuota${cuotasForm.length===1?'':'s'}, pagado ${money(pagas)} de ${money(suma)}`;
+  const total=brutoVal(), dif=suma-total;
+  const av=$('cuotas-form-aviso');
+  if(!total){ av.textContent=''; }
+  else if(dif!==0){ av.textContent=`La suma de cuotas (${money(suma)}) no coincide con el importe del gasto (${money(total)}). Diferencia: ${money(dif)}.`; av.className='cuota-aviso'; }
+  else { av.textContent=`Suma de cuotas = importe del gasto (${money(suma)}).`; av.className='cuota-ok'; }
+}
+$('btn-cuota-add-form').addEventListener('click',()=>{
+  const suma=cuotasForm.reduce((a,c)=>a+(+c.importe||0),0);
+  cuotasForm.push({importe:Math.max(0,brutoVal()-suma),mesPago:mesActual(),fecha:hoyISO(),pago:false});
+  renderCuotasForm();
+});
+$('cuotas-form').addEventListener('input',e=>{
+  const im=e.target.dataset.cfImp;
+  if(im!==undefined){ formatCampo(e.target); cuotasForm[+im].importe = e.target.value.replace(/\D/g,'')?parseInt(e.target.value.replace(/\D/g,''),10):0;
+    const suma=cuotasForm.reduce((a,c)=>a+(+c.importe||0),0),pagas=cuotasForm.reduce((a,c)=>a+(c.pago?(+c.importe||0):0),0);
+    $('cuotas-form-resumen').textContent=`— ${cuotasForm.length} cuota${cuotasForm.length===1?'':'s'}, pagado ${money(pagas)} de ${money(suma)}`;
+    const total=brutoVal(),dif=suma-total,av=$('cuotas-form-aviso');
+    if(!total){av.textContent='';} else if(dif!==0){av.textContent=`La suma de cuotas (${money(suma)}) no coincide con el importe del gasto (${money(total)}). Diferencia: ${money(dif)}.`;av.className='cuota-aviso';} else {av.textContent=`Suma de cuotas = importe del gasto (${money(suma)}).`;av.className='cuota-ok';}
+    return; }
+  const me=e.target.dataset.cfMes;
+  if(me!==undefined){ cuotasForm[+me].mesPago=e.target.value; return; }
+  const fe=e.target.dataset.cfFecha;
+  if(fe!==undefined){ cuotasForm[+fe].fecha=e.target.value; if(e.target.value){ cuotasForm[+fe].mesPago=e.target.value.slice(0,7); renderCuotasForm(); } }
+});
+$('cuotas-form').addEventListener('change',e=>{
+  const pg=e.target.dataset.cfPago;
+  if(pg!==undefined){ cuotasForm[+pg].pago=e.target.checked; renderCuotasForm(); }
+});
+$('cuotas-form').addEventListener('click',e=>{
+  const dl=e.target.dataset.cfDel;
+  if(dl!==undefined){ cuotasForm.splice(+dl,1); renderCuotasForm(); }
+});
+
+/* ---------- Alta y edición ---------- */
+function limpiarForm(){
+  $('f-item').value='';$('f-bruto').value='';$('f-iva').value='';
+  $('f-tipo').value='No posee';$('f-rubro').value='';$('f-fact').value='Facturado';
+  $('f-pago').checked=false;$('f-comp').checked=true;$('f-dividido').checked=false;$('f-dividido').disabled=false;$('f-detalle').value='';
+  $('f-fecha-real-pago').value='';$('wrap-fecha-real-pago').hidden=true;
+  $('f-metodo-pago').value='';$('wrap-metodo-pago').hidden=true;
+  $('f-fechapago').value=hoyISO();$('wrap-fechapago').hidden=false;
+  $('f-moneda').value='ARS';$('f-cotizacion').value='';$('wrap-cotizacion').hidden=true;
+  $('lbl-fechapago').textContent = modo==='gasto'?'Fecha de vencimiento':'Fecha de cobro';
+  cuotasForm=[]; $('cuotas-form').hidden=true;
+  previewNeto();
+  (modo==='ingreso'?$('f-bruto'):$('f-item')).focus();
+}
+function salirEdicion(){
+  editId=null;
+  $('titulo-carga').textContent='Cargar movimiento';
+  $('btn-add').textContent='Agregar';
+  $('wrap-cancel').hidden=true;
+  $('vista-cargar').classList.remove('editando');
+  limpiarForm(); render();
+}
+async function abrirEdicion(id){
+  const r=rows.find(x=>x.id===id); if(!r) return;
+  if(!(await asegurarUsuario())) return;
+  toggleMovs(true);
+  setVistaMov('cargar');
+  editId=id; setModo(r.tipo||'gasto');
+  $('f-mespago').value=r.mesPago||'';
+  $('f-mescorr').value=r.mesCorr||'';
+  $('f-fechapago').value = r.tipo==='ingreso' ? (r.fechaPago||'') : (r.fechaVenc||'');
+  $('f-item').value=r.item||'';
+  $('f-bruto').value=Math.round(r.bruto).toLocaleString('es-AR');
+  $('f-tipo').value=r.tipoFac||'No posee';
+  $('f-iva').value=r.iva?Math.round(r.iva).toLocaleString('es-AR'):'';
+  $('f-pago').checked=!!r.pago;
+  $('wrap-fecha-real-pago').hidden = !r.pago;
+  $('f-fecha-real-pago').value = r.pago ? (r.fechaPago||hoyISO()) : '';
+  $('wrap-metodo-pago').hidden = !(r.pago && r.tipo==='gasto');
+  pintarMetodosPago(); $('f-metodo-pago').value = (r.pago && r.tipo==='gasto') ? (r.metodoPago||'') : '';
+  $('f-comp').checked = r.comp!==false;
+  $('f-moneda').value = r.moneda||'ARS';
+  $('wrap-cotizacion').hidden = (r.moneda||'ARS')!=='USD';
+  $('f-cotizacion').value = r.cotizacion?Math.round(r.cotizacion).toLocaleString('es-AR'):'';
+  $('f-dividido').disabled = r.moneda==='USD';
+  $('f-dividido').checked = !!r.dividido;
+  cuotasForm = (r.dividido&&Array.isArray(r.cuotas)) ? r.cuotas.map(c=>({importe:+c.importe||0,mesPago:c.mesPago||'',fecha:c.fecha||'',pago:!!c.pago})) : [];
+  $('wrap-fechapago').hidden = !!r.dividido;
+  renderCuotasForm();
+  $('f-detalle').value=r.detalle||'';
+  if(r.rubro&&!RUBROS[modo].includes(r.rubro)&&!propios[modo].includes(r.rubro)){ propios[modo].push(r.rubro); fillRubros(); }
+  $('f-rubro').value=r.rubro||'';
+  $('f-fact').value=r.fact||'Facturado';
+  previewNeto();
+  $('titulo-carga').textContent='Editando movimiento';
+  $('btn-add').textContent='Guardar cambios';
+  $('wrap-cancel').hidden=false;
+  $('vista-cargar').classList.add('editando');
+  render();
+  $('vista-cargar').scrollIntoView({behavior:'smooth',block:'start'});
+  (modo==='ingreso'?$('f-bruto'):$('f-item')).focus();
+}
+$('btn-cancel').addEventListener('click',salirEdicion);
+
+$('btn-add').addEventListener('click',async()=>{
+  const bruto=brutoVal();
+  const rubroSel=$('f-rubro').value;
+  if(!rubroSel||rubroSel==='__nuevo'){toast('Elegí el rubro.');$('f-rubro').focus();return;}
+  const item = modo==='ingreso' ? rubroSel : $('f-item').value.trim().toUpperCase();
+  if(modo==='gasto'&&!item){toast('Falta el ítem.');$('f-item').focus();return;}
+  if(!(bruto>0)){toast('Cargá un importe.');$('f-bruto').focus();return;}
+  if(!$('f-mescorr').value){toast('Indicá el mes al que corresponde.');$('f-mescorr').focus();return;}
+  const tipoFac = modo==='gasto'?$('f-tipo').value:'—';
+  const ivaManual = (modo==='gasto'&&tipoFac==='A | 27%')?ivaVal():0;
+  if(modo==='gasto'&&tipoFac==='A | 27%'){
+    if(!(ivaManual>0)){toast('Cargá el IVA a descontar.');$('f-iva').focus();return;}
+    if(ivaManual>=bruto){toast('El IVA no puede ser igual o mayor al bruto.');$('f-iva').focus();return;}
+  }
+  const moneda=$('f-moneda').value;
+  const cotizacion=moneda==='USD'?cotizVal():0;
+  if(moneda==='USD'&&!(cotizacion>0)){toast('Cargá la cotización del dólar.');$('f-cotizacion').focus();return;}
+  const esDiv = modo==='gasto' && $('f-dividido').checked && moneda!=='USD';
+  if(!esDiv && $('f-pago').checked && !$('f-fecha-real-pago').value){
+    toast('Indicá la fecha en que se '+(modo==='ingreso'?'cobró':'pagó')+'.');
+    $('f-fecha-real-pago').focus();
+    return;
+  }
+  if(!esDiv && modo==='gasto' && $('f-pago').checked && (!$('f-metodo-pago').value||$('f-metodo-pago').value==='__nuevo')){
+    toast('Elegí el método de pago.');
+    $('f-metodo-pago').focus();
+    return;
+  }
+  const datos={tipo:modo,mesPago:$('f-mespago').value,mesCorr:$('f-mescorr').value,
+    rubro:rubroSel,
+    item,bruto,moneda,cotizacion,tipoFac,iva:ivaManual,fact:modo==='ingreso'?$('f-fact').value:'',
+    pago:$('f-pago').checked,comp:modo==='ingreso'?true:$('f-comp').checked,
+    dividido:esDiv,detalle:$('f-detalle').value.trim().toUpperCase()};
+  if(modo==='gasto') datos.fechaVenc = esDiv?'':$('f-fechapago').value;
+  if(!esDiv && datos.pago){
+    datos.fechaPago = $('f-fecha-real-pago').value;
+    if(modo==='gasto') datos.metodoPago = $('f-metodo-pago').value;
+  }
+  else if(modo==='ingreso' && !datos.pago) datos.fechaPago = $('f-fechapago').value;
+  if(!(await asegurarUsuario())) return;
+  if(editId){
+    const r=rows.find(x=>x.id===editId);
+    if(r){
+      Object.assign(r,datos);
+      if(esDiv){
+        r.cuotas = cuotasForm.map(c=>({importe:+c.importe||0,mesPago:c.mesPago||'',fecha:c.fecha||'',pago:!!c.pago}));
+        if(!r.cuotas.length) r.cuotas=[{importe:bruto,mesPago:datos.mesPago||'',fecha:'',pago:datos.pago}];
+        sincronizarPagoDividido(r);
+      } else { delete r.cuotas; }
+      registrarHistorial('Modificó',r);
+    }
+    await save(); salirEdicion(); toast('Cambios guardados');
+  }else{
+    const nuevo={id:uid(),...datos};
+    if(esDiv){
+      nuevo.cuotas = cuotasForm.map(c=>({importe:+c.importe||0,mesPago:c.mesPago||'',fecha:c.fecha||'',pago:!!c.pago}));
+      if(!nuevo.cuotas.length) nuevo.cuotas=[{importe:bruto,mesPago:datos.mesPago||'',fecha:'',pago:datos.pago}];
+      sincronizarPagoDividido(nuevo);
+    }
+    rows.push(nuevo);
+    registrarHistorial('Agregó',nuevo);
+    await save(); limpiarForm(); render(); toast(modo==='ingreso'?'Ingreso agregado':'Gasto agregado');
+    mostrarConfirmacionAgregado(nuevo);
+  }
+});
+
+// Deriva el estado de pago del gasto según sus cuotas y ajusta el bruto a la suma
+function sincronizarPagoDividido(r){
+  if(!Array.isArray(r.cuotas)||!r.cuotas.length){ r.dividido=false; delete r.cuotas; return; }
+  const pagas=r.cuotas.filter(c=>c.pago).length;
+  r.pagoParcial = pagas>0 && pagas<r.cuotas.length;
+  r.pago = pagas===r.cuotas.length;   // pagado solo si todas están pagas
+}
+function saldoCuotas(r){
+  if(!Array.isArray(r.cuotas)) return 0;
+  return r.cuotas.reduce((a,c)=>a+(c.pago?0:(+c.importe||0)),0);
+}
+function pagadoCuotas(r){
+  if(!Array.isArray(r.cuotas)) return 0;
+  return r.cuotas.reduce((a,c)=>a+(c.pago?(+c.importe||0):0),0);
+}
+
+/* ---------- Orden por columna (Registrados y Fijos mensuales) ---------- */
+let sortRegistrados={col:'mesCorr',dir:'desc'};
+let sortFijos={col:'mesCorr',dir:'desc'};
+// valor a comparar por columna
+const COLS_ORDEN={
+  tipo:      r=>r.tipo==='ingreso'?'ingreso':'gasto',
+  mesPago:   r=>r.mesPago||'',
+  item:      r=>(r.tipo==='ingreso'?(r.rubro||''):(r.item||'')),
+  bruto:     r=>brutoARS(r),
+  neto:      r=>netoARS(r),
+  factura:   r=>r.tipoFac||'',
+  facturado: r=>r.tipo==='ingreso'?(r.fact||''):'',
+  estado:    r=>r.pago?('1'+(r.fechaPago||'')):'0',
+  metodo:    r=>r.tipo==='gasto'?(r.metodoPago||''):'',
+  computable:r=>r.comp!==false?1:0,
+  mesCorr:   r=>r.mesCorr||'',
+  rubro:     r=>r.rubro||'',
+  detalle:   r=>r.detalle||''
+};
+function comparar(a,b,col){
+  const f=COLS_ORDEN[col]||COLS_ORDEN.mesCorr;
+  const va=f(a), vb=f(b);
+  let c;
+  if(typeof va==='number'&&typeof vb==='number') c=va-vb;
+  else c=String(va).localeCompare(String(vb));
+  if(c!==0) return c;
+  // desempate estable por nombre
+  const na=r=>(r.tipo==='ingreso'?(r.rubro||''):(r.item||''));
+  return na(a).localeCompare(na(b));
+}
+function ordenar(lista,sortState){
+  return lista.slice().sort((a,b)=>{
+    const c=comparar(a,b,sortState.col);
+    return sortState.dir==='asc'?c:-c;
+  });
+}
+// clic en un título de columna: ordena por esa columna, o invierte el orden si ya estaba activa
+document.addEventListener('click',e=>{
+  const th=e.target.closest('th[data-sortcol]');
+  if(!th) return;
+  const col=th.dataset.sortcol;
+  const enFijos=!!th.closest('#fijoszone');
+  const state=enFijos?sortFijos:sortRegistrados;
+  if(state.col===col){ state.dir = state.dir==='asc'?'desc':'asc'; }
+  else { state.col=col; state.dir = ['bruto','neto','mesPago','mesCorr','estado'].includes(col)?'desc':'asc'; }
+  if(enFijos) renderFijos(filteredFijos()); else renderTabla(filteredTabla());
+});
+
+/* ---------- Filtros ---------- */
+['qi-cobro','qi-corr','qg-pago','qg-corr'].forEach(id=>$(id).addEventListener('input',render));
+const FILTROS_TABLA=['q-tipo','q-rubro','q-estado','q-texto','qt-pago-desde','qt-pago-hasta','qt-corr-desde','qt-corr-hasta','qt-fecha-desde','qt-fecha-hasta'];
+FILTROS_TABLA.forEach(id=>$(id).addEventListener('input',()=>renderTabla(filteredTabla())));
+$('btn-limpiar-per').addEventListener('click',()=>{ ['qi-cobro','qi-corr','qg-pago','qg-corr'].forEach(id=>$(id).value=''); render(); });
+$('btn-limpiar-filtros').addEventListener('click',()=>{
+  FILTROS_TABLA.forEach(id=>$(id).value='');
+  sortRegistrados={col:'mesCorr',dir:'desc'};
+  renderTabla(filteredTabla());
+});
+
+// Filtro de PERÍODO: aplica al dashboard y es la base de la tabla
+function filteredPeriodo(){
+  const icb=$('qi-cobro').value,icr=$('qi-corr').value,gpg=$('qg-pago').value,gcr=$('qg-corr').value;
+  return rows.filter(r=>{
+    if(r.tipo==='ingreso'){ if(icb&&r.mesPago!==icb) return false; if(icr&&r.mesCorr!==icr) return false; }
+    else { if(gpg&&r.mesPago!==gpg) return false; if(gcr&&r.mesCorr!==gcr) return false; }
+    return true;
+  });
+}
+// Filtro de la TABLA: período + los filtros propios de Movimientos Registrados
+function filteredTabla(){
+  const tp=$('q-tipo').value,ru=$('q-rubro').value,es=$('q-estado').value,tx=$('q-texto').value.toLowerCase();
+  const pd=$('qt-pago-desde').value, ph=$('qt-pago-hasta').value;
+  const cd=$('qt-corr-desde').value, ch=$('qt-corr-hasta').value;
+  const fd=$('qt-fecha-desde').value, fh=$('qt-fecha-hasta').value;
+  const out=filteredPeriodo().filter(r=>{
+    if(tp&&r.tipo!==tp) return false;
+    if(ru&&r.rubro!==ru) return false;
+    if(es&&(es==='pag'?!r.pago:r.pago)) return false;
+    if(pd&&(!r.mesPago||r.mesPago<pd)) return false;
+    if(ph&&(!r.mesPago||r.mesPago>ph)) return false;
+    if(cd&&(!r.mesCorr||r.mesCorr<cd)) return false;
+    if(ch&&(!r.mesCorr||r.mesCorr>ch)) return false;
+    if(fd&&(!r.fechaPago||r.fechaPago<fd)) return false;
+    if(fh&&(!r.fechaPago||r.fechaPago>fh)) return false;
+    if(tx&&!((r.item||'')+' '+(r.detalle||'')+' '+(r.rubro||'')).toLowerCase().includes(tx)) return false;
+    return true;
+  });
+  return ordenar(out,sortRegistrados);
+}
+// índice de un rubro según el orden del plan de gastos fijos
+const ORDEN_RUBRO=['RRHH','ALQUILER HOTEL','ALQUILER COCHERA 1','ALQUILER COCHERA 2','IMPUESTOS','LAVADERO','MARKETING','DESAYUNOS','SERVICIOS','TASAS MUNICIPALES','IVA','GASTOS MANTENIMIENTO','INSUMOS','INVERSIONES','OTROS'];
+function ordenRubro(r){ const i=ORDEN_RUBRO.indexOf(r); return i<0?999:i; }
+// lista completa de fijos = base + agregados por el usuario, ordenada por rubro
+function fijosTodos(){
+  const todos=[...GASTOS_FIJOS.map(f=>({item:f[0],rubro:f[1],base:true})), ...fijosExtra.map(f=>({item:f.item,rubro:f.rubro,base:false}))];
+  return todos.map((f,i)=>({...f,_i:i})).sort((a,b)=>{
+    const d=ordenRubro(a.rubro)-ordenRubro(b.rubro); return d||a._i-b._i;
+  });
+}
+function ordenFijo(item){ const list=[...GASTOS_FIJOS.map(f=>f[0]),...fijosExtra.map(f=>f.item)]; const i=list.indexOf(item); return i<0?999:i; }
+function syncSelect(id,field,plain,soloTipo){
+  const sel=$(id),cur=sel.value;
+  const base = soloTipo ? rows.filter(r=>r.tipo===soloTipo) : rows;
+  let vals=[...new Set(base.map(r=>r[field]).filter(Boolean))].sort();
+  if(!plain) vals.reverse();
+  sel.innerHTML='<option value="">Todos</option>'+vals.map(v=>`<option value="${esc(v)}"${v===cur?' selected':''}>${plain?esc(v):mesLabel(v)}</option>`).join('');
+}
+
+/* ---------- Render ---------- */
+function render(){
+  syncSelect('qi-cobro','mesPago',false,'ingreso');
+  syncSelect('qi-corr','mesCorr',false,'ingreso');
+  syncSelect('qg-pago','mesPago',false,'gasto');
+  syncSelect('qg-corr','mesCorr',false,'gasto');
+  syncSelect('q-rubro','rubro',true);
+
+  const icb=$('qi-cobro').value,icr=$('qi-corr').value,gpg=$('qg-pago').value,gcr=$('qg-corr').value;
+  $('btn-limpiar-per').hidden = !(icb||icr||gpg||gcr);
+  const partes=[];
+  if(icb) partes.push('ing. cobrados '+mesLabel(icb));
+  if(icr) partes.push('ing. devengados '+mesLabel(icr));
+  if(gpg) partes.push('gas. pagados '+mesLabel(gpg));
+  if(gcr) partes.push('gas. devengados '+mesLabel(gcr));
+  const baseD=filteredPeriodo();
+  $('periodo-nota').textContent = (partes.length?partes.join(' · '):'Todos los períodos')+` — dashboard sobre ${baseD.length} movimiento${baseD.length===1?'':'s'}`;
+
+  renderDashboard(baseD);
+  renderTabla(filteredTabla());
+  syncSelectFijos();
+  renderFijos(filteredFijos());
+}
+
+// activo en el dashboard = pasa el período Y su rubro está tildado
+function activoDash(r){ return !rubrosOff[r.tipo].has(r.rubro||'—'); }
+
+function renderDashboard(base){
+  // KPIs superiores: respetan los tildes de rubro (montos convertidos a pesos)
+  let ing=0,gas=0,pend=0,nocomp=0;
+  const pendGasto=r=>{ // saldo impago del gasto: si está dividido, la suma de cuotas no pagas
+    if(r.dividido&&Array.isArray(r.cuotas)) return saldoCuotas(r);
+    return r.pago?0:netoARS(r);
+  };
+  base.forEach(r=>{ if(!activoDash(r)) return; const n=netoARS(r);
+    if(r.tipo==='ingreso'){ ing+=n; }
+    else if(r.comp===false){ nocomp+=n; pend+=pendGasto(r); }  // pago real pero no es gasto del resultado
+    else { gas+=n; pend+=pendGasto(r); } });
+  const res=ing-gas, mg=ing?res/ing*100:0;
+  const cards=[
+    ['Ingresos netos','$ '+money(ing),'ing'],
+    ['Gastos netos','$ '+money(gas),''],
+    ['Resultado','$ '+money(res),res<0?'neg':'ok'],
+    ['Margen',(ing?mg.toFixed(1):'—')+' %',res<0?'neg':'ok'],
+    ['Pagos impagos','$ '+money(pend),'pend']
+  ];
+  if(nocomp>0) cards.push(['No computable','$ '+money(nocomp),'nc']);
+  $('totals').innerHTML=cards.map(([l,v,c])=>`<div class="tot"><div class="lbl">${l}</div><div class="val ${c}">${v}</div></div>`).join('');
+
+  // el resultado por mes y los rubros excluyen los no computables
+  renderResultados(base.filter(r=>activoDash(r) && r.comp!==false));
+  renderRubros(base.filter(r=>r.comp!==false));
+}
+
+function renderRubros(base){
+  const build=(tipo,cont)=>{
+    const o={};
+    base.filter(r=>r.tipo===tipo).forEach(r=>{const k=r.rubro||'—';o[k]=(o[k]||0)+netoARS(r);});
+    const ks=Object.keys(o).sort((a,b)=>o[b]-o[a]);
+    if(!ks.length){ $(cont).innerHTML='<div class="rrow"><span style="color:var(--ink-soft)">Sin movimientos</span><span></span></div>'; return; }
+    const totAct=ks.filter(k=>!rubrosOff[tipo].has(k)).reduce((a,k)=>a+o[k],0);
+    $(cont).innerHTML=ks.map(k=>{
+      const off=rubrosOff[tipo].has(k);
+      const pct=totAct?(o[k]/totAct*100).toFixed(0):0;
+      return `<label class="rrow ${off?'off':''}">
+        <span><input type="checkbox" data-rub="${tipo}|${esc(k)}" ${off?'':'checked'}> ${esc(k)}</span>
+        <span><b>${money(o[k])}</b>${off?'':`<small>${pct}%</small>`}</span></label>`;
+    }).join('');
+  };
+  build('ingreso','ring');
+  build('gasto','rgas');
+}
+
+// tildes de rubro
+document.addEventListener('change',e=>{
+  const rub=e.target.dataset&&e.target.dataset.rub;
+  if(!rub) return;
+  const [tipo,...rest]=rub.split('|'); const k=rest.join('|');
+  if(e.target.checked) rubrosOff[tipo].delete(k); else rubrosOff[tipo].add(k);
+  renderDashboard(filteredPeriodo());
+});
+
+// colapso del dashboard
+function togglePanel(bodyId,chevId,headId,hintId,hintTxt,force){
+  const body=$(bodyId), head=$(headId);
+  const abrir = force!==undefined ? force : body.hidden;
+  body.hidden=!abrir;
+  $(chevId).textContent = abrir?'▾':'▸';
+  head.setAttribute('aria-expanded', abrir?'true':'false');
+  $(hintId).textContent = abrir?'':hintTxt;
+}
+function toggleDash(force){ togglePanel('dash-body','dash-chev','dash-toggle','dash-hint','(toca para ver los resultados)',force); }
+function toggleMovs(force){ togglePanel('movs-body','movs-chev','movs-toggle','movs-hint','(toca para ver los movimientos)',force); }
+$('dash-toggle').addEventListener('click',()=>toggleDash());
+$('dash-toggle').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleDash(); } });
+$('movs-toggle').addEventListener('click',()=>toggleMovs());
+$('movs-toggle').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleMovs(); } });
+
+// Sub-vistas dentro de Movimientos: Cargar nuevos / Registrados / Fijos mensuales
+function setVistaMov(v){
+  ['cargar','registrados','fijos'].forEach(k=>{
+    $('subtab-'+k).className = k===v ? 'on' : '';
+    $('vista-'+k).hidden = k!==v;
+  });
+  if(v==='registrados') renderTabla(filteredTabla());
+  if(v==='fijos') renderFijos(filteredFijos());
+}
+$('subtab-cargar').addEventListener('click',()=>setVistaMov('cargar'));
+$('subtab-registrados').addEventListener('click',()=>setVistaMov('registrados'));
+$('subtab-fijos').addEventListener('click',()=>setVistaMov('fijos'));
+
+/* ---------- Historial: popover flotante junto al botón del header ---------- */
+$('btn-historial').addEventListener('click',e=>{
+  e.stopPropagation();
+  const pop=$('historial-popover');
+  const abrir=pop.hidden;
+  pop.hidden=!abrir;
+  if(abrir) renderHistorial();
+});
+$('historial-cerrar').addEventListener('click',()=>{ $('historial-popover').hidden=true; });
+document.addEventListener('click',e=>{
+  const pop=$('historial-popover');
+  if(pop.hidden) return;
+  if(pop.contains(e.target)||e.target.closest('#btn-historial')) return;
+  pop.hidden=true;
+});
+
+function renderResultados(view){
+  const m={};
+  view.forEach(r=>{const k=r.mesCorr||'sin';m[k]=m[k]||{i:0,g:0};const n=netoARS(r);r.tipo==='ingreso'?m[k].i+=n:m[k].g+=n;});
+  const keys=Object.keys(m).sort().reverse();
+  if(!keys.length){ $('reszone').innerHTML='<div class="empty">Cargá ingresos y gastos para ver el resultado por mes.</div>'; $('ring').innerHTML='';$('rgas').innerHTML='';return; }
+  const max=Math.max(1,...keys.map(k=>Math.max(m[k].i,m[k].g)));
+  let ti=0,tg=0;
+  const filas=keys.map(k=>{
+    const d=m[k],r=d.i-d.g,mg=d.i?r/d.i*100:0; ti+=d.i; tg+=d.g;
+    return `<tr>
+      <td class="mono">${k==='sin'?'sin mes':mesLabel(k)}</td>
+      <td class="num ing">${money(d.i)}</td>
+      <td class="num">${money(d.g)}</td>
+      <td class="num ${r<0?'negv':'pos'}"><b>${money(r)}</b></td>
+      <td class="num ${r<0?'negv':'pos'}">${d.i?mg.toFixed(1)+'%':'—'}</td>
+      <td class="barcell"><div class="bar"><i class="g" style="width:${d.i/max*50}%;left:50%"></i><i class="p" style="width:${d.g/max*50}%;left:${50-d.g/max*50}%"></i></div></td>
+    </tr>`;}).join('');
+  const tr=ti-tg;
+  $('reszone').innerHTML=`<div class="tablewrap"><table>
+    <thead><tr><th>Mes devengado</th><th class="num">Ingresos</th><th class="num">Gastos</th><th class="num">Resultado</th><th class="num">Margen</th><th>Gastos ◄ ► Ingresos</th></tr></thead>
+    <tbody>${filas}</tbody>
+    <tfoot><tr><td>Total</td><td class="num">${money(ti)}</td><td class="num">${money(tg)}</td>
+      <td class="num ${tr<0?'negv':'pos'}">${money(tr)}</td><td class="num">${ti?(tr/ti*100).toFixed(1)+'%':'—'}</td><td></td></tr></tfoot>
+  </table></div>`;
+}
+
+const fmtFechaCorta=f=>{ if(!f) return ''; const [y,mm,dd]=f.split('-'); return `${dd}/${mm}/${y.slice(2)}`; };
+function thOrden(label,col,sortState,opts){
+  opts=opts||{};
+  const activo=sortState.col===col;
+  const flecha=activo?(sortState.dir==='asc'?' ▲':' ▼'):'';
+  const cls=['th-orden',opts.cls].filter(Boolean).join(' ');
+  const title=opts.title?` title="${opts.title}"`:'';
+  return `<th class="${cls}" data-sortcol="${col}"${title}>${label}${flecha}</th>`;
+}
+function tablaHtml(view,sortState){
+  let tb=0,tn=0;
+  view.forEach(r=>{tb+=brutoARS(r);tn+=netoARS(r);});
+  const montoCell=(valOriginal,valARS,usd)=> usd
+    ? `<div>U$S ${money(valOriginal)}</div><span class="fx-sub">≈ $ ${money(valARS)}</span>`
+    : money(valOriginal);
+  // FC (tipo de comprobante) y Método solo tienen sentido si hay gastos a la vista; ¿Facturado? solo si hay ingresos
+  const hayIngresos=view.some(r=>r.tipo==='ingreso');
+  const hayGastos=view.some(r=>r.tipo==='gasto');
+  const mostrarFC=hayGastos, mostrarFacturado=hayIngresos, mostrarMetodo=hayGastos;
+  const ANCHOS={tipo:4,mesPago:9,item:12,bruto:7,neto:7,factura:6,facturado:7,metodo:8,estado:6,computable:6,mesCorr:6,rubro:7,detalle:9,acciones:6};
+  let extra=0;
+  if(!mostrarFC) extra+=ANCHOS.factura;
+  if(!mostrarFacturado) extra+=ANCHOS.facturado;
+  if(!mostrarMetodo) extra+=ANCHOS.metodo;
+  const colOrder=['tipo','mesPago','item','bruto','neto',
+    ...(mostrarFC?['factura']:[]), ...(mostrarFacturado?['facturado']:[]),
+    'estado', ...(mostrarMetodo?['metodo']:[]), 'computable','mesCorr','rubro','detalle','acciones'];
+  const totalCols=colOrder.length;
+  const colgroupHtml=colOrder.map(c=>`<col style="width:${c==='item'?ANCHOS.item+extra:ANCHOS[c]}%">`).join('');
+  const theadCeldas={
+    tipo: thOrden('Tipo','tipo',sortState),
+    mesPago: thOrden('Mes pago','mesPago',sortState),
+    item: thOrden('Ítem','item',sortState),
+    bruto: thOrden('Bruto','bruto',sortState,{cls:'num'}),
+    neto: thOrden('Neto','neto',sortState,{cls:'num'}),
+    factura: thOrden('FC','factura',sortState,{cls:'th-help',title:'Tipo de comprobante con el que se recibió el gasto.'}),
+    facturado: thOrden('¿Facturado?','facturado',sortState,{cls:'th-help',title:'Solo para ingresos: si la estadía o el servicio fue facturado o no.'}),
+    estado: thOrden('Estado de pago','estado',sortState,{cls:'th-help',title:'Pago (gastos) o Cobro (ingresos). Tocá el cuadro de la fila para marcarlo, pidiendo la fecha.'}),
+    metodo: thOrden('Método','metodo',sortState,{cls:'th-help',title:'Método con el que se pagó el gasto (efectivo, transferencia, tarjeta, etc).'}),
+    computable: thOrden('Computable','computable',sortState,{cls:'th-help computable',title:'Computable como gasto: tildado, resta en el resultado. Destildado = se pagó pero no es gasto del hotel (ej. IVA, o pagos ajenos hechos desde la cuenta), no afecta el resultado.'}),
+    mesCorr: thOrden('Mes corresp.','mesCorr',sortState),
+    rubro: thOrden('Rubro','rubro',sortState),
+    detalle: thOrden('Detalle','detalle',sortState),
+    acciones: '<th></th>'
+  };
+  const theadHtml=colOrder.map(c=>theadCeldas[c]).join('');
+  return `<div class="tablewrap"><table>
+    <colgroup>${colgroupHtml}</colgroup>
+    <thead><tr>${theadHtml}</tr></thead>
+    <tbody>${view.map(r=>{const n=netoDe(r),esIng=r.tipo==='ingreso';const div=r.dividido&&Array.isArray(r.cuotas);
+      const usd=r.moneda==='USD';
+      const parcial=div&&r.pagoParcial;const abierta=expandidas.has(r.id);
+      const cpCell = div
+        ? `<td class="cp"><input type="checkbox" ${r.pago?'checked':''} disabled title="Pagado ${money(pagadoCuotas(r))} de ${money(r.bruto)}${parcial?' (parcial)':''}. Se marca solo cuando todas las cuotas están pagas."><button class="cuotas-arrow ${parcial?'parcial':(r.pago?'ok':'')}" data-exp="${r.id}" title="Ver desglose de pagos">${abierta?'▾':'▸'}</button></td>`
+        : `<td class="cp"><button type="button" class="cp-badge ${r.pago?'pagado':'pendiente'}" data-tog="${r.id}" title="${r.pago?('Pagado el '+fmtFechaCorta(r.fechaPago)+(r.metodoPago?' · '+esc(r.metodoPago):'')+' — clic para desmarcar'):(esIng?'Marcar como cobrado':'Marcar como pagado')}">${r.pago?fmtFechaCorta(r.fechaPago):(esIng?'Marcar cobro':'Marcar pago')}</button></td>`;
+      const btnEdit = `<button class="rowbtn plain" data-edit="${r.id}" title="Modificar">✎</button>`;
+      const btnDel = `<button class="rowbtn plain" data-del="${r.id}" title="Eliminar">✕</button>`;
+      const tdFactura = mostrarFC ? `<td>${esIng?'<span class="tag">—</span>':`<span class="tag ${r.tipoFac==='A'||r.tipoFac==='A | 27%'?'A':''}">${esc(r.tipoFac||'No posee')}</span>${r.tipoFac==='A | 27%'?`<div class="ivanota">IVA ${money(r.iva)}</div>`:''}`}</td>` : '';
+      const tdFacturado = mostrarFacturado ? `<td>${esIng?`<span class="tag ${r.fact==='No Facturado'?'nf':(r.fact==='Facturado'?'fa':'')}">${r.fact==='No Facturado'?'No':(r.fact==='Facturado'?'Sí':'—')}</span>`:'<span class="tag EG">—</span>'}</td>` : '';
+      const tdMetodo = mostrarMetodo ? `<td>${(!esIng&&r.metodoPago)?esc(r.metodoPago):'<span class="tag EG">—</span>'}</td>` : '';
+      const filaPrincipal = `<tr data-row-id="${r.id}" class="${r.pago?'paid':'unpaid'}${parcial?' parcial':''}${r.id===editId?' editing':''}${r.comp===false?' nocomp':''}">
+      <td><span class="tag ${esIng?'IN':'EG'}">${esIng?'ING':'GAS'}</span></td>
+      <td class="mono">${div?'<span class="cp-let" title="Se paga en varias cuotas">varias</span>':mesLabel(r.mesPago)}${(!esIng&&r.fechaVenc)?`<span class="fx-sub" title="Fecha de vencimiento">Vence ${fmtFechaCorta(r.fechaVenc)}</span>`:''}</td>
+      <td class="item" title="${esc(r.item)}">${esIng?'—':esc(r.item)}</td>
+      <td class="num${usd?' dual':''}">${montoCell(r.bruto,brutoARS(r),usd)}</td>
+      <td class="num${usd?' dual':''}${esIng?' ing':''}">${montoCell(n,netoARS(r),usd)}</td>
+      ${tdFactura}${tdFacturado}
+      ${cpCell}
+      ${tdMetodo}
+      <td class="computable">${esIng?'<span class="tag EG">—</span>':`<input type="checkbox" ${r.comp!==false?'checked':''} data-comp="${r.id}" title="${r.comp!==false?'Computable: resta en el resultado. Destildá si se pagó pero no es gasto del hotel.':'No computable: se pagó pero no afecta el resultado. Tildá para contarlo como gasto.'}">`}</td>
+      <td class="mono">${mesLabel(r.mesCorr)}</td>
+      <td class="rubro" title="${esc(r.rubro||'')}">${esc(r.rubro||'—')}</td>
+      <td class="detalle" title="${esc(r.detalle||'')}">${esc(r.detalle||'')}</td>
+      <td class="acciones">${btnEdit}${btnDel}</td>
+    </tr>`;
+      const filaDesglose = (div&&abierta) ? filaDesgloseCuotas(r,totalCols) : '';
+      return filaPrincipal+filaDesglose;
+    }).join('')}</tbody>
+    <tfoot><tr><td colspan="3">Totales (${view.length}) — en pesos</td><td class="num">${money(tb)}</td><td class="num">${money(tn)}</td><td colspan="${totalCols-5}"></td></tr></tfoot>
+  </table></div>`;
+}
+function renderTabla(view){
+  if(!view.length){ $('tablezone').innerHTML='<div class="empty">No hay movimientos que coincidan con el filtro.</div>'; return; }
+  $('tablezone').innerHTML=tablaHtml(view,sortRegistrados);
+}
+function renderFijos(view){
+  if(!view.length){ $('fijoszone').innerHTML='<div class="empty">No hay gastos fijos cargados todavía. Usá "Cargar en el libro" para sumar los del mes en curso.</div>'; return; }
+  $('fijoszone').innerHTML=tablaHtml(view,sortFijos);
+}
+// Filtro de la sub-vista Fijos mensuales: todos los gastos fijos, de cualquier mes
+function filteredFijos(){
+  const mf=$('qf-mes').value, ef=$('qf-estado').value;
+  const out=rows.filter(r=>r.tipo==='gasto'&&r.fijo).filter(r=>{
+    if(mf&&r.mesCorr!==mf) return false;
+    if(ef&&(ef==='pag'?!r.pago:r.pago)) return false;
+    return true;
+  });
+  return ordenar(out,sortFijos);
+}
+function syncSelectFijos(){
+  const sel=$('qf-mes'),cur=sel.value;
+  const vals=[...new Set(rows.filter(r=>r.fijo).map(r=>r.mesCorr).filter(Boolean))].sort().reverse();
+  sel.innerHTML='<option value="">Todos</option>'+vals.map(v=>`<option value="${v}"${v===cur?' selected':''}>${mesLabel(v)}</option>`).join('');
+}
+['qf-mes','qf-estado'].forEach(id=>$(id).addEventListener('input',()=>renderFijos(filteredFijos())));
+
+
+// Fila de solo lectura con el desglose de pagos de un gasto dividido
+function filaDesgloseCuotas(r,totalCols){
+  const fmtFecha=f=>{ if(!f) return '—'; const [y,mm,dd]=f.split('-'); return `${dd}/${mm}/${y.slice(2)}`; };
+  const filas=(r.cuotas||[]).map((c,i)=>`
+    <div class="desg-row ${c.pago?'pagada':''}">
+      <span class="desg-n">Cuota ${i+1}</span>
+      <span class="desg-imp">${money(c.importe)}</span>
+      <span class="desg-fecha">${c.fecha?fmtFecha(c.fecha):(c.mesPago?mesLabel(c.mesPago):'sin fecha')}</span>
+      <span class="desg-estado">${c.pago?'✓ pago':'pendiente'}</span>
+    </div>`).join('');
+  return `<tr class="desglose-fila"><td></td><td colspan="${totalCols-1}">
+    <div class="desglose-box">
+      <div class="desglose-head">Desglose de <b>${esc(r.item)}</b> — pagado ${money(pagadoCuotas(r))} de ${money(r.bruto)}, resta ${money(saldoCuotas(r))} <span class="desg-edit">(editá desde el botón de modificar)</span></div>
+      ${filas}
+    </div>
+  </td></tr>`;
+}
+
+/* ---------- Acciones ---------- */
+document.addEventListener('click',async e=>{
+  const d=e.target.dataset||{};
+  if(d.edit){ abrirEdicion(d.edit); return; }
+  if(d.del){
+    const r=rows.find(x=>x.id===d.del);
+    const nombre = r ? (r.tipo==='ingreso' ? (r.rubro||'ingreso') : (r.item||'gasto')) : '';
+    if(!confirm('¿ESTÁ SEGURO DE ELIMINAR?\n\n'+nombre)) return;
+    if(!(await asegurarUsuario())) return;
+    registrarHistorial('Eliminó',r);
+    rows=rows.filter(x=>x.id!==d.del);
+    if(editId===d.del) return salirEdicion();
+    await save(); render(); toast('Movimiento borrado');
+    return;
+  }
+  // desplegar / plegar el desglose de pagos de un gasto dividido
+  if(d.exp){ if(expandidas.has(d.exp)) expandidas.delete(d.exp); else expandidas.add(d.exp); renderTabla(filteredTabla()); return; }
+  // marcar / desmarcar como pago-cobrado (sin usar prompt/confirm, todo inline en la celda)
+  if(d.tog){
+    const r=rows.find(x=>x.id===d.tog); if(!r) return;
+    if(!(await asegurarUsuario())) return;
+    if(r.pago){ r.pago=false; registrarHistorial('Desmarcó el pago/cobro',r); await save(); render(); return; }
+    const td=e.target.closest('td.cp'); if(!td) return;
+    const esGasto=r.tipo==='gasto';
+    td.innerHTML=`<div class="cp-editor">
+      <input type="date" class="cp-fecha-input" value="${r.fechaPago||hoyISO()}">
+      ${esGasto?`<select class="cp-metodo-input">${metodosPagoOptionsHtml(r.metodoPago||'')}</select>`:''}
+      <button type="button" class="cp-ok" data-cp-ok="${r.id}" title="Confirmar">✓</button>
+      <button type="button" class="cp-cancel" data-cp-cancel="1" title="Cancelar">✕</button>
+    </div>`;
+    const inp=td.querySelector('.cp-fecha-input');
+    inp.focus();
+    return;
+  }
+  if(d.cpOk){
+    const r=rows.find(x=>x.id===d.cpOk); if(!r) return;
+    const td=e.target.closest('td.cp');
+    const inp=td&&td.querySelector('.cp-fecha-input');
+    const fecha=(inp&&inp.value)||hoyISO();
+    let metodo=r.metodoPago||'';
+    if(r.tipo==='gasto'){
+      const sel=td&&td.querySelector('.cp-metodo-input');
+      let val=sel?sel.value:'';
+      if(val==='__nuevo'){
+        const nuevo=(prompt('Nombre del método de pago nuevo:')||'').trim();
+        if(!nuevo){ toast('Indicá el método de pago.'); return; }
+        if(!METODOS_PAGO_BASE.includes(nuevo)&&!propios.metodos.includes(nuevo)){ propios.metodos.push(nuevo); registrarHistorial('Agregó el método de pago',null,nuevo); }
+        val=nuevo;
+      }
+      if(!val){ toast('Elegí el método de pago.'); return; }
+      metodo=val;
+    }
+    r.fechaPago=fecha;
+    if(!r.mesPago) r.mesPago=fecha.slice(0,7);
+    r.pago=true;
+    if(r.tipo==='gasto') r.metodoPago=metodo;
+    registrarHistorial(r.tipo==='ingreso'?'Marcó como cobrado':'Marcó como pagado',r);
+    await save(); render();
+    return;
+  }
+  if(d.cpCancel){ render(); return; }
+});
+document.addEventListener('change',async e=>{
+  const c=e.target.dataset&&e.target.dataset.comp;
+  if(c){
+    const r=rows.find(x=>x.id===c); if(!r) return;
+    if(!(await asegurarUsuario())){ e.target.checked=!e.target.checked; return; }
+    r.comp=e.target.checked;
+    registrarHistorial(e.target.checked?'Marcó como computable':'Marcó como no computable',r);
+    await save(); render();
+    return;
+  }
+});
+
+/* ---------- Export ---------- */
+$('btn-csv').addEventListener('click',()=>{
+  const head=['Tipo','Mes de Pago o Cobro','Fecha de Vencimiento','Fecha real de Pago o Cobro','Método de Pago','Item','Moneda','Cotización','Importe Bruto','IVA Descontado','Importe Neto','Importe Bruto (ARS)','Importe Neto (ARS)','Tipo de Factura','Facturacion','Cobrado o Pago','Computable','Mes al que corresponde','Rubro','Observaciones/Detalle'];
+  const fmtF=f=>{ if(!f) return ''; const [y,mm,dd]=f.split('-'); return `${dd}/${mm}/${y}`; };
+  const lines=filteredTabla().map(r=>[r.tipo==='ingreso'?'INGRESO':'GASTO',mesLabel(r.mesPago),
+    r.tipo==='gasto'?fmtF(r.fechaVenc):'',
+    r.dividido?'(en cuotas)':fmtF(r.fechaPago),
+    r.tipo==='gasto'?(r.metodoPago||''):'',
+    r.tipo==='ingreso'?'':(r.item||'').toUpperCase(),
+    r.moneda||'ARS',r.moneda==='USD'?Math.round(r.cotizacion):'',
+    Math.round(r.bruto),Math.round(r.bruto-netoDe(r)),Math.round(netoDe(r)),
+    Math.round(brutoARS(r)),Math.round(netoARS(r)),
+    r.tipoFac||'—',r.tipo==='ingreso'?(r.fact||'Facturado'):'—',
+    r.tipo==='gasto'&&r.dividido?(r.pago?'SI (en cuotas)':(r.pagoParcial?'PARCIAL':'NO')):(r.pago?'SI':'NO'),
+    r.tipo==='ingreso'?'—':(r.comp!==false?'SI':'NO'),
+    mesLabel(r.mesCorr),r.rubro||'',(r.detalle||'').toUpperCase()]
+    .map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';'));
+  const blob=new Blob(['\uFEFF'+[head.join(';'),...lines].join('\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='resultados-copahue.csv';a.click();
+  toast('CSV exportado');
+});
+
+/* ---------- Inicio ---------- */
+(function init(){
+  $('firebase-warning').hidden = FIREBASE_LISTO;
+  $('stamp').textContent='Actualizado '+new Date().toLocaleDateString('es-AR');
+  $('f-mespago').value=mesActual(); $('f-mescorr').value=mesActual(); $('f-fechapago').value=hoyISO();
+  cargarTema();
+  $('titulo-carga').textContent='Cargar movimiento';
+  setModo('gasto'); iniciarAuth();
+})();
+</script>
+</body>
+</html>
