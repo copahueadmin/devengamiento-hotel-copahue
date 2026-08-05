@@ -796,11 +796,6 @@ async function load(){
     if(!propios.metodos) propios.metodos=[];
   }
   fillRubros(); pintarFxRubros(); pintarFijosExtra(); pintarMetodosPago(); render();
-  const m=mesActual();
-  let mov=false;
-  if(rows.some(r=>r.tipo==='gasto'&&r.mesPago===m)){ $('qg-pago').value=m; mov=true; }
-  if(rows.some(r=>r.tipo==='ingreso'&&r.mesPago===m)){ $('qi-cobro').value=m; mov=true; }
-  if(mov) render();
 }
 async function save(){
   try{
@@ -1370,6 +1365,7 @@ $('btn-add').addEventListener('click',async()=>{
     if(modo==='gasto') datos.metodoPago = $('f-metodo-pago').value;
   }
   else if(modo==='ingreso' && !datos.pago) datos.fechaPago = $('f-fechapago').value;
+  else if(modo==='gasto' && !esDiv && !datos.pago) datos.metodoPago = '';
   if(!(await asegurarUsuario())) return;
   if(editId){
     const r=rows.find(x=>x.id===editId);
@@ -1820,7 +1816,7 @@ document.addEventListener('click',async e=>{
   if(d.tog){
     const r=rows.find(x=>x.id===d.tog); if(!r) return;
     if(!(await asegurarUsuario())) return;
-    if(r.pago){ r.pago=false; registrarHistorial('Desmarcó el pago/cobro',r); await save(); render(); return; }
+    if(r.pago){ r.pago=false; if(r.tipo==='gasto') r.metodoPago=''; registrarHistorial('Desmarcó el pago/cobro',r); await save(); render(); return; }
     const td=e.target.closest('td.cp'); if(!td) return;
     const esGasto=r.tipo==='gasto';
     td.innerHTML=`<div class="cp-editor">
