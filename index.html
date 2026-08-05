@@ -191,6 +191,8 @@
   tbody tr.editing{background:var(--tint-warn);outline:2px solid var(--warn);outline-offset:-2px}
   tbody tr.nocomp td.item,tbody tr.nocomp td.num{color:var(--iva);font-style:italic}
   tbody tr.nocomp td:first-child{box-shadow:inset 3px 0 0 var(--iva)!important}
+  .tablacompacta tbody tr.gasto-impago{background:color-mix(in srgb, var(--neg) 8%, var(--paper))}
+  .tablacompacta tbody tr.gasto-impago.vence-pronto{background:color-mix(in srgb, var(--neg) 24%, var(--paper))}
   td.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
   td.num.ing{color:var(--ing);font-weight:500}
   td.mono{font-family:'IBM Plex Mono',monospace;font-size:13px;white-space:nowrap}
@@ -1671,6 +1673,14 @@ function renderResultados(view){
 }
 
 const fmtFechaCorta=f=>{ if(!f) return ''; const [y,mm,dd]=f.split('-'); return `${dd}/${mm}/${y.slice(2)}`; };
+// Días de diferencia entre hoy y una fecha ISO (YYYY-MM-DD); negativo si ya pasó.
+function diasHasta(fechaISO){
+  if(!fechaISO) return null;
+  const hoy=new Date(hoyISO()+'T00:00:00');
+  const obj=new Date(fechaISO+'T00:00:00');
+  if(isNaN(obj)) return null;
+  return Math.round((obj-hoy)/86400000);
+}
 function thOrden(label,col,sortState,opts){
   opts=opts||{};
   const activo=sortState.col===col;
@@ -1730,7 +1740,8 @@ function tablaHtml(view,sortState){
       const tdFactura = mostrarFC ? `<td>${esIng?'<span class="tag">—</span>':`<span class="tag ${r.tipoFac==='A'||r.tipoFac==='A | 27%'?'A':''}">${esc(r.tipoFac||'No posee')}</span>${r.tipoFac==='A | 27%'?`<div class="ivanota">IVA ${money(r.iva)}</div>`:''}`}</td>` : '';
       const tdFacturado = mostrarFacturado ? `<td>${esIng?`<span class="tag ${r.fact==='No Facturado'?'nf':(r.fact==='Facturado'?'fa':'')}">${r.fact==='No Facturado'?'No':(r.fact==='Facturado'?'Sí':'—')}</span>`:'<span class="tag EG">—</span>'}</td>` : '';
       const tdMetodo = mostrarMetodo ? `<td>${(!esIng&&r.metodoPago)?esc(r.metodoPago):'<span class="tag EG">—</span>'}</td>` : '';
-      const filaPrincipal = `<tr data-row-id="${r.id}" class="${r.pago?'paid':'unpaid'}${parcial?' parcial':''}${r.id===editId?' editing':''}${r.comp===false?' nocomp':''}">
+      const claseImpago = (!esIng && !r.pago) ? (' gasto-impago'+((diasHasta(r.fechaVenc)!==null && diasHasta(r.fechaVenc)<=7) ? ' vence-pronto' : '')) : '';
+      const filaPrincipal = `<tr data-row-id="${r.id}" class="${r.pago?'paid':'unpaid'}${parcial?' parcial':''}${r.id===editId?' editing':''}${r.comp===false?' nocomp':''}${claseImpago}">
       <td><span class="tag ${esIng?'IN':'EG'}">${esIng?'ING':'GAS'}</span></td>
       <td class="mono">${div?'<span class="cp-let" title="Se paga en varias cuotas">varias</span>':mesLabel(r.mesPago)}${(!esIng&&r.fechaVenc)?`<span class="fx-sub" title="Fecha de vencimiento">Vence ${fmtFechaCorta(r.fechaVenc)}</span>`:''}</td>
       <td class="item" title="${esc(r.item)}">${esIng?'—':esc(r.item)}</td>
