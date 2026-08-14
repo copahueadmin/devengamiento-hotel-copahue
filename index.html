@@ -119,7 +119,6 @@
   #f-item,#f-detalle{text-transform:uppercase}
   #f-item::placeholder,#f-detalle::placeholder{text-transform:none}
   #wrap-iva label{color:var(--iva)} #f-iva{border-color:var(--iva)}
-  #f-iva[readonly]{background:var(--ledger);cursor:default;color:var(--ink-soft)}
   .neto-preview{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;background:var(--ledger);border:1px solid var(--rule);padding:8px 9px;text-align:right;font-size:14px}
   button{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:var(--paper);border:1px solid var(--ink);padding:10px 16px;cursor:pointer}
   button:hover{background:var(--ok);border-color:var(--ok)}
@@ -453,7 +452,7 @@
               <option value="B">B</option><option value="C">C</option><option value="No posee" selected>No posee</option>
             </select>
           </div>
-          <div class="field" id="wrap-iva" hidden><label for="f-iva">IVA descontado (27%, automático)</label><input type="text" id="f-iva" readonly tabindex="-1"></div>
+          <div class="field" id="wrap-iva" hidden><label for="f-iva" id="lbl-iva">IVA a descontar</label><input type="text" id="f-iva" inputmode="decimal" autocomplete="off" placeholder="0"></div>
           <div class="field" id="wrap-neto"><label>Importe neto</label><div class="neto-preview" id="f-neto">0</div></div>
           <div class="field" id="wrap-rubro"><label for="f-rubro">Rubro</label><select id="f-rubro"></select></div>
           <div class="field" id="wrap-fact" hidden><label for="f-fact">Facturación</label>
@@ -741,8 +740,8 @@ const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"
 
 function neto(b,t,iva,tipoMov){
   if(tipoMov==='ingreso') return b||0;
-  if(t==='A') return (b||0)/1.21;
-  if(t==='A | 27%') return (b||0)*0.73;
+  if(t==='A') return Math.max(0,(b||0)-(iva||0));
+  if(t==='A | 27%') return Math.max(0,(b||0)-(iva||0));
   return b||0;
 }
 const netoDe=r=>neto(r.bruto,r.tipoFac,r.iva,r.tipo);
@@ -764,6 +763,9 @@ function normalizar(lista){
     if(o.tipo==='gasto'&&!o.tipoFac) o.tipoFac='No posee';
     if(o.tipo==='ingreso') o.tipoFac='—';
     o.iva=o.iva||0;
+    // antes la factura "A" (21%) descontaba el IVA automáticamente sin guardarlo; para no perder
+    // esa referencia en movimientos viejos, lo calculamos una vez y lo dejamos guardado (editable).
+    if(o.tipoFac==='A' && !o.iva && o.bruto>0) o.iva=redondear2(o.bruto-(o.bruto/1.21));
     if(!o.moneda) o.moneda='ARS';
     o.cotizacion=o.cotizacion||0;
     if(o.tipo==='gasto' && o.comp===undefined) o.comp=true;
@@ -1052,7 +1054,7 @@ function setModo(m){
   $('lbl-detalle').textContent = m==='gasto'?'Detalle':'Observaciones';
   $('f-detalle').placeholder = m==='gasto'?'Proveedor, comprobante, observaciones':'Observaciones';
   $('nota-form').textContent = m==='gasto'
-    ? 'Factura A: descuenta el 21% automáticamente. A | 27%: descuenta el 27% automáticamente. B, C o sin comprobante: el neto es igual al bruto.'
+    ? 'Factura A: descuenta el 21% automáticamente. A | 27%: te sugiere el 27% pero cargás el IVA a mano, por si la factura mezcla Ingresos Brutos u otras percepciones. B, C o sin comprobante: el neto es igual al bruto.'
     : 'Cargá el importe neto (sin IVA). El campo Facturado / No Facturado es solo informativo. Imputalo al mes de la estadía, cochera o evento, aunque el cobro caiga en otro mes.';
   fillRubros(); previewNeto();
 }
@@ -1189,7 +1191,7 @@ $('f-rubro').addEventListener('change',async e=>{
 
 /* ---------- Importes con separador (admite centavos con coma) ---------- */
 const digitos=el=>{
-  let v=el.value.replace(/[^\d,]/g,'');
+  let v=el.value.replace(/[^\d,.]/g,'').replace(/\./g,',');
   const i=v.indexOf(',');
   if(i!==-1) v=v.slice(0,i+1)+v.slice(i+1).replace(/,/g,'');
   if(!v) return 0;
@@ -1199,8 +1201,8 @@ const digitos=el=>{
 const brutoVal=()=>digitos($('f-bruto'));
 const ivaVal=()=>digitos($('f-iva'));
 function formatCampo(el){
-  const antes=el.value.slice(0,el.selectionStart??el.value.length).replace(/[^\d,]/g,'').length;
-  let v=el.value.replace(/[^\d,]/g,'');
+  const antes=el.value.slice(0,el.selectionStart??el.value.length).replace(/[^\d,.]/g,'').length;
+  let v=el.value.replace(/[^\d,.]/g,'').replace(/\./g,',');
   const i=v.indexOf(',');
   let ent=v, dec=null;
   if(i!==-1){ ent=v.slice(0,i); dec=v.slice(i+1).replace(/,/g,'').slice(0,2); }
@@ -1212,9 +1214,9 @@ function formatCampo(el){
   while(pos<el.value.length&&vistos<antes){ if(/[\d,]/.test(el.value[pos]))vistos++; pos++; }
   try{el.setSelectionRange(pos,pos);}catch(e){}
 }
-$('f-bruto').addEventListener('input',()=>{formatCampo($('f-bruto'));previewNeto();});
+$('f-bruto').addEventListener('input',()=>{formatCampo($('f-bruto'));sugerirIva27();previewNeto();});
 $('f-iva').addEventListener('input',()=>{formatCampo($('f-iva'));previewNeto();});
-$('f-tipo').addEventListener('input',()=>previewNeto());
+$('f-tipo').addEventListener('input',()=>{sugerirIva27();previewNeto();});
 const cotizVal=()=>digitos($('f-cotizacion'));
 $('f-cotizacion').addEventListener('input',()=>{formatCampo($('f-cotizacion'));previewNeto();});
 $('f-pago').addEventListener('change',()=>{
@@ -1231,16 +1233,30 @@ $('f-moneda').addEventListener('change',()=>{
   $('lbl-dividido').title = usd ? 'El pago en cuotas todavía no está disponible para movimientos en USD.' : 'Dividir el pago de este gasto en varias cuotas con su propia fecha';
   previewNeto();
 });
+// % de IVA sugerido según el tipo de factura elegido; null si no corresponde mostrar el campo
+function pctIvaSugerido(){
+  const t=$('f-tipo').value;
+  if(t==='A') return 0.21;
+  if(t==='A | 27%') return 0.27;
+  return null;
+}
 function previewNeto(){
-  const esA27 = modo==='gasto' && $('f-tipo').value==='A | 27%';
-  $('wrap-iva').hidden = !esA27;
+  const pct = modo==='gasto' ? pctIvaSugerido() : null;
+  $('wrap-iva').hidden = pct===null;
+  if(pct!==null) $('lbl-iva').textContent = `IVA a descontar (sugerido: ${Math.round(pct*100)}%)`;
   const usd=$('f-moneda').value==='USD';
-  const n=neto(brutoVal(),$('f-tipo').value,0,modo);
-  if(esA27) $('f-iva').value = brutoVal()>0 ? money(brutoVal()*0.27) : '';
+  const n=neto(brutoVal(),$('f-tipo').value,ivaVal(),modo);
   const simbolo=usd?'U$S ':'$ ';
   let txt=simbolo+money(n);
   if(usd) txt += cotizVal()>0 ? ` ≈ $ ${money(n*cotizVal())}` : ' (cargá la cotización)';
   $('f-neto').textContent=txt;
+}
+// Sugiere el IVA (21% o 27% según el tipo) como punto de partida, sin pisar lo que el usuario ya haya tipeado a mano.
+function sugerirIva27(){
+  const pct=modo==='gasto'?pctIvaSugerido():null;
+  if(pct!==null && !$('f-iva').value && brutoVal()>0){
+    $('f-iva').value = money(brutoVal()*pct);
+  }
 }
 
 /* ---------- Cuotas dentro del formulario ---------- */
@@ -1377,7 +1393,12 @@ $('btn-add').addEventListener('click',async()=>{
   if(!(bruto>0) && !sinImportePermitido){toast('Cargá un importe.');$('f-bruto').focus();return;}
   if(!$('f-mescorr').value){toast('Indicá el mes al que corresponde.');$('f-mescorr').focus();return;}
   const tipoFac = modo==='gasto'?$('f-tipo').value:'—';
-  const ivaManual = (modo==='gasto'&&tipoFac==='A | 27%'&&bruto>0)?redondear2(bruto*0.27):0;
+  const esConIva = modo==='gasto' && (tipoFac==='A'||tipoFac==='A | 27%') && bruto>0;
+  const ivaManual = esConIva ? ivaVal() : 0;
+  if(esConIva){
+    if(!(ivaManual>0)){toast('Cargá el IVA a descontar.');$('f-iva').focus();return;}
+    if(ivaManual>=bruto){toast('El IVA no puede ser igual o mayor al bruto.');$('f-iva').focus();return;}
+  }
   const moneda=$('f-moneda').value;
   const cotizacion=moneda==='USD'?cotizVal():0;
   if(moneda==='USD'&&!(cotizacion>0)){toast('Cargá la cotización del dólar.');$('f-cotizacion').focus();return;}
@@ -1451,8 +1472,9 @@ function pagadoCuotas(r){
 let sortRegistrados={col:'mesCorr',dir:'desc'};
 // valor a comparar por columna
 const COLS_ORDEN={
-  tipo:      r=>r.tipo==='ingreso'?'ingreso':'gasto',
+  tipo:      r=>r.tipo==='ingreso'?'variable':(r.fijo?'fijo':'variable'),
   mesPago:   r=>r.mesPago||'',
+  vencimiento: r=>r.tipo==='gasto'?(r.fechaVenc||''):'',
   item:      r=>(r.tipo==='ingreso'?(r.rubro||''):(r.item||'')),
   bruto:     r=>brutoARS(r),
   neto:      r=>netoARS(r),
@@ -1733,19 +1755,20 @@ function tablaHtml(view,sortState){
   const hayIngresos=view.some(r=>r.tipo==='ingreso');
   const hayGastos=view.some(r=>r.tipo==='gasto');
   const mostrarFC=hayGastos, mostrarFacturado=hayIngresos, mostrarMetodo=hayGastos;
-  const ANCHOS={tipo:9,mesPago:11,item:10,bruto:7,neto:7,factura:6,facturado:7,metodo:7,estado:6,computable:6,mesCorr:6,rubro:6,detalle:6,acciones:6};
+  const ANCHOS={tipo:9,mesPago:7,vencimiento:7,item:9,bruto:7,neto:7,factura:6,facturado:7,metodo:7,estado:6,computable:6,mesCorr:6,rubro:5,detalle:5,acciones:6};
   let extra=0;
   if(!mostrarFC) extra+=ANCHOS.factura;
   if(!mostrarFacturado) extra+=ANCHOS.facturado;
   if(!mostrarMetodo) extra+=ANCHOS.metodo;
-  const colOrder=['tipo','mesPago','item','bruto','neto',
+  const colOrder=['tipo','mesPago','vencimiento','item','bruto','neto',
     ...(mostrarFC?['factura']:[]), ...(mostrarFacturado?['facturado']:[]),
     'estado', ...(mostrarMetodo?['metodo']:[]), 'computable','mesCorr','rubro','detalle','acciones'];
   const totalCols=colOrder.length;
   const colgroupHtml=colOrder.map(c=>`<col style="width:${c==='item'?ANCHOS.item+extra:ANCHOS[c]}%">`).join('');
   const theadCeldas={
     tipo: thOrden('Tipo','tipo',sortState),
-    mesPago: thOrden('Mes de pago - vencimiento','mesPago',sortState),
+    mesPago: thOrden('Mes de pago','mesPago',sortState),
+    vencimiento: thOrden('Fecha de vencimiento','vencimiento',sortState),
     item: thOrden('Ítem','item',sortState),
     bruto: thOrden('Bruto','bruto',sortState,{cls:'num'}),
     neto: thOrden('Neto','neto',sortState,{cls:'num'}),
@@ -1771,13 +1794,14 @@ function tablaHtml(view,sortState){
         : `<td class="cp"><button type="button" class="cp-badge ${r.pago?'pagado':'pendiente'}" data-tog="${r.id}" title="${r.pago?('Pagado el '+fmtFechaCorta(r.fechaPago)+(r.metodoPago?' · '+esc(r.metodoPago):'')+' — clic para desmarcar'):(esIng?'Marcar como cobrado':'Marcar como pagado')}">${r.pago?fmtFechaCorta(r.fechaPago):(esIng?'Marcar cobro':'Marcar pago')}</button></td>`;
       const btnEdit = `<button class="rowbtn plain" data-edit="${r.id}" title="Modificar">✎</button>`;
       const btnDel = `<button class="rowbtn plain" data-del="${r.id}" title="Eliminar">✕</button>`;
-      const tdFactura = mostrarFC ? `<td>${esIng?'<span class="tag">—</span>':`<span class="tag ${r.tipoFac==='A'||r.tipoFac==='A | 27%'?'A':''}">${esc(r.tipoFac||'No posee')}</span>${r.tipoFac==='A | 27%'?`<div class="ivanota">IVA ${money(r.iva)}</div>`:''}`}</td>` : '';
+      const tdFactura = mostrarFC ? `<td>${esIng?'<span class="tag">—</span>':`<span class="tag ${r.tipoFac==='A'||r.tipoFac==='A | 27%'?'A':''}">${esc(r.tipoFac||'No posee')}</span>${(r.tipoFac==='A'||r.tipoFac==='A | 27%')?`<div class="ivanota">IVA ${money(r.iva)}</div>`:''}`}</td>` : '';
       const tdFacturado = mostrarFacturado ? `<td>${esIng?`<span class="tag ${r.fact==='No Facturado'?'nf':(r.fact==='Facturado'?'fa':'')}">${r.fact==='No Facturado'?'No':(r.fact==='Facturado'?'Sí':'—')}</span>`:'<span class="tag EG">—</span>'}</td>` : '';
       const tdMetodo = mostrarMetodo ? `<td>${(!esIng&&r.metodoPago)?esc(r.metodoPago):'<span class="tag EG">—</span>'}</td>` : '';
       const claseImpago = (!esIng && !r.pago) ? (' gasto-impago'+((diasHasta(r.fechaVenc)!==null && diasHasta(r.fechaVenc)<=7) ? ' vence-pronto' : '')) : '';
       const filaPrincipal = `<tr data-row-id="${r.id}" class="${r.pago?'paid':'unpaid'}${parcial?' parcial':''}${r.id===editId?' editing':''}${r.comp===false?' nocomp':''}${claseImpago}">
       <td><span class="tag ${esIng?'IN':'EG'}">${esIng?'INGRESO':'GASTO'}</span>${!esIng?`<span class="tag ${r.fijo?'FIJ':'VAR'}">${r.fijo?'FIJO':'VARIABLE'}</span>`:''}</td>
-      <td class="mono">${div?'<span class="cp-let" title="Se paga en varias cuotas">varias</span>':mesLabel(r.mesPago).toUpperCase()}${(!esIng&&r.fechaVenc)?' | '+fmtFechaCorta(r.fechaVenc).toUpperCase():''}</td>
+      <td class="mono">${div?'<span class="cp-let" title="Se paga en varias cuotas">varias</span>':'<b>'+mesLabel(r.mesPago).toUpperCase()+'</b>'}</td>
+      <td class="mono">${(!esIng&&r.fechaVenc)?fmtFechaCorta(r.fechaVenc).toUpperCase():'—'}</td>
       <td class="item" title="${esc(r.item)}">${esIng?'—':esc(r.item)}</td>
       <td class="num${usd?' dual':''}">${montoCell(r.bruto,brutoARS(r),usd)}</td>
       <td class="num${usd?' dual':''}${esIng?' ing':''}">${montoCell(n,netoARS(r),usd)}</td>
