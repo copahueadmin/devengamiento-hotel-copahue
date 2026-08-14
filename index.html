@@ -241,8 +241,9 @@
   .icon-btn{display:inline-flex;align-items:center;justify-content:center;background:none;border:1px solid var(--rule-strong);color:var(--ink-soft);padding:8px 10px;cursor:pointer;line-height:1}
   .icon-btn:hover{border-color:var(--ink-soft);color:var(--ink)}
   .icon-btn.identificado{color:var(--ink);border-color:var(--ink-soft)}
+  .usuario-nombre-header{font-size:13px;color:var(--ink);font-weight:600}
   .firebase-warning{background:var(--tint-warn);border:1px solid var(--warn);color:var(--ink);padding:10px 14px;margin-bottom:16px;font-size:13px}
-  .usuario-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px}
+  .usuario-overlay{position:fixed;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;z-index:200;padding:20px}
   .usuario-box{background:var(--paper);border:1px solid var(--rule-strong);box-shadow:0 8px 30px rgba(0,0,0,.35);padding:22px;max-width:360px;width:100%}
   .usuario-box h3{margin:0 0 8px;font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
   .usuario-box input{margin-top:4px}
@@ -299,6 +300,7 @@
       <div class="sub">Hotel Copahue · Saavedra 80, Junín</div>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
+      <span id="usuario-nombre-header" class="usuario-nombre-header"></span>
       <button type="button" id="usuario-chip" class="icon-btn" title="Cerrar sesión">
         <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
       </button>
@@ -856,6 +858,7 @@ function actualizarUsuarioUI(){
   const u = FIREBASE_LISTO ? firebase.auth().currentUser : null;
   btn.title = u ? ('Conectado como '+(usuarioActual||u.email)+' — tocá para cerrar sesión') : 'Cerrar sesión';
   btn.classList.toggle('identificado',!!u);
+  $('usuario-nombre-header').textContent = u ? (usuarioActual||u.email) : '';
 }
 async function asegurarUsuario(){ return !!usuarioActual; }  // el login ya garantiza que hay alguien identificado
 $('usuario-chip').addEventListener('click',()=>{
@@ -1488,7 +1491,10 @@ function filteredTabla(){
   const pd=$('qt-pago-desde').value, ph=$('qt-pago-hasta').value;
   const cd=$('qt-corr-desde').value, ch=$('qt-corr-hasta').value;
   const fd=$('qt-fecha-desde').value, fh=$('qt-fecha-hasta').value;
-  const out=filteredPeriodo().filter(r=>{
+  // Registrados no depende del filtro de Período (ese es solo para el Dashboard) y no incluye
+  // los gastos fijos: esos se ven exclusivamente desde la sección Fijos mensuales.
+  const out=rows.filter(r=>{
+    if(r.fijo) return false;
     if(tp&&r.tipo!==tp) return false;
     if(ru&&r.rubro!==ru) return false;
     if(es&&(es==='pag'?!r.pago:r.pago)) return false;
