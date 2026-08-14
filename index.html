@@ -1228,6 +1228,11 @@ $('f-iva').addEventListener('input',()=>{formatCampo($('f-iva'));previewNeto();}
 $('f-tipo').addEventListener('input',()=>{sugerirIva27();previewNeto();});
 const cotizVal=()=>digitos($('f-cotizacion'));
 $('f-cotizacion').addEventListener('input',()=>{formatCampo($('f-cotizacion'));previewNeto();});
+// Al enfocar un campo de importe, se selecciona todo lo que tenga (típicamente "0") para que
+// la primera tecla lo reemplace en vez de sumarse a él.
+function seleccionarAlFoco(e){ if(e.target.value) e.target.select(); }
+['f-bruto','f-iva','f-cotizacion'].forEach(id=>$(id).addEventListener('focus',seleccionarAlFoco));
+$('cuotas-form').addEventListener('focusin',e=>{ if(e.target.classList&&e.target.classList.contains('cuota-imp')) seleccionarAlFoco(e); });
 $('f-pago').addEventListener('change',()=>{
   const marcado=$('f-pago').checked;
   $('wrap-fecha-real-pago').hidden=!marcado;
@@ -1264,7 +1269,9 @@ function previewNeto(){
 function sugerirIva27(){
   const pct=modo==='gasto'?pctIvaSugerido():null;
   if(pct!==null && !$('f-iva').value && brutoVal()>0){
-    $('f-iva').value = money(brutoVal()*pct);
+    // el bruto ya incluye el IVA: lo que se descuenta es bruto - (bruto / (1+%)), no bruto*%
+    const b=brutoVal();
+    $('f-iva').value = money(b-(b/(1+pct)));
   }
 }
 
