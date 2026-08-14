@@ -1190,22 +1190,31 @@ $('f-rubro').addEventListener('change',async e=>{
 });
 
 /* ---------- Importes con separador (admite centavos con coma) ---------- */
+// Separa entero y centavos de lo que hay tipeado. El separador decimal es el ÚLTIMO "," o "."
+// que tenga como máximo 2 dígitos después; cualquier otro punto (los de miles, ya formateados
+// automáticamente) se ignora. Así "," y "." sirven para centavos sin romper "10.000".
+function separarImporte(valor){
+  let v=valor.replace(/[^\d,.]/g,'');
+  const li=Math.max(v.lastIndexOf(','),v.lastIndexOf('.'));
+  let ent=v, dec=null;
+  if(li!==-1){
+    const tras=v.slice(li+1).replace(/[.,]/g,'');
+    if(tras.length<=2){ dec=tras; ent=v.slice(0,li).replace(/[.,]/g,''); }
+    else{ ent=v.replace(/[.,]/g,''); }
+  }
+  return {ent,dec};
+}
 const digitos=el=>{
-  let v=el.value.replace(/[^\d,.]/g,'').replace(/\./g,',');
-  const i=v.indexOf(',');
-  if(i!==-1) v=v.slice(0,i+1)+v.slice(i+1).replace(/,/g,'');
-  if(!v) return 0;
-  const n=parseFloat(v.replace(',','.'));
+  const {ent,dec}=separarImporte(el.value);
+  if(!ent&&!dec) return 0;
+  const n=parseFloat((ent||'0')+'.'+(dec||'0'));
   return isNaN(n)?0:n;
 };
 const brutoVal=()=>digitos($('f-bruto'));
 const ivaVal=()=>digitos($('f-iva'));
 function formatCampo(el){
   const antes=el.value.slice(0,el.selectionStart??el.value.length).replace(/[^\d,.]/g,'').length;
-  let v=el.value.replace(/[^\d,.]/g,'').replace(/\./g,',');
-  const i=v.indexOf(',');
-  let ent=v, dec=null;
-  if(i!==-1){ ent=v.slice(0,i); dec=v.slice(i+1).replace(/,/g,'').slice(0,2); }
+  let {ent,dec}=separarImporte(el.value);
   ent=ent.replace(/^0+(?=\d)/,'');
   let out = ent ? parseInt(ent,10).toLocaleString('es-AR') : (dec!==null?'0':'');
   if(dec!==null) out+=','+dec;
