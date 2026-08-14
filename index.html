@@ -132,6 +132,12 @@
   .fijos-estado-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 10px;font-size:13px;color:var(--ink-soft)}
   .fijos-estado-head button{white-space:nowrap}
   #fijos-estado-lista{border:1px solid var(--rule)}
+  #fijos-lote-box{border:1px solid var(--warn);border-left:3px solid var(--warn);background:var(--tint-warn2);padding:14px;margin-top:18px}
+  #fijos-lote-lista{border:1px solid var(--rule);background:var(--surface);max-height:320px;overflow-y:auto;margin:10px 0}
+  .fijo-lote-row{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--rule);font-size:13px;cursor:pointer}
+  .fijo-lote-row:last-child{border-bottom:none}
+  .fijo-lote-row:nth-child(odd){background:var(--ledger)}
+  .fijo-lote-row input{width:auto;flex:none}
   .fijo-estado-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:9px 12px;border-bottom:1px solid var(--rule);font-size:13px}
   .fijo-estado-row:last-child{border-bottom:none}
   .fijo-estado-row:nth-child(odd){background:var(--ledger)}
@@ -545,6 +551,19 @@
           </div>
           <p class="note">El mes al que corresponde queda en blanco a propósito: lo asignás vos en cada línea, desde Registrados. Si completás "mes de pago" o "fecha de vencimiento" acá arriba, se aplican a todas las líneas de la tanda.</p>
         </div>
+        <div id="fijos-lote-box">
+          <div class="fijos-add-tit">Registrar en bloque el mes que entra</div>
+          <p class="note" style="margin-top:0">Elegí el mes, destildá los que no correspondan ese mes, y registralos todos juntos — así cuando llegue cada factura, ya los tenés a mano en Registrados para completar el importe.</p>
+          <div class="fijos-row">
+            <div class="field"><label for="lote-mes">Mes a registrar</label><input type="month" id="lote-mes"></div>
+            <div class="field"><button type="button" class="ghost" id="btn-lote-todos">Marcar todos</button></div>
+            <div class="field"><button type="button" class="ghost" id="btn-lote-ninguno">Desmarcar todos</button></div>
+          </div>
+          <div id="fijos-lote-lista"></div>
+          <div class="fijos-row">
+            <div class="field"><button type="button" id="btn-lote-registrar">Registrar todos</button></div>
+          </div>
+        </div>
         <div class="fijos-estado-head">
           <span>Lista de gastos fijos — siempre en blanco, lista para reutilizar cada mes. Al completar uno con datos reales (importe, pago, etc.) pasa a "Registrados" sin mes asignado, para que lo completes vos; acá se sigue viendo disponible para el mes que viene.</span>
           <button class="ghost" type="button" id="btn-quitar-duplicados">Buscar y quitar duplicados</button>
@@ -747,6 +766,7 @@ const redondear2=n=>Math.round((n||0)*100)/100;
 const mesLabel=v=>{if(!v)return '—';const[y,m]=v.split('-');return MESES[(+m)-1]+' '+y.slice(2);};
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const mesActual=()=>{const h=new Date();return h.getFullYear()+'-'+String(h.getMonth()+1).padStart(2,'0');};
+const mesSiguiente=()=>{const h=new Date();h.setMonth(h.getMonth()+1);return h.getFullYear()+'-'+String(h.getMonth()+1).padStart(2,'0');};
 const hoyISO=()=>{const h=new Date();return h.getFullYear()+'-'+String(h.getMonth()+1).padStart(2,'0')+'-'+String(h.getDate()).padStart(2,'0');};
 const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
@@ -1630,10 +1650,10 @@ function filteredTabla(){
   const cd=$('qt-corr-desde').value, ch=$('qt-corr-hasta').value;
   const fd=$('qt-fecha-desde').value, fh=$('qt-fecha-hasta').value;
   // Registrados no depende del filtro de Período (ese es solo para el Dashboard). Un gasto fijo
-  // recién cargado (sin importe ni pago) no aparece acá todavía: solo se ve en Fijos mensuales,
-  // hasta que se le carguen datos reales.
+  // recién cargado sin datos ni mes asignado no aparece acá todavía (solo en Fijos mensuales);
+  // en cuanto tiene importe, pago, o un mes ya asignado (por ej. desde "Registrar en bloque"), sí.
   const out=rows.filter(r=>{
-    if(r.fijo && !(r.bruto>0 || r.pago)) return false;
+    if(r.fijo && !(r.bruto>0 || r.pago || r.mesPago || r.mesCorr)) return false;
     if(tp&&r.tipo!==tp) return false;
     if(ru&&r.rubro!==ru) return false;
     if(es&&(es==='pag'?!r.pago:r.pago)) return false;
@@ -1773,7 +1793,7 @@ function setVistaMov(v){
     $('vista-'+k).hidden = k!==v;
   });
   if(v==='registrados') renderTabla(filteredTabla());
-  if(v==='fijos') renderEstadoFijos();
+  if(v==='fijos'){ renderEstadoFijos(); renderLoteFijos(); }
 }
 $('subtab-cargar').addEventListener('click',()=>setVistaMov('cargar'));
 $('subtab-registrados').addEventListener('click',()=>setVistaMov('registrados'));
@@ -1920,6 +1940,40 @@ function renderTabla(view){
 }
 // Lista de plantillas de gastos fijos: siempre en blanco, reutilizable cada mes. Muestra si ya
 // se cargó (con datos reales) el mes en curso, y da acceso rápido para cargarlo o editarlo.
+// Checklist para "Registrar en bloque el mes que entra": todos los ítems, tildados por defecto.
+function renderLoteFijos(){
+  if(!$('lote-mes').value) $('lote-mes').value=mesSiguiente();
+  const plantillas=fijosTodos();
+  if(!plantillas.length){ $('fijos-lote-lista').innerHTML='<div class="empty">Todavía no hay gastos fijos en la lista.</div>'; return; }
+  $('fijos-lote-lista').innerHTML=plantillas.map(f=>`
+    <label class="fijo-lote-row">
+      <input type="checkbox" class="lote-check" value="${esc(f.item)}" data-rubro="${esc(f.rubro)}" checked>
+      <span class="fijo-estado-item">${esc(f.item)}</span><span class="fijo-estado-rubro">${esc(f.rubro)}</span>
+    </label>`).join('');
+}
+$('btn-lote-todos').addEventListener('click',()=>{ document.querySelectorAll('#fijos-lote-lista .lote-check').forEach(cb=>cb.checked=true); });
+$('btn-lote-ninguno').addEventListener('click',()=>{ document.querySelectorAll('#fijos-lote-lista .lote-check').forEach(cb=>cb.checked=false); });
+$('btn-lote-registrar').addEventListener('click',async()=>{
+  const mes=$('lote-mes').value;
+  if(!mes){ toast('Elegí el mes a registrar.'); $('lote-mes').focus(); return; }
+  const seleccionados=[...document.querySelectorAll('#fijos-lote-lista .lote-check:checked')].map(cb=>({item:cb.value,rubro:cb.dataset.rubro}));
+  if(!seleccionados.length){ toast('No hay ítems tildados.'); return; }
+  const yaExiste=new Set(rows.filter(r=>r.tipo==='gasto'&&r.fijo&&r.mesPago===mes).map(r=>r.item));
+  const nuevosItems=seleccionados.filter(s=>!yaExiste.has(s.item));
+  if(!nuevosItems.length){ toast('Ya estaban registrados todos los tildados para '+mesLabel(mes)+'.'); return; }
+  if(!(await asegurarUsuario())) return;
+  const nuevos=nuevosItems.map(f=>({
+    id:uid(),tipo:'gasto',mesPago:mes,mesCorr:mes,rubro:f.rubro,item:f.item,bruto:0,
+    moneda:'ARS',cotizacion:0,tipoFac:'No posee',iva:0,fact:'',pago:false,comp:true,detalle:'',fijo:true,fechaVenc:'',loteMes:mes
+  }));
+  guardarParaDeshacer('registrar en bloque '+nuevos.length+' fijos para '+mesLabel(mes));
+  rows.push(...nuevos);
+  registrarHistorial('Registró en bloque gastos fijos',null,nuevos.length+' gastos fijos para '+mesLabel(mes));
+  await save();
+  render(); renderLoteFijos();
+  toast(nuevos.length+' gastos fijos registrados para '+mesLabel(mes)+' — ya están en Registrados, esperando el importe de cada factura.');
+});
+
 function renderEstadoFijos(){
   const mes=mesActual();
   const plantillas=fijosTodos();
