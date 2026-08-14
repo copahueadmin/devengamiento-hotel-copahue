@@ -92,7 +92,7 @@
   .form-grid.ingreso{display:flex;flex-wrap:wrap}
   .form-grid.ingreso .field{flex:1 1 150px;min-width:150px}
   .form-grid.ingreso #wrap-item{display:none}
-  .form-grid.ingreso #wrap-tipo,.form-grid.ingreso #wrap-iva,.form-grid.ingreso #wrap-neto{display:none}
+  .form-grid.ingreso #wrap-tipo,.form-grid.ingreso #wrap-iva,.form-grid.ingreso #wrap-neto,.form-grid.ingreso #wrap-marcar-fijo{display:none}
   .form-grid.ingreso #wrap-rubro{order:3}
   .form-grid.ingreso #wrap-bruto{order:4}
   .form-grid.ingreso #wrap-moneda{order:5}
@@ -200,13 +200,18 @@
   .tablacompacta .detalle{max-width:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   tbody td{padding:8px 10px;border-bottom:1px solid var(--rule);vertical-align:top;font-size:14px}
   tbody tr:nth-child(odd){background:var(--ledger)}
+  .tablacompacta tbody tr:hover{filter:brightness(1.08);cursor:default}
   tbody tr.paid td:first-child{box-shadow:inset 3px 0 0 var(--ok)}
   tbody tr.unpaid td:first-child{box-shadow:inset 3px 0 0 var(--warn)}
   tbody tr.editing{background:var(--tint-warn);outline:2px solid var(--warn);outline-offset:-2px}
   tbody tr.nocomp td.item,tbody tr.nocomp td.num{color:var(--iva);font-style:italic}
   tbody tr.nocomp td:first-child{box-shadow:inset 3px 0 0 var(--iva)!important}
-  .tablacompacta tbody tr.gasto-impago{background:color-mix(in srgb, var(--neg) 8%, var(--paper))}
-  .tablacompacta tbody tr.gasto-impago.vence-pronto{background:color-mix(in srgb, var(--neg) 24%, var(--paper))}
+  .tablacompacta tbody tr.gasto-impago:nth-child(odd){background:color-mix(in srgb, var(--neg) 10%, var(--paper))}
+  .tablacompacta tbody tr.gasto-impago:nth-child(even){background:color-mix(in srgb, var(--neg) 6%, var(--paper))}
+  .tablacompacta tbody tr.gasto-impago.vence-pronto:nth-child(odd){background:color-mix(in srgb, var(--neg) 26%, var(--paper))}
+  .tablacompacta tbody tr.gasto-impago.vence-pronto:nth-child(even){background:color-mix(in srgb, var(--neg) 22%, var(--paper))}
+  .tablacompacta tbody tr.gasto-pago:nth-child(odd){background:color-mix(in srgb, var(--ok) 12%, var(--paper))}
+  .tablacompacta tbody tr.gasto-pago:nth-child(even){background:color-mix(in srgb, var(--ok) 7%, var(--paper))}
   td.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
   td.num.ing{color:var(--ing);font-weight:500}
   td.mono{font-family:'IBM Plex Mono',monospace;font-size:13px;white-space:nowrap}
@@ -257,6 +262,8 @@
   .icon-btn{display:inline-flex;align-items:center;justify-content:center;background:none;border:1px solid var(--rule-strong);color:var(--ink-soft);padding:8px 10px;cursor:pointer;line-height:1}
   .icon-btn:hover{border-color:var(--ink-soft);color:var(--ink)}
   .icon-btn.identificado{color:var(--ink);border-color:var(--ink-soft)}
+  .icon-btn:disabled{opacity:.35;cursor:default}
+  .icon-btn:disabled:hover{border-color:var(--rule-strong);color:var(--ink-soft)}
   .usuario-nombre-header{font-size:13px;color:var(--ink);font-weight:600}
   .firebase-warning{background:var(--tint-warn);border:1px solid var(--warn);color:var(--ink);padding:10px 14px;margin-bottom:16px;font-size:13px}
   .usuario-overlay{position:fixed;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;z-index:200;padding:20px}
@@ -319,6 +326,9 @@
       <span id="usuario-nombre-header" class="usuario-nombre-header"></span>
       <button type="button" id="usuario-chip" class="icon-btn" title="Cerrar sesión">
         <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+      </button>
+      <button type="button" id="btn-deshacer" class="icon-btn" title="No hay nada para deshacer" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="17" height="17"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>
       </button>
       <button type="button" id="btn-historial" class="icon-btn" title="Ver historial de cambios">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="17" height="17"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
@@ -464,6 +474,7 @@
           <div class="field" id="wrap-metodo-pago" hidden><label for="f-metodo-pago">Método de pago</label><select id="f-metodo-pago"></select></div>
           <div class="field" id="wrap-comp"><label for="f-comp">Computable</label><div style="padding:8px 0"><input type="checkbox" id="f-comp" checked></div></div>
           <div class="field" id="wrap-dividido"><label for="f-dividido" id="lbl-dividido" title="Dividir el pago de este gasto en varias cuotas con su propia fecha">Pago dividido</label><div style="padding:8px 0"><input type="checkbox" id="f-dividido"></div></div>
+          <div class="field" id="wrap-marcar-fijo"><label for="f-marcar-fijo" title="Además de registrarse este mes, queda sumado a la lista de Fijos mensuales para reutilizar en los meses siguientes">Gasto fijo mensual</label><div style="padding:8px 0"><input type="checkbox" id="f-marcar-fijo"></div></div>
           <div class="field" id="wrap-add"><button id="btn-add">Agregar</button></div>
           <div class="field" id="wrap-cancel" hidden><button class="ghost" id="btn-cancel">Cancelar</button></div>
         </div>
@@ -515,7 +526,7 @@
       <div id="vista-fijos" hidden>
         <div id="fijos-box">
           <div class="fijos-head">
-            <span>Se cargarán <b id="fijos-n"></b> gastos fijos correspondientes a <b id="fijos-mes-actual"></b>, con importe en blanco. Después, en cada línea, completás el importe y el mes de pago.</span>
+            <span>Se cargarán <b id="fijos-n"></b> gastos fijos con importe y mes en blanco. Después, en cada línea, completás el importe, el mes al que corresponde y el mes de pago.</span>
           </div>
           <div class="fijos-add">
             <span class="fijos-add-tit">Agregar o quitar un rubro de gasto fijo, y sumar un ítem a la lista (queda guardado para todos los meses)</span>
@@ -532,10 +543,10 @@
             <div class="field"><label for="fijos-venc-todos">Fecha de vencimiento para todos (opcional)</label><input type="date" id="fijos-venc-todos"></div>
             <div class="field"><button id="btn-fijos-go">Cargar en el libro</button></div>
           </div>
-          <p class="note">Quedan imputados automáticamente al mes en curso. Si completás "mes de pago" o "fecha de vencimiento" se aplican a todas las líneas; si los dejás vacíos, los asignás en cada línea, abajo.</p>
+          <p class="note">El mes al que corresponde queda en blanco a propósito: lo asignás vos en cada línea, desde Registrados. Si completás "mes de pago" o "fecha de vencimiento" acá arriba, se aplican a todas las líneas de la tanda.</p>
         </div>
         <div class="fijos-estado-head">
-          <span>Lista de gastos fijos — siempre en blanco, lista para reutilizar cada mes. Al completar uno con datos reales (importe, pago, etc.) pasa a "Registrados" en <b id="fijos-estado-mes-actual"></b>; acá se sigue viendo disponible para el mes que viene.</span>
+          <span>Lista de gastos fijos — siempre en blanco, lista para reutilizar cada mes. Al completar uno con datos reales (importe, pago, etc.) pasa a "Registrados" sin mes asignado, para que lo completes vos; acá se sigue viendo disponible para el mes que viene.</span>
           <button class="ghost" type="button" id="btn-quitar-duplicados">Buscar y quitar duplicados</button>
         </div>
         <div id="fijos-estado-lista"></div>
@@ -721,6 +732,7 @@ let fijosExtra=[];  // gastos fijos que el usuario suma a la lista base, persist
 let expandidas=new Set();  // ids de gastos divididos con el desglose de pagos abierto
 let historial=[];  // registro de quién hizo cada cambio, persistido
 let usuarioActual='';  // nombre y apellido de la cuenta con sesión iniciada (viene de Firebase Auth)
+let historialDeshacer=[];  // pila de instantáneas previas a cada acción, para poder deshacer
 let ultimoAgregadoId=null, addConfirmTimers=[];
 let cuotasForm=[];  // cuotas en edición dentro del formulario
 let rubrosOff={ingreso:new Set(),gasto:new Set()};  // rubros destildados en el dashboard
@@ -775,6 +787,7 @@ function normalizar(lista){
     if(o.tipo==='gasto'){
       if(!o.pago && o.fechaPago && !o.fechaVenc){ o.fechaVenc=o.fechaPago; o.fechaPago=''; }
       if(o.fechaVenc===undefined) o.fechaVenc='';
+      if(o.fijo && o.loteMes===undefined) o.loteMes=o.mesCorr||'';
     }
     if(o.tipo==='gasto' && o.dividido && Array.isArray(o.cuotas)){ sincronizarPagoDividido(o); } else if(o.dividido===undefined){ o.dividido=false; }
     return o;
@@ -982,6 +995,34 @@ function iniciarAuth(){
 }
 
 /* ---------- Historial de cambios ---------- */
+/* ---------- Deshacer ---------- */
+// Guarda una instantánea del estado ANTES de aplicar una acción, para poder revertirla después.
+function guardarParaDeshacer(desc){
+  historialDeshacer.push({rows:JSON.stringify(rows),propios:JSON.stringify(propios),fijosExtra:JSON.stringify(fijosExtra),desc});
+  if(historialDeshacer.length>20) historialDeshacer.shift();
+  actualizarBotonDeshacer();
+}
+function actualizarBotonDeshacer(){
+  const btn=$('btn-deshacer');
+  const hay=historialDeshacer.length>0;
+  btn.disabled=!hay;
+  btn.title = hay ? ('Deshacer: '+historialDeshacer[historialDeshacer.length-1].desc) : 'No hay nada para deshacer';
+}
+async function deshacer(){
+  if(!historialDeshacer.length) return;
+  if(!(await asegurarUsuario())) return;
+  const ultimo=historialDeshacer.pop();
+  rows=JSON.parse(ultimo.rows);
+  propios=JSON.parse(ultimo.propios);
+  fijosExtra=JSON.parse(ultimo.fijosExtra);
+  registrarHistorial('Deshizo: '+ultimo.desc,null);
+  await save();
+  render(); pintarFxRubros(); pintarFijosExtra(); pintarMetodosPago();
+  actualizarBotonDeshacer();
+  toast('Deshecho: '+ultimo.desc);
+}
+$('btn-deshacer').addEventListener('click',deshacer);
+
 function registrarHistorial(accion,r,detalleExtra){
   const nombre = r ? (r.tipo==='ingreso'?(r.rubro||'ingreso'):(r.item||'gasto')) : (detalleExtra||'');
   historial.push({ ts:new Date().toISOString(), usuario:usuarioActual||'—', accion, item:nombre,
@@ -1065,7 +1106,6 @@ $('tab-ingreso').addEventListener('click',()=>{ if(editId) return toast('Termin�
 function contarFijos(){ return GASTOS_FIJOS.length + fijosExtra.length; }
 function pintarFijosExtra(){
   $('fijos-n').textContent = contarFijos();
-  $('fijos-mes-actual').textContent = mesLabel(mesActual());
   const cont=$('fijos-extra-list');
   if(!fijosExtra.length){ cont.innerHTML='<span style="color:var(--ink-soft);font-size:12px">Todavía no agregaste gastos fijos propios.</span>'; return; }
   cont.innerHTML=fijosExtra.map((f,i)=>`<span class="fx-chip"><b>${esc(f.item)}</b><span class="rb">${esc(f.rubro)}</span><button data-fx-del="${i}" title="Quitar de la lista">×</button></span>`).join('');
@@ -1087,6 +1127,7 @@ $('f-metodo-pago').addEventListener('change',async e=>{
   const nuevo=(prompt('Nombre del método de pago nuevo:')||'').trim();
   if(nuevo&&!METODOS_PAGO_BASE.includes(nuevo)&&!propios.metodos.includes(nuevo)){
     if(!(await asegurarUsuario())){ $('f-metodo-pago').value=''; return; }
+    guardarParaDeshacer('agregar método de pago "'+nuevo+'"');
     propios.metodos.push(nuevo);
     registrarHistorial('Agregó el método de pago',null,nuevo);
     await save();
@@ -1106,6 +1147,7 @@ $('fx-rubro').addEventListener('change',async e=>{
   const nuevo=(prompt('Nombre del rubro nuevo:')||'').trim().toUpperCase();
   if(nuevo&&!propios.gasto.includes(nuevo)&&!RUBROS.gasto.includes(nuevo)){
     if(!(await asegurarUsuario())){ $('fx-rubro').value=''; return; }
+    guardarParaDeshacer('agregar rubro "'+nuevo+'"');
     propios.gasto.push(nuevo);
     registrarHistorial('Agregó el rubro',null,nuevo);
     await save();
@@ -1118,6 +1160,7 @@ $('btn-fx-rubro-quitar').addEventListener('click',async()=>{
   if(!propios.gasto.includes(r)){ toast('Solo se pueden quitar rubros que agregaste vos.'); return; }
   if(!confirm('¿Quitar el rubro "'+r+'" de la lista? Los gastos fijos que ya lo usan no se modifican.')) return;
   if(!(await asegurarUsuario())) return;
+  guardarParaDeshacer('quitar rubro "'+r+'"');
   propios.gasto = propios.gasto.filter(x=>x!==r);
   registrarHistorial('Quitó el rubro',null,r);
   await save(); pintarFxRubros(); toast('Rubro quitado de la lista');
@@ -1130,6 +1173,7 @@ $('btn-fx-add').addEventListener('click',async()=>{
   const dup = GASTOS_FIJOS.some(f=>f[0]===item) || fijosExtra.some(f=>f.item===item);
   if(dup && !confirm('Ya existe un gasto fijo "'+item+'". ¿Agregarlo igual?')) return;
   if(!(await asegurarUsuario())) return;
+  guardarParaDeshacer('sumar "'+item+'" a la lista de fijos');
   fijosExtra.push({item,rubro});
   registrarHistorial('Sumó a la lista de fijos',null,item+' ('+rubro+')');
   await save();
@@ -1141,32 +1185,32 @@ document.addEventListener('click',async e=>{
   if(i===undefined) return;
   if(!(await asegurarUsuario())) return;
   const f=fijosExtra[+i];
+  guardarParaDeshacer('quitar "'+(f?f.item:'')+'" de la lista de fijos');
   fijosExtra.splice(+i,1);
   if(f) registrarHistorial('Quitó de la lista de fijos',null,f.item);
   await save(); pintarFijosExtra();
 });
 $('btn-fijos-go').addEventListener('click',async()=>{
-  const mesCorr=mesActual();  // los gastos fijos se imputan siempre al mes en curso
+  const mesLote=mesActual();  // se usa solo internamente, para no duplicar si se aprieta más de una vez
   const mesTodos=$('fijos-mes-todos').value;  // mes de pago, opcional
   const vencTodos=$('fijos-venc-todos').value;  // fecha de vencimiento, opcional
-  // solo se cargan los que todavía no existen para este mes (evita duplicar si se aprieta más de una vez)
-  const yaCargados = new Set(rows.filter(r=>r.tipo==='gasto'&&r.fijo&&r.mesCorr===mesCorr).map(r=>r.item));
+  // solo se cargan los que todavía no existen para esta tanda (evita duplicar si se aprieta más de una vez)
+  const yaCargados = new Set(rows.filter(r=>r.tipo==='gasto'&&r.fijo&&r.loteMes===mesLote).map(r=>r.item));
   const faltantes = fijosTodos().filter(f=>!yaCargados.has(f.item));
-  if(!faltantes.length){ toast('Ya estaban cargados todos los gastos fijos de '+mesLabel(mesCorr)+'.'); return; }
+  if(!faltantes.length){ toast('Ya estaban cargados todos los gastos fijos de esta tanda.'); return; }
   if(!(await asegurarUsuario())) return;
   const nuevos=faltantes.map(f=>({
-    id:uid(),tipo:'gasto',mesPago:mesTodos||'',mesCorr,rubro:f.rubro,item:f.item,bruto:0,
-    moneda:'ARS',cotizacion:0,tipoFac:'No posee',iva:0,fact:'',pago:false,comp:true,detalle:'',fijo:true,fechaVenc:vencTodos||''
+    id:uid(),tipo:'gasto',mesPago:mesTodos||'',mesCorr:'',rubro:f.rubro,item:f.item,bruto:0,
+    moneda:'ARS',cotizacion:0,tipoFac:'No posee',iva:0,fact:'',pago:false,comp:true,detalle:'',fijo:true,fechaVenc:vencTodos||'',loteMes:mesLote
   }));
+  guardarParaDeshacer('cargar '+nuevos.length+' gastos fijos al libro');
   rows.push(...nuevos);
-  registrarHistorial('Cargó gastos fijos',null,nuevos.length+' gastos fijos de '+mesLabel(mesCorr));
+  registrarHistorial('Cargó gastos fijos',null,nuevos.length+' gastos fijos, sin mes asignado');
   await save();
   $('fijos-mes-todos').value=''; $('fijos-venc-todos').value='';
   ['qi-cobro','qi-corr','qg-pago','qg-corr'].forEach(id=>$(id).value='');
-  $('qg-corr').value=mesCorr;
-  if(mesTodos) $('qg-pago').value=mesTodos;
   render();
-  toast(nuevos.length+' gastos fijos cargados para '+mesLabel(mesCorr)+(mesTodos?', a pagar en '+mesLabel(mesTodos):' — pendientes de asignarles mes de pago'));
+  toast(nuevos.length+' gastos fijos cargados sin mes asignado'+(mesTodos?', a pagar en '+mesLabel(mesTodos):'')+' — completalos desde Registrados.');
 });
 
 function fillRubros(){
@@ -1182,6 +1226,7 @@ $('f-rubro').addEventListener('change',async e=>{
   const nuevo=(prompt('Nombre del rubro nuevo:')||'').trim().toUpperCase();
   if(nuevo&&!propios[modo].includes(nuevo)){
     if(!(await asegurarUsuario())){ $('f-rubro').value=''; return; }
+    guardarParaDeshacer('agregar rubro "'+nuevo+'"');
     propios[modo].push(nuevo);
     registrarHistorial('Agregó el rubro',null,nuevo);
     await save();
@@ -1342,7 +1387,7 @@ $('cuotas-form').addEventListener('click',e=>{
 function limpiarForm(){
   $('f-item').value='';$('f-bruto').value='';$('f-iva').value='';ivaAuto=true;
   $('f-tipo').value='No posee';$('f-rubro').value='';$('f-fact').value='Facturado';
-  $('f-pago').checked=false;$('f-comp').checked=true;$('f-dividido').checked=false;$('f-dividido').disabled=false;$('f-detalle').value='';
+  $('f-pago').checked=false;$('f-comp').checked=true;$('f-dividido').checked=false;$('f-dividido').disabled=false;$('f-detalle').value='';$('f-marcar-fijo').checked=false;
   $('f-fecha-real-pago').value='';$('wrap-fecha-real-pago').hidden=true;
   $('f-metodo-pago').value='';$('wrap-metodo-pago').hidden=true;
   $('f-fechapago').value=hoyISO();$('wrap-fechapago').hidden=false;
@@ -1393,6 +1438,7 @@ async function abrirEdicion(id){
   $('f-cotizacion').value = r.cotizacion?money(r.cotizacion):'';
   $('f-dividido').disabled = r.moneda==='USD';
   $('f-dividido').checked = !!r.dividido;
+  $('f-marcar-fijo').checked = !!r.fijo;
   cuotasForm = (r.dividido&&Array.isArray(r.cuotas)) ? r.cuotas.map(c=>({importe:+c.importe||0,mesPago:c.mesPago||'',fecha:c.fecha||'',pago:!!c.pago})) : [];
   $('wrap-fechapago').hidden = !!r.dividido;
   renderCuotasForm();
@@ -1445,7 +1491,8 @@ $('btn-add').addEventListener('click',async()=>{
     rubro:rubroSel,
     item,bruto,moneda,cotizacion,tipoFac,iva:ivaManual,fact:modo==='ingreso'?$('f-fact').value:'',
     pago:$('f-pago').checked,comp:modo==='ingreso'?true:$('f-comp').checked,
-    dividido:esDiv,detalle:$('f-detalle').value.trim().toUpperCase()};
+    dividido:esDiv,detalle:$('f-detalle').value.trim().toUpperCase(),
+    fijo: modo==='gasto' ? $('f-marcar-fijo').checked : false};
   if(modo==='gasto') datos.fechaVenc = esDiv?'':$('f-fechapago').value;
   if(!esDiv && datos.pago){
     datos.fechaPago = $('f-fecha-real-pago').value;
@@ -1457,12 +1504,14 @@ $('btn-add').addEventListener('click',async()=>{
   if(editId){
     const r=rows.find(x=>x.id===editId);
     if(r){
+      guardarParaDeshacer('modificación de "'+(r.tipo==='ingreso'?(r.rubro||'ingreso'):(r.item||'gasto'))+'"');
       Object.assign(r,datos);
       if(esDiv){
         r.cuotas = cuotasForm.map(c=>({importe:+c.importe||0,mesPago:c.mesPago||'',fecha:c.fecha||'',pago:!!c.pago}));
         if(!r.cuotas.length) r.cuotas=[{importe:bruto,mesPago:datos.mesPago||'',fecha:'',pago:datos.pago}];
         sincronizarPagoDividido(r);
       } else { delete r.cuotas; }
+      if(r.fijo){ if(!r.loteMes) r.loteMes=r.mesCorr||''; agregarAFijosSiCorresponde(r.item,r.rubro); }
       registrarHistorial('Modificó',r);
     }
     await save(); salirEdicion(); toast('Cambios guardados');
@@ -1473,12 +1522,24 @@ $('btn-add').addEventListener('click',async()=>{
       if(!nuevo.cuotas.length) nuevo.cuotas=[{importe:bruto,mesPago:datos.mesPago||'',fecha:'',pago:datos.pago}];
       sincronizarPagoDividido(nuevo);
     }
+    if(nuevo.fijo) nuevo.loteMes = nuevo.mesCorr||'';
+    guardarParaDeshacer('alta de "'+(nuevo.tipo==='ingreso'?(nuevo.rubro||'ingreso'):(nuevo.item||'gasto'))+'"');
     rows.push(nuevo);
+    if(nuevo.fijo) agregarAFijosSiCorresponde(nuevo.item,nuevo.rubro);
     registrarHistorial('Agregó',nuevo);
     await save(); limpiarForm(); render(); toast(modo==='ingreso'?'Ingreso agregado':'Gasto agregado');
     mostrarConfirmacionAgregado(nuevo);
   }
 });
+// Si un gasto se marca como fijo, además de registrarse queda disponible como plantilla
+// reutilizable en Fijos mensuales (si no estaba ya en la lista).
+function agregarAFijosSiCorresponde(item,rubro){
+  const dup = GASTOS_FIJOS.some(f=>f[0]===item) || fijosExtra.some(f=>f.item===item);
+  if(!dup){
+    fijosExtra.push({item,rubro});
+    registrarHistorial('Sumó a la lista de fijos',null,item+' ('+rubro+')');
+  }
+}
 
 // Deriva el estado de pago del gasto según sus cuotas y ajusta el bruto a la suma
 function sincronizarPagoDividido(r){
@@ -1568,9 +1629,11 @@ function filteredTabla(){
   const pd=$('qt-pago-desde').value, ph=$('qt-pago-hasta').value;
   const cd=$('qt-corr-desde').value, ch=$('qt-corr-hasta').value;
   const fd=$('qt-fecha-desde').value, fh=$('qt-fecha-hasta').value;
-  // Registrados no depende del filtro de Período (ese es solo para el Dashboard). Incluye los
-  // gastos fijos ya cargados/completados con datos reales de algún mes.
+  // Registrados no depende del filtro de Período (ese es solo para el Dashboard). Un gasto fijo
+  // recién cargado (sin importe ni pago) no aparece acá todavía: solo se ve en Fijos mensuales,
+  // hasta que se le carguen datos reales.
   const out=rows.filter(r=>{
+    if(r.fijo && !(r.bruto>0 || r.pago)) return false;
     if(tp&&r.tipo!==tp) return false;
     if(ru&&r.rubro!==ru) return false;
     if(es&&(es==='pag'?!r.pago:r.pago)) return false;
@@ -1828,7 +1891,8 @@ function tablaHtml(view,sortState){
       const tdFacturado = mostrarFacturado ? `<td>${esIng?`<span class="tag ${r.fact==='No Facturado'?'nf':(r.fact==='Facturado'?'fa':'')}">${r.fact==='No Facturado'?'No':(r.fact==='Facturado'?'Sí':'—')}</span>`:'<span class="tag EG">—</span>'}</td>` : '';
       const tdMetodo = mostrarMetodo ? `<td>${(!esIng&&r.metodoPago)?esc(r.metodoPago):'<span class="tag EG">—</span>'}</td>` : '';
       const claseImpago = (!esIng && !r.pago) ? (' gasto-impago'+((diasHasta(r.fechaVenc)!==null && diasHasta(r.fechaVenc)<=7) ? ' vence-pronto' : '')) : '';
-      const filaPrincipal = `<tr data-row-id="${r.id}" class="${r.pago?'paid':'unpaid'}${parcial?' parcial':''}${r.id===editId?' editing':''}${r.comp===false?' nocomp':''}${claseImpago}">
+      const clasePago = (!esIng && r.pago) ? ' gasto-pago' : '';
+      const filaPrincipal = `<tr data-row-id="${r.id}" class="${r.pago?'paid':'unpaid'}${parcial?' parcial':''}${r.id===editId?' editing':''}${r.comp===false?' nocomp':''}${claseImpago}${clasePago}">
       <td><span class="tag ${esIng?'IN':'EG'}">${esIng?'INGRESO':'GASTO'}</span>${!esIng?`<span class="tag ${r.fijo?'FIJ':'VAR'}">${r.fijo?'FIJO':'VARIABLE'}</span>`:''}</td>
       <td class="mono">${div?'<span class="cp-let" title="Se paga en varias cuotas">varias</span>':'<b>'+mesLabel(r.mesPago).toUpperCase()+'</b>'}</td>
       <td class="mono">${(!esIng&&r.fechaVenc)?fmtFechaCorta(r.fechaVenc).toUpperCase():'—'}</td>
@@ -1858,13 +1922,13 @@ function renderTabla(view){
 // se cargó (con datos reales) el mes en curso, y da acceso rápido para cargarlo o editarlo.
 function renderEstadoFijos(){
   const mes=mesActual();
-  $('fijos-estado-mes-actual').textContent=mesLabel(mes);
   const plantillas=fijosTodos();
   if(!plantillas.length){ $('fijos-estado-lista').innerHTML='<div class="empty">Todavía no hay gastos fijos en la lista. Sumá alguno arriba.</div>'; return; }
   $('fijos-estado-lista').innerHTML=plantillas.map(f=>{
-    const fila=rows.find(r=>r.tipo==='gasto'&&r.fijo&&r.item===f.item&&r.mesCorr===mes);
+    const fila=rows.find(r=>r.tipo==='gasto'&&r.fijo&&r.item===f.item&&r.loteMes===mes);
+    const enRegistrados = fila && (fila.bruto>0 || fila.pago);
     const acc = fila
-      ? `<span class="fijo-estado-info cargado">Cargado en Registrados — ${fila.bruto>0?money(fila.bruto):'sin importe'} · ${fila.pago?'pago':'pendiente'}</span>
+      ? `<span class="fijo-estado-info ${enRegistrados?'cargado':''}">${enRegistrados?('En Registrados — '+money(fila.bruto)+' · '+(fila.pago?'pago':'pendiente')):'Cargado, todavía sin importe'}</span>
          <button type="button" class="rowbtn plain" data-edit="${fila.id}" title="Modificar">✎</button>`
       : `<span class="fijo-estado-info">Sin cargar este mes</span>
          <button type="button" class="ghost" data-fijo-cargar="${esc(f.item)}" data-fijo-rubro="${esc(f.rubro)}">Cargar este mes</button>`;
@@ -1881,8 +1945,9 @@ document.addEventListener('click',async e=>{
   const rubro=e.target.dataset.fijoRubro||'';
   if(!(await asegurarUsuario())) return;
   const mes=mesActual();
-  const nuevo={id:uid(),tipo:'gasto',mesPago:'',mesCorr:mes,rubro,item,bruto:0,
-    moneda:'ARS',cotizacion:0,tipoFac:'No posee',iva:0,fact:'',pago:false,comp:true,detalle:'',fijo:true,fechaVenc:''};
+  const nuevo={id:uid(),tipo:'gasto',mesPago:'',mesCorr:'',rubro,item,bruto:0,
+    moneda:'ARS',cotizacion:0,tipoFac:'No posee',iva:0,fact:'',pago:false,comp:true,detalle:'',fijo:true,fechaVenc:'',loteMes:mes};
+  guardarParaDeshacer('cargar gasto fijo "'+item+'"');
   rows.push(nuevo);
   registrarHistorial('Cargó gasto fijo',nuevo);
   await save();
@@ -1914,6 +1979,7 @@ $('btn-quitar-duplicados').addEventListener('click',async()=>{
   if(!confirm('Se van a eliminar '+sobrantes.length+' gastos fijos duplicados (se conserva, de cada uno, el que tenga más datos cargados o esté pago):\n\n'+resumen)) return;
   if(!(await asegurarUsuario())) return;
   const idsBorrar=new Set(sobrantes.map(r=>r.id));
+  guardarParaDeshacer('quitar '+sobrantes.length+' gastos fijos duplicados');
   rows=rows.filter(r=>!idsBorrar.has(r.id));
   registrarHistorial('Quitó duplicados',null,sobrantes.length+' gastos fijos duplicados');
   await save(); render();
@@ -1948,6 +2014,7 @@ document.addEventListener('click',async e=>{
     const nombre = r ? (r.tipo==='ingreso' ? (r.rubro||'ingreso') : (r.item||'gasto')) : '';
     if(!confirm('¿ESTÁ SEGURO DE ELIMINAR?\n\n'+nombre)) return;
     if(!(await asegurarUsuario())) return;
+    guardarParaDeshacer('eliminación de "'+nombre+'"');
     registrarHistorial('Eliminó',r);
     rows=rows.filter(x=>x.id!==d.del);
     if(editId===d.del) return salirEdicion();
@@ -1960,7 +2027,10 @@ document.addEventListener('click',async e=>{
   if(d.tog){
     const r=rows.find(x=>x.id===d.tog); if(!r) return;
     if(!(await asegurarUsuario())) return;
-    if(r.pago){ r.pago=false; if(r.tipo==='gasto') r.metodoPago=''; registrarHistorial('Desmarcó el pago/cobro',r); await save(); render(); return; }
+    if(r.pago){
+      guardarParaDeshacer('desmarcar pago de "'+(r.tipo==='ingreso'?(r.rubro||'ingreso'):(r.item||'gasto'))+'"');
+      r.pago=false; if(r.tipo==='gasto') r.metodoPago=''; registrarHistorial('Desmarcó el pago/cobro',r); await save(); render(); return;
+    }
     const td=e.target.closest('td.cp'); if(!td) return;
     const esGasto=r.tipo==='gasto';
     td.innerHTML=`<div class="cp-editor">
@@ -1985,12 +2055,13 @@ document.addEventListener('click',async e=>{
       if(val==='__nuevo'){
         const nuevo=(prompt('Nombre del método de pago nuevo:')||'').trim();
         if(!nuevo){ toast('Indicá el método de pago.'); return; }
-        if(!METODOS_PAGO_BASE.includes(nuevo)&&!propios.metodos.includes(nuevo)){ propios.metodos.push(nuevo); registrarHistorial('Agregó el método de pago',null,nuevo); }
+        if(!METODOS_PAGO_BASE.includes(nuevo)&&!propios.metodos.includes(nuevo)){ guardarParaDeshacer('agregar método de pago "'+nuevo+'"'); propios.metodos.push(nuevo); registrarHistorial('Agregó el método de pago',null,nuevo); }
         val=nuevo;
       }
       if(!val){ toast('Elegí el método de pago.'); return; }
       metodo=val;
     }
+    guardarParaDeshacer('marcar pago de "'+(r.tipo==='ingreso'?(r.rubro||'ingreso'):(r.item||'gasto'))+'"');
     r.fechaPago=fecha;
     if(!r.mesPago) r.mesPago=fecha.slice(0,7);
     r.pago=true;
@@ -2006,6 +2077,7 @@ document.addEventListener('change',async e=>{
   if(c){
     const r=rows.find(x=>x.id===c); if(!r) return;
     if(!(await asegurarUsuario())){ e.target.checked=!e.target.checked; return; }
+    guardarParaDeshacer('cambio de computable en "'+(r.tipo==='ingreso'?(r.rubro||'ingreso'):(r.item||'gasto'))+'"');
     r.comp=e.target.checked;
     registrarHistorial(e.target.checked?'Marcó como computable':'Marcó como no computable',r);
     await save(); render();
@@ -2043,6 +2115,7 @@ $('btn-csv').addEventListener('click',()=>{
   $('stamp').textContent='Actualizado '+new Date().toLocaleDateString('es-AR');
   $('f-mespago').value=mesActual(); $('f-mescorr').value=mesActual(); $('f-fechapago').value=hoyISO();
   cargarTema();
+  actualizarBotonDeshacer();
   $('titulo-carga').textContent='Cargar movimiento';
   setModo('gasto'); iniciarAuth();
 })();
