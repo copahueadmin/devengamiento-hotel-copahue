@@ -1359,10 +1359,19 @@ function salirEdicion(){
   $('wrap-cancel').hidden=true;
   $('vista-cargar').classList.remove('editando');
   limpiarForm(); render();
+  if(volverVistaTrasEditar){
+    const vista=volverVistaTrasEditar, idResaltar=volverIdTrasEditar;
+    volverVistaTrasEditar=null; volverIdTrasEditar=null;
+    setVistaMov(vista);
+    if(vista==='registrados') setTimeout(()=>resaltarFila(idResaltar),60);
+  }
 }
+let volverVistaTrasEditar=null, volverIdTrasEditar=null;
 async function abrirEdicion(id){
   const r=rows.find(x=>x.id===id); if(!r) return;
   if(!(await asegurarUsuario())) return;
+  volverVistaTrasEditar = vistaMovActual!=='cargar' ? vistaMovActual : null;
+  volverIdTrasEditar = id;
   toggleMovs(true);
   setVistaMov('cargar');
   editId=id; setModo(r.tipo||'gasto');
@@ -1693,7 +1702,9 @@ $('movs-toggle').addEventListener('click',()=>toggleMovs());
 $('movs-toggle').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleMovs(); } });
 
 // Sub-vistas dentro de Movimientos: Cargar nuevos / Registrados / Fijos mensuales
+let vistaMovActual='cargar';
 function setVistaMov(v){
+  vistaMovActual=v;
   ['cargar','registrados','fijos'].forEach(k=>{
     $('subtab-'+k).className = k===v ? 'on' : '';
     $('vista-'+k).hidden = k!==v;
