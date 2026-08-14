@@ -112,11 +112,14 @@
   .field[hidden]{display:none!important}
   .field label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
   input,select,textarea{font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:0;padding:8px 9px;width:100%}
+  select option:nth-child(odd){background:var(--surface);color:var(--ink)}
+  select option:nth-child(even){background:var(--ledger);color:var(--ink)}
   #f-bruto,#f-iva{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;text-align:right}
   input:focus,select:focus,button:focus-visible{outline:2px solid var(--ok);outline-offset:1px}
   #f-item,#f-detalle{text-transform:uppercase}
   #f-item::placeholder,#f-detalle::placeholder{text-transform:none}
   #wrap-iva label{color:var(--iva)} #f-iva{border-color:var(--iva)}
+  #f-iva[readonly]{background:var(--ledger);cursor:default;color:var(--ink-soft)}
   .neto-preview{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;background:var(--ledger);border:1px solid var(--rule);padding:8px 9px;text-align:right;font-size:14px}
   button{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:var(--paper);border:1px solid var(--ink);padding:10px 16px;cursor:pointer}
   button:hover{background:var(--ok);border-color:var(--ok)}
@@ -127,6 +130,18 @@
 
   .filters{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-bottom:12px}
   .filters .field{min-width:125px}
+  .fijos-estado-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 10px;font-size:13px;color:var(--ink-soft)}
+  .fijos-estado-head button{white-space:nowrap}
+  #fijos-estado-lista{border:1px solid var(--rule)}
+  .fijo-estado-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:9px 12px;border-bottom:1px solid var(--rule);font-size:13px}
+  .fijo-estado-row:last-child{border-bottom:none}
+  .fijo-estado-row:nth-child(odd){background:var(--ledger)}
+  .fijo-estado-item{font-weight:600}
+  .fijo-estado-rubro{color:var(--ink-soft);font-size:11px;margin-left:8px;font-family:'IBM Plex Mono',monospace}
+  .fijo-estado-acc{display:flex;align-items:center;gap:8px}
+  .fijo-estado-info{font-size:12px;color:var(--ink-soft);white-space:nowrap}
+  .fijo-estado-info.cargado{color:var(--ok)}
+  .fijo-estado-acc button{padding:6px 10px;font-size:11px}
 
   .tablewrap{overflow-x:auto;border:1px solid var(--rule-strong)}
   table{border-collapse:collapse;width:100%;background:var(--surface)}
@@ -436,7 +451,7 @@
               <option value="B">B</option><option value="C">C</option><option value="No posee" selected>No posee</option>
             </select>
           </div>
-          <div class="field" id="wrap-iva" hidden><label for="f-iva">IVA a descontar</label><input type="text" id="f-iva" inputmode="numeric" autocomplete="off" placeholder="0"></div>
+          <div class="field" id="wrap-iva" hidden><label for="f-iva">IVA descontado (27%, automático)</label><input type="text" id="f-iva" readonly tabindex="-1"></div>
           <div class="field" id="wrap-neto"><label>Importe neto</label><div class="neto-preview" id="f-neto">0</div></div>
           <div class="field" id="wrap-rubro"><label for="f-rubro">Rubro</label><select id="f-rubro"></select></div>
           <div class="field" id="wrap-fact" hidden><label for="f-fact">Facturación</label>
@@ -518,13 +533,11 @@
           </div>
           <p class="note">Quedan imputados automáticamente al mes en curso. Si completás "mes de pago" o "fecha de vencimiento" se aplican a todas las líneas; si los dejás vacíos, los asignás en cada línea, abajo.</p>
         </div>
-        <div class="filters">
-          <div class="field"><label for="qf-mes">Mes al que corresponde</label><select id="qf-mes"><option value="">Todos</option></select></div>
-          <div class="field"><label for="qf-estado">Estado</label><select id="qf-estado"><option value="">Todos</option><option value="pend">Pendientes</option><option value="pag">Pagados</option></select></div>
-          <div class="field"><button class="ghost" type="button" id="btn-quitar-duplicados">Buscar y quitar duplicados</button></div>
+        <div class="fijos-estado-head">
+          <span>Lista de gastos fijos — siempre en blanco, lista para reutilizar cada mes. Al completar uno con datos reales (importe, pago, etc.) pasa a "Registrados" en <b id="fijos-estado-mes-actual"></b>; acá se sigue viendo disponible para el mes que viene.</span>
+          <button class="ghost" type="button" id="btn-quitar-duplicados">Buscar y quitar duplicados</button>
         </div>
-        <p class="note">Tocá el título de una columna para ordenar por ese dato; tocá de nuevo para invertir el orden.</p>
-        <div id="fijoszone" class="tablacompacta"></div>
+        <div id="fijos-estado-lista"></div>
       </div>
     </div>
   </section>
@@ -712,7 +725,12 @@ let cuotasForm=[];  // cuotas en edición dentro del formulario
 let rubrosOff={ingreso:new Set(),gasto:new Set()};  // rubros destildados en el dashboard
 
 const $=id=>document.getElementById(id);
-const money=n=>Math.round(n||0).toLocaleString('es-AR',{maximumFractionDigits:0});
+const money=n=>{
+  n=n||0;
+  const tieneDec = Math.round(Math.abs(n)*100)%100!==0;
+  return n.toLocaleString('es-AR',{minimumFractionDigits:tieneDec?2:0,maximumFractionDigits:2});
+};
+const redondear2=n=>Math.round((n||0)*100)/100;
 const mesLabel=v=>{if(!v)return '—';const[y,m]=v.split('-');return MESES[(+m)-1]+' '+y.slice(2);};
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const mesActual=()=>{const h=new Date();return h.getFullYear()+'-'+String(h.getMonth()+1).padStart(2,'0');};
@@ -722,7 +740,7 @@ const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"
 function neto(b,t,iva,tipoMov){
   if(tipoMov==='ingreso') return b||0;
   if(t==='A') return (b||0)/1.21;
-  if(t==='A | 27%') return Math.max(0,(b||0)-(iva||0));
+  if(t==='A | 27%') return (b||0)*0.73;
   return b||0;
 }
 const netoDe=r=>neto(r.bruto,r.tipoFac,r.iva,r.tipo);
@@ -1032,7 +1050,7 @@ function setModo(m){
   $('lbl-detalle').textContent = m==='gasto'?'Detalle':'Observaciones';
   $('f-detalle').placeholder = m==='gasto'?'Proveedor, comprobante, observaciones':'Observaciones';
   $('nota-form').textContent = m==='gasto'
-    ? 'Factura A: descuenta el 21% automáticamente. A | 27%: descuenta el IVA que cargues a mano. B, C o sin comprobante: el neto es igual al bruto.'
+    ? 'Factura A: descuenta el 21% automáticamente. A | 27%: descuenta el 27% automáticamente. B, C o sin comprobante: el neto es igual al bruto.'
     : 'Cargá el importe neto (sin IVA). El campo Facturado / No Facturado es solo informativo. Imputalo al mes de la estadía, cochera o evento, aunque el cobro caiga en otro mes.';
   fillRubros(); previewNeto();
 }
@@ -1167,16 +1185,29 @@ $('f-rubro').addEventListener('change',async e=>{
   fillRubros(); $('f-rubro').value=nuevo||'';
 });
 
-/* ---------- Importes con separador ---------- */
-const digitos=el=>{const d=el.value.replace(/\D/g,'');return d?parseInt(d,10):0;};
+/* ---------- Importes con separador (admite centavos con coma) ---------- */
+const digitos=el=>{
+  let v=el.value.replace(/[^\d,]/g,'');
+  const i=v.indexOf(',');
+  if(i!==-1) v=v.slice(0,i+1)+v.slice(i+1).replace(/,/g,'');
+  if(!v) return 0;
+  const n=parseFloat(v.replace(',','.'));
+  return isNaN(n)?0:n;
+};
 const brutoVal=()=>digitos($('f-bruto'));
 const ivaVal=()=>digitos($('f-iva'));
 function formatCampo(el){
-  const antes=el.value.slice(0,el.selectionStart??el.value.length).replace(/\D/g,'').length;
-  const d=el.value.replace(/\D/g,'').replace(/^0+(?=\d)/,'');
-  el.value=d?parseInt(d,10).toLocaleString('es-AR'):'';
+  const antes=el.value.slice(0,el.selectionStart??el.value.length).replace(/[^\d,]/g,'').length;
+  let v=el.value.replace(/[^\d,]/g,'');
+  const i=v.indexOf(',');
+  let ent=v, dec=null;
+  if(i!==-1){ ent=v.slice(0,i); dec=v.slice(i+1).replace(/,/g,'').slice(0,2); }
+  ent=ent.replace(/^0+(?=\d)/,'');
+  let out = ent ? parseInt(ent,10).toLocaleString('es-AR') : (dec!==null?'0':'');
+  if(dec!==null) out+=','+dec;
+  el.value=out;
   let pos=0,vistos=0;
-  while(pos<el.value.length&&vistos<antes){ if(/\d/.test(el.value[pos]))vistos++; pos++; }
+  while(pos<el.value.length&&vistos<antes){ if(/[\d,]/.test(el.value[pos]))vistos++; pos++; }
   try{el.setSelectionRange(pos,pos);}catch(e){}
 }
 $('f-bruto').addEventListener('input',()=>{formatCampo($('f-bruto'));previewNeto();});
@@ -1199,10 +1230,11 @@ $('f-moneda').addEventListener('change',()=>{
   previewNeto();
 });
 function previewNeto(){
-  $('wrap-iva').hidden = !(modo==='gasto' && $('f-tipo').value==='A | 27%');
-  if($('wrap-iva').hidden) $('f-iva').value = editId?$('f-iva').value:'';
+  const esA27 = modo==='gasto' && $('f-tipo').value==='A | 27%';
+  $('wrap-iva').hidden = !esA27;
   const usd=$('f-moneda').value==='USD';
-  const n=neto(brutoVal(),$('f-tipo').value,ivaVal(),modo);
+  const n=neto(brutoVal(),$('f-tipo').value,0,modo);
+  if(esA27) $('f-iva').value = brutoVal()>0 ? money(brutoVal()*0.27) : '';
   const simbolo=usd?'U$S ':'$ ';
   let txt=simbolo+money(n);
   if(usd) txt += cotizVal()>0 ? ` ≈ $ ${money(n*cotizVal())}` : ' (cargá la cotización)';
@@ -1227,7 +1259,7 @@ function renderCuotasForm(){
   $('cuotas-form-list').innerHTML=cuotasForm.map((c,i)=>`
     <div class="cuota-row">
       <span class="cuota-n">Cuota ${i+1}</span>
-      <label>Importe <input type="text" inputmode="numeric" class="cuota-imp" data-cf-imp="${i}" value="${c.importe?(+c.importe).toLocaleString('es-AR'):''}" placeholder="0"></label>
+      <label>Importe <input type="text" inputmode="numeric" class="cuota-imp" data-cf-imp="${i}" value="${c.importe?money(+c.importe):''}" placeholder="0"></label>
       <label>Mes de pago <input type="month" data-cf-mes="${i}" value="${c.mesPago||''}"></label>
       <label>Fecha de pago <input type="date" data-cf-fecha="${i}" value="${c.fecha||''}"></label>
       <label class="cuota-pago"><input type="checkbox" data-cf-pago="${i}" ${c.pago?'checked':''}> Pago</label>
@@ -1249,7 +1281,7 @@ $('btn-cuota-add-form').addEventListener('click',()=>{
 });
 $('cuotas-form').addEventListener('input',e=>{
   const im=e.target.dataset.cfImp;
-  if(im!==undefined){ formatCampo(e.target); cuotasForm[+im].importe = e.target.value.replace(/\D/g,'')?parseInt(e.target.value.replace(/\D/g,''),10):0;
+  if(im!==undefined){ formatCampo(e.target); cuotasForm[+im].importe = digitos(e.target);
     const suma=cuotasForm.reduce((a,c)=>a+(+c.importe||0),0),pagas=cuotasForm.reduce((a,c)=>a+(c.pago?(+c.importe||0):0),0);
     $('cuotas-form-resumen').textContent=`— ${cuotasForm.length} cuota${cuotasForm.length===1?'':'s'}, pagado ${money(pagas)} de ${money(suma)}`;
     const total=brutoVal(),dif=suma-total,av=$('cuotas-form-aviso');
@@ -1301,9 +1333,9 @@ async function abrirEdicion(id){
   $('f-mescorr').value=r.mesCorr||'';
   $('f-fechapago').value = r.tipo==='ingreso' ? (r.fechaPago||'') : (r.fechaVenc||'');
   $('f-item').value=r.item||'';
-  $('f-bruto').value=Math.round(r.bruto).toLocaleString('es-AR');
+  $('f-bruto').value=money(r.bruto);
   $('f-tipo').value=r.tipoFac||'No posee';
-  $('f-iva').value=r.iva?Math.round(r.iva).toLocaleString('es-AR'):'';
+  $('f-iva').value=r.iva?money(r.iva):'';
   $('f-pago').checked=!!r.pago;
   $('wrap-fecha-real-pago').hidden = !r.pago;
   $('f-fecha-real-pago').value = r.pago ? (r.fechaPago||hoyISO()) : '';
@@ -1312,7 +1344,7 @@ async function abrirEdicion(id){
   $('f-comp').checked = r.comp!==false;
   $('f-moneda').value = r.moneda||'ARS';
   $('wrap-cotizacion').hidden = (r.moneda||'ARS')!=='USD';
-  $('f-cotizacion').value = r.cotizacion?Math.round(r.cotizacion).toLocaleString('es-AR'):'';
+  $('f-cotizacion').value = r.cotizacion?money(r.cotizacion):'';
   $('f-dividido').disabled = r.moneda==='USD';
   $('f-dividido').checked = !!r.dividido;
   cuotasForm = (r.dividido&&Array.isArray(r.cuotas)) ? r.cuotas.map(c=>({importe:+c.importe||0,mesPago:c.mesPago||'',fecha:c.fecha||'',pago:!!c.pago})) : [];
@@ -1339,15 +1371,11 @@ $('btn-add').addEventListener('click',async()=>{
   if(!rubroSel||rubroSel==='__nuevo'){toast('Elegí el rubro.');$('f-rubro').focus();return;}
   const item = modo==='ingreso' ? rubroSel : $('f-item').value.trim().toUpperCase();
   if(modo==='gasto'&&!item){toast('Falta el ítem.');$('f-item').focus();return;}
-  const sinImportePermitido = modo==='gasto' && !$('f-pago').checked;
+  const sinImportePermitido = modo==='gasto';
   if(!(bruto>0) && !sinImportePermitido){toast('Cargá un importe.');$('f-bruto').focus();return;}
   if(!$('f-mescorr').value){toast('Indicá el mes al que corresponde.');$('f-mescorr').focus();return;}
   const tipoFac = modo==='gasto'?$('f-tipo').value:'—';
-  const ivaManual = (modo==='gasto'&&tipoFac==='A | 27%'&&bruto>0)?ivaVal():0;
-  if(modo==='gasto'&&tipoFac==='A | 27%'&&bruto>0){
-    if(!(ivaManual>0)){toast('Cargá el IVA a descontar.');$('f-iva').focus();return;}
-    if(ivaManual>=bruto){toast('El IVA no puede ser igual o mayor al bruto.');$('f-iva').focus();return;}
-  }
+  const ivaManual = (modo==='gasto'&&tipoFac==='A | 27%'&&bruto>0)?redondear2(bruto*0.27):0;
   const moneda=$('f-moneda').value;
   const cotizacion=moneda==='USD'?cotizVal():0;
   if(moneda==='USD'&&!(cotizacion>0)){toast('Cargá la cotización del dólar.');$('f-cotizacion').focus();return;}
@@ -1419,7 +1447,6 @@ function pagadoCuotas(r){
 
 /* ---------- Orden por columna (Registrados y Fijos mensuales) ---------- */
 let sortRegistrados={col:'mesCorr',dir:'desc'};
-let sortFijos={col:'mesCorr',dir:'desc'};
 // valor a comparar por columna
 const COLS_ORDEN={
   tipo:      r=>r.tipo==='ingreso'?'ingreso':'gasto',
@@ -1458,11 +1485,9 @@ document.addEventListener('click',e=>{
   const th=e.target.closest('th[data-sortcol]');
   if(!th) return;
   const col=th.dataset.sortcol;
-  const enFijos=!!th.closest('#fijoszone');
-  const state=enFijos?sortFijos:sortRegistrados;
-  if(state.col===col){ state.dir = state.dir==='asc'?'desc':'asc'; }
-  else { state.col=col; state.dir = ['bruto','neto','mesPago','mesCorr','estado'].includes(col)?'desc':'asc'; }
-  if(enFijos) renderFijos(filteredFijos()); else renderTabla(filteredTabla());
+  if(sortRegistrados.col===col){ sortRegistrados.dir = sortRegistrados.dir==='asc'?'desc':'asc'; }
+  else { sortRegistrados.col=col; sortRegistrados.dir = ['bruto','neto','mesPago','mesCorr','estado'].includes(col)?'desc':'asc'; }
+  renderTabla(filteredTabla());
 });
 
 /* ---------- Filtros ---------- */
@@ -1491,10 +1516,9 @@ function filteredTabla(){
   const pd=$('qt-pago-desde').value, ph=$('qt-pago-hasta').value;
   const cd=$('qt-corr-desde').value, ch=$('qt-corr-hasta').value;
   const fd=$('qt-fecha-desde').value, fh=$('qt-fecha-hasta').value;
-  // Registrados no depende del filtro de Período (ese es solo para el Dashboard) y no incluye
-  // los gastos fijos: esos se ven exclusivamente desde la sección Fijos mensuales.
+  // Registrados no depende del filtro de Período (ese es solo para el Dashboard). Incluye los
+  // gastos fijos ya cargados/completados con datos reales de algún mes.
   const out=rows.filter(r=>{
-    if(r.fijo) return false;
     if(tp&&r.tipo!==tp) return false;
     if(ru&&r.rubro!==ru) return false;
     if(es&&(es==='pag'?!r.pago:r.pago)) return false;
@@ -1548,8 +1572,7 @@ function render(){
 
   renderDashboard(baseD);
   renderTabla(filteredTabla());
-  syncSelectFijos();
-  renderFijos(filteredFijos());
+  renderEstadoFijos();
 }
 
 // activo en el dashboard = pasa el período Y su rubro está tildado
@@ -1633,7 +1656,7 @@ function setVistaMov(v){
     $('vista-'+k).hidden = k!==v;
   });
   if(v==='registrados') renderTabla(filteredTabla());
-  if(v==='fijos') renderFijos(filteredFijos());
+  if(v==='fijos') renderEstadoFijos();
 }
 $('subtab-cargar').addEventListener('click',()=>setVistaMov('cargar'));
 $('subtab-registrados').addEventListener('click',()=>setVistaMov('registrados'));
@@ -1708,7 +1731,7 @@ function tablaHtml(view,sortState){
   const hayIngresos=view.some(r=>r.tipo==='ingreso');
   const hayGastos=view.some(r=>r.tipo==='gasto');
   const mostrarFC=hayGastos, mostrarFacturado=hayIngresos, mostrarMetodo=hayGastos;
-  const ANCHOS={tipo:4,mesPago:9,item:12,bruto:7,neto:7,factura:6,facturado:7,metodo:8,estado:6,computable:6,mesCorr:6,rubro:7,detalle:9,acciones:6};
+  const ANCHOS={tipo:6,mesPago:11,item:11,bruto:7,neto:7,factura:6,facturado:7,metodo:8,estado:6,computable:6,mesCorr:6,rubro:6,detalle:7,acciones:6};
   let extra=0;
   if(!mostrarFC) extra+=ANCHOS.factura;
   if(!mostrarFacturado) extra+=ANCHOS.facturado;
@@ -1751,8 +1774,8 @@ function tablaHtml(view,sortState){
       const tdMetodo = mostrarMetodo ? `<td>${(!esIng&&r.metodoPago)?esc(r.metodoPago):'<span class="tag EG">—</span>'}</td>` : '';
       const claseImpago = (!esIng && !r.pago) ? (' gasto-impago'+((diasHasta(r.fechaVenc)!==null && diasHasta(r.fechaVenc)<=7) ? ' vence-pronto' : '')) : '';
       const filaPrincipal = `<tr data-row-id="${r.id}" class="${r.pago?'paid':'unpaid'}${parcial?' parcial':''}${r.id===editId?' editing':''}${r.comp===false?' nocomp':''}${claseImpago}">
-      <td><span class="tag ${esIng?'IN':'EG'}">${esIng?'ING':'GAS'}</span></td>
-      <td class="mono">${div?'<span class="cp-let" title="Se paga en varias cuotas">varias</span>':mesLabel(r.mesPago)}${(!esIng&&r.fechaVenc)?`<span class="fx-sub" title="Fecha de vencimiento">Vence ${fmtFechaCorta(r.fechaVenc)}</span>`:''}</td>
+      <td><span class="tag ${esIng?'IN':'EG'}">${esIng?'INGRESO':'GASTO'}</span></td>
+      <td class="mono">${div?'<span class="cp-let" title="Se paga en varias cuotas">varias</span>':mesLabel(r.mesPago).toUpperCase()}${(!esIng&&r.fechaVenc)?' | '+fmtFechaCorta(r.fechaVenc).toUpperCase():''}</td>
       <td class="item" title="${esc(r.item)}">${esIng?'—':esc(r.item)}</td>
       <td class="num${usd?' dual':''}">${montoCell(r.bruto,brutoARS(r),usd)}</td>
       <td class="num${usd?' dual':''}${esIng?' ing':''}">${montoCell(n,netoARS(r),usd)}</td>
@@ -1775,26 +1798,40 @@ function renderTabla(view){
   if(!view.length){ $('tablezone').innerHTML='<div class="empty">No hay movimientos que coincidan con el filtro.</div>'; return; }
   $('tablezone').innerHTML=tablaHtml(view,sortRegistrados);
 }
-function renderFijos(view){
-  if(!view.length){ $('fijoszone').innerHTML='<div class="empty">No hay gastos fijos cargados todavía. Usá "Cargar en el libro" para sumar los del mes en curso.</div>'; return; }
-  $('fijoszone').innerHTML=tablaHtml(view,sortFijos);
+// Lista de plantillas de gastos fijos: siempre en blanco, reutilizable cada mes. Muestra si ya
+// se cargó (con datos reales) el mes en curso, y da acceso rápido para cargarlo o editarlo.
+function renderEstadoFijos(){
+  const mes=mesActual();
+  $('fijos-estado-mes-actual').textContent=mesLabel(mes);
+  const plantillas=fijosTodos();
+  if(!plantillas.length){ $('fijos-estado-lista').innerHTML='<div class="empty">Todavía no hay gastos fijos en la lista. Sumá alguno arriba.</div>'; return; }
+  $('fijos-estado-lista').innerHTML=plantillas.map(f=>{
+    const fila=rows.find(r=>r.tipo==='gasto'&&r.fijo&&r.item===f.item&&r.mesCorr===mes);
+    const acc = fila
+      ? `<span class="fijo-estado-info cargado">Cargado en Registrados — ${fila.bruto>0?money(fila.bruto):'sin importe'} · ${fila.pago?'pago':'pendiente'}</span>
+         <button type="button" class="rowbtn plain" data-edit="${fila.id}" title="Modificar">✎</button>`
+      : `<span class="fijo-estado-info">Sin cargar este mes</span>
+         <button type="button" class="ghost" data-fijo-cargar="${esc(f.item)}" data-fijo-rubro="${esc(f.rubro)}">Cargar este mes</button>`;
+    return `<div class="fijo-estado-row">
+      <div><span class="fijo-estado-item">${esc(f.item)}</span><span class="fijo-estado-rubro">${esc(f.rubro)}</span></div>
+      <div class="fijo-estado-acc">${acc}</div>
+    </div>`;
+  }).join('');
 }
-// Filtro de la sub-vista Fijos mensuales: todos los gastos fijos, de cualquier mes
-function filteredFijos(){
-  const mf=$('qf-mes').value, ef=$('qf-estado').value;
-  const out=rows.filter(r=>r.tipo==='gasto'&&r.fijo).filter(r=>{
-    if(mf&&r.mesCorr!==mf) return false;
-    if(ef&&(ef==='pag'?!r.pago:r.pago)) return false;
-    return true;
-  });
-  return ordenar(out,sortFijos);
-}
-function syncSelectFijos(){
-  const sel=$('qf-mes'),cur=sel.value;
-  const vals=[...new Set(rows.filter(r=>r.fijo).map(r=>r.mesCorr).filter(Boolean))].sort().reverse();
-  sel.innerHTML='<option value="">Todos</option>'+vals.map(v=>`<option value="${v}"${v===cur?' selected':''}>${mesLabel(v)}</option>`).join('');
-}
-['qf-mes','qf-estado'].forEach(id=>$(id).addEventListener('input',()=>renderFijos(filteredFijos())));
+// Cargar un único gasto fijo puntual para el mes en curso, y abrirlo para completar sus datos.
+document.addEventListener('click',async e=>{
+  const item=e.target.dataset&&e.target.dataset.fijoCargar;
+  if(item===undefined) return;
+  const rubro=e.target.dataset.fijoRubro||'';
+  if(!(await asegurarUsuario())) return;
+  const mes=mesActual();
+  const nuevo={id:uid(),tipo:'gasto',mesPago:'',mesCorr:mes,rubro,item,bruto:0,
+    moneda:'ARS',cotizacion:0,tipoFac:'No posee',iva:0,fact:'',pago:false,comp:true,detalle:'',fijo:true,fechaVenc:''};
+  rows.push(nuevo);
+  registrarHistorial('Cargó gasto fijo',nuevo);
+  await save();
+  abrirEdicion(nuevo.id);
+});
 // Gastos fijos duplicados: mismo mes al que corresponden + mismo ítem. Se conserva el que
 // tenga más datos cargados (pago, o con importe) y se ofrece borrar el resto.
 function encontrarFijosDuplicados(){
@@ -1882,7 +1919,6 @@ document.addEventListener('click',async e=>{
   }
   if(d.cpOk){
     const r=rows.find(x=>x.id===d.cpOk); if(!r) return;
-    if(!(r.bruto>0)){ toast('Todavía no tiene importe cargado — completalo primero desde Modificar (✎).'); return; }
     const td=e.target.closest('td.cp');
     const inp=td&&td.querySelector('.cp-fecha-input');
     const fecha=(inp&&inp.value)||hoyISO();
@@ -1930,9 +1966,9 @@ $('btn-csv').addEventListener('click',()=>{
     r.dividido?'(en cuotas)':fmtF(r.fechaPago),
     r.tipo==='gasto'?(r.metodoPago||''):'',
     r.tipo==='ingreso'?'':(r.item||'').toUpperCase(),
-    r.moneda||'ARS',r.moneda==='USD'?Math.round(r.cotizacion):'',
-    Math.round(r.bruto),Math.round(r.bruto-netoDe(r)),Math.round(netoDe(r)),
-    Math.round(brutoARS(r)),Math.round(netoARS(r)),
+    r.moneda||'ARS',r.moneda==='USD'?redondear2(r.cotizacion):'',
+    redondear2(r.bruto),redondear2(r.bruto-netoDe(r)),redondear2(netoDe(r)),
+    redondear2(brutoARS(r)),redondear2(netoARS(r)),
     r.tipoFac||'—',r.tipo==='ingreso'?(r.fact||'Facturado'):'—',
     r.tipo==='gasto'&&r.dividido?(r.pago?'SI (en cuotas)':(r.pagoParcial?'PARCIAL':'NO')):(r.pago?'SI':'NO'),
     r.tipo==='ingreso'?'—':(r.comp!==false?'SI':'NO'),
