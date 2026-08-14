@@ -219,6 +219,8 @@
   .tag.A{border-color:var(--iva);color:var(--iva)}
   .tag.IN{border-color:var(--ing);color:var(--ing);font-weight:600}
   .tag.EG{border-color:var(--ink-soft);color:var(--ink-soft)}
+  .tag.FIJ{border-color:var(--warn);color:var(--warn);margin-left:3px}
+  .tag.VAR{border-color:var(--rule-strong);color:var(--ink-soft);margin-left:3px}
   .tag.fa{border-color:var(--ing);color:var(--ing)}
   .tag.nf{border-color:var(--warn);color:var(--warn)}
   .ivanota{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--iva);margin-top:3px;white-space:nowrap}
@@ -1731,7 +1733,7 @@ function tablaHtml(view,sortState){
   const hayIngresos=view.some(r=>r.tipo==='ingreso');
   const hayGastos=view.some(r=>r.tipo==='gasto');
   const mostrarFC=hayGastos, mostrarFacturado=hayIngresos, mostrarMetodo=hayGastos;
-  const ANCHOS={tipo:6,mesPago:11,item:11,bruto:7,neto:7,factura:6,facturado:7,metodo:8,estado:6,computable:6,mesCorr:6,rubro:6,detalle:7,acciones:6};
+  const ANCHOS={tipo:9,mesPago:11,item:10,bruto:7,neto:7,factura:6,facturado:7,metodo:7,estado:6,computable:6,mesCorr:6,rubro:6,detalle:6,acciones:6};
   let extra=0;
   if(!mostrarFC) extra+=ANCHOS.factura;
   if(!mostrarFacturado) extra+=ANCHOS.facturado;
@@ -1743,7 +1745,7 @@ function tablaHtml(view,sortState){
   const colgroupHtml=colOrder.map(c=>`<col style="width:${c==='item'?ANCHOS.item+extra:ANCHOS[c]}%">`).join('');
   const theadCeldas={
     tipo: thOrden('Tipo','tipo',sortState),
-    mesPago: thOrden('Mes pago','mesPago',sortState),
+    mesPago: thOrden('Mes de pago - vencimiento','mesPago',sortState),
     item: thOrden('Ítem','item',sortState),
     bruto: thOrden('Bruto','bruto',sortState,{cls:'num'}),
     neto: thOrden('Neto','neto',sortState,{cls:'num'}),
@@ -1774,7 +1776,7 @@ function tablaHtml(view,sortState){
       const tdMetodo = mostrarMetodo ? `<td>${(!esIng&&r.metodoPago)?esc(r.metodoPago):'<span class="tag EG">—</span>'}</td>` : '';
       const claseImpago = (!esIng && !r.pago) ? (' gasto-impago'+((diasHasta(r.fechaVenc)!==null && diasHasta(r.fechaVenc)<=7) ? ' vence-pronto' : '')) : '';
       const filaPrincipal = `<tr data-row-id="${r.id}" class="${r.pago?'paid':'unpaid'}${parcial?' parcial':''}${r.id===editId?' editing':''}${r.comp===false?' nocomp':''}${claseImpago}">
-      <td><span class="tag ${esIng?'IN':'EG'}">${esIng?'INGRESO':'GASTO'}</span></td>
+      <td><span class="tag ${esIng?'IN':'EG'}">${esIng?'INGRESO':'GASTO'}</span>${!esIng?`<span class="tag ${r.fijo?'FIJ':'VAR'}">${r.fijo?'FIJO':'VARIABLE'}</span>`:''}</td>
       <td class="mono">${div?'<span class="cp-let" title="Se paga en varias cuotas">varias</span>':mesLabel(r.mesPago).toUpperCase()}${(!esIng&&r.fechaVenc)?' | '+fmtFechaCorta(r.fechaVenc).toUpperCase():''}</td>
       <td class="item" title="${esc(r.item)}">${esIng?'—':esc(r.item)}</td>
       <td class="num${usd?' dual':''}">${montoCell(r.bruto,brutoARS(r),usd)}</td>
@@ -1783,7 +1785,7 @@ function tablaHtml(view,sortState){
       ${cpCell}
       ${tdMetodo}
       <td class="computable">${esIng?'<span class="tag EG">—</span>':`<input type="checkbox" ${r.comp!==false?'checked':''} data-comp="${r.id}" title="${r.comp!==false?'Computable: resta en el resultado. Destildá si se pagó pero no es gasto del hotel.':'No computable: se pagó pero no afecta el resultado. Tildá para contarlo como gasto.'}">`}</td>
-      <td class="mono">${mesLabel(r.mesCorr)}</td>
+      <td class="mono"><b>${mesLabel(r.mesCorr)}</b></td>
       <td class="rubro" title="${esc(r.rubro||'')}">${esc(r.rubro||'—')}</td>
       <td class="detalle" title="${esc(r.detalle||'')}">${esc(r.detalle||'')}</td>
       <td class="acciones">${btnEdit}${btnDel}</td>
@@ -1959,9 +1961,11 @@ document.addEventListener('change',async e=>{
 
 /* ---------- Export ---------- */
 $('btn-csv').addEventListener('click',()=>{
-  const head=['Tipo','Mes de Pago o Cobro','Fecha de Vencimiento','Fecha real de Pago o Cobro','Método de Pago','Item','Moneda','Cotización','Importe Bruto','IVA Descontado','Importe Neto','Importe Bruto (ARS)','Importe Neto (ARS)','Tipo de Factura','Facturacion','Cobrado o Pago','Computable','Mes al que corresponde','Rubro','Observaciones/Detalle'];
+  const head=['Tipo','Fijo o Variable','Mes de Pago o Cobro','Fecha de Vencimiento','Fecha real de Pago o Cobro','Método de Pago','Item','Moneda','Cotización','Importe Bruto','IVA Descontado','Importe Neto','Importe Bruto (ARS)','Importe Neto (ARS)','Tipo de Factura','Facturacion','Cobrado o Pago','Computable','Mes al que corresponde','Rubro','Observaciones/Detalle'];
   const fmtF=f=>{ if(!f) return ''; const [y,mm,dd]=f.split('-'); return `${dd}/${mm}/${y}`; };
-  const lines=filteredTabla().map(r=>[r.tipo==='ingreso'?'INGRESO':'GASTO',mesLabel(r.mesPago),
+  const lines=filteredTabla().map(r=>[r.tipo==='ingreso'?'INGRESO':'GASTO',
+    r.tipo==='gasto'?(r.fijo?'FIJO':'VARIABLE'):'',
+    mesLabel(r.mesPago),
     r.tipo==='gasto'?fmtF(r.fechaVenc):'',
     r.dividido?'(en cuotas)':fmtF(r.fechaPago),
     r.tipo==='gasto'?(r.metodoPago||''):'',
