@@ -1224,7 +1224,7 @@ function formatCampo(el){
   try{el.setSelectionRange(pos,pos);}catch(e){}
 }
 $('f-bruto').addEventListener('input',()=>{formatCampo($('f-bruto'));sugerirIva27();previewNeto();});
-$('f-iva').addEventListener('input',()=>{formatCampo($('f-iva'));previewNeto();});
+$('f-iva').addEventListener('input',()=>{formatCampo($('f-iva'));ivaAuto=!$('f-iva').value;sugerirIva27();previewNeto();});
 $('f-tipo').addEventListener('input',()=>{sugerirIva27();previewNeto();});
 const cotizVal=()=>digitos($('f-cotizacion'));
 $('f-cotizacion').addEventListener('input',()=>{formatCampo($('f-cotizacion'));previewNeto();});
@@ -1265,10 +1265,13 @@ function previewNeto(){
   if(usd) txt += cotizVal()>0 ? ` ≈ $ ${money(n*cotizVal())}` : ' (cargá la cotización)';
   $('f-neto').textContent=txt;
 }
-// Sugiere el IVA (21% o 27% según el tipo) como punto de partida, sin pisar lo que el usuario ya haya tipeado a mano.
+// Sugiere el IVA (21% o 27% según el tipo) como punto de partida, sin pisar lo que el usuario
+// ya haya tipeado a mano. "ivaAuto" indica si lo que hay en el campo es todavía la sugerencia
+// (se puede recalcular libremente) o si el usuario ya la tocó (no se vuelve a tocar).
+let ivaAuto=true;
 function sugerirIva27(){
   const pct=modo==='gasto'?pctIvaSugerido():null;
-  if(pct!==null && !$('f-iva').value && brutoVal()>0){
+  if(pct!==null && ivaAuto && brutoVal()>0){
     // el bruto ya incluye el IVA: lo que se descuenta es bruto - (bruto / (1+%)), no bruto*%
     const b=brutoVal();
     $('f-iva').value = money(b-(b/(1+pct)));
@@ -1337,7 +1340,7 @@ $('cuotas-form').addEventListener('click',e=>{
 
 /* ---------- Alta y edición ---------- */
 function limpiarForm(){
-  $('f-item').value='';$('f-bruto').value='';$('f-iva').value='';
+  $('f-item').value='';$('f-bruto').value='';$('f-iva').value='';ivaAuto=true;
   $('f-tipo').value='No posee';$('f-rubro').value='';$('f-fact').value='Facturado';
   $('f-pago').checked=false;$('f-comp').checked=true;$('f-dividido').checked=false;$('f-dividido').disabled=false;$('f-detalle').value='';
   $('f-fecha-real-pago').value='';$('wrap-fecha-real-pago').hidden=true;
@@ -1369,7 +1372,7 @@ async function abrirEdicion(id){
   $('f-item').value=r.item||'';
   $('f-bruto').value=money(r.bruto);
   $('f-tipo').value=r.tipoFac||'No posee';
-  $('f-iva').value=r.iva?money(r.iva):'';
+  $('f-iva').value=r.iva?money(r.iva):'';ivaAuto=!(r.iva>0);
   $('f-pago').checked=!!r.pago;
   $('wrap-fecha-real-pago').hidden = !r.pago;
   $('f-fecha-real-pago').value = r.pago ? (r.fechaPago||hoyISO()) : '';
