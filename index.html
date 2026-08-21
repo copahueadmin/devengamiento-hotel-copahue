@@ -281,6 +281,8 @@
   .login-error{margin-top:10px;padding:8px 10px;background:var(--tint-warn);border:1px solid var(--neg);color:var(--neg);font-size:12px}
   .usuario-box a{color:var(--iva)}
   .historial-popover{position:fixed;top:64px;right:20px;width:360px;max-width:calc(100vw - 40px);max-height:70vh;overflow-y:auto;background:var(--paper);border:1px solid var(--rule-strong);box-shadow:0 10px 34px rgba(0,0,0,.35);z-index:180}
+  .texto-popover{position:fixed;z-index:190;max-width:340px;background:var(--paper);border:1px solid var(--rule-strong);box-shadow:0 8px 24px rgba(0,0,0,.3);padding:10px 12px;font-size:13px;line-height:1.45;white-space:normal;word-break:break-word}
+  .tablacompacta td.rubro,.tablacompacta td.detalle{cursor:pointer}
   .historial-popover-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--rule-strong);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);position:sticky;top:0;background:var(--paper)}
   .historial-popover-head button{background:none;border:1px solid var(--rule-strong);color:var(--ink-soft);cursor:pointer;font-size:11px;padding:2px 7px;line-height:1.6}
   .historial-popover-head button:hover{border-color:var(--ink-soft);color:var(--ink)}
@@ -431,6 +433,9 @@
         <div><h3>Gastos por rubro</h3><div class="rlist" id="rgas"></div></div>
       </div>
       <p class="note">El resultado se arma por mes devengado y es independiente de los filtros de Movimientos Registrados. Destildá un rubro para ver cómo impacta en el resultado.</p>
+      <h3 style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin:22px 0 8px;font-weight:600">Detalle de movimientos del período</h3>
+      <div id="detalle-periodo-zone" class="tablacompacta"></div>
+      <p class="note">Este detalle muestra todos los movimientos cargados dentro del período elegido arriba (mes de cobro/pago o al que corresponde), incluidos los no computables. No depende de los tildes de rubro.</p>
     </div>
   </section>
 
@@ -508,7 +513,8 @@
           <div class="field"><label for="q-tipo">Tipo</label><select id="q-tipo"><option value="">Todos</option><option value="ingreso">Ingresos</option><option value="gasto">Gastos</option></select></div>
           <div class="field"><label for="q-rubro">Rubro</label><select id="q-rubro"><option value="">Todos</option></select></div>
           <div class="field"><label for="q-estado">Estado</label><select id="q-estado"><option value="">Todos</option><option value="pend">Pendientes</option><option value="pag">Cobrados / pagos</option></select></div>
-          <div class="field"><label for="q-texto">Buscar</label><input type="text" id="q-texto" placeholder="Ítem o detalle"></div>
+          <div class="field"><label for="q-comp" title="Computable como gasto del resultado, o no (ej. IVA o pagos ajenos hechos desde la cuenta)">Computable</label><select id="q-comp"><option value="">Todos</option><option value="si">Computable</option><option value="no">No computable</option></select></div>
+          <div class="field"><label for="q-texto">Buscar</label><input type="text" id="q-texto" placeholder="Ítem, rubro o detalle (podés escribir varias palabras)"></div>
           <div class="rango">
             <div class="field"><label for="qt-pago-desde">Mes de pago/cobro, desde</label><input type="month" id="qt-pago-desde"></div>
             <span class="rango-sep">–</span>
@@ -585,6 +591,7 @@
 
 </div>
 <div class="toast" id="toast"></div>
+<div id="texto-popover" class="texto-popover" hidden></div>
 
 <!-- ============ FIREBASE ============
 SDK de Firebase (Firestore), para que los datos se guarden en la nube y estén disponibles
@@ -1637,8 +1644,9 @@ function pagadoCuotas(r){
   return r.cuotas.reduce((a,c)=>a+(c.pago?(+c.importe||0):0),0);
 }
 
-/* ---------- Orden por columna (Registrados y Fijos mensuales) ---------- */
+/* ---------- Orden por columna (Registrados, Fijos mensuales y Detalle del período) ---------- */
 let sortRegistrados={col:'mesCorr',dir:'desc'};
+let sortDetallePeriodo={col:'mesCorr',dir:'desc'};
 // valor a comparar por columna
 const COLS_ORDEN={
   tipo:      r=>r.tipo==='ingreso'?'variable':(r.fijo?'fijo':'variable'),
@@ -1674,18 +1682,22 @@ function ordenar(lista,sortState){
   });
 }
 // clic en un título de columna: ordena por esa columna, o invierte el orden si ya estaba activa
+// (la misma tabla se reutiliza en Registrados y en el Detalle del período del dashboard;
+// data-tabla en el contenedor indica cuál de las dos hay que reordenar y volver a pintar)
 document.addEventListener('click',e=>{
   const th=e.target.closest('th[data-sortcol]');
   if(!th) return;
+  const esPeriodo = !!th.closest('[data-tabla="periodo"]');
+  const sortState = esPeriodo ? sortDetallePeriodo : sortRegistrados;
   const col=th.dataset.sortcol;
-  if(sortRegistrados.col===col){ sortRegistrados.dir = sortRegistrados.dir==='asc'?'desc':'asc'; }
-  else { sortRegistrados.col=col; sortRegistrados.dir = ['bruto','neto','mesPago','mesCorr','estado'].includes(col)?'desc':'asc'; }
-  renderTabla(filteredTabla());
+  if(sortState.col===col){ sortState.dir = sortState.dir==='asc'?'desc':'asc'; }
+  else { sortState.col=col; sortState.dir = ['bruto','neto','mesPago','mesCorr','estado'].includes(col)?'desc':'asc'; }
+  if(esPeriodo) renderDetallePeriodo(filteredPeriodo()); else renderTabla(filteredTabla());
 });
 
 /* ---------- Filtros ---------- */
 ['qi-cobro','qi-corr','qg-pago','qg-corr'].forEach(id=>$(id).addEventListener('input',render));
-const FILTROS_TABLA=['q-tipo','q-rubro','q-estado','q-texto','qt-pago-desde','qt-pago-hasta','qt-corr-desde','qt-corr-hasta','qt-fecha-desde','qt-fecha-hasta'];
+const FILTROS_TABLA=['q-tipo','q-rubro','q-estado','q-comp','q-texto','qt-pago-desde','qt-pago-hasta','qt-corr-desde','qt-corr-hasta','qt-fecha-desde','qt-fecha-hasta'];
 FILTROS_TABLA.forEach(id=>$(id).addEventListener('input',()=>renderTabla(filteredTabla())));
 $('btn-limpiar-per').addEventListener('click',()=>{ ['qi-cobro','qi-corr','qg-pago','qg-corr'].forEach(id=>$(id).value=''); render(); });
 $('btn-limpiar-filtros').addEventListener('click',()=>{
@@ -1704,8 +1716,16 @@ function filteredPeriodo(){
   });
 }
 // Filtro de la TABLA: período + los filtros propios de Movimientos Registrados
+// Búsqueda por palabras: cada palabra escrita tiene que aparecer en algún lugar del texto
+// (ítem, rubro o detalle), sin importar el orden. Así "sac provision" encuentra "Provisión SAC".
+function coincideTexto(r,tx){
+  if(!tx) return true;
+  const hay=((r.item||'')+' '+(r.rubro||'')+' '+(r.detalle||'')).toLowerCase();
+  const palabras=tx.toLowerCase().split(/\s+/).filter(Boolean);
+  return palabras.every(p=>hay.includes(p));
+}
 function filteredTabla(){
-  const tp=$('q-tipo').value,ru=$('q-rubro').value,es=$('q-estado').value,tx=$('q-texto').value.toLowerCase();
+  const tp=$('q-tipo').value,ru=$('q-rubro').value,es=$('q-estado').value,cp=$('q-comp').value,tx=$('q-texto').value;
   const pd=$('qt-pago-desde').value, ph=$('qt-pago-hasta').value;
   const cd=$('qt-corr-desde').value, ch=$('qt-corr-hasta').value;
   const fd=$('qt-fecha-desde').value, fh=$('qt-fecha-hasta').value;
@@ -1717,13 +1737,14 @@ function filteredTabla(){
     if(tp&&r.tipo!==tp) return false;
     if(ru&&r.rubro!==ru) return false;
     if(es&&(es==='pag'?!r.pago:r.pago)) return false;
+    if(cp&&(cp==='no'?r.comp!==false:r.comp===false)) return false;
     if(pd&&(!r.mesPago||r.mesPago<pd)) return false;
     if(ph&&(!r.mesPago||r.mesPago>ph)) return false;
     if(cd&&(!r.mesCorr||r.mesCorr<cd)) return false;
     if(ch&&(!r.mesCorr||r.mesCorr>ch)) return false;
     if(fd&&(!r.fechaPago||r.fechaPago<fd)) return false;
     if(fh&&(!r.fechaPago||r.fechaPago>fh)) return false;
-    if(tx&&!((r.item||'')+' '+(r.detalle||'')+' '+(r.rubro||'')).toLowerCase().includes(tx)) return false;
+    if(!coincideTexto(r,tx)) return false;
     return true;
   });
   return ordenar(out,sortRegistrados);
@@ -1765,6 +1786,7 @@ function render(){
   $('periodo-nota').textContent = (partes.length?partes.join(' · '):'Todos los períodos')+` — dashboard sobre ${baseD.length} movimiento${baseD.length===1?'':'s'}`;
 
   renderDashboard(baseD);
+  renderDetallePeriodo(baseD);
   renderTabla(filteredTabla());
   renderEstadoFijos();
 }
@@ -1858,6 +1880,24 @@ $('subtab-cargar').addEventListener('click',()=>setVistaMov('cargar'));
 $('subtab-registrados').addEventListener('click',()=>setVistaMov('registrados'));
 $('subtab-fijos').addEventListener('click',()=>setVistaMov('fijos'));
 
+/* ---------- Ver texto completo de una celda truncada (Rubro/Detalle) ---------- */
+document.addEventListener('click',e=>{
+  const pop=$('texto-popover');
+  const celda=e.target.closest('td[data-vertexto]');
+  if(celda && celda.dataset.vertexto && celda.scrollWidth>celda.clientWidth+2){
+    pop.textContent=celda.dataset.vertexto;
+    const rect=celda.getBoundingClientRect();
+    pop.hidden=false;
+    let top=rect.bottom+4, left=rect.left;
+    const maxLeft=window.innerWidth-360;
+    if(left>maxLeft) left=Math.max(8,maxLeft);
+    if(top+100>window.innerHeight) top=Math.max(8,rect.top-90);
+    pop.style.top=top+'px'; pop.style.left=left+'px';
+    return;
+  }
+  if(!e.target.closest('#texto-popover')) pop.hidden=true;
+});
+
 /* ---------- Historial: popover flotante junto al botón del header ---------- */
 $('btn-historial').addEventListener('click',e=>{
   e.stopPropagation();
@@ -1917,9 +1957,15 @@ function thOrden(label,col,sortState,opts){
   const title=opts.title?` title="${opts.title}"`:'';
   return `<th class="${cls}" data-sortcol="${col}"${title}>${label}${flecha}</th>`;
 }
-function tablaHtml(view,sortState){
-  let tb=0,tn=0;
-  view.forEach(r=>{tb+=brutoARS(r);tn+=netoARS(r);});
+function tablaHtml(view,sortState,tablaId){
+  // Los importes no computables (ej. IVA o pagos ajenos hechos desde la cuenta) se acumulan
+  // aparte: no deben mezclarse en el total "real" de la tabla, así que se muestran a la vista
+  // pero diferenciados en el pie.
+  let tb=0,tn=0,tbNc=0,tnNc=0;
+  view.forEach(r=>{
+    if(r.comp===false){ tbNc+=brutoARS(r); tnNc+=netoARS(r); }
+    else { tb+=brutoARS(r); tn+=netoARS(r); }
+  });
   const montoCell=(valOriginal,valARS,usd)=> usd
     ? `<div>U$S ${money(valOriginal)}</div><span class="fx-sub">≈ $ ${money(valARS)}</span>`
     : money(valOriginal);
@@ -1927,7 +1973,7 @@ function tablaHtml(view,sortState){
   const hayIngresos=view.some(r=>r.tipo==='ingreso');
   const hayGastos=view.some(r=>r.tipo==='gasto');
   const mostrarFC=hayGastos, mostrarFacturado=hayIngresos, mostrarMetodo=hayGastos;
-  const ANCHOS={tipo:9,mesPago:7,vencimiento:7,item:9,bruto:7,neto:7,factura:6,facturado:7,metodo:7,estado:6,computable:6,mesCorr:6,rubro:5,detalle:5,acciones:6};
+  const ANCHOS={tipo:7,mesPago:7,vencimiento:6,item:9,bruto:7,neto:7,factura:5,facturado:6,metodo:6,estado:5,computable:5,mesCorr:5,rubro:5,detalle:14,acciones:6};
   let extra=0;
   if(!mostrarFC) extra+=ANCHOS.factura;
   if(!mostrarFacturado) extra+=ANCHOS.facturado;
@@ -1955,7 +2001,7 @@ function tablaHtml(view,sortState){
     acciones: '<th></th>'
   };
   const theadHtml=colOrder.map(c=>theadCeldas[c]).join('');
-  return `<div class="tablewrap"><table>
+  return `<div class="tablewrap" data-tabla="${tablaId||'registrados'}"><table>
     <colgroup>${colgroupHtml}</colgroup>
     <thead><tr>${theadHtml}</tr></thead>
     <tbody>${view.map(r=>{const n=netoDe(r),esIng=r.tipo==='ingreso';const div=r.dividido&&Array.isArray(r.cuotas);
@@ -1983,19 +2029,26 @@ function tablaHtml(view,sortState){
       ${tdMetodo}
       <td class="computable">${esIng?'<span class="tag EG">—</span>':`<input type="checkbox" ${r.comp!==false?'checked':''} data-comp="${r.id}" title="${r.comp!==false?'Computable: resta en el resultado. Destildá si se pagó pero no es gasto del hotel.':'No computable: se pagó pero no afecta el resultado. Tildá para contarlo como gasto.'}">`}</td>
       <td class="mono"><b>${mesLabel(r.mesCorr)}</b></td>
-      <td class="rubro" title="${esc(r.rubro||'')}">${esc(r.rubro||'—')}</td>
-      <td class="detalle" title="${esc(r.detalle||'')}">${esc(r.detalle||'')}</td>
+      <td class="rubro" data-vertexto="${esc(r.rubro||'')}" title="Tocá para ver completo">${esc(r.rubro||'—')}</td>
+      <td class="detalle" data-vertexto="${esc(r.detalle||'')}" title="Tocá para ver completo">${esc(r.detalle||'')}</td>
       <td class="acciones">${btnEdit}${btnDel}</td>
     </tr>`;
       const filaDesglose = (div&&abierta) ? filaDesgloseCuotas(r,totalCols) : '';
       return filaPrincipal+filaDesglose;
     }).join('')}</tbody>
-    <tfoot><tr><td colspan="3">Totales (${view.length}) — en pesos</td><td class="num">${money(tb)}</td><td class="num">${money(tn)}</td><td colspan="${totalCols-5}"></td></tr></tfoot>
+    <tfoot><tr><td colspan="3">Totales (${view.length}) — en pesos${(tbNc||tnNc)?` <span style="font-weight:400;color:var(--iva)">· no computable: bruto ${money(tbNc)} / neto ${money(tnNc)}</span>`:''}</td><td class="num">${money(tb)}</td><td class="num">${money(tn)}</td><td colspan="${totalCols-5}"></td></tr></tfoot>
   </table></div>`;
 }
 function renderTabla(view){
   if(!view.length){ $('tablezone').innerHTML='<div class="empty">No hay movimientos que coincidan con el filtro.</div>'; return; }
-  $('tablezone').innerHTML=tablaHtml(view,sortRegistrados);
+  $('tablezone').innerHTML=tablaHtml(view,sortRegistrados,'registrados');
+}
+// Detalle de movimientos del período elegido en el dashboard (mes de cobro/pago o al que
+// corresponde). No depende de los filtros de Registrados ni de los tildes de rubro: muestra
+// exactamente lo que entra en el período filtrado, computable o no.
+function renderDetallePeriodo(base){
+  if(!base.length){ $('detalle-periodo-zone').innerHTML='<div class="empty">No hay movimientos cargados para este período.</div>'; return; }
+  $('detalle-periodo-zone').innerHTML=tablaHtml(ordenar(base,sortDetallePeriodo),sortDetallePeriodo,'periodo');
 }
 // Lista de plantillas de gastos fijos: siempre en blanco, reutilizable cada mes. Muestra si ya
 // se cargó (con datos reales) el mes en curso, y da acceso rápido para cargarlo o editarlo.
@@ -2134,8 +2187,12 @@ document.addEventListener('click',async e=>{
     await save(); render(); toast('Movimiento borrado');
     return;
   }
-  // desplegar / plegar el desglose de pagos de un gasto dividido
-  if(d.exp){ if(expandidas.has(d.exp)) expandidas.delete(d.exp); else expandidas.add(d.exp); renderTabla(filteredTabla()); return; }
+  // desplegar / plegar el desglose de pagos de un gasto dividido (puede estar en Registrados o en el Detalle del período)
+  if(d.exp){
+    if(expandidas.has(d.exp)) expandidas.delete(d.exp); else expandidas.add(d.exp);
+    if(e.target.closest('[data-tabla="periodo"]')) renderDetallePeriodo(filteredPeriodo()); else renderTabla(filteredTabla());
+    return;
+  }
   // marcar / desmarcar como pago-cobrado (sin usar prompt/confirm, todo inline en la celda)
   if(d.tog){
     const r=rows.find(x=>x.id===d.tog); if(!r) return;
