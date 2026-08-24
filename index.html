@@ -370,10 +370,21 @@
   .rrow.off .rrow-bar-fill{background:var(--ink-soft)}
   .rrow.off .rrow-monto b{text-decoration:line-through;color:var(--ink-soft)}
   .rrow.abierto .rrow-nombre{font-weight:600}
-  .rubro-detalle-full{margin-top:18px;padding:14px 16px 18px;background:var(--tint-neutral);border:1px solid var(--rule-strong)}
-  .rubro-detalle-head{display:flex;align-items:center;flex-wrap:wrap;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px}
-  .rubro-detalle-head b{color:var(--ink);text-transform:none;letter-spacing:0;font-size:13px}
-  .rubro-detalle-head button{margin-left:auto;padding:4px 10px;font-size:10px}
+
+  /* desglose de un rubro: se pinta pegado debajo de SU fila (no en una zona aparte al final),
+     como una lista compacta -no la tabla completa de Movimientos- para que entre bien en la
+     columna angosta de ring/rgas. */
+  .rrow-detalle{margin:2px 0 10px;padding:10px 12px 2px;background:var(--tint-neutral);border:1px solid var(--rule);border-top:none}
+  .rrow-detalle-head{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:6px}
+  .rrow-detalle-head b{color:var(--ink);text-transform:none;letter-spacing:0}
+  .rrow-detalle-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--rule);font-size:12px}
+  .rrow-detalle-item:first-of-type{border-top:none}
+  .rdi-nombre{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rdi-mes{flex:none;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;font-size:11px;width:50px}
+  .rdi-estado{flex:none;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.04em;text-transform:uppercase;color:var(--warn);width:62px}
+  .rdi-estado.ok{color:var(--ok)}
+  .rdi-monto{flex:none;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;text-align:right;width:92px}
+  .rdi-acciones{flex:none;display:flex;gap:3px}
 
   /* presencia en vivo: burbujas con la inicial de cada usuario conectado, en el header */
   .presencia-zone{display:flex;align-items:center}
@@ -526,8 +537,6 @@
         <div><h3>Ingresos por rubro</h3><div class="rlist" id="ring"></div></div>
         <div><h3>Gastos por rubro</h3><div class="rlist" id="rgas"></div></div>
       </div>
-      <div id="rubro-detalle-ingreso"></div>
-      <div id="rubro-detalle-gasto"></div>
       <p class="note">El resultado se arma por mes devengado y es independiente de los filtros de Movimientos Registrados. Destildá un rubro para ver cómo impacta en el resultado. Tocá el nombre de un rubro para ver el detalle de sus movimientos.</p>
       <h3 style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin:22px 0 8px;font-weight:600">Detalle de movimientos del período</h3>
       <div id="detalle-periodo-zone" class="tablacompacta"></div>
@@ -1918,7 +1927,6 @@ function pagadoCuotas(r){
 /* ---------- Orden por columna (Registrados, Fijos mensuales y Detalle del período) ---------- */
 let sortRegistrados={col:'mesCorr',dir:'desc'};
 let sortDetallePeriodo={col:'mesCorr',dir:'desc'};
-let sortRubroDetalle={ingreso:{col:'mesCorr',dir:'desc'}, gasto:{col:'mesCorr',dir:'desc'}};
 // valor a comparar por columna
 const COLS_ORDEN={
   tipo:      r=>r.tipo==='ingreso'?'variable':(r.fijo?'fijo':'variable'),
@@ -1960,13 +1968,11 @@ document.addEventListener('click',e=>{
   const th=e.target.closest('th[data-sortcol]');
   if(!th) return;
   const tablaId = (th.closest('[data-tabla]')||{}).dataset ? th.closest('[data-tabla]').dataset.tabla : 'registrados';
-  const esRubro = tablaId && tablaId.indexOf('rubro-')===0;
-  const sortState = tablaId==='periodo' ? sortDetallePeriodo : esRubro ? sortRubroDetalle[tablaId.slice(6)] : sortRegistrados;
+  const sortState = tablaId==='periodo' ? sortDetallePeriodo : sortRegistrados;
   const col=th.dataset.sortcol;
   if(sortState.col===col){ sortState.dir = sortState.dir==='asc'?'desc':'asc'; }
   else { sortState.col=col; sortState.dir = ['bruto','neto','mesPago','mesCorr','estado'].includes(col)?'desc':'asc'; }
   if(tablaId==='periodo') renderDetallePeriodo(filteredPeriodo());
-  else if(esRubro) renderDashboard(filteredPeriodo());
   else renderTabla(filteredTabla());
 });
 
@@ -2110,7 +2116,7 @@ function renderRubros(base){
       (movs[k]=movs[k]||[]).push(r);
     });
     const ks=Object.keys(o).sort((a,b)=>o[b]-o[a]);
-    if(!ks.length){ $(cont).innerHTML='<div class="empty" style="padding:16px">Sin movimientos</div>'; if(rubroAbierto[tipo]) rubroAbierto[tipo]=null; pintarRubroDetalle(tipo,null); return; }
+    if(!ks.length){ $(cont).innerHTML='<div class="empty" style="padding:16px">Sin movimientos</div>'; if(rubroAbierto[tipo]) rubroAbierto[tipo]=null; return; }
     if(rubroAbierto[tipo] && !ks.includes(rubroAbierto[tipo])) rubroAbierto[tipo]=null;
     const totAct=ks.filter(k=>!rubrosOff[tipo].has(k)).reduce((a,k)=>a+o[k],0);
     const maxV=Math.max(1,...ks.map(k=>o[k]));
@@ -2121,7 +2127,7 @@ function renderRubros(base){
       const w=(o[k]/maxV*100).toFixed(1);
       const abierto=rubroAbierto[tipo]===k;
       const tip=esc(k+' — $ '+money(o[k])+(off?' (destildado, no entra al resultado)':' · '+pct+'% del total activo'));
-      return `<div class="rrow ${claseTipo}${off?' off':''}${abierto?' abierto':''}">
+      const fila=`<div class="rrow ${claseTipo}${off?' off':''}${abierto?' abierto':''}">
         <input type="checkbox" data-rub="${tipo}|${esc(k)}" ${off?'':'checked'} title="Tildar/destildar este rubro en el resultado">
         <button type="button" class="rrow-nombre" data-rubro-toggle="${tipo}|${esc(k)}" title="Ver los movimientos de este rubro">
           <span class="rrow-chev">${abierto?'▾':'▸'}</span>${esc(k)}
@@ -2129,23 +2135,36 @@ function renderRubros(base){
         <span class="rrow-monto"><b>${money(o[k])}</b>${off?'':`<small>${pct}%</small>`}</span>
         <span class="rrow-bar-track" data-tip="${tip}"><span class="rrow-bar-fill" style="width:${w}%"></span></span>
       </div>`;
+      return abierto ? (fila+filaDetalleRubro(tipo,k,movs[k])) : fila;
     }).join('');
-    pintarRubroDetalle(tipo, rubroAbierto[tipo] ? movs[rubroAbierto[tipo]] : null);
   };
   build('ingreso','ring');
   build('gasto','rgas');
 }
-// Detalle de movimientos del rubro abierto: se pinta a todo el ancho del dashboard (no adentro
-// de la columna angosta de ring/rgas) para que la tabla completa de movimientos se lea bien.
-function pintarRubroDetalle(tipo, movs){
-  const cont=$('rubro-detalle-'+tipo);
-  const k=rubroAbierto[tipo];
-  if(!cont) return;
-  if(!k || !movs){ cont.innerHTML=''; return; }
-  cont.innerHTML=`<div class="rubro-detalle-full">
-    <div class="rubro-detalle-head">Movimientos de <b>${esc(k)}</b> (${tipo==='ingreso'?'ingresos':'gastos'}) — ${movs.length} movimiento${movs.length===1?'':'s'} del período filtrado
-      <button type="button" class="ghost" data-rubro-cerrar="${tipo}">Cerrar</button></div>
-    <div class="tablacompacta">${tablaHtml(ordenar(movs,sortRubroDetalle[tipo]),sortRubroDetalle[tipo],'rubro-'+tipo)}</div>
+// Desglose de los movimientos que componen un rubro: se pinta pegado debajo de la fila de ese
+// rubro (dentro de la misma columna de ring/rgas), no en una zona aparte al final del dashboard,
+// para que quede claro de un vistazo a qué rubro corresponde cada ítem listado. Al ser una
+// columna angosta, se muestra una lista compacta (ítem, mes, estado, monto) en vez de la tabla
+// completa de Movimientos — para editar o borrar uno en particular están los íconos de al lado.
+function filaDetalleRubro(tipo,k,movs){
+  const lista=movs.slice().sort((a,b)=>netoARS(b)-netoARS(a));
+  const filas=lista.map(r=>{
+    const monto=(r.moneda==='USD'?'U$S ':'$ ')+money(netoARS(r));
+    const estado = r.pago ? (tipo==='ingreso'?'Cobrado':'Pagado') : (tipo==='ingreso'?'A cobrar':'A pagar');
+    return `<div class="rrow-detalle-item">
+      <span class="rdi-nombre" title="${esc(nombreDe(r))}">${esc(nombreDe(r))}</span>
+      <span class="rdi-mes">${mesLabel(r.mesCorr)}</span>
+      <span class="rdi-estado${r.pago?' ok':''}">${estado}</span>
+      <span class="rdi-monto">${monto}</span>
+      <span class="rdi-acciones">
+        <button type="button" class="rowbtn plain" data-edit="${r.id}" title="Modificar">✎</button>
+        <button type="button" class="rowbtn plain" data-del="${r.id}" title="Eliminar">✕</button>
+      </span>
+    </div>`;
+  }).join('');
+  return `<div class="rrow-detalle">
+    <div class="rrow-detalle-head">${movs.length} movimiento${movs.length===1?'':'s'} de <b>${esc(k)}</b> en el período filtrado</div>
+    ${filas}
   </div>`;
 }
 
