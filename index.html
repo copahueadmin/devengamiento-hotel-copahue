@@ -60,12 +60,18 @@
   .dash-head:hover{color:var(--ink)}
   .dash-head .chev{font-size:13px;display:inline-block;width:12px}
   .dash-hint{font-weight:400;letter-spacing:.04em;text-transform:none;color:var(--ink-soft);font-size:11px;margin-left:6px}
-  .rrow.off{opacity:.5}
-  .rrow.off b{text-decoration:line-through;color:var(--ink-soft)}
-  .rrow input[type=checkbox]{width:15px;height:15px;vertical-align:-2px;margin-right:6px;accent-color:var(--ing)}
-  label.rrow{cursor:pointer}
-  .rgas label.rrow input,#rgas label.rrow input{accent-color:var(--ink-soft)}
-  .panel{margin-bottom:32px}
+  .panel{margin-bottom:32px;background:var(--surface);border:1px solid var(--rule-strong);padding:24px 26px;box-shadow:0 3px 14px rgba(0,0,0,.07);transition:box-shadow .25s}
+  body.dark .panel{box-shadow:0 3px 16px rgba(0,0,0,.4)}
+  .panel.atajo-flash{animation:atajo-pulso 1s ease}
+  @keyframes atajo-pulso{0%{box-shadow:0 0 0 3px var(--ing)}100%{box-shadow:0 3px 14px rgba(0,0,0,.07)}}
+
+  /* accesos rápidos fijos (atajos a Dashboard / Movimientos) */
+  .atajos{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;background:var(--ink);box-shadow:2px 0 12px rgba(0,0,0,.2)}
+  .atajos button{display:flex;flex-direction:column;align-items:center;gap:4px;width:64px;padding:14px 3px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);color:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:0;text-transform:uppercase;line-height:1.3;cursor:pointer;white-space:nowrap}
+  .atajos button:last-child{border-bottom:none}
+  .atajos button:hover{background:rgba(255,255,255,.14)}
+  .atajos-ico{font-size:16px}
+  @media (max-width:900px){.atajos{display:none}}
 
   /* pestañas gasto / ingreso */
   .tabs{display:flex;gap:0;margin-bottom:14px}
@@ -91,7 +97,7 @@
   /* en modo ingreso: sin Ítem, y Rubro a la izquierda del Importe */
   .form-grid.ingreso{display:flex;flex-wrap:wrap}
   .form-grid.ingreso .field{flex:1 1 150px;min-width:150px}
-  .form-grid.ingreso #wrap-item{display:none}
+  .form-grid.ingreso #wrap-item{order:2}
   .form-grid.ingreso #wrap-tipo,.form-grid.ingreso #wrap-iva,.form-grid.ingreso #wrap-neto,.form-grid.ingreso #wrap-marcar-fijo,.form-grid.ingreso #wrap-fecha-diferida{display:none}
   .form-grid.ingreso #wrap-rubro{order:3}
   .form-grid.ingreso #wrap-bruto{order:4}
@@ -148,12 +154,16 @@
   .fijo-estado-info.cargado{color:var(--ok)}
   .fijo-estado-acc button{padding:6px 10px;font-size:11px}
 
-  .tablewrap{overflow-x:auto;border:1px solid var(--rule-strong)}
+  /* overflow-x:auto en este contenedor rompería el encabezado sticky (un contenedor con
+     overflow-x no visible pasa a ser también el contexto de scroll vertical, y el sticky termina
+     fijo dentro de ÉL en vez de la ventana). Como las columnas son de ancho fijo en %, alcanza con
+     que la página entera scrollee horizontalmente si hace falta en pantallas muy angostas. */
+  .tablewrap{border:1px solid var(--rule-strong)}
   table{border-collapse:collapse;width:100%;background:var(--surface)}
   .tablacompacta table{min-width:0;width:100%;table-layout:fixed}
   thead th{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;text-align:left;padding:9px 10px;background:var(--ink);color:var(--paper);white-space:nowrap}
   thead th.num{text-align:right}
-  .tablacompacta thead th{padding:6px 5px;font-size:9px;letter-spacing:.04em}
+  .tablacompacta thead th{padding:6px 5px;font-size:9px;letter-spacing:.04em;position:sticky;top:0;z-index:5}
   .tablacompacta thead th.th-help{cursor:help;text-decoration:underline dotted;text-underline-offset:2px}
   .tablacompacta td.cp{white-space:nowrap}
   .tablacompacta td.cp .cp-let{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:var(--ink-soft);margin-right:3px;vertical-align:1px}
@@ -234,7 +244,8 @@
   .tag.VAR{border-color:var(--rule-strong);color:var(--ink-soft);margin-left:3px}
   .tag.fa{border-color:var(--ing);color:var(--ing)}
   .tag.nf{border-color:var(--warn);color:var(--warn)}
-  .ivanota{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--iva);margin-top:3px;white-space:nowrap}
+  .ivanota{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--iva);white-space:nowrap;display:inline-block;margin-left:4px}
+  .tablacompacta .ivanota{margin-left:3px}
   input[type=checkbox]{width:18px;height:18px;accent-color:var(--ok);cursor:pointer}
   .rowbtn{background:none;border:1px solid var(--rule-strong);color:var(--ink-soft);padding:1px 0;width:20px;font-size:11px;font-weight:600;letter-spacing:0;cursor:pointer;line-height:1.3}
   .rowbtn:hover{background:var(--neg);border-color:var(--neg);color:var(--paper)}
@@ -244,13 +255,21 @@
   .rowbtn.plain:hover{background:var(--ledger);border-color:var(--ink-soft);color:var(--ink)}
   .fx-sub{display:block;font-size:9px;color:var(--ink-soft);font-weight:400;white-space:nowrap}
   td.num.dual{white-space:normal;line-height:1.3}
-  .tablacompacta thead th{white-space:normal}
-  .cp-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.02em;background:none;border:1px solid var(--rule-strong);color:var(--ink-soft);padding:2px 6px;cursor:pointer;white-space:nowrap}
+  .tablacompacta thead th{white-space:normal;overflow-wrap:break-word;word-break:break-word}
+  .cp-badge{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0;text-transform:none;background:none;border:1px solid var(--rule-strong);color:var(--ink-soft);padding:2px 5px;cursor:pointer;white-space:nowrap}
   .cp-badge.pendiente{border-color:var(--warn);color:var(--warn)}
   .cp-badge.pendiente:hover{background:var(--warn);color:var(--paper)}
   .cp-badge.pagado{border-color:var(--ok);color:var(--ok)}
   .cp-badge.pagado:hover{background:var(--ok);color:var(--paper)}
   .tablacompacta td.cp{position:relative}
+  .cp-multi{display:flex;align-items:flex-start;gap:4px;white-space:nowrap}
+  .cp-stack{display:flex;flex-direction:column;gap:2px;font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.3}
+  .cp-stack-line{white-space:nowrap}
+  .cp-stack-line.ok{color:var(--ok)}
+  .cp-stack-line.pend{color:var(--warn)}
+  td.item.tarjeta-item{cursor:pointer}
+  td.item.tarjeta-item:hover{text-decoration:underline dotted}
+  .tarjeta-badge{display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0;text-transform:none;color:var(--iva);font-weight:600;margin-top:1px}
   .cp-editor{position:absolute;z-index:30;top:50%;left:0;transform:translateY(-50%);display:flex;align-items:center;gap:3px;background:var(--surface);border:1px solid var(--rule-strong);box-shadow:0 3px 10px rgba(0,0,0,.25);padding:4px 5px;white-space:nowrap}
   .cp-fecha-input{width:118px;font-size:11px;padding:3px 5px;display:inline-block}
   .cp-metodo-input{max-width:160px;font-size:11px;padding:3px 5px;display:inline-block}
@@ -306,12 +325,74 @@
   .bar{height:12px;background:var(--ledger);position:relative;overflow:hidden}
   .bar i{position:absolute;top:0;bottom:0;display:block}
   .bar i.g{background:var(--ing)} .bar i.p{background:var(--neg)}
-  .split{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:22px}
+  .split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;margin-top:22px}
   .split h3{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 8px;font-weight:600}
   .rlist{display:grid;gap:1px}
-  .rrow{display:grid;grid-template-columns:1fr auto;gap:10px;padding:6px 0;border-bottom:1px solid var(--rule);font-size:14px}
-  .rrow b{font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums}
-  .rrow small{font-family:'IBM Plex Mono',monospace;color:var(--ink-soft);margin-left:8px}
+
+  .chart-tooltip{position:fixed;z-index:190;background:var(--ink);color:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;padding:8px 11px;pointer-events:none;max-width:240px;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+
+  /* exportar dashboard a Excel / PDF */
+  .dash-export-bar{display:flex;align-items:center;gap:10px;margin:-14px 0 22px}
+  .dash-export-bar button{font-size:11px;padding:7px 12px}
+  .dash-export-estado{font-size:12px;color:var(--ink-soft)}
+  .reporte-pdf{display:none}
+  @media print{
+    body.imprimiendo-dashboard > *:not(#reporte-pdf){display:none!important}
+    body.imprimiendo-dashboard #reporte-pdf{display:block!important}
+    .reporte-pdf{font-family:'Inter',Arial,sans-serif;color:#000;background:#fff;padding:0}
+    .reporte-pdf h1{font-size:19px;margin:0 0 4px}
+    .reporte-pdf .reporte-sub{font-size:11px;color:#444;margin-bottom:16px}
+    .reporte-pdf h2{font-size:13px;border-bottom:1px solid #000;padding-bottom:4px;margin:20px 0 8px}
+    .reporte-pdf table{width:100%;border-collapse:collapse;margin-bottom:10px;font-size:10.5px}
+    .reporte-pdf th,.reporte-pdf td{border:1px solid #999;padding:3px 6px;text-align:left}
+    .reporte-pdf th{background:#eee}
+    .reporte-pdf .num{text-align:right;font-variant-numeric:tabular-nums}
+    .reporte-pdf .reporte-nota{font-size:10px;color:#555;margin:0 0 8px}
+    .reporte-salto{page-break-before:always}
+  }
+
+  /* gráfico de barras "Ingresos/Gastos por rubro": cada fila es una barra real (no un tinte de
+     fondo), con su magnitud relativa al rubro más grande de la lista. El nombre es un botón
+     aparte del checkbox para poder abrir el desglose de movimientos sin tildar/destildar. */
+  .rrow{display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:auto auto;align-items:center;column-gap:10px;row-gap:6px;padding:9px 0;border-bottom:1px solid var(--rule);font-size:14px}
+  .rrow input[type=checkbox]{grid-row:1;grid-column:1;margin:0}
+  .rrow-nombre{grid-row:1;grid-column:2;display:flex;align-items:center;gap:6px;background:none;border:none;padding:0;margin:0;font:inherit;text-transform:none;letter-spacing:normal;text-align:left;color:var(--ink);cursor:pointer;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rrow-nombre:hover{color:var(--ing)}
+  .rrow.gas .rrow-nombre:hover{color:var(--neg)}
+  .rrow-chev{color:var(--ink-soft);font-size:10px;flex:none}
+  .rrow-monto{grid-row:1;grid-column:3;text-align:right;white-space:nowrap}
+  .rrow-monto b{font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums}
+  .rrow-monto small{font-family:'IBM Plex Mono',monospace;color:var(--ink-soft);margin-left:8px}
+  .rrow-bar-track{grid-row:2;grid-column:1/-1;height:8px;background:var(--ledger);border-radius:5px;overflow:hidden;cursor:default}
+  .rrow-bar-fill{display:block;height:100%;border-radius:5px;transition:width .3s}
+  .rrow.ing .rrow-bar-fill{background:var(--ing)}
+  .rrow.gas .rrow-bar-fill{background:var(--neg)}
+  .rrow.off .rrow-bar-fill{background:var(--ink-soft)}
+  .rrow.off .rrow-monto b{text-decoration:line-through;color:var(--ink-soft)}
+  .rrow.abierto .rrow-nombre{font-weight:600}
+  .rubro-detalle-full{margin-top:18px;padding:14px 16px 18px;background:var(--tint-neutral);border:1px solid var(--rule-strong)}
+  .rubro-detalle-head{display:flex;align-items:center;flex-wrap:wrap;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px}
+  .rubro-detalle-head b{color:var(--ink);text-transform:none;letter-spacing:0;font-size:13px}
+  .rubro-detalle-head button{margin-left:auto;padding:4px 10px;font-size:10px}
+
+  /* presencia en vivo: burbujas con la inicial de cada usuario conectado, en el header */
+  .presencia-zone{display:flex;align-items:center}
+  .presencia-zone:empty{display:none}
+  .presencia-bubble{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--pcolor,var(--ink-soft));color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border:2px solid var(--paper);margin-left:-8px;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:opacity .3s,transform .3s;cursor:default}
+  .presencia-bubble:first-child{margin-left:0}
+  .presencia-bubble.entrando{animation:presencia-pop .32s ease}
+  .presencia-bubble.saliendo{opacity:0;transform:scale(.5)}
+  @keyframes presencia-pop{from{opacity:0;transform:scale(.4) translateY(4px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+  /* indicador chico de guardado: la interfaz confirma un movimiento al instante (optimista),
+     así que este indicador es el único aviso de si el guardado real en Firestore, que corre
+     en segundo plano, sigue en curso o falló. */
+  .guardado-estado{display:flex;align-items:center;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
+  .guardado-estado .punto{width:6px;height:6px;border-radius:50%;background:var(--ink-soft);flex:none}
+  .guardado-estado.guardando .punto{background:var(--ing);animation:guardado-pulso 1s ease-in-out infinite}
+  .guardado-estado.error{color:var(--neg)}
+  .guardado-estado.error .punto{background:var(--neg);animation:none}
+  @keyframes guardado-pulso{0%,100%{opacity:1}50%{opacity:.3}}
 
   .empty{padding:26px;text-align:center;color:var(--ink-soft);background:var(--surface);border:1px dashed var(--rule-strong)}
   .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:12px;padding:10px 18px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9}
@@ -321,6 +402,12 @@
 </style>
 </head>
 <body>
+<!-- Accesos rápidos fijos al borde izquierdo: siempre visibles, y al ser position:fixed no
+     empujan ni angostan el contenido de .wrap (el ancho de las secciones queda intacto). -->
+<nav class="atajos" aria-label="Accesos rápidos">
+  <button type="button" data-atajo="resultados" title="Ir al Dashboard de resultados"><span class="atajos-ico">▤</span><span class="atajos-txt">Dashboard</span></button>
+  <button type="button" data-atajo="panel-movs" title="Ir a Movimientos"><span class="atajos-ico">≡</span><span class="atajos-txt">Movimientos</span></button>
+</nav>
 <div class="wrap">
 
   <div id="firebase-warning" class="firebase-warning" hidden>
@@ -333,6 +420,8 @@
       <div class="sub">Hotel Copahue · Saavedra 80, Junín</div>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
+      <span id="guardado-estado" class="guardado-estado" hidden></span>
+      <div id="presencia-zone" class="presencia-zone" title="Quiénes están conectados ahora"></div>
       <span id="usuario-nombre-header" class="usuario-nombre-header"></span>
       <button type="button" id="usuario-chip" class="icon-btn" title="Cerrar sesión">
         <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
@@ -427,12 +516,19 @@
         <span class="periodo-nota" id="periodo-nota"></span>
       </div>
       <div class="totals" id="totals"></div>
+      <div class="dash-export-bar">
+        <button type="button" class="ghost" id="btn-export-excel" title="Descarga un Excel con el resumen y, en una hoja aparte, el detalle completo de movimientos filtrados">⬇ Exportar a Excel</button>
+        <button type="button" class="ghost" id="btn-export-pdf" title="Abre el diálogo de impresión para guardar como PDF: resumen primero, detalle de movimientos en páginas aparte">⬇ Exportar a PDF</button>
+        <span class="dash-export-estado" id="dash-export-estado"></span>
+      </div>
       <div id="reszone"></div>
       <div class="split">
         <div><h3>Ingresos por rubro</h3><div class="rlist" id="ring"></div></div>
         <div><h3>Gastos por rubro</h3><div class="rlist" id="rgas"></div></div>
       </div>
-      <p class="note">El resultado se arma por mes devengado y es independiente de los filtros de Movimientos Registrados. Destildá un rubro para ver cómo impacta en el resultado.</p>
+      <div id="rubro-detalle-ingreso"></div>
+      <div id="rubro-detalle-gasto"></div>
+      <p class="note">El resultado se arma por mes devengado y es independiente de los filtros de Movimientos Registrados. Destildá un rubro para ver cómo impacta en el resultado. Tocá el nombre de un rubro para ver el detalle de sus movimientos.</p>
       <h3 style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin:22px 0 8px;font-weight:600">Detalle de movimientos del período</h3>
       <div id="detalle-periodo-zone" class="tablacompacta"></div>
       <p class="note">Este detalle muestra todos los movimientos cargados dentro del período elegido arriba (mes de cobro/pago o al que corresponde), incluidos los no computables. No depende de los tildes de rubro.</p>
@@ -463,7 +559,7 @@
           <div class="field"><label for="f-mespago" id="lbl-mespago">Mes de pago</label><input type="month" id="f-mespago"></div>
           <div class="field"><label for="f-mescorr">Mes al que corresponde</label><input type="month" id="f-mescorr"></div>
           <div class="field" id="wrap-fechapago"><label for="f-fechapago" id="lbl-fechapago">Fecha de vencimiento</label><input type="date" id="f-fechapago"></div>
-          <div class="field" id="wrap-item"><label for="f-item">Ítem</label><input type="text" id="f-item" placeholder="Ej. Provisión SAC"></div>
+          <div class="field" id="wrap-item"><label for="f-item" id="lbl-item">Ítem</label><input type="text" id="f-item" placeholder="Ej. Provisión SAC"></div>
           <div class="field" id="wrap-bruto"><label for="f-bruto" id="lbl-bruto">Importe bruto</label><input type="text" id="f-bruto" inputmode="numeric" autocomplete="off" placeholder="0"></div>
           <div class="field" id="wrap-moneda"><label for="f-moneda">Moneda</label>
             <select id="f-moneda"><option value="ARS" selected>ARS</option><option value="USD">USD</option></select>
@@ -590,8 +686,12 @@
   </section>
 
 </div>
+<!-- Reporte para PDF: oculto en pantalla, solo se muestra (y .wrap se oculta) durante la
+     impresión — ver exportarPDF() y las reglas @media print. -->
+<div id="reporte-pdf" class="reporte-pdf"></div>
 <div class="toast" id="toast"></div>
 <div id="texto-popover" class="texto-popover" hidden></div>
+<div id="chart-tooltip" class="chart-tooltip" hidden></div>
 
 <!-- ============ FIREBASE ============
 SDK de Firebase (Firestore), para que los datos se guarden en la nube y estén disponibles
@@ -766,12 +866,14 @@ const GASTOS_FIJOS=[
 let rows=[], propios={gasto:[],ingreso:[]}, modo='gasto', editId=null, pendingDel=null;
 let fijosExtra=[];  // gastos fijos que el usuario suma a la lista base, persistidos
 let expandidas=new Set();  // ids de gastos divididos con el desglose de pagos abierto
+let expandidasTarjeta=new Set();  // ids de gastos "tarjeta" con el desglose del resumen abierto
 let historial=[];  // registro de quién hizo cada cambio, persistido
 let usuarioActual='';  // nombre y apellido de la cuenta con sesión iniciada (viene de Firebase Auth)
 let historialDeshacer=[];  // pila de instantáneas previas a cada acción, para poder deshacer
 let ultimoAgregadoId=null, addConfirmTimers=[];
 let cuotasForm=[];  // cuotas en edición dentro del formulario
 let rubrosOff={ingreso:new Set(),gasto:new Set()};  // rubros destildados en el dashboard
+let rubroAbierto={ingreso:null,gasto:null};  // rubro con el desglose de movimientos abierto en el dashboard (uno por tipo)
 
 const $=id=>document.getElementById(id);
 const money=n=>{
@@ -781,6 +883,9 @@ const money=n=>{
 };
 const redondear2=n=>Math.round((n||0)*100)/100;
 const mesLabel=v=>{if(!v)return '—';const[y,m]=v.split('-');return MESES[(+m)-1]+' '+y.slice(2);};
+// Nombre "para humanos" de un movimiento en historial/deshacer: ahora que los ingresos también
+// pueden tener un ítem propio, se prioriza ese nombre y el rubro queda como respaldo.
+const nombreDe=r=>(r.item||r.rubro||(r&&r.tipo==='ingreso'?'ingreso':'gasto'));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const mesActual=()=>{const h=new Date();return h.getFullYear()+'-'+String(h.getMonth()+1).padStart(2,'0');};
 const mesSiguiente=()=>{const h=new Date();h.setMonth(h.getMonth()+1);return h.getFullYear()+'-'+String(h.getMonth()+1).padStart(2,'0');};
@@ -874,7 +979,33 @@ async function load(){
   }
   fillRubros(); pintarFxRubros(); pintarFijosExtra(); pintarMetodosPago(); pintarFxMetodosQuitar(); render();
 }
-async function save(){
+/* Guardado en segundo plano: antes, cada acción se quedaba esperando a que Firestore
+   confirmara el guardado antes de mostrar el cambio en pantalla (de ahí la demora de varios
+   segundos al cargar un movimiento). Ahora la pantalla se actualiza al instante con el cambio
+   ya hecho en memoria y el guardado real viaja en segundo plano; el indicador chico del
+   encabezado ("Guardando…" / "Guardado" / "No se pudo guardar") es el único aviso de cómo va.
+   Los guardados se encolan uno detrás del otro (nunca en paralelo) para que, si se hacen varios
+   cambios seguidos, Firestore los reciba siempre en el mismo orden en que ocurrieron acá; sin
+   esto, dos guardados en simultáneo podrían terminar de escribirse en un orden distinto y el
+   más viejo pisar al más nuevo. */
+let colaGuardado=Promise.resolve();
+let erroresGuardadoPendientes=0;
+let guardadoOkTimer=null;
+function marcarEstadoGuardado(estado){
+  const el=$('guardado-estado');
+  if(!el) return;
+  clearTimeout(guardadoOkTimer);
+  el.hidden=false;
+  el.classList.remove('guardando','error');
+  if(estado==='guardando'){ el.classList.add('guardando'); el.innerHTML='<span class="punto"></span>Guardando…'; }
+  else if(estado==='error'){ el.classList.add('error'); el.innerHTML='<span class="punto"></span>No se pudo guardar'; }
+  else {
+    el.innerHTML='<span class="punto"></span>Guardado';
+    guardadoOkTimer=setTimeout(()=>{ if(!erroresGuardadoPendientes) el.hidden=true; },1500);
+  }
+}
+async function guardarReal(){
+  marcarEstadoGuardado('guardando');
   try{
     const rowsPorAño={};
     rows.forEach(r=>{ const a=añoDeMes(r.mesCorr||r.mesPago); (rowsPorAño[a]=rowsPorAño[a]||[]).push(r); });
@@ -888,8 +1019,19 @@ async function save(){
       window.storage.set('copahue:indice', JSON.stringify({rowYears,histYears}))
     ];
     await Promise.all(tareas);
+    erroresGuardadoPendientes=0;
+    marcarEstadoGuardado('ok');
   }
-  catch(e){ toast('No se pudo guardar. Reintentá.'); }
+  catch(e){
+    erroresGuardadoPendientes++;
+    toast('No se pudo guardar. Reintentá.');
+    marcarEstadoGuardado('error');
+  }
+}
+function save(){
+  const tarea=colaGuardado.then(()=>guardarReal());
+  colaGuardado=tarea;
+  return tarea;
 }
 
 /* ---------- Tema claro/oscuro ---------- */
@@ -933,11 +1075,105 @@ function actualizarUsuarioUI(){
   $('usuario-nombre-header').textContent = u ? (usuarioActual||u.email) : '';
 }
 async function asegurarUsuario(){ return !!usuarioActual; }  // el login ya garantiza que hay alguien identificado
-$('usuario-chip').addEventListener('click',()=>{
+$('usuario-chip').addEventListener('click',async()=>{
   if(!FIREBASE_LISTO) return;
   if(!confirm('¿Cerrar sesión de '+(usuarioActual||'')+'?')) return;
+  await detenerPresencia(); // borra el latido ANTES de cerrar sesión (con la sesión ya cerrada no tendría permiso para escribir)
   firebase.auth().signOut();
 });
+
+/* ---------- Presencia en vivo ----------
+   Mientras alguien tiene la página abierta y con sesión iniciada, su pestaña manda un "latido"
+   cada 20s a presencia/{uid} (nombre + hora). Un listener en tiempo real arma burbujas con la
+   inicial de cada persona cuyo último latido tiene menos de 45s; si el latido se corta sin poder
+   avisar (se cierra la pestaña, se corta la conexión), la burbuja se apaga sola al vencer ese
+   margen — no hace falta "avisar" la salida para que funcione.
+   No requiere ninguna regla de Firestore nueva: ya está cubierta por la regla comodín del
+   proyecto (match /{document=**} { allow read, write: if request.auth != null }). */
+const PRESENCIA_COL='presencia', PRESENCIA_INTERVALO=20000, PRESENCIA_TIMEOUT=45000;
+let presenciaUid=null, presenciaTimer=null, presenciaCheckTimer=null, presenciaUnsub=null, presenciaPagehideHandler=null;
+let presenciaDocsCache={};      // uid -> {nombre, ts}, espejo en vivo de la colección
+let presenciaVivos=[];          // [{uid,nombre}] última lista pintada (latido vigente)
+let presenciaSaliendo={};       // uid -> {uid,nombre} en animación de salida
+
+function inicialesDe(nombre){
+  const partes=(nombre||'?').trim().split(/\s+/).filter(Boolean);
+  if(!partes.length) return '?';
+  if(partes.length===1) return partes[0].slice(0,2).toUpperCase();
+  return (partes[0][0]+partes[partes.length-1][0]).toUpperCase();
+}
+// Color estable por persona (hash simple del nombre) para distinguir burbujas de un vistazo.
+const PRESENCIA_HUES=['#1F6B57','#3B5F86','#B0791C','#963A2C','#6B4FA0','#B0507A'];
+function colorDe(nombre){
+  let h=0; for(let i=0;i<(nombre||'').length;i++) h=(h*31+nombre.charCodeAt(i))>>>0;
+  return PRESENCIA_HUES[h%PRESENCIA_HUES.length];
+}
+async function latidoPresencia(){
+  if(!db||!presenciaUid) return;
+  try{ await db.collection(PRESENCIA_COL).doc(presenciaUid).set({nombre:usuarioActual||'Usuario',ts:Date.now()}); }
+  catch(e){ /* un latido perdido no es grave: se reintenta en el próximo intervalo */ }
+}
+async function iniciarPresencia(user){
+  if(!db||!user) return;
+  presenciaUid=user.uid;
+  await latidoPresencia();
+  presenciaTimer=setInterval(latidoPresencia,PRESENCIA_INTERVALO);
+  presenciaUnsub=db.collection(PRESENCIA_COL).onSnapshot(snap=>{
+    presenciaDocsCache={};
+    snap.forEach(doc=>{ presenciaDocsCache[doc.id]=doc.data(); });
+    recalcularPresencia();
+  }, ()=>{ /* sin permisos o sin red: no se muestra a nadie, no rompe el resto de la app */ });
+  presenciaCheckTimer=setInterval(recalcularPresencia,10000);
+  if(presenciaPagehideHandler) window.removeEventListener('pagehide',presenciaPagehideHandler);
+  presenciaPagehideHandler=()=>{ if(db&&presenciaUid) db.collection(PRESENCIA_COL).doc(presenciaUid).delete().catch(()=>{}); };
+  window.addEventListener('pagehide',presenciaPagehideHandler);
+}
+function recalcularPresencia(){
+  const ahora=Date.now();
+  const vivos=Object.entries(presenciaDocsCache)
+    .filter(([uid,d])=>d && (ahora-(d.ts||0))<PRESENCIA_TIMEOUT)
+    .map(([uid,d])=>({uid,nombre:d.nombre||'Usuario'}))
+    .sort((a,b)=>a.nombre.localeCompare(b.nombre));
+  pintarPresencia(vivos);
+}
+function pintarPresencia(vivosNuevos){
+  const idsNuevos=new Set(vivosNuevos.map(v=>v.uid));
+  presenciaVivos.forEach(v=>{
+    if(!idsNuevos.has(v.uid) && !presenciaSaliendo[v.uid]){
+      presenciaSaliendo[v.uid]=v;
+      setTimeout(()=>{ delete presenciaSaliendo[v.uid]; pintarBurbujas(); },320);
+    }
+  });
+  vivosNuevos.forEach(v=>{ delete presenciaSaliendo[v.uid]; }); // si vuelve a aparecer, cancelá su salida
+  presenciaVivos=vivosNuevos;
+  pintarBurbujas();
+}
+function pintarBurbujas(){
+  const zona=$('presencia-zone'); if(!zona) return;
+  const idsPrevios=new Set(Array.from(zona.querySelectorAll('[data-uid]')).map(el=>el.dataset.uid));
+  const huboPrimeraPintada = zona.dataset.pintado==='1';
+  const items=[
+    ...presenciaVivos.map(v=>({...v,estado:'ok'})),
+    ...Object.values(presenciaSaliendo).map(v=>({...v,estado:'saliendo'}))
+  ].sort((a,b)=>a.nombre.localeCompare(b.nombre));
+  zona.innerHTML=items.map(v=>{
+    const esNueva = v.estado==='ok' && huboPrimeraPintada && !idsPrevios.has(v.uid);
+    return `<span class="presencia-bubble${v.estado==='saliendo'?' saliendo':''}${esNueva?' entrando':''}" data-uid="${esc(v.uid)}" style="--pcolor:${colorDe(v.nombre)}" title="${esc(v.nombre)} — ${v.estado==='saliendo'?'se acaba de desconectar':'en línea ahora'}">${esc(inicialesDe(v.nombre))}</span>`;
+  }).join('');
+  zona.dataset.pintado='1';
+}
+async function detenerPresencia(){
+  if(presenciaTimer){ clearInterval(presenciaTimer); presenciaTimer=null; }
+  if(presenciaCheckTimer){ clearInterval(presenciaCheckTimer); presenciaCheckTimer=null; }
+  if(presenciaUnsub){ presenciaUnsub(); presenciaUnsub=null; }
+  if(presenciaPagehideHandler){ window.removeEventListener('pagehide',presenciaPagehideHandler); presenciaPagehideHandler=null; }
+  presenciaDocsCache={}; presenciaVivos=[]; presenciaSaliendo={};
+  const zona=$('presencia-zone'); if(zona){ zona.innerHTML=''; zona.dataset.pintado=''; }
+  if(db && presenciaUid){
+    const uidABorrar=presenciaUid; presenciaUid=null;
+    try{ await db.collection(PRESENCIA_COL).doc(uidABorrar).delete(); }catch(e){ /* si ya no hay sesión válida, el latido igual expira solo a los 45s */ }
+  } else { presenciaUid=null; }
+}
 
 /* ---------- Login ---------- */
 function mostrarVistaLogin(v){
@@ -1023,7 +1259,9 @@ function iniciarAuth(){
       actualizarUsuarioUI();
       $('login-overlay').hidden=true;
       load();
+      iniciarPresencia(user);
     } else {
+      detenerPresencia(); // no-op si ya se llamó antes (p.ej. desde el botón de cerrar sesión)
       usuarioActual='';
       $('login-overlay').hidden=false;
       mostrarVistaLogin('signin');
@@ -1053,7 +1291,7 @@ async function deshacer(){
   propios=JSON.parse(ultimo.propios);
   fijosExtra=JSON.parse(ultimo.fijosExtra);
   registrarHistorial('Deshizo: '+ultimo.desc,null);
-  await save();
+  save();
   render(); pintarFxRubros(); pintarFijosExtra(); pintarMetodosPago(); pintarFxMetodosQuitar();
   actualizarBotonDeshacer();
   toast('Deshecho: '+ultimo.desc);
@@ -1061,7 +1299,7 @@ async function deshacer(){
 $('btn-deshacer').addEventListener('click',deshacer);
 
 function registrarHistorial(accion,r,detalleExtra){
-  const nombre = r ? (r.tipo==='ingreso'?(r.rubro||'ingreso'):(r.item||'gasto')) : (detalleExtra||'');
+  const nombre = r ? (nombreDe(r)) : (detalleExtra||'');
   historial.push({ ts:new Date().toISOString(), usuario:usuarioActual||'—', accion, item:nombre,
     rubro:r?(r.rubro||''):'', tipo:r?r.tipo:'', monto:(r&&typeof r.bruto==='number')?r.bruto:null, moneda:r?r.moneda:'',
     metodo:(r&&r.tipo==='gasto')?(r.metodoPago||''):'' });
@@ -1087,7 +1325,7 @@ function renderHistorial(){
 function mostrarConfirmacionAgregado(r){
   ultimoAgregadoId=r.id;
   addConfirmTimers.forEach(clearTimeout); addConfirmTimers=[];
-  const nombre=r.tipo==='ingreso'?(r.rubro||'ingreso'):(r.item||'gasto');
+  const nombre=nombreDe(r);
   const monto=(r.moneda==='USD'?'U$S ':'$ ')+money(r.bruto);
   $('add-confirm-txt').textContent=`${r.tipo==='ingreso'?'Ingreso':'Gasto'} agregado: ${nombre} — ${monto}`;
   const box=$('add-confirm');
@@ -1121,11 +1359,11 @@ function setModo(m){
   $('lbl-pago').textContent = m==='gasto'?'¿Está pago?':'¿Está cobrado?';
   $('wrap-metodo-pago').hidden = !($('f-pago').checked && m==='gasto');
   $('lbl-fecha-real-pago').textContent = m==='gasto'?'Fecha en que se pagó':'Fecha en que se cobró';
-  $('f-item').placeholder = m==='gasto'?'Ej. Provisión SAC':'Ej. Facturación del mes';
+  $('f-item').placeholder = m==='gasto'?'Ej. Provisión SAC':'Ej. Reserva Booking, Facturación del mes...';
+  $('lbl-item').textContent = m==='gasto' ? 'Ítem' : 'Ítem (opcional)';
   $('wrap-tipo').hidden = m==='ingreso';
   $('wrap-neto').hidden = m==='ingreso';
   $('wrap-fact').hidden = m==='gasto';
-  $('wrap-item').hidden = m==='ingreso';
   $('wrap-comp').hidden = m==='ingreso';
   $('wrap-dividido').hidden = m==='ingreso';
   document.querySelector('.form-grid').classList.toggle('ingreso', m==='ingreso');
@@ -1172,7 +1410,7 @@ $('f-metodo-pago').addEventListener('change',async e=>{
     guardarParaDeshacer('agregar método de pago "'+nuevo+'"');
     propios.metodos.push(nuevo);
     registrarHistorial('Agregó el método de pago',null,nuevo);
-    await save();
+    save();
   }
   pintarMetodosPago(); $('f-metodo-pago').value=nuevo||'';
   pintarFxMetodosQuitar();
@@ -1194,7 +1432,7 @@ $('fx-rubro').addEventListener('change',async e=>{
     guardarParaDeshacer('agregar rubro "'+nuevo+'"');
     propios.gasto.push(nuevo);
     registrarHistorial('Agregó el rubro',null,nuevo);
-    await save();
+    save();
   }
   pintarFxRubros(); $('fx-rubro').value=nuevo||'';
 });
@@ -1207,7 +1445,7 @@ $('btn-fx-rubro-quitar').addEventListener('click',async()=>{
   guardarParaDeshacer('quitar rubro "'+r+'"');
   propios.gasto = propios.gasto.filter(x=>x!==r);
   registrarHistorial('Quitó el rubro',null,r);
-  await save(); pintarFxRubros(); toast('Rubro quitado de la lista');
+  save(); pintarFxRubros(); toast('Rubro quitado de la lista');
 });
 function pintarFxMetodosQuitar(){
   const cur=$('fx-metodo-quitar').value;
@@ -1225,7 +1463,7 @@ $('btn-fx-metodo-quitar').addEventListener('click',async()=>{
   guardarParaDeshacer('quitar método de pago "'+m+'"');
   propios.metodos = propios.metodos.filter(x=>x!==m);
   registrarHistorial('Quitó el método de pago',null,m);
-  await save(); pintarFxMetodosQuitar(); pintarMetodosPago(); toast('Método de pago quitado de la lista');
+  save(); pintarFxMetodosQuitar(); pintarMetodosPago(); toast('Método de pago quitado de la lista');
 });
 $('btn-fx-add').addEventListener('click',async()=>{
   const item=$('fx-item').value.trim().toUpperCase();
@@ -1238,7 +1476,7 @@ $('btn-fx-add').addEventListener('click',async()=>{
   guardarParaDeshacer('sumar "'+item+'" a la lista de fijos');
   fijosExtra.push({item,rubro});
   registrarHistorial('Sumó a la lista de fijos',null,item+' ('+rubro+')');
-  await save();
+  save();
   $('fx-item').value=''; $('fx-rubro').value='';
   pintarFijosExtra(); $('fx-item').focus();
 });
@@ -1250,7 +1488,7 @@ document.addEventListener('click',async e=>{
   guardarParaDeshacer('quitar "'+(f?f.item:'')+'" de la lista de fijos');
   fijosExtra.splice(+i,1);
   if(f) registrarHistorial('Quitó de la lista de fijos',null,f.item);
-  await save(); pintarFijosExtra();
+  save(); pintarFijosExtra();
 });
 $('btn-fijos-go').addEventListener('click',async()=>{
   const mesLote=mesActual();  // se usa solo internamente, para no duplicar si se aprieta más de una vez
@@ -1268,7 +1506,7 @@ $('btn-fijos-go').addEventListener('click',async()=>{
   guardarParaDeshacer('cargar '+nuevos.length+' gastos fijos al libro');
   rows.push(...nuevos);
   registrarHistorial('Cargó gastos fijos',null,nuevos.length+' gastos fijos, sin mes asignado');
-  await save();
+  save();
   $('fijos-mes-todos').value=''; $('fijos-venc-todos').value='';
   ['qi-cobro','qi-corr','qg-pago','qg-corr'].forEach(id=>$(id).value='');
   render();
@@ -1291,7 +1529,7 @@ $('f-rubro').addEventListener('change',async e=>{
     guardarParaDeshacer('agregar rubro "'+nuevo+'"');
     propios[modo].push(nuevo);
     registrarHistorial('Agregó el rubro',null,nuevo);
-    await save();
+    save();
   }
   fillRubros(); $('f-rubro').value=nuevo||'';
 });
@@ -1319,6 +1557,9 @@ const digitos=el=>{
 };
 const brutoVal=()=>digitos($('f-bruto'));
 const ivaVal=()=>digitos($('f-iva'));
+// Versión de "digitos" para inputs sueltos (por id) fuera del formulario principal, como los del
+// desglose de un resumen de tarjeta: mismo parseo de miles/decimales, sin el formateo en vivo.
+function valorSimple(id){ const el=$(id); if(!el) return 0; return digitos(el); }
 function formatCampo(el){
   const antes=el.value.slice(0,el.selectionStart??el.value.length).replace(/[^\d,.]/g,'').length;
   let {ent,dec}=separarImporte(el.value);
@@ -1384,6 +1625,22 @@ function sugerirIva27(){
     $('f-iva').value = money(b-(b/(1+pct)));
   }
 }
+// Misma sugerencia de IVA (21%/27%), pero para el mini-formulario de desglose de un resumen de
+// tarjeta (campos dz-tipo-/dz-bruto-/dz-iva- por fila de tarjeta). Queda editable a mano igual
+// que en el formulario principal: "dzIvaAuto[rowId]" pasa a false en cuanto el usuario toca el
+// campo de IVA, y se reinicia a true al agregar el movimiento (los campos vuelven a quedar en blanco).
+let dzIvaAuto={};
+function sugerirIvaDesglose(rowId){
+  const selTipo=$('dz-tipo-'+rowId);
+  if(!selTipo) return;
+  const t=selTipo.value;
+  const pct = t==='A' ? 0.21 : (t==='A | 27%' ? 0.27 : null);
+  if(pct===null) return;
+  if(dzIvaAuto[rowId]===false) return;
+  const b=valorSimple('dz-bruto-'+rowId);
+  const ivaEl=$('dz-iva-'+rowId);
+  if(ivaEl && b>0) ivaEl.value = money(b-(b/(1+pct)));
+}
 
 /* ---------- Cuotas dentro del formulario ---------- */
 $('f-dividido').addEventListener('change',()=>{
@@ -1446,7 +1703,7 @@ $('cuotas-form').addEventListener('change',async e=>{
     if(val==='__nuevo'){
       const nuevo=(prompt('Nombre del método de pago nuevo:')||'').trim();
       if(nuevo&&!METODOS_PAGO_BASE.includes(nuevo)&&!propios.metodos.includes(nuevo)){
-        if(await asegurarUsuario()){ guardarParaDeshacer('agregar método de pago "'+nuevo+'"'); propios.metodos.push(nuevo); registrarHistorial('Agregó el método de pago',null,nuevo); await save(); pintarFxMetodosQuitar(); }
+        if(await asegurarUsuario()){ guardarParaDeshacer('agregar método de pago "'+nuevo+'"'); propios.metodos.push(nuevo); registrarHistorial('Agregó el método de pago',null,nuevo); save(); pintarFxMetodosQuitar(); }
       }
       val=nuevo||'';
     }
@@ -1536,11 +1793,25 @@ async function abrirEdicion(id){
 }
 $('btn-cancel').addEventListener('click',salirEdicion);
 
+// Enter en cualquier campo del formulario de carga/edición dispara el guardado (Agregar o
+// Guardar cambios, según corresponda), como si se tocara el botón. No aplica al formulario de
+// cuotas (que tiene su propio botón para sumar cuotas) ni a los <select>, donde Enter confirma
+// la opción elegida en vez de disparar el guardado global.
+$('form-grid').addEventListener('keydown',e=>{
+  if(e.key!=='Enter') return;
+  if(e.target.tagName==='SELECT') return;
+  e.preventDefault();
+  $('btn-add').click();
+});
+
 $('btn-add').addEventListener('click',async()=>{
   const bruto=brutoVal();
   const rubroSel=$('f-rubro').value;
   if(!rubroSel||rubroSel==='__nuevo'){toast('Elegí el rubro.');$('f-rubro').focus();return;}
-  const item = modo==='ingreso' ? rubroSel : $('f-item').value.trim().toUpperCase();
+  // El ítem es de carga libre para los dos tipos; en ingresos es opcional y, si se deja en
+  // blanco, se sigue usando el rubro como nombre (comportamiento de antes, para no romper nada).
+  const itemTexto = $('f-item').value.trim().toUpperCase();
+  const item = itemTexto || (modo==='ingreso' ? rubroSel : '');
   if(modo==='gasto'&&!item){toast('Falta el ítem.');$('f-item').focus();return;}
   const sinImportePermitido = modo==='gasto';
   if(!(bruto>0) && !sinImportePermitido){toast('Cargá un importe.');$('f-bruto').focus();return;}
@@ -1591,7 +1862,7 @@ $('btn-add').addEventListener('click',async()=>{
   if(editId){
     const r=rows.find(x=>x.id===editId);
     if(r){
-      guardarParaDeshacer('modificación de "'+(r.tipo==='ingreso'?(r.rubro||'ingreso'):(r.item||'gasto'))+'"');
+      guardarParaDeshacer('modificación de "'+(nombreDe(r))+'"');
       Object.assign(r,datos);
       if(esDiv){
         r.cuotas = cuotasForm.map(c=>({importe:+c.importe||0,mesPago:c.mesPago||'',fecha:c.fecha||'',pago:!!c.pago,metodoPago:c.metodoPago||''}));
@@ -1601,7 +1872,7 @@ $('btn-add').addEventListener('click',async()=>{
       if(r.fijo){ if(!r.loteMes) r.loteMes=r.mesCorr||''; agregarAFijosSiCorresponde(r.item,r.rubro); }
       registrarHistorial('Modificó',r);
     }
-    await save(); salirEdicion(); toast('Cambios guardados');
+    save(); salirEdicion(); toast('Cambios guardados');
   }else{
     const nuevo={id:uid(),...datos};
     if(esDiv){
@@ -1610,11 +1881,11 @@ $('btn-add').addEventListener('click',async()=>{
       sincronizarPagoDividido(nuevo);
     }
     if(nuevo.fijo) nuevo.loteMes = nuevo.mesCorr||'';
-    guardarParaDeshacer('alta de "'+(nuevo.tipo==='ingreso'?(nuevo.rubro||'ingreso'):(nuevo.item||'gasto'))+'"');
+    guardarParaDeshacer('alta de "'+nombreDe(nuevo)+'"');
     rows.push(nuevo);
     if(nuevo.fijo) agregarAFijosSiCorresponde(nuevo.item,nuevo.rubro);
     registrarHistorial('Agregó',nuevo);
-    await save(); limpiarForm(); render(); toast(modo==='ingreso'?'Ingreso agregado':'Gasto agregado');
+    save(); limpiarForm(); render(); toast(modo==='ingreso'?'Ingreso agregado':'Gasto agregado');
     mostrarConfirmacionAgregado(nuevo);
   }
 });
@@ -1647,12 +1918,13 @@ function pagadoCuotas(r){
 /* ---------- Orden por columna (Registrados, Fijos mensuales y Detalle del período) ---------- */
 let sortRegistrados={col:'mesCorr',dir:'desc'};
 let sortDetallePeriodo={col:'mesCorr',dir:'desc'};
+let sortRubroDetalle={ingreso:{col:'mesCorr',dir:'desc'}, gasto:{col:'mesCorr',dir:'desc'}};
 // valor a comparar por columna
 const COLS_ORDEN={
   tipo:      r=>r.tipo==='ingreso'?'variable':(r.fijo?'fijo':'variable'),
   mesPago:   r=>r.mesPago||'',
   vencimiento: r=>r.tipo==='gasto'?(r.fechaVenc||''):'',
-  item:      r=>(r.tipo==='ingreso'?(r.rubro||''):(r.item||'')),
+  item:      r=>(r.item||r.rubro||''),
   bruto:     r=>brutoARS(r),
   neto:      r=>netoARS(r),
   factura:   r=>r.tipoFac||'',
@@ -1672,7 +1944,7 @@ function comparar(a,b,col){
   else c=String(va).localeCompare(String(vb));
   if(c!==0) return c;
   // desempate estable por nombre
-  const na=r=>(r.tipo==='ingreso'?(r.rubro||''):(r.item||''));
+  const na=r=>(r.item||r.rubro||'');
   return na(a).localeCompare(na(b));
 }
 function ordenar(lista,sortState){
@@ -1687,12 +1959,15 @@ function ordenar(lista,sortState){
 document.addEventListener('click',e=>{
   const th=e.target.closest('th[data-sortcol]');
   if(!th) return;
-  const esPeriodo = !!th.closest('[data-tabla="periodo"]');
-  const sortState = esPeriodo ? sortDetallePeriodo : sortRegistrados;
+  const tablaId = (th.closest('[data-tabla]')||{}).dataset ? th.closest('[data-tabla]').dataset.tabla : 'registrados';
+  const esRubro = tablaId && tablaId.indexOf('rubro-')===0;
+  const sortState = tablaId==='periodo' ? sortDetallePeriodo : esRubro ? sortRubroDetalle[tablaId.slice(6)] : sortRegistrados;
   const col=th.dataset.sortcol;
   if(sortState.col===col){ sortState.dir = sortState.dir==='asc'?'desc':'asc'; }
   else { sortState.col=col; sortState.dir = ['bruto','neto','mesPago','mesCorr','estado'].includes(col)?'desc':'asc'; }
-  if(esPeriodo) renderDetallePeriodo(filteredPeriodo()); else renderTabla(filteredTabla());
+  if(tablaId==='periodo') renderDetallePeriodo(filteredPeriodo());
+  else if(esRubro) renderDashboard(filteredPeriodo());
+  else renderTabla(filteredTabla());
 });
 
 /* ---------- Filtros ---------- */
@@ -1821,24 +2096,229 @@ function renderDashboard(base){
   renderRubros(base.filter(r=>r.comp!==false));
 }
 
+// Gráfico de barras real de "Ingresos por rubro" / "Gastos por rubro": cada fila dibuja una
+// barra proporcional al rubro más grande de la lista (no un tinte de fondo). El nombre del rubro
+// es un botón aparte del checkbox: tocarlo despliega el detalle de los movimientos de ese rubro
+// (dentro del período filtrado) sin tildar/destildarlo. Solo puede haber un rubro desplegado a
+// la vez POR TIPO — abrir uno en gastos no cierra el que esté abierto en ingresos, y viceversa.
 function renderRubros(base){
   const build=(tipo,cont)=>{
-    const o={};
-    base.filter(r=>r.tipo===tipo).forEach(r=>{const k=r.rubro||'—';o[k]=(o[k]||0)+netoARS(r);});
+    const o={}, movs={};
+    base.filter(r=>r.tipo===tipo).forEach(r=>{
+      const k=r.rubro||'—';
+      o[k]=(o[k]||0)+netoARS(r);
+      (movs[k]=movs[k]||[]).push(r);
+    });
     const ks=Object.keys(o).sort((a,b)=>o[b]-o[a]);
-    if(!ks.length){ $(cont).innerHTML='<div class="rrow"><span style="color:var(--ink-soft)">Sin movimientos</span><span></span></div>'; return; }
+    if(!ks.length){ $(cont).innerHTML='<div class="empty" style="padding:16px">Sin movimientos</div>'; if(rubroAbierto[tipo]) rubroAbierto[tipo]=null; pintarRubroDetalle(tipo,null); return; }
+    if(rubroAbierto[tipo] && !ks.includes(rubroAbierto[tipo])) rubroAbierto[tipo]=null;
     const totAct=ks.filter(k=>!rubrosOff[tipo].has(k)).reduce((a,k)=>a+o[k],0);
+    const maxV=Math.max(1,...ks.map(k=>o[k]));
+    const claseTipo = tipo==='ingreso' ? 'ing' : 'gas';
     $(cont).innerHTML=ks.map(k=>{
       const off=rubrosOff[tipo].has(k);
       const pct=totAct?(o[k]/totAct*100).toFixed(0):0;
-      return `<label class="rrow ${off?'off':''}">
-        <span><input type="checkbox" data-rub="${tipo}|${esc(k)}" ${off?'':'checked'}> ${esc(k)}</span>
-        <span><b>${money(o[k])}</b>${off?'':`<small>${pct}%</small>`}</span></label>`;
+      const w=(o[k]/maxV*100).toFixed(1);
+      const abierto=rubroAbierto[tipo]===k;
+      const tip=esc(k+' — $ '+money(o[k])+(off?' (destildado, no entra al resultado)':' · '+pct+'% del total activo'));
+      return `<div class="rrow ${claseTipo}${off?' off':''}${abierto?' abierto':''}">
+        <input type="checkbox" data-rub="${tipo}|${esc(k)}" ${off?'':'checked'} title="Tildar/destildar este rubro en el resultado">
+        <button type="button" class="rrow-nombre" data-rubro-toggle="${tipo}|${esc(k)}" title="Ver los movimientos de este rubro">
+          <span class="rrow-chev">${abierto?'▾':'▸'}</span>${esc(k)}
+        </button>
+        <span class="rrow-monto"><b>${money(o[k])}</b>${off?'':`<small>${pct}%</small>`}</span>
+        <span class="rrow-bar-track" data-tip="${tip}"><span class="rrow-bar-fill" style="width:${w}%"></span></span>
+      </div>`;
     }).join('');
+    pintarRubroDetalle(tipo, rubroAbierto[tipo] ? movs[rubroAbierto[tipo]] : null);
   };
   build('ingreso','ring');
   build('gasto','rgas');
 }
+// Detalle de movimientos del rubro abierto: se pinta a todo el ancho del dashboard (no adentro
+// de la columna angosta de ring/rgas) para que la tabla completa de movimientos se lea bien.
+function pintarRubroDetalle(tipo, movs){
+  const cont=$('rubro-detalle-'+tipo);
+  const k=rubroAbierto[tipo];
+  if(!cont) return;
+  if(!k || !movs){ cont.innerHTML=''; return; }
+  cont.innerHTML=`<div class="rubro-detalle-full">
+    <div class="rubro-detalle-head">Movimientos de <b>${esc(k)}</b> (${tipo==='ingreso'?'ingresos':'gastos'}) — ${movs.length} movimiento${movs.length===1?'':'s'} del período filtrado
+      <button type="button" class="ghost" data-rubro-cerrar="${tipo}">Cerrar</button></div>
+    <div class="tablacompacta">${tablaHtml(ordenar(movs,sortRubroDetalle[tipo]),sortRubroDetalle[tipo],'rubro-'+tipo)}</div>
+  </div>`;
+}
+
+/* ---------- Exportar el dashboard a Excel y a PDF ----------
+   Los dos exportadores parten de la misma función datosReporte(), así el Excel y el PDF nunca
+   pueden mostrar números distintos entre sí. En los dos, el desglose completo de movimientos
+   filtrados queda en una sección/hoja aparte de los resultados principales (KPIs, resultado por
+   mes y rubros): una hoja separada en el Excel, y después de un salto de página en el PDF. */
+function datosReporte(){
+  const baseD=filteredPeriodo();
+  let ing=0,gas=0,pend=0,nocomp=0;
+  const pendGasto=r=>(r.dividido&&Array.isArray(r.cuotas))?saldoCuotas(r):(r.pago?0:netoARS(r));
+  baseD.forEach(r=>{ if(!activoDash(r)) return; const n=netoARS(r);
+    if(r.tipo==='ingreso'){ ing+=n; }
+    else if(r.comp===false){ nocomp+=n; pend+=pendGasto(r); }
+    else { gas+=n; pend+=pendGasto(r); } });
+  const res=ing-gas, mg=ing?res/ing*100:0;
+
+  const compView=baseD.filter(r=>activoDash(r)&&r.comp!==false);
+  const m={};
+  compView.forEach(r=>{const k=r.mesCorr||'sin';m[k]=m[k]||{i:0,g:0};const n=netoARS(r);r.tipo==='ingreso'?m[k].i+=n:m[k].g+=n;});
+  const meses=Object.keys(m).sort().reverse().map(k=>{
+    const d=m[k], r2=d.i-d.g;
+    return {mes:k==='sin'?'Sin mes':mesLabel(k), ingresos:d.i, gastos:d.g, resultado:r2, margen:d.i?r2/d.i*100:null};
+  });
+
+  const rubroView=baseD.filter(r=>r.comp!==false);
+  const rubrosDe=tipo=>{
+    const o={}; rubroView.filter(r=>r.tipo===tipo).forEach(r=>{const k=r.rubro||'—';o[k]=(o[k]||0)+netoARS(r);});
+    const ks=Object.keys(o).sort((a,b)=>o[b]-o[a]);
+    const totAct=ks.filter(k=>!rubrosOff[tipo].has(k)).reduce((a,k)=>a+o[k],0);
+    return ks.map(k=>({rubro:k, monto:o[k], activo:!rubrosOff[tipo].has(k), pct: totAct?o[k]/totAct*100:0}));
+  };
+
+  return {
+    periodoTxt: $('periodo-nota').textContent||'Todos los períodos',
+    kpis:{ing,gas,res,mg,pend,nocomp},
+    meses,
+    ingresosPorRubro: rubrosDe('ingreso'),
+    gastosPorRubro: rubrosDe('gasto'),
+    detalle: baseD  // igual que "Detalle de movimientos del período": todo el período, computable o no
+  };
+}
+function construirReportePdfHtml(d){
+  const filasMeses=d.meses.map(m=>`<tr><td>${esc(m.mes)}</td><td class="num">${money(m.ingresos)}</td><td class="num">${money(m.gastos)}</td><td class="num">${money(m.resultado)}</td><td class="num">${m.margen!=null?m.margen.toFixed(1)+'%':'—'}</td></tr>`).join('');
+  const filasRubro=lista=>lista.map(r=>`<tr><td>${esc(r.rubro)}${r.activo?'':' (destildado)'}</td><td class="num">${money(r.monto)}</td><td class="num">${r.activo?r.pct.toFixed(0)+'%':'—'}</td></tr>`).join('')
+    ||'<tr><td colspan="3">Sin movimientos</td></tr>';
+  const filasDetalle=d.detalle.map(r=>{
+    const esIng=r.tipo==='ingreso';
+    return `<tr>
+      <td>${esIng?'Ingreso':'Gasto'}</td>
+      <td>${esc(mesLabel(r.mesPago))}</td>
+      <td>${esc(mesLabel(r.mesCorr))}</td>
+      <td>${esc(r.item||r.rubro||'')}</td>
+      <td class="num">${money(brutoARS(r))}</td>
+      <td class="num">${money(netoARS(r))}</td>
+      <td>${esc(r.rubro||'')}</td>
+      <td>${r.comp!==false?'Sí':'No'}</td>
+      <td>${r.pago?'Sí':'No'}</td>
+      <td>${esc(r.detalle||'')}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="10">Sin movimientos en este período</td></tr>';
+  return `
+    <h1>Hotel Copahue — Resultados y devengamiento</h1>
+    <div class="reporte-sub">${esc(d.periodoTxt)} · Generado el ${new Date().toLocaleString('es-AR')}</div>
+    <h2>Resumen</h2>
+    <table><thead><tr><th>Ingresos netos</th><th>Gastos netos</th><th>Resultado</th><th>Margen</th><th>Pagos impagos</th>${d.kpis.nocomp>0?'<th>No computable</th>':''}</tr></thead>
+    <tbody><tr><td class="num">$ ${money(d.kpis.ing)}</td><td class="num">$ ${money(d.kpis.gas)}</td><td class="num">$ ${money(d.kpis.res)}</td><td class="num">${d.kpis.ing?d.kpis.mg.toFixed(1)+'%':'—'}</td><td class="num">$ ${money(d.kpis.pend)}</td>${d.kpis.nocomp>0?`<td class="num">$ ${money(d.kpis.nocomp)}</td>`:''}</tr></tbody></table>
+    <h2>Resultado por mes</h2>
+    <table><thead><tr><th>Mes devengado</th><th>Ingresos</th><th>Gastos</th><th>Resultado</th><th>Margen</th></tr></thead><tbody>${filasMeses||'<tr><td colspan="5">Sin movimientos</td></tr>'}</tbody></table>
+    <h2>Ingresos por rubro</h2>
+    <table><thead><tr><th>Rubro</th><th>Monto</th><th>% del total activo</th></tr></thead><tbody>${filasRubro(d.ingresosPorRubro)}</tbody></table>
+    <h2>Gastos por rubro</h2>
+    <table><thead><tr><th>Rubro</th><th>Monto</th><th>% del total activo</th></tr></thead><tbody>${filasRubro(d.gastosPorRubro)}</tbody></table>
+    <div class="reporte-salto"></div>
+    <h2>Detalle de movimientos filtrados (${d.detalle.length})</h2>
+    <p class="reporte-nota">Incluye todos los movimientos del período elegido arriba, computables y no computables — igual que "Detalle de movimientos del período" del dashboard. No depende de los tildes de rubro.</p>
+    <table><thead><tr><th>Tipo</th><th>Mes de pago/cobro</th><th>Mes correspondiente</th><th>Ítem</th><th>Bruto</th><th>Neto</th><th>Rubro</th><th>Computable</th><th>Pago/Cobro</th><th>Detalle</th></tr></thead><tbody>${filasDetalle}</tbody></table>
+  `;
+}
+function exportarPDF(){
+  $('reporte-pdf').innerHTML = construirReportePdfHtml(datosReporte());
+  document.body.classList.add('imprimiendo-dashboard');
+  window.print();
+}
+window.addEventListener('afterprint',()=>{ document.body.classList.remove('imprimiendo-dashboard'); });
+$('btn-export-pdf').addEventListener('click',exportarPDF);
+
+// El generador de Excel (ExcelJS) pesa varios cientos de KB, así que se carga bajo demanda recién
+// al tocar "Exportar a Excel" (no en cada carga de la página) y se cachea para no pedirlo de nuevo.
+let cargaExcelJS=null;
+function cargarExcelJS(){
+  if(window.ExcelJS) return Promise.resolve();
+  if(cargaExcelJS) return cargaExcelJS;
+  cargaExcelJS=new Promise((resolve,reject)=>{
+    const s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.bare.min.js';
+    s.onload=()=>resolve();
+    s.onerror=()=>{ cargaExcelJS=null; reject(new Error('No se pudo cargar el generador de Excel (revisá la conexión a internet).')); };
+    document.head.appendChild(s);
+  });
+  return cargaExcelJS;
+}
+async function exportarExcel(){
+  const estado=$('dash-export-estado');
+  const btn=$('btn-export-excel');
+  btn.disabled=true; estado.textContent='Generando Excel…';
+  try{
+    await cargarExcelJS();
+    const d=datosReporte();
+    const wb=new ExcelJS.Workbook();
+    wb.creator='Hotel Copahue'; wb.created=new Date();
+
+    const wsR=wb.addWorksheet('Resumen');
+    wsR.columns=[{width:28},{width:16},{width:16},{width:16},{width:14},{width:14}];
+    wsR.addRow(['Hotel Copahue — Resultados y devengamiento']).font={bold:true,size:14};
+    wsR.addRow([d.periodoTxt]);
+    wsR.addRow([]);
+    wsR.addRow(['Ingresos netos','Gastos netos','Resultado','Margen','Pagos impagos','No computable']).font={bold:true};
+    const rKpi=wsR.addRow([d.kpis.ing,d.kpis.gas,d.kpis.res,(d.kpis.ing?d.kpis.mg/100:0),d.kpis.pend,d.kpis.nocomp]);
+    [1,2,3,5,6].forEach(c=>rKpi.getCell(c).numFmt='"$"#,##0');
+    rKpi.getCell(4).numFmt='0.0%';
+    wsR.addRow([]);
+    wsR.addRow(['Mes devengado','Ingresos','Gastos','Resultado','Margen']).font={bold:true};
+    d.meses.forEach(m=>{
+      const r=wsR.addRow([m.mes,m.ingresos,m.gastos,m.resultado,m.margen!=null?m.margen/100:null]);
+      r.getCell(2).numFmt='"$"#,##0'; r.getCell(3).numFmt='"$"#,##0'; r.getCell(4).numFmt='"$"#,##0';
+      if(m.margen!=null) r.getCell(5).numFmt='0.0%';
+    });
+    wsR.addRow([]);
+    wsR.addRow(['Ingresos por rubro','Monto','% del total activo']).font={bold:true};
+    d.ingresosPorRubro.forEach(x=>{
+      const r=wsR.addRow([x.rubro+(x.activo?'':' (destildado)'),x.monto,x.activo?x.pct/100:null]);
+      r.getCell(2).numFmt='"$"#,##0'; if(x.activo) r.getCell(3).numFmt='0%';
+    });
+    wsR.addRow([]);
+    wsR.addRow(['Gastos por rubro','Monto','% del total activo']).font={bold:true};
+    d.gastosPorRubro.forEach(x=>{
+      const r=wsR.addRow([x.rubro+(x.activo?'':' (destildado)'),x.monto,x.activo?x.pct/100:null]);
+      r.getCell(2).numFmt='"$"#,##0'; if(x.activo) r.getCell(3).numFmt='0%';
+    });
+
+    const wsD=wb.addWorksheet('Detalle de movimientos');
+    const cols=['Tipo','Mes de pago/cobro','Mes correspondiente','Ítem','Bruto','Neto','Moneda','Tipo de factura','Rubro','Computable','Pago/Cobro','Fecha de pago','Método','Detalle'];
+    wsD.addRow(cols).font={bold:true};
+    wsD.columns=cols.map(c=>({width: c==='Detalle'?32:(c==='Ítem'?24:16)}));
+    d.detalle.forEach(r=>{
+      const esIng=r.tipo==='ingreso';
+      const row=wsD.addRow([
+        esIng?'Ingreso':'Gasto', mesLabel(r.mesPago), mesLabel(r.mesCorr), r.item||r.rubro||'',
+        brutoARS(r), netoARS(r), r.moneda||'ARS', r.tipoFac||'', r.rubro||'',
+        r.comp!==false?'Sí':'No', r.pago?'Sí':'No', r.fechaPago?fmtFechaCorta(r.fechaPago):'', r.metodoPago||'', r.detalle||''
+      ]);
+      row.getCell(5).numFmt='"$"#,##0'; row.getCell(6).numFmt='"$"#,##0';
+    });
+    if(d.detalle.length) wsD.autoFilter={from:{row:1,column:1},to:{row:1,column:cols.length}};
+
+    const buf=await wb.xlsx.writeBuffer();
+    const blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download='Copahue_Resultados_'+hoyISO()+'.xlsx';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),2000);
+    estado.textContent='';
+    toast('Excel descargado');
+  }catch(e){
+    estado.textContent='';
+    toast(e.message||'No se pudo generar el Excel.');
+  }finally{
+    btn.disabled=false;
+  }
+}
+$('btn-export-excel').addEventListener('click',exportarExcel);
 
 // tildes de rubro
 document.addEventListener('change',e=>{
@@ -1865,6 +2345,19 @@ $('dash-toggle').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '
 $('movs-toggle').addEventListener('click',()=>toggleMovs());
 $('movs-toggle').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleMovs(); } });
 
+// Accesos rápidos fijos: despliegan la sección si estaba colapsada, hacen scroll hasta ella y
+// la resaltan un instante para que se note adónde se llegó.
+document.querySelectorAll('.atajos button[data-atajo]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const id=btn.dataset.atajo;
+    if(id==='resultados') toggleDash(true); else toggleMovs(true);
+    const sec=$(id);
+    sec.scrollIntoView({behavior:'smooth',block:'start'});
+    sec.classList.remove('atajo-flash');
+    requestAnimationFrame(()=>{ sec.classList.add('atajo-flash'); setTimeout(()=>sec.classList.remove('atajo-flash'),1000); });
+  });
+});
+
 // Sub-vistas dentro de Movimientos: Cargar nuevos / Registrados / Fijos mensuales
 let vistaMovActual='cargar';
 function setVistaMov(v){
@@ -1879,6 +2372,34 @@ function setVistaMov(v){
 $('subtab-cargar').addEventListener('click',()=>setVistaMov('cargar'));
 $('subtab-registrados').addEventListener('click',()=>setVistaMov('registrados'));
 $('subtab-fijos').addEventListener('click',()=>setVistaMov('fijos'));
+
+/* ---------- Tooltip de los gráficos del dashboard (hover/foco sobre barras y puntos) ---------- */
+(function(){
+  const tip=$('chart-tooltip');
+  const ubicar=(x,y)=>{
+    let left=x+14, top=y+14;
+    const maxLeft=window.innerWidth-250, maxTop=window.innerHeight-70;
+    if(left>maxLeft) left=x-tip.offsetWidth-14;
+    if(top>maxTop) top=y-tip.offsetHeight-14;
+    tip.style.left=Math.max(6,left)+'px'; tip.style.top=Math.max(6,top)+'px';
+  };
+  const mostrar=(el,x,y)=>{ tip.textContent=el.dataset.tip; tip.hidden=false; ubicar(x,y); };
+  document.addEventListener('mousemove',e=>{
+    const el=e.target.closest('[data-tip]');
+    if(!el){ if(!tip.hidden) tip.hidden=true; return; }
+    mostrar(el,e.clientX,e.clientY);
+  });
+  document.addEventListener('mouseleave',()=>{ tip.hidden=true; },true);
+  document.addEventListener('focusin',e=>{
+    const el=e.target.closest('[data-tip]');
+    if(!el) return;
+    const rect=el.getBoundingClientRect();
+    mostrar(el,rect.left+rect.width/2,rect.top);
+  });
+  document.addEventListener('focusout',e=>{
+    if(e.target.closest('[data-tip]')) tip.hidden=true;
+  });
+})();
 
 /* ---------- Ver texto completo de una celda truncada (Rubro/Detalle) ---------- */
 document.addEventListener('click',e=>{
@@ -1973,29 +2494,33 @@ function tablaHtml(view,sortState,tablaId){
   const hayIngresos=view.some(r=>r.tipo==='ingreso');
   const hayGastos=view.some(r=>r.tipo==='gasto');
   const mostrarFC=hayGastos, mostrarFacturado=hayIngresos, mostrarMetodo=hayGastos;
-  const ANCHOS={tipo:7,mesPago:7,vencimiento:6,item:9,bruto:7,neto:7,factura:5,facturado:6,metodo:6,estado:5,computable:5,mesCorr:5,rubro:5,detalle:14,acciones:6};
+  // Mes de pago y Mes correspondiente van juntos; Vencimiento se corrió al lado de Estado;
+  // Computable y Vencimiento más angostas; FC más ancha (para que el IVA entre en el renglón)
+  // y Detalle más ancha (usando lo que se libera de Tipo/Acciones y de las columnas ocultas).
+  const ANCHOS={tipo:6,mesPago:5,mesCorr:5,vencimiento:4,item:9,bruto:7,neto:7,factura:9,facturado:6,estado:7,metodo:6,computable:4,rubro:5,detalle:15,acciones:5};
   let extra=0;
   if(!mostrarFC) extra+=ANCHOS.factura;
   if(!mostrarFacturado) extra+=ANCHOS.facturado;
   if(!mostrarMetodo) extra+=ANCHOS.metodo;
-  const colOrder=['tipo','mesPago','vencimiento','item','bruto','neto',
+  const colOrder=['tipo','mesPago','mesCorr','item','bruto','neto',
     ...(mostrarFC?['factura']:[]), ...(mostrarFacturado?['facturado']:[]),
-    'estado', ...(mostrarMetodo?['metodo']:[]), 'computable','mesCorr','rubro','detalle','acciones'];
+    'vencimiento','estado', ...(mostrarMetodo?['metodo']:[]), 'computable','rubro','detalle','acciones'];
   const totalCols=colOrder.length;
-  const colgroupHtml=colOrder.map(c=>`<col style="width:${c==='item'?ANCHOS.item+extra:ANCHOS[c]}%">`).join('');
+  const idxBruto=colOrder.indexOf('bruto'), idxNeto=colOrder.indexOf('neto');
+  const colgroupHtml=colOrder.map(c=>`<col style="width:${c==='detalle'?ANCHOS.detalle+extra:ANCHOS[c]}%">`).join('');
   const theadCeldas={
     tipo: thOrden('Tipo','tipo',sortState),
     mesPago: thOrden('Mes de pago','mesPago',sortState),
-    vencimiento: thOrden('Fecha de vencimiento','vencimiento',sortState),
+    mesCorr: thOrden('Mes corresp.','mesCorr',sortState),
     item: thOrden('Ítem','item',sortState),
     bruto: thOrden('Bruto','bruto',sortState,{cls:'num'}),
     neto: thOrden('Neto','neto',sortState,{cls:'num'}),
     factura: thOrden('FC','factura',sortState,{cls:'th-help',title:'Tipo de comprobante con el que se recibió el gasto.'}),
     facturado: thOrden('¿Facturado?','facturado',sortState,{cls:'th-help',title:'Solo para ingresos: si la estadía o el servicio fue facturado o no.'}),
-    estado: thOrden('Estado de pago','estado',sortState,{cls:'th-help',title:'Pago (gastos) o Cobro (ingresos). Tocá el cuadro de la fila para marcarlo, pidiendo la fecha.'}),
-    metodo: thOrden('Método','metodo',sortState,{cls:'th-help',title:'Método con el que se pagó el gasto (efectivo, transferencia, tarjeta, etc).'}),
+    vencimiento: thOrden('Vencimiento','vencimiento',sortState),
+    estado: thOrden('Estado de pago','estado',sortState,{cls:'th-help',title:'Pago (gastos) o Cobro (ingresos). Tocá el cuadro de la fila para marcarlo, pidiendo la fecha. Si el pago está dividido, se listan todas las fechas.'}),
+    metodo: thOrden('Método','metodo',sortState,{cls:'th-help',title:'Método con el que se pagó el gasto (efectivo, transferencia, tarjeta, etc). Si el pago está dividido, se listan todos.'}),
     computable: thOrden('Computable','computable',sortState,{cls:'th-help computable',title:'Computable como gasto: tildado, resta en el resultado. Destildado = se pagó pero no es gasto del hotel (ej. IVA, o pagos ajenos hechos desde la cuenta), no afecta el resultado.'}),
-    mesCorr: thOrden('Mes corresp.','mesCorr',sortState),
     rubro: thOrden('Rubro','rubro',sortState),
     detalle: thOrden('Detalle','detalle',sortState),
     acciones: '<th></th>'
@@ -2007,36 +2532,60 @@ function tablaHtml(view,sortState,tablaId){
     <tbody>${view.map(r=>{const n=netoDe(r),esIng=r.tipo==='ingreso';const div=r.dividido&&Array.isArray(r.cuotas);
       const usd=r.moneda==='USD';
       const parcial=div&&r.pagoParcial;const abierta=expandidas.has(r.id);
+      // Pago dividido: en vez de un único casillero, se listan todas las fechas (pagadas o
+      // pendientes) apiladas dentro de la misma celda, para ver el estado de un vistazo.
       const cpCell = div
-        ? `<td class="cp"><input type="checkbox" ${r.pago?'checked':''} disabled title="Pagado ${money(pagadoCuotas(r))} de ${money(r.bruto)}${parcial?' (parcial)':''}. Se marca solo cuando todas las cuotas están pagas."><button class="cuotas-arrow ${parcial?'parcial':(r.pago?'ok':'')}" data-exp="${r.id}" title="Ver desglose de pagos">${abierta?'▾':'▸'}</button></td>`
-        : `<td class="cp"><button type="button" class="cp-badge ${r.pago?'pagado':'pendiente'}" data-tog="${r.id}" title="${r.pago?('Pagado el '+fmtFechaCorta(r.fechaPago)+(r.metodoPago?' · '+esc(r.metodoPago):'')+(r.fechaDiferida?' · diferido al '+fmtFechaCorta(r.fechaDiferida):'')+' — clic para desmarcar'):(esIng?'Marcar como cobrado':'Marcar como pagado')}">${r.pago?fmtFechaCorta(r.fechaPago):(esIng?'Marcar cobro':'Marcar pago')}</button></td>`;
+        ? `<td class="cp cp-multi"><button class="cuotas-arrow ${parcial?'parcial':(r.pago?'ok':'')}" data-exp="${r.id}" title="Ver desglose de importes por cuota">${abierta?'▾':'▸'}</button><div class="cp-stack">${
+            r.cuotas.map(c=>c.pago
+              ? `<span class="cp-stack-line ok">${esc(fmtFechaCorta(c.fecha)||(c.mesPago?mesLabel(c.mesPago):'—'))}</span>`
+              : `<span class="cp-stack-line pend">pendiente</span>`
+            ).join('')
+          }</div></td>`
+        : `<td class="cp"><button type="button" class="cp-badge ${r.pago?'pagado':'pendiente'}" data-tog="${r.id}" title="${r.pago?('Pagado el '+fmtFechaCorta(r.fechaPago)+(r.metodoPago?' · '+esc(r.metodoPago):'')+(r.fechaDiferida?' · diferido al '+fmtFechaCorta(r.fechaDiferida):'')+' — clic para desmarcar'):(esIng?'Marcar como cobrado':'Marcar como pagado')}">${r.pago?fmtFechaCorta(r.fechaPago):(esIng?'Cobrar':'Pagar')}</button></td>`;
       const btnEdit = `<button class="rowbtn plain" data-edit="${r.id}" title="Modificar">✎</button>`;
       const btnDel = `<button class="rowbtn plain" data-del="${r.id}" title="Eliminar">✕</button>`;
-      const tdFactura = mostrarFC ? `<td>${esIng?'<span class="tag">—</span>':`<span class="tag ${r.tipoFac==='A'||r.tipoFac==='A | 27%'?'A':''}">${esc(r.tipoFac||'No posee')}</span>${(r.tipoFac==='A'||r.tipoFac==='A | 27%')?`<div class="ivanota">IVA ${money(r.iva)}</div>`:''}`}</td>` : '';
+      const tdFactura = mostrarFC ? `<td>${esIng?'<span class="tag">—</span>':`<span class="tag ${r.tipoFac==='A'||r.tipoFac==='A | 27%'?'A':''}">${esc(r.tipoFac||'No posee')}</span>${(r.tipoFac==='A'||r.tipoFac==='A | 27%')?`<span class="ivanota">IVA ${money(r.iva)}</span>`:''}`}</td>` : '';
       const tdFacturado = mostrarFacturado ? `<td>${esIng?`<span class="tag ${r.fact==='No Facturado'?'nf':(r.fact==='Facturado'?'fa':'')}">${r.fact==='No Facturado'?'No':(r.fact==='Facturado'?'Sí':'—')}</span>`:'<span class="tag EG">—</span>'}</td>` : '';
-      const tdMetodo = mostrarMetodo ? `<td>${(!esIng&&r.metodoPago)?esc(r.metodoPago):'<span class="tag EG">—</span>'}</td>` : '';
+      // Método de pago: si es un pago dividido, se listan los métodos de las cuotas ya pagas,
+      // apilados igual que las fechas de Estado.
+      const tdMetodo = mostrarMetodo ? `<td>${
+          esIng ? '<span class="tag EG">—</span>'
+          : div ? (r.cuotas.some(c=>c.pago) ? `<div class="cp-stack">${r.cuotas.filter(c=>c.pago).map(c=>`<span class="cp-stack-line">${esc(c.metodoPago||'—')}</span>`).join('')}</div>` : '<span class="tag EG">—</span>')
+          : (r.metodoPago ? esc(r.metodoPago) : '<span class="tag EG">—</span>')
+        }</td>` : '';
       const claseImpago = (!esIng && !r.pago) ? (' gasto-impago'+((diasHasta(r.fechaVenc)!==null && diasHasta(r.fechaVenc)<=7) ? ' vence-pronto' : '')) : '';
       const clasePago = (!esIng && r.pago) ? ' gasto-pago' : '';
+      // Ítems de tarjeta de crédito: al tocar el nombre se abre un desglose para clasificar los
+      // movimientos del resumen sin duplicar el total (ese total sigue siendo el de esta fila).
+      const esTarjeta = !esIng && /tarjeta/i.test(r.item||'');
+      const abiertaTarjeta = expandidasTarjeta.has(r.id);
+      const nDesglose = (r.desglose||[]).length;
+      const tdItem = esIng ? `<td class="item" title="${esc(r.item||'')}">${r.item?esc(r.item):'—'}</td>`
+        : `<td class="item${esTarjeta?' tarjeta-item':''}" title="${esc(r.item)}${esTarjeta?' — tocá para ver/cargar el desglose del resumen':''}"${esTarjeta?` data-tarjeta-toggle="${r.id}"`:''}>${esc(r.item)}${esTarjeta?`<span class="tarjeta-badge">${abiertaTarjeta?'▾':'▸'} desglose${nDesglose?' ('+nDesglose+')':''}</span>`:''}</td>`;
       const filaPrincipal = `<tr data-row-id="${r.id}" class="${r.pago?'paid':'unpaid'}${parcial?' parcial':''}${r.id===editId?' editing':''}${r.comp===false?' nocomp':''}${claseImpago}${clasePago}">
       <td><span class="tag ${esIng?'IN':'EG'}">${esIng?'INGRESO':'GASTO'}</span>${!esIng?`<span class="tag ${r.fijo?'FIJ':'VAR'}">${r.fijo?'FIJO':'VARIABLE'}</span>`:''}</td>
       <td class="mono">${div?'<span class="cp-let" title="Se paga en varias cuotas">varias</span>':'<b>'+mesLabel(r.mesPago).toUpperCase()+'</b>'}</td>
-      <td class="mono">${(!esIng&&r.fechaVenc)?fmtFechaCorta(r.fechaVenc).toUpperCase():'—'}</td>
-      <td class="item" title="${esc(r.item)}">${esIng?'—':esc(r.item)}</td>
+      <td class="mono"><b>${mesLabel(r.mesCorr)}</b></td>
+      ${tdItem}
       <td class="num${usd?' dual':''}">${montoCell(r.bruto,brutoARS(r),usd)}</td>
       <td class="num${usd?' dual':''}${esIng?' ing':''}">${montoCell(n,netoARS(r),usd)}</td>
       ${tdFactura}${tdFacturado}
+      <td class="mono">${(!esIng&&r.fechaVenc)?fmtFechaCorta(r.fechaVenc).toUpperCase():'—'}</td>
       ${cpCell}
       ${tdMetodo}
       <td class="computable">${esIng?'<span class="tag EG">—</span>':`<input type="checkbox" ${r.comp!==false?'checked':''} data-comp="${r.id}" title="${r.comp!==false?'Computable: resta en el resultado. Destildá si se pagó pero no es gasto del hotel.':'No computable: se pagó pero no afecta el resultado. Tildá para contarlo como gasto.'}">`}</td>
-      <td class="mono"><b>${mesLabel(r.mesCorr)}</b></td>
       <td class="rubro" data-vertexto="${esc(r.rubro||'')}" title="Tocá para ver completo">${esc(r.rubro||'—')}</td>
       <td class="detalle" data-vertexto="${esc(r.detalle||'')}" title="Tocá para ver completo">${esc(r.detalle||'')}</td>
       <td class="acciones">${btnEdit}${btnDel}</td>
     </tr>`;
       const filaDesglose = (div&&abierta) ? filaDesgloseCuotas(r,totalCols) : '';
-      return filaPrincipal+filaDesglose;
+      const filaTarjeta = (esTarjeta&&abiertaTarjeta) ? filaDesgloseTarjeta(r,totalCols) : '';
+      return filaPrincipal+filaDesglose+filaTarjeta;
     }).join('')}</tbody>
-    <tfoot><tr><td colspan="3">Totales (${view.length}) — en pesos${(tbNc||tnNc)?` <span style="font-weight:400;color:var(--iva)">· no computable: bruto ${money(tbNc)} / neto ${money(tnNc)}</span>`:''}</td><td class="num">${money(tb)}</td><td class="num">${money(tn)}</td><td colspan="${totalCols-5}"></td></tr></tfoot>
+    <tfoot>
+      <tr><td colspan="${idxBruto}">Totales (${view.length}) — en pesos</td><td class="num">${money(tb)}</td><td class="num">${money(tn)}</td><td colspan="${totalCols-idxNeto-1}"></td></tr>
+      ${(tbNc||tnNc)?`<tr><td colspan="${idxBruto}" style="font-weight:400;color:var(--iva);border-top:none">No computable (no entra en el resultado)</td><td class="num" style="font-weight:400;color:var(--iva);border-top:none">${money(tbNc)}</td><td class="num" style="font-weight:400;color:var(--iva);border-top:none">${money(tnNc)}</td><td colspan="${totalCols-idxNeto-1}" style="border-top:none"></td></tr>`:''}
+    </tfoot>
   </table></div>`;
 }
 function renderTabla(view){
@@ -2081,7 +2630,7 @@ $('btn-lote-registrar').addEventListener('click',async()=>{
   guardarParaDeshacer('registrar en bloque '+nuevos.length+' fijos para '+mesLabel(mes));
   rows.push(...nuevos);
   registrarHistorial('Registró en bloque gastos fijos',null,nuevos.length+' gastos fijos para '+mesLabel(mes));
-  await save();
+  save();
   render(); renderLoteFijos();
   toast(nuevos.length+' gastos fijos registrados para '+mesLabel(mes)+' — ya están en Registrados, esperando el importe de cada factura.');
 });
@@ -2116,7 +2665,7 @@ document.addEventListener('click',async e=>{
   guardarParaDeshacer('cargar gasto fijo "'+item+'"');
   rows.push(nuevo);
   registrarHistorial('Cargó gasto fijo',nuevo);
-  await save();
+  save();
   abrirEdicion(nuevo.id);
 });
 // Gastos fijos duplicados: mismo mes al que corresponden + mismo ítem. Se conserva el que
@@ -2148,7 +2697,7 @@ $('btn-quitar-duplicados').addEventListener('click',async()=>{
   guardarParaDeshacer('quitar '+sobrantes.length+' gastos fijos duplicados');
   rows=rows.filter(r=>!idsBorrar.has(r.id));
   registrarHistorial('Quitó duplicados',null,sobrantes.length+' gastos fijos duplicados');
-  await save(); render();
+  save(); render();
   toast(sobrantes.length+' duplicados eliminados');
 });
 
@@ -2171,20 +2720,60 @@ function filaDesgloseCuotas(r,totalCols){
   </td></tr>`;
 }
 
+// Desglose de los movimientos que componen un resumen de tarjeta (ítem cuyo nombre contiene
+// "tarjeta"). Es solo para clasificar/anotar qué hay adentro del resumen: el importe que entra
+// al resultado sigue siendo el bruto de la fila principal, así que estos sub-movimientos no se
+// suman a ningún total — cargar el resumen entero (como corresponde) y después desglosarlo acá
+// evita el doble conteo que pasaba al cargar cada consumo como un gasto aparte.
+function filaDesgloseTarjeta(r,totalCols){
+  const items=r.desglose||[];
+  const suma=items.reduce((a,d)=>a+(+d.bruto||0),0);
+  const resta=(+r.bruto||0)-suma;
+  const fmtFecha=f=>{ if(!f) return '—'; const [y,mm,dd]=f.split('-'); return `${dd}/${mm}/${y.slice(2)}`; };
+  const filas=items.map(d=>`
+    <div class="desg-row">
+      <span class="desg-fecha">${fmtFecha(d.fechaPago)}</span>
+      <span>${d.tipoFac&&d.tipoFac!=='No posee'?`<span class="tag ${d.tipoFac==='A'||d.tipoFac==='A | 27%'?'A':''}">${esc(d.tipoFac)}</span>${d.iva>0?`<span class="ivanota">IVA ${money(d.iva)}</span>`:''}`:'<span class="tag EG">—</span>'}</span>
+      <span class="desg-n" style="text-transform:none;font-weight:400;color:var(--ink)">${esc(d.detalle||'')}</span>
+      <span class="desg-imp">${money(d.bruto)}</span>
+      <button type="button" class="cuota-del" data-desg-del="${r.id}|${d.id}" title="Eliminar este movimiento del desglose">✕</button>
+    </div>`).join('');
+  return `<tr class="cuotas-fila"><td></td><td colspan="${totalCols-1}">
+    <div class="cuotas-box">
+      <div class="cuotas-head">Desglose del resumen de <b>${esc(r.item)}</b> — cargado ${money(suma)} de ${money(r.bruto)}${resta>0?`, resta ${money(resta)}`:(items.length?' — desglose completo':'')}
+        <span class="desg-edit">(es solo para clasificar; el importe que entra al resultado sigue siendo el de esta fila, no se duplica)</span></div>
+      ${filas || '<p class="note" style="margin:0 0 10px">Todavía no cargaste movimientos de este resumen.</p>'}
+      <div class="cuotas-form-foot" style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--rule)">
+        <div class="field" style="min-width:130px"><label>Fecha de pago</label><input type="date" id="dz-fecha-${r.id}" value="${hoyISO()}"></div>
+        <div class="field" style="min-width:120px"><label>Tipo de factura</label>
+          <select id="dz-tipo-${r.id}" data-dz-tipo="${r.id}">
+            <option value="A">A</option><option value="A | 27%">A | 27%</option>
+            <option value="B">B</option><option value="C">C</option><option value="No posee" selected>No posee</option>
+          </select>
+        </div>
+        <div class="field" style="min-width:110px" id="dz-wrap-iva-${r.id}" hidden><label>IVA a descontar</label><input type="text" id="dz-iva-${r.id}" inputmode="decimal" placeholder="0"></div>
+        <div class="field" style="min-width:100px"><label>Importe</label><input type="text" id="dz-bruto-${r.id}" inputmode="decimal" placeholder="0"></div>
+        <div class="field" style="flex:1 1 170px"><label>Detalle</label><input type="text" id="dz-detalle-${r.id}" placeholder="Comercio, cuota, etc."></div>
+        <div class="field"><button type="button" class="ghost" data-desg-add="${r.id}">+ Agregar movimiento</button></div>
+      </div>
+    </div>
+  </td></tr>`;
+}
+
 /* ---------- Acciones ---------- */
 document.addEventListener('click',async e=>{
   const d=e.target.dataset||{};
   if(d.edit){ abrirEdicion(d.edit); return; }
   if(d.del){
     const r=rows.find(x=>x.id===d.del);
-    const nombre = r ? (r.tipo==='ingreso' ? (r.rubro||'ingreso') : (r.item||'gasto')) : '';
+    const nombre = r ? nombreDe(r) : '';
     if(!confirm('¿ESTÁ SEGURO DE ELIMINAR?\n\n'+nombre)) return;
     if(!(await asegurarUsuario())) return;
     guardarParaDeshacer('eliminación de "'+nombre+'"');
     registrarHistorial('Eliminó',r);
     rows=rows.filter(x=>x.id!==d.del);
     if(editId===d.del) return salirEdicion();
-    await save(); render(); toast('Movimiento borrado');
+    save(); render(); toast('Movimiento borrado');
     return;
   }
   // desplegar / plegar el desglose de pagos de un gasto dividido (puede estar en Registrados o en el Detalle del período)
@@ -2193,13 +2782,63 @@ document.addEventListener('click',async e=>{
     if(e.target.closest('[data-tabla="periodo"]')) renderDetallePeriodo(filteredPeriodo()); else renderTabla(filteredTabla());
     return;
   }
+  // ítems de tarjeta de crédito: abrir/cerrar el desglose del resumen
+  if(d.tarjetaToggle){
+    if(expandidasTarjeta.has(d.tarjetaToggle)) expandidasTarjeta.delete(d.tarjetaToggle); else expandidasTarjeta.add(d.tarjetaToggle);
+    if(e.target.closest('[data-tabla="periodo"]')) renderDetallePeriodo(filteredPeriodo()); else renderTabla(filteredTabla());
+    return;
+  }
+  // desplegar/plegar el detalle de movimientos de un rubro (ring/rgas del dashboard). Un solo
+  // rubro abierto a la vez POR TIPO: abrir uno en gastos no afecta el que esté abierto en ingresos.
+  if(d.rubroToggle){
+    const [tipo,...rest]=d.rubroToggle.split('|'); const k=rest.join('|');
+    rubroAbierto[tipo] = (rubroAbierto[tipo]===k) ? null : k;
+    renderDashboard(filteredPeriodo());
+    return;
+  }
+  if(d.rubroCerrar){
+    rubroAbierto[d.rubroCerrar]=null;
+    renderDashboard(filteredPeriodo());
+    return;
+  }
+  // agregar un movimiento al desglose de un resumen de tarjeta (solo clasifica, no suma aparte)
+  if(d.desgAdd){
+    const r=rows.find(x=>x.id===d.desgAdd); if(!r) return;
+    const bruto=valorSimple('dz-bruto-'+r.id);
+    if(!(bruto>0)){ toast('Cargá el importe del movimiento.'); return; }
+    const tipoFac=($('dz-tipo-'+r.id)||{}).value||'No posee';
+    const iva=(tipoFac==='A'||tipoFac==='A | 27%')?valorSimple('dz-iva-'+r.id):0;
+    const fechaPago=($('dz-fecha-'+r.id)||{}).value||hoyISO();
+    const detalle=(($('dz-detalle-'+r.id)||{}).value||'').trim();
+    if(!(await asegurarUsuario())) return;
+    guardarParaDeshacer('agregar movimiento al desglose de "'+(r.item||'')+'"');
+    if(!Array.isArray(r.desglose)) r.desglose=[];
+    r.desglose.push({id:uid(),bruto,iva,tipoFac,fechaPago,detalle});
+    registrarHistorial('Agregó un movimiento al desglose de tarjeta',r,detalle||('$ '+money(bruto)));
+    dzIvaAuto[r.id]=true;
+    save();
+    if(e.target.closest('[data-tabla="periodo"]')) renderDetallePeriodo(filteredPeriodo()); else renderTabla(filteredTabla());
+    return;
+  }
+  // eliminar un movimiento del desglose de un resumen de tarjeta
+  if(d.desgDel){
+    const [rowId,desgId]=d.desgDel.split('|');
+    const r=rows.find(x=>x.id===rowId); if(!r||!Array.isArray(r.desglose)) return;
+    if(!(await asegurarUsuario())) return;
+    guardarParaDeshacer('eliminar movimiento del desglose de "'+(r.item||'')+'"');
+    r.desglose=r.desglose.filter(x=>x.id!==desgId);
+    registrarHistorial('Eliminó un movimiento del desglose de tarjeta',r);
+    save();
+    if(e.target.closest('[data-tabla="periodo"]')) renderDetallePeriodo(filteredPeriodo()); else renderTabla(filteredTabla());
+    return;
+  }
   // marcar / desmarcar como pago-cobrado (sin usar prompt/confirm, todo inline en la celda)
   if(d.tog){
     const r=rows.find(x=>x.id===d.tog); if(!r) return;
     if(!(await asegurarUsuario())) return;
     if(r.pago){
-      guardarParaDeshacer('desmarcar pago de "'+(r.tipo==='ingreso'?(r.rubro||'ingreso'):(r.item||'gasto'))+'"');
-      r.pago=false; if(r.tipo==='gasto') r.metodoPago=''; registrarHistorial('Desmarcó el pago/cobro',r); await save(); render(); return;
+      guardarParaDeshacer('desmarcar pago de "'+(nombreDe(r))+'"');
+      r.pago=false; if(r.tipo==='gasto') r.metodoPago=''; registrarHistorial('Desmarcó el pago/cobro',r); save(); render(); return;
     }
     const td=e.target.closest('td.cp'); if(!td) return;
     const esGasto=r.tipo==='gasto';
@@ -2239,18 +2878,26 @@ document.addEventListener('click',async e=>{
         if(!fechaDiferida){ toast('Indicá la fecha diferida del cheque.'); return; }
       }
     }
-    guardarParaDeshacer('marcar pago de "'+(r.tipo==='ingreso'?(r.rubro||'ingreso'):(r.item||'gasto'))+'"');
+    guardarParaDeshacer('marcar pago de "'+(nombreDe(r))+'"');
     r.fechaPago=fecha;
     if(!r.mesPago) r.mesPago=fecha.slice(0,7);
     r.pago=true;
     if(r.tipo==='gasto'){ r.metodoPago=metodo; r.fechaDiferida = metodo==='E-cheq' ? fechaDiferida : ''; }
     registrarHistorial(r.tipo==='ingreso'?'Marcó como cobrado':'Marcó como pagado',r);
-    await save(); render();
+    save(); render();
     return;
   }
   if(d.cpCancel){ render(); return; }
 });
 document.addEventListener('change',async e=>{
+  const dzTipoId=e.target.dataset&&e.target.dataset.dzTipo;
+  if(dzTipoId){
+    const wrap=$('dz-wrap-iva-'+dzTipoId);
+    const esA=e.target.value==='A'||e.target.value==='A | 27%';
+    if(wrap) wrap.hidden = !esA;
+    if(esA) sugerirIvaDesglose(dzTipoId);
+    return;
+  }
   if(e.target.classList&&e.target.classList.contains('cp-metodo-input')){
     const cont=e.target.closest('.cp-editor');
     const dif=cont&&cont.querySelector('.cp-diferida-input');
@@ -2261,10 +2908,26 @@ document.addEventListener('change',async e=>{
   if(c){
     const r=rows.find(x=>x.id===c); if(!r) return;
     if(!(await asegurarUsuario())){ e.target.checked=!e.target.checked; return; }
-    guardarParaDeshacer('cambio de computable en "'+(r.tipo==='ingreso'?(r.rubro||'ingreso'):(r.item||'gasto'))+'"');
+    guardarParaDeshacer('cambio de computable en "'+(nombreDe(r))+'"');
     r.comp=e.target.checked;
     registrarHistorial(e.target.checked?'Marcó como computable':'Marcó como no computable',r);
-    await save(); render();
+    save(); render();
+    return;
+  }
+});
+// Formateo en vivo (miles/decimales) + auto-sugerencia de IVA en los campos del desglose de
+// tarjeta, que se crean dinámicamente por fila (no existen al cargar la página, por eso van
+// delegados en 'document' en vez de tener su propio addEventListener fijo como f-bruto/f-iva).
+document.addEventListener('input',e=>{
+  const id=e.target.id||'';
+  if(id.startsWith('dz-bruto-')){
+    formatCampo(e.target);
+    sugerirIvaDesglose(id.slice('dz-bruto-'.length));
+    return;
+  }
+  if(id.startsWith('dz-iva-')){
+    formatCampo(e.target);
+    dzIvaAuto[id.slice('dz-iva-'.length)] = !e.target.value;
     return;
   }
 });
@@ -2280,7 +2943,7 @@ $('btn-csv').addEventListener('click',()=>{
     r.dividido?'(en cuotas)':fmtF(r.fechaPago),
     r.tipo==='gasto'?(r.metodoPago||''):'',
     r.tipo==='gasto'?fmtF(r.fechaDiferida):'',
-    r.tipo==='ingreso'?'':(r.item||'').toUpperCase(),
+    (r.item||'').toUpperCase(),
     r.moneda||'ARS',r.moneda==='USD'?redondear2(r.cotizacion):'',
     redondear2(r.bruto),redondear2(r.bruto-netoDe(r)),redondear2(netoDe(r)),
     redondear2(brutoARS(r)),redondear2(netoARS(r)),
