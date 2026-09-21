@@ -15,6 +15,9 @@
     --ok:#2F6B4F; --warn:#B0791C; --iva:#3B5F86;
     --neg:#963A2C; --ing:#1F6B57;
     --surface:#fff;
+    --surface-panel:#EEEAE0;
+    --fondo-pagina:#8E948D;
+    --fondo-encabezado:#FBFAF7;
     --tint-ing:#F2F8F5; --tint-warn:#FFF6E0; --tint-warn2:#FFFBF2; --tint-neutral:#F4F7F5;
   }
   body.dark{
@@ -24,15 +27,29 @@
     --ok:#4CAF7D; --warn:#D89B4A; --iva:#7BA3D6;
     --neg:#E28577; --ing:#4FBF9C;
     --surface:#1C1C1C;
+    --surface-panel:#1C1C1C;
+    --fondo-pagina:#121212;
+    --fondo-encabezado:#121212;
     --tint-ing:#1A1A1A; --tint-warn:#241F15; --tint-warn2:#221E17; --tint-neutral:#1B1B1B;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
-  body{background:var(--paper);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;transition:background-color .2s,color .2s}
-  .wrap{width:96%;max-width:1680px;margin:0 auto;padding:28px 20px 80px}
+  body{background:var(--fondo-pagina);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;transition:background-color .2s,color .2s}
+  /* Reserva el ancho de los atajos verticales fijos para que nunca se superpongan con el
+     encabezado ni con los paneles flotantes (ver .atajos más abajo). */
+  @media (min-width:901px){
+    body{padding-left:34px}
+    /* El encabezado ignora ese padding reservado para los atajos y sigue llegando de punta a
+       punta (incluido el borde izquierdo); la franja de atajos ya arranca debajo de él. */
+    header.masthead{margin-left:-34px;width:calc(100% + 34px)}
+  }
+  .wrap{width:99%;max-width:1680px;margin:0 auto;padding:0 8px 80px}
   [hidden]{display:none!important}
 
-  header.masthead{border-bottom:3px double var(--rule-strong);padding-bottom:14px;margin-bottom:20px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px;justify-content:space-between}
+  /* El encabezado es una franja de punta a punta (fuera de .wrap) con fondo claro; su contenido
+     interno se alinea con el mismo ancho/margen que .wrap para que quede prolijo con el resto. */
+  header.masthead{background:var(--fondo-encabezado);border-bottom:3px double var(--rule-strong)}
+  .masthead-inner{width:99%;max-width:1680px;margin:0 auto;padding:28px 8px 14px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px;justify-content:space-between}
   .masthead h1{font-family:'Zilla Slab',Georgia,serif;font-weight:700;font-size:30px;line-height:1;margin:0;letter-spacing:-.01em}
   .masthead .sub{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-top:6px}
   .stamp{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);border:1px solid var(--rule);padding:6px 10px}
@@ -41,7 +58,7 @@
   .pbloque{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;padding:8px 12px 10px;border:1px solid var(--rule);position:relative}
   .pbloque.ing{border-left:3px solid var(--ing)}
   .pbloque.gas{border-left:3px solid var(--ink-soft)}
-  .pbloque-tit{position:absolute;top:-9px;left:10px;background:var(--paper);padding:0 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+  .pbloque-tit{position:absolute;top:-9px;left:10px;background:var(--surface-panel);padding:0 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
   .pbloque.ing .pbloque-tit{color:var(--ing)}
   .pfield{display:flex;flex-direction:column;gap:4px}
   .periodo label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
@@ -60,18 +77,27 @@
   .dash-head:hover{color:var(--ink)}
   .dash-head .chev{font-size:13px;display:inline-block;width:12px}
   .dash-hint{font-weight:400;letter-spacing:.04em;text-transform:none;color:var(--ink-soft);font-size:11px;margin-left:6px}
-  .panel{margin-bottom:32px;background:var(--surface);border:1px solid var(--rule-strong);padding:24px 26px;box-shadow:0 3px 14px rgba(0,0,0,.07);transition:box-shadow .25s}
+  .panel{margin-bottom:32px;background:var(--surface-panel);border:1px solid var(--rule-strong);padding:24px 13px;box-shadow:0 3px 14px rgba(0,0,0,.07);transition:box-shadow .25s}
+  /* Con los dos paneles (Dashboard y Movimientos) cerrados, actualizarCentradoPaneles() calcula
+     este padding-top para que ambos encabezados queden centrados en la pantalla; al abrir
+     cualquiera de los dos, el padding vuelve a 0 y con la transición se ven "subir" hacia arriba. */
+  .paneles-zone{padding-top:0;transition:padding-top .35s ease}
   body.dark .panel{box-shadow:0 3px 16px rgba(0,0,0,.4)}
   .panel.atajo-flash{animation:atajo-pulso 1s ease}
   @keyframes atajo-pulso{0%{box-shadow:0 0 0 3px var(--ing)}100%{box-shadow:0 3px 14px rgba(0,0,0,.07)}}
 
-  /* accesos rápidos fijos (atajos a Dashboard / Movimientos) */
-  .atajos{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;background:var(--ink);box-shadow:2px 0 12px rgba(0,0,0,.2)}
-  .atajos button{display:flex;flex-direction:column;align-items:center;gap:4px;width:64px;padding:14px 3px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.15);color:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:0;text-transform:uppercase;line-height:1.3;cursor:pointer;white-space:nowrap}
-  .atajos button:last-child{border-bottom:none}
-  .atajos button:hover{background:rgba(255,255,255,.14)}
-  .atajos-ico{font-size:16px}
-  @media (max-width:900px){.atajos{display:none}}
+  /* accesos rápidos fijos (atajos a Dashboard / Movimientos): franja vertical fija que ocupa
+     el borde izquierdo desde la línea del encabezado para abajo (nunca sobre el título), sin
+     invadir tampoco los paneles flotantes (ese espacio queda reservado con el padding-left del
+     body, arriba). El top se ajusta por JS (ajustarAtajos) a la altura real del encabezado. */
+  .atajos{position:fixed;left:0;top:var(--atajos-top,90px);bottom:0;width:34px;z-index:40;display:flex;flex-direction:column;box-shadow:2px 0 12px rgba(0,0,0,.2)}
+  .atajos button{flex:1 1 50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:12px 2px;background:none;border:none;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;filter:brightness(1);transition:filter .15s}
+  .atajos button:hover{filter:brightness(1.3)}
+  .atajos button[data-atajo="resultados"]{background:#0F3626;color:#D3F0DF}
+  .atajos button[data-atajo="panel-movs"]{background:#0C1728;color:#CBD9F2}
+  .atajos-ico{font-size:14px;flex:none}
+  .atajos-txt{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap}
+  @media (max-width:900px){.atajos{display:none}body{padding-left:0!important}}
 
   /* pestañas gasto / ingreso */
   .tabs{display:flex;gap:0;margin-bottom:14px}
@@ -135,6 +161,14 @@
 
   .filters{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-bottom:12px}
   .filters .field{min-width:125px}
+
+  /* Pagos semanales: acceso directo a cargar + dos listas, la de esta semana con énfasis
+     normal y la de la semana próxima atenuada (más chica, más clara) para que quede claro cuál
+     es la urgente. */
+  .semana-toolbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+  .semana-heading{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);margin:18px 0 8px;font-weight:600}
+  .semana-proxima-box{margin-top:26px;padding-top:18px;border-top:1px dashed var(--rule-strong);opacity:.72}
+  .semana-heading.suave{font-size:11px;font-weight:500;color:var(--ink-soft)}
   .fijos-estado-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 10px;font-size:13px;color:var(--ink-soft)}
   .fijos-estado-head button{white-space:nowrap}
   #fijos-estado-lista{border:1px solid var(--rule)}
@@ -246,6 +280,11 @@
   .tag.nf{border-color:var(--warn);color:var(--warn)}
   .ivanota{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--iva);white-space:nowrap;display:inline-block;margin-left:4px}
   .tablacompacta .ivanota{margin-left:3px}
+  /* Dato orientativo (método de pago / vencimiento sugeridos a partir del último registro de un
+     gasto fijo): en cursiva sobre fondo anaranjado, para dejar claro que es una sugerencia y no
+     un dato confirmado. Desaparece en cuanto se modifica el campo. */
+  .tentativo{font-style:italic;color:var(--warn);background:var(--tint-warn);border-radius:4px;padding:1px 7px;display:inline-block}
+  .campo-tentativo{font-style:italic;background:var(--tint-warn)!important;border-color:var(--warn)!important}
   input[type=checkbox]{width:18px;height:18px;accent-color:var(--ok);cursor:pointer}
   .rowbtn{background:none;border:1px solid var(--rule-strong);color:var(--ink-soft);padding:1px 0;width:20px;font-size:11px;font-weight:600;letter-spacing:0;cursor:pointer;line-height:1.3}
   .rowbtn:hover{background:var(--neg);border-color:var(--neg);color:var(--paper)}
@@ -293,12 +332,30 @@
   .icon-btn:disabled:hover{border-color:var(--rule-strong);color:var(--ink-soft)}
   .usuario-nombre-header{font-size:13px;color:var(--ink);font-weight:600}
   .firebase-warning{background:var(--tint-warn);border:1px solid var(--warn);color:var(--ink);padding:10px 14px;margin-bottom:16px;font-size:13px}
-  .usuario-overlay{position:fixed;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;z-index:200;padding:20px}
+  .usuario-overlay{position:fixed;inset:0;background:var(--surface-panel);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:40px;z-index:200;padding:20px}
   .usuario-box{background:var(--paper);border:1px solid var(--rule-strong);box-shadow:0 8px 30px rgba(0,0,0,.35);padding:22px;max-width:360px;width:100%}
+  .login-logo{width:96px;height:auto;flex:none}
   .usuario-box h3{margin:0 0 8px;font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
   .usuario-box input{margin-top:4px}
   .login-error{margin-top:10px;padding:8px 10px;background:var(--tint-warn);border:1px solid var(--neg);color:var(--neg);font-size:12px}
   .usuario-box a{color:var(--iva)}
+  .admin-usuarios-box{max-width:580px}
+  .admin-usuarios-lista{max-height:280px;overflow-y:auto;margin:10px 0;border:1px solid var(--rule)}
+  .admin-usuarios-lista .empty{border:none;background:none;padding:16px 4px;font-size:13px;color:var(--ink-soft)}
+  .admin-usuario-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid var(--rule);font-size:13px}
+  .admin-usuario-row:last-child{border-bottom:none}
+  .admin-usuario-row.inactivo{opacity:.55}
+  .admin-usuario-row .au-nombre{flex:1 1 150px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .admin-usuario-row .au-vos{font-weight:400;color:var(--ink-soft);font-size:11px}
+  .admin-usuario-row .au-email{flex:1 1 170px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;font-size:11px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .admin-usuario-row .au-estado{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border:1px solid var(--rule-strong);flex:0 0 auto}
+  .admin-usuario-row .au-estado.on{color:var(--ok);border-color:var(--ok)}
+  .admin-usuario-row .au-estado.off{color:var(--neg);border-color:var(--neg)}
+  .admin-usuario-row .au-acciones{display:flex;gap:4px;flex:0 0 auto;margin-left:auto}
+  .admin-usuario-row.editando{background:var(--tint-neutral)}
+  .admin-usuario-row.editando .au-nombre-input{flex:1 1 150px;margin:0}
+  .admin-usuario-row .au-activo{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--ink-soft);flex:0 0 auto}
+  .admin-usuarios-nueva{border-top:1px dashed var(--rule-strong);margin-top:14px;padding-top:12px}
   .historial-popover{position:fixed;top:64px;right:20px;width:360px;max-width:calc(100vw - 40px);max-height:70vh;overflow-y:auto;background:var(--paper);border:1px solid var(--rule-strong);box-shadow:0 10px 34px rgba(0,0,0,.35);z-index:180}
   .texto-popover{position:fixed;z-index:190;max-width:340px;background:var(--paper);border:1px solid var(--rule-strong);box-shadow:0 8px 24px rgba(0,0,0,.3);padding:10px 12px;font-size:13px;line-height:1.45;white-space:normal;word-break:break-word}
   .tablacompacta td.rubro,.tablacompacta td.detalle{cursor:pointer}
@@ -316,6 +373,15 @@
   .tablacompacta td.acciones{white-space:nowrap;text-align:center}
   .tablacompacta td.acciones .rowbtn+.rowbtn{margin-left:3px}
   tfoot td{padding:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;border-top:2px solid var(--ink);background:var(--paper)}
+  /* Fila de totales al pie de la tabla (Bruto y Neto): toda la fila es una sola celda flexible en
+     vez de columnas angostas de ancho fijo, así el texto "Totales (N) — en pesos" y los dos
+     importes nunca se superponen entre sí por más largos que sean los números. El rótulo cede
+     espacio (se achica/trunca) antes que dejar que los importes se toquen; entre Bruto y Neto
+     siempre queda medio centímetro de separación. */
+  .tot-fila{display:flex;justify-content:space-between;align-items:baseline;gap:14px;width:100%}
+  .tot-fila-label{min-width:0;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tot-doble{flex:0 0 auto;display:flex;justify-content:flex-end;align-items:baseline;gap:0.5cm}
+  .tot-num{white-space:nowrap;font-variant-numeric:tabular-nums}
 
   /* dashboard de resultados */
   #resultados table{min-width:640px}
@@ -419,13 +485,10 @@
   <button type="button" data-atajo="resultados" title="Ir al Dashboard de resultados"><span class="atajos-ico">▤</span><span class="atajos-txt">Dashboard</span></button>
   <button type="button" data-atajo="panel-movs" title="Ir a Movimientos"><span class="atajos-ico">≡</span><span class="atajos-txt">Movimientos</span></button>
 </nav>
-<div class="wrap">
-
-  <div id="firebase-warning" class="firebase-warning" hidden>
-    ⚠️ Firebase todavía no está configurado — lo que cargues <b>no se va a guardar</b>. Abrí el archivo y completá "CONFIGURACIÓN DE FIREBASE" al principio del &lt;script&gt;.
-  </div>
-
-  <header class="masthead">
+<!-- El encabezado queda fuera de .wrap para poder pintarlo de un color claro que llegue de punta
+     a punta de la pantalla; de la línea doble para abajo (ya dentro de .wrap) el fondo es oscuro. -->
+<header class="masthead">
+  <div class="masthead-inner">
     <div>
       <h1>Resultados y Devengamiento</h1>
       <div class="sub">Hotel Copahue · Saavedra 80, Junín</div>
@@ -453,9 +516,16 @@
       <button class="icon-btn" id="btn-tema" type="button" title="Cambiar modo claro/oscuro">🌙</button>
       <div class="stamp" id="stamp"></div>
     </div>
-  </header>
+  </div>
+</header>
+<div class="wrap">
+
+  <div id="firebase-warning" class="firebase-warning" hidden>
+    ⚠️ Firebase todavía no está configurado — lo que cargues <b>no se va a guardar</b>. Abrí el archivo y completá "CONFIGURACIÓN DE FIREBASE" al principio del &lt;script&gt;.
+  </div>
 
   <div id="login-overlay" class="usuario-overlay">
+    <img class="login-logo" alt="Hotel Copahue" src="data:image/png;base64,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">
     <div class="usuario-box">
       <!-- ---- Ingresar ---- -->
       <div id="login-vista-signin">
@@ -469,14 +539,16 @@
         <div style="display:flex;gap:8px;margin-top:12px">
           <button type="button" id="login-signin-btn">Ingresar</button>
         </div>
-        <p class="note" style="margin-top:14px">¿Sos administrador? <a href="#" id="link-admin-gate">Crear una cuenta nueva</a></p>
+        <div style="display:flex;gap:8px;margin-top:14px">
+          <button type="button" class="ghost" id="link-admin-gate">Acceso de administrador</button>
+        </div>
       </div>
       <!-- ---- Verificación de administrador ---- -->
       <div id="login-vista-admin-gate" hidden>
         <h3>Acceso de administrador</h3>
-        <p class="note">Ingresá el CUIT de la empresa y la clave de administrador para poder crear cuentas nuevas.</p>
-        <label for="admin-cuit" style="font-size:12px;color:var(--ink-soft)">CUIT</label>
-        <input type="text" id="admin-cuit" placeholder="CUIT de la empresa" autocomplete="off">
+        <p class="note">Ingresá el usuario y la clave de administrador para poder crear cuentas nuevas.</p>
+        <label for="admin-cuit" style="font-size:12px;color:var(--ink-soft)">Usuario</label>
+        <input type="text" id="admin-cuit" placeholder="Usuario" autocomplete="off">
         <label for="admin-clave" style="font-size:12px;color:var(--ink-soft);margin-top:8px;display:block">Clave de administrador</label>
         <input type="password" id="admin-clave" placeholder="Clave" autocomplete="off">
         <div id="admin-gate-error" class="login-error" hidden></div>
@@ -505,6 +577,54 @@
     </div>
   </div>
 
+  <!-- ============ GESTIÓN DE USUARIOS ============
+       Panel de administrador: se abre desde el link "Acceso de administrador" en la
+       pantalla inicial (antes de iniciar sesión), no hace falta estar logueado. Pide el
+       mismo usuario/clave de administrador antes de mostrar la lista. -->
+  <div id="admin-usuarios-overlay" class="usuario-overlay" hidden>
+    <div class="usuario-box admin-usuarios-box">
+      <!-- ---- Verificación de administrador ---- -->
+      <div id="au-vista-gate">
+        <h3>Acceso de administrador</h3>
+        <p class="note">Ingresá el usuario y la clave de administrador para gestionar usuarios.</p>
+        <label for="au-gate-cuit" style="font-size:12px;color:var(--ink-soft)">Usuario</label>
+        <input type="text" id="au-gate-cuit" placeholder="Usuario" autocomplete="off">
+        <label for="au-gate-clave" style="font-size:12px;color:var(--ink-soft);margin-top:8px;display:block">Clave de administrador</label>
+        <input type="password" id="au-gate-clave" placeholder="Clave" autocomplete="off">
+        <div id="au-gate-error" class="login-error" hidden></div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button type="button" id="au-gate-btn">Continuar</button>
+          <button type="button" class="ghost" id="au-gate-cancelar">Cancelar</button>
+        </div>
+      </div>
+      <!-- ---- Panel: ver, modificar y crear usuarios ---- -->
+      <div id="au-vista-panel" hidden>
+        <h3>Gestión de usuarios</h3>
+        <p class="note">Se listan las cuentas que iniciaron sesión alguna vez en esta app, o que creaste desde acá. Tocá ✎ para cambiar el nombre o activar/desactivar el acceso, o 🔑 para mandarle un correo de restablecimiento de contraseña.</p>
+        <div id="admin-usuarios-lista"></div>
+        <div class="admin-usuarios-nueva">
+          <span class="fijos-add-tit">Crear cuenta nueva</span>
+          <label for="au-nuevo-nombre" style="font-size:12px;color:var(--ink-soft)">Nombre y apellido</label>
+          <input type="text" id="au-nuevo-nombre" placeholder="Nombre y apellido" autocomplete="off">
+          <label for="au-nuevo-email" style="font-size:12px;color:var(--ink-soft);margin-top:8px;display:block">Correo</label>
+          <input type="email" id="au-nuevo-email" placeholder="usuario@hotelcopahue.com" autocomplete="off">
+          <label for="au-nuevo-clave" style="font-size:12px;color:var(--ink-soft);margin-top:8px;display:block">Clave (mínimo 6 caracteres)</label>
+          <input type="password" id="au-nuevo-clave" placeholder="Clave" autocomplete="off">
+          <div id="au-crear-error" class="login-error" hidden></div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button type="button" id="au-crear-btn">Crear cuenta</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:16px;border-top:1px solid var(--rule);padding-top:14px">
+          <button type="button" class="ghost" id="au-panel-cerrar">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Envuelve los dos paneles colapsables: cuando ambos están cerrados, se centra verticalmente
+       en la pantalla (ver actualizarCentradoPaneles()); apenas se abre alguno, sube arriba. -->
+  <div class="paneles-zone" id="paneles-zone">
   <!-- ============ DASHBOARD (colapsable) ============ -->
   <section class="panel" id="resultados">
     <h2 class="sec dash-head" id="dash-toggle" role="button" tabindex="0" aria-expanded="true">
@@ -554,6 +674,7 @@
       <div class="tabs">
         <button id="subtab-cargar" class="on">Cargar nuevos</button>
         <button id="subtab-registrados">Registrados</button>
+        <button id="subtab-semana">Pagos semanales</button>
         <button id="subtab-fijos">Fijos mensuales</button>
       </div>
 
@@ -569,7 +690,7 @@
           <div class="field"><label for="f-mescorr">Mes al que corresponde</label><input type="month" id="f-mescorr"></div>
           <div class="field" id="wrap-fechapago"><label for="f-fechapago" id="lbl-fechapago">Fecha de vencimiento</label><input type="date" id="f-fechapago"></div>
           <div class="field" id="wrap-item"><label for="f-item" id="lbl-item">Ítem</label><input type="text" id="f-item" placeholder="Ej. Provisión SAC"></div>
-          <div class="field" id="wrap-bruto"><label for="f-bruto" id="lbl-bruto">Importe bruto</label><input type="text" id="f-bruto" inputmode="numeric" autocomplete="off" placeholder="0"></div>
+          <div class="field" id="wrap-bruto"><label for="f-bruto" id="lbl-bruto">Importe bruto</label><input type="text" id="f-bruto" inputmode="numeric" autocomplete="off" placeholder="0" title="Podés cargar un importe negativo (ej. -1000) para un saldo negativo, una nota de crédito o un reverso."></div>
           <div class="field" id="wrap-moneda"><label for="f-moneda">Moneda</label>
             <select id="f-moneda"><option value="ARS" selected>ARS</option><option value="USD">USD</option></select>
           </div>
@@ -619,7 +740,15 @@
           <div class="field"><label for="q-rubro">Rubro</label><select id="q-rubro"><option value="">Todos</option></select></div>
           <div class="field"><label for="q-estado">Estado</label><select id="q-estado"><option value="">Todos</option><option value="pend">Pendientes</option><option value="pag">Cobrados / pagos</option></select></div>
           <div class="field"><label for="q-comp" title="Computable como gasto del resultado, o no (ej. IVA o pagos ajenos hechos desde la cuenta)">Computable</label><select id="q-comp"><option value="">Todos</option><option value="si">Computable</option><option value="no">No computable</option></select></div>
+          <div class="field"><label for="q-fijo" title="Solo aplica a gastos: los ingresos se cuentan siempre como variable">Fijo / Variable</label><select id="q-fijo"><option value="">Ambos</option><option value="fijo">Fijo</option><option value="variable">Variable</option></select></div>
+          <div class="field"><label for="q-factura">Tipo de factura</label><select id="q-factura"><option value="">Todas</option><option value="A">A</option><option value="A | 27%">A | 27%</option><option value="B">B</option><option value="C">C</option><option value="No posee">No posee</option></select></div>
+          <div class="field"><label for="q-metodo">Método de pago</label><select id="q-metodo"><option value="">Todos</option></select></div>
           <div class="field"><label for="q-texto">Buscar</label><input type="text" id="q-texto" placeholder="Ítem, rubro o detalle (podés escribir varias palabras)"></div>
+          <div class="rango">
+            <div class="field"><label for="q-monto-desde" title="Sobre el importe neto convertido a pesos">Importe neto (ARS), desde</label><input type="number" id="q-monto-desde" step="0.01" placeholder="Mínimo"></div>
+            <span class="rango-sep">–</span>
+            <div class="field"><label for="q-monto-hasta">hasta</label><input type="number" id="q-monto-hasta" step="0.01" placeholder="Máximo"></div>
+          </div>
           <div class="rango">
             <div class="field"><label for="qt-pago-desde">Mes de pago/cobro, desde</label><input type="month" id="qt-pago-desde"></div>
             <span class="rango-sep">–</span>
@@ -635,11 +764,46 @@
             <span class="rango-sep">–</span>
             <div class="field"><label for="qt-fecha-hasta">hasta</label><input type="date" id="qt-fecha-hasta"></div>
           </div>
+          <div class="rango">
+            <div class="field"><label for="qt-venc-desde" title="Solo aplica a gastos">Fecha de vencimiento, desde</label><input type="date" id="qt-venc-desde"></div>
+            <span class="rango-sep">–</span>
+            <div class="field"><label for="qt-venc-hasta">hasta</label><input type="date" id="qt-venc-hasta"></div>
+          </div>
           <div class="field"><button class="ghost" id="btn-limpiar-filtros">Limpiar filtros</button></div>
           <div class="field"><button class="ghost" id="btn-csv">Exportar CSV</button></div>
         </div>
         <p class="note">Tocá el título de una columna para ordenar por ese dato; tocá de nuevo para invertir el orden.</p>
         <div id="tablezone" class="tablacompacta"></div>
+      </div>
+
+      <!-- ---- Sub-vista: Pagos semanales ---- -->
+      <div id="vista-semana" hidden>
+        <div class="semana-toolbar">
+          <button type="button" id="btn-semana-nuevo">+ Nuevo gasto</button>
+          <p class="note" style="margin:0">Gastos pendientes de pago según su fecha de vencimiento. No depende de los filtros de Registrados ni del período del dashboard.</p>
+        </div>
+        <div class="filters">
+          <div class="field"><label for="qs-rubro">Rubro</label><select id="qs-rubro"><option value="">Todos</option></select></div>
+          <div class="field"><label for="qs-comp" title="Computable como gasto del resultado, o no (ej. IVA o pagos ajenos hechos desde la cuenta)">Computable</label><select id="qs-comp"><option value="">Todos</option><option value="si">Computable</option><option value="no">No computable</option></select></div>
+          <div class="field"><label for="qs-texto">Buscar</label><input type="text" id="qs-texto" placeholder="Ítem, rubro o detalle (podés escribir varias palabras)"></div>
+          <div class="rango">
+            <div class="field"><label for="qs-pago-desde">Mes de pago previsto, desde</label><input type="month" id="qs-pago-desde"></div>
+            <span class="rango-sep">–</span>
+            <div class="field"><label for="qs-pago-hasta">hasta</label><input type="month" id="qs-pago-hasta"></div>
+          </div>
+          <div class="rango">
+            <div class="field"><label for="qs-corr-desde">Mes al que corresponde, desde</label><input type="month" id="qs-corr-desde"></div>
+            <span class="rango-sep">–</span>
+            <div class="field"><label for="qs-corr-hasta">hasta</label><input type="month" id="qs-corr-hasta"></div>
+          </div>
+          <div class="field"><button class="ghost" id="btn-semana-limpiar">Limpiar filtros</button></div>
+        </div>
+        <h3 class="semana-heading" id="semana-actual-titulo">Esta semana</h3>
+        <div id="semana-actual-zone" class="tablacompacta"></div>
+        <div class="semana-proxima-box">
+          <h3 class="semana-heading suave" id="semana-proxima-titulo">Semana próxima</h3>
+          <div id="semana-proxima-zone" class="tablacompacta"></div>
+        </div>
       </div>
 
       <!-- ---- Sub-vista: Fijos mensuales ---- -->
@@ -693,6 +857,7 @@
       </div>
     </div>
   </section>
+  </div>
 
 </div>
 <!-- Reporte para PDF: oculto en pantalla, solo se muestra (y .wrap se oculta) durante la
@@ -874,12 +1039,19 @@ const GASTOS_FIJOS=[
 ];
 let rows=[], propios={gasto:[],ingreso:[]}, modo='gasto', editId=null, pendingDel=null;
 let fijosExtra=[];  // gastos fijos que el usuario suma a la lista base, persistidos
+let usuarios=[];  // directorio de cuentas {email,nombre,activo,creadoTs,creadoPor}, persistido junto con propios/fijosExtra
+let usuarioEnEdicion=null;  // email de la fila que está en edición dentro del panel de Gestión de usuarios
 let expandidas=new Set();  // ids de gastos divididos con el desglose de pagos abierto
 let expandidasTarjeta=new Set();  // ids de gastos "tarjeta" con el desglose del resumen abierto
 let historial=[];  // registro de quién hizo cada cambio, persistido
 let usuarioActual='';  // nombre y apellido de la cuenta con sesión iniciada (viene de Firebase Auth)
 let historialDeshacer=[];  // pila de instantáneas previas a cada acción, para poder deshacer
 let ultimoAgregadoId=null, addConfirmTimers=[];
+// Fecha de vencimiento / mes al que corresponde "pegajosos": mientras se sigan cargando
+// movimientos nuevos sin salir de "Cargar nuevos", quedan en el último valor usado; se
+// reinician a la fecha/mes actual cada vez que se entra de nuevo a esa sub-vista (null = todavía
+// no se inicializaron, para distinguirlo de "el usuario los dejó en blanco a propósito").
+let stickyFechaPago=null, stickyMesCorr=null;
 let cuotasForm=[];  // cuotas en edición dentro del formulario
 let rubrosOff={ingreso:new Set(),gasto:new Set()};  // rubros destildados en el dashboard
 let rubroAbierto={ingreso:null,gasto:null};  // rubro con el desglose de movimientos abierto en el dashboard (uno por tipo)
@@ -903,9 +1075,15 @@ const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"
 
 function neto(b,t,iva,tipoMov){
   if(tipoMov==='ingreso') return b||0;
-  if(t==='A') return Math.max(0,(b||0)-(iva||0));
-  if(t==='A | 27%') return Math.max(0,(b||0)-(iva||0));
-  return b||0;
+  b=b||0;
+  if(t==='A'||t==='A | 27%'){
+    const n=b-(iva||0);
+    // El piso en 0 solo tiene sentido si el bruto es positivo (evita que un IVA mal cargado dé un
+    // neto negativo). Si el bruto YA es negativo (una nota de crédito o reverso), se deja tal cual:
+    // acotarlo a 0 convertiría un saldo negativo real en cero, que es peor que el error que evita.
+    return b>=0 ? Math.max(0,n) : n;
+  }
+  return b;
 }
 const netoDe=r=>neto(r.bruto,r.tipoFac,r.iva,r.tipo);
 // Equivalente en pesos: si el movimiento está cargado en USD, lo convierte con su cotización.
@@ -967,6 +1145,7 @@ async function load(){
       propios = d.propios || (d.rubros?{gasto:d.rubros,ingreso:[]}:{gasto:[],ingreso:[]});
       fijosExtra = Array.isArray(d.fijosExtra) ? d.fijosExtra : [];
       historial = Array.isArray(d.historial) ? d.historial : [];
+      usuarios = Array.isArray(d.usuarios) ? d.usuarios : [];
     }
     rows = normalizar(rowsViejas);
     if(!propios.gasto) propios.gasto=[];
@@ -982,6 +1161,7 @@ async function load(){
     const config = await leer('copahue:config') || {};
     propios = config.propios || {gasto:[],ingreso:[]};
     fijosExtra = Array.isArray(config.fijosExtra) ? config.fijosExtra : [];
+    usuarios = Array.isArray(config.usuarios) ? config.usuarios : [];
     if(!propios.gasto) propios.gasto=[];
     if(!propios.ingreso) propios.ingreso=[];
     if(!propios.metodos) propios.metodos=[];
@@ -1024,7 +1204,7 @@ async function guardarReal(){
     const tareas=[
       ...rowYears.map(a=>window.storage.set('copahue:movs:'+a, JSON.stringify(rowsPorAño[a]))),
       ...histYears.map(a=>window.storage.set('copahue:hist:'+a, JSON.stringify(histPorAño[a]))),
-      window.storage.set('copahue:config', JSON.stringify({propios,fijosExtra})),
+      window.storage.set('copahue:config', JSON.stringify({propios,fijosExtra,usuarios})),
       window.storage.set('copahue:indice', JSON.stringify({rowYears,histYears}))
     ];
     await Promise.all(tareas);
@@ -1207,7 +1387,7 @@ $('login-signin-btn').addEventListener('click',async()=>{
 });
 $('login-password').addEventListener('keydown',e=>{ if(e.key==='Enter') $('login-signin-btn').click(); });
 
-$('link-admin-gate').addEventListener('click',e=>{ e.preventDefault(); mostrarVistaLogin('admin-gate'); });
+$('link-admin-gate').addEventListener('click',e=>{ e.preventDefault(); abrirGestionUsuarios(); });
 $('admin-gate-volver').addEventListener('click',()=>mostrarVistaLogin('signin'));
 $('admin-gate-btn').addEventListener('click',()=>{
   const cuit=$('admin-cuit').value.trim();
@@ -1216,7 +1396,7 @@ $('admin-gate-btn').addEventListener('click',()=>{
     $('admin-cuit').value=''; $('admin-clave').value='';
     mostrarVistaLogin('admin-crear');
   } else {
-    $('admin-gate-error').hidden=false; $('admin-gate-error').textContent='CUIT o clave incorrectos.';
+    $('admin-gate-error').hidden=false; $('admin-gate-error').textContent='Usuario o clave incorrectos.';
   }
 });
 
@@ -1255,6 +1435,153 @@ $('admin-crear-otra').addEventListener('click',()=>{
 });
 $('admin-crear-volver').addEventListener('click',()=>mostrarVistaLogin('signin'));
 
+/* ---------- Gestión de usuarios ----------
+   Panel de administrador accesible desde la pantalla inicial (link "Acceso de administrador",
+   antes de iniciar sesión), pide el mismo usuario/clave de administrador (misma constante que la
+   creación de cuentas) y ahí se puede ver el directorio, editar nombre/estado, mandar un correo
+   de restablecimiento de contraseña, y crear cuentas nuevas — todo en un mismo lugar. El
+   directorio (variable "usuarios") se guarda junto con "propios"/"fijosExtra" en el mismo
+   documento de configuración, así que no hace falta ninguna regla de Firestore nueva.
+   LÍMITES (por ser todo del lado del navegador, sin servidor propio — igual que el CUIT/clave
+   de más abajo): no se puede cambiar el correo ni ver/cambiar la contraseña de otra cuenta
+   directamente (Firebase no lo permite desde acá); en su lugar se manda un correo para que la
+   persona la restablezca sola. "Desactivar" a alguien le impide seguir usando la app normalmente
+   (se lo saca apenas inicia sesión), pero no borra ni bloquea su cuenta de Firebase a nivel
+   servidor: para eso hace falta el panel de Firebase Authentication. */
+function pintarUsuariosAdmin(){
+  const cont=$('admin-usuarios-lista');
+  if(!usuarios.length){
+    cont.innerHTML='<div class="empty">Todavía no hay cuentas en la lista — se suman solas la primera vez que cada persona inicia sesión, o al crearlas acá abajo.</div>';
+    return;
+  }
+  const miEmail=(FIREBASE_LISTO && firebase.auth().currentUser && firebase.auth().currentUser.email || '').toLowerCase();
+  const ordenados=[...usuarios].sort((a,b)=>(a.nombre||a.email||'').localeCompare(b.nombre||b.email||'','es'));
+  cont.innerHTML=ordenados.map(u=>{
+    const email=esc(u.email||'');
+    const esYo = u.email && u.email.toLowerCase()===miEmail;
+    if(usuarioEnEdicion===u.email){
+      return `<div class="admin-usuario-row editando" data-uemail="${email}">
+        <input type="text" class="au-nombre-input" value="${esc(u.nombre||'')}" placeholder="Nombre y apellido">
+        <span class="au-email">${email}</span>
+        <label class="au-activo"><input type="checkbox" class="au-activo-chk" ${u.activo!==false?'checked':''}> Activo</label>
+        <div class="au-acciones">
+          <button type="button" class="ghost" data-au-guardar="${email}">Guardar</button>
+          <button type="button" class="ghost" data-au-cancelar="${email}">Cancelar</button>
+        </div>
+      </div>`;
+    }
+    return `<div class="admin-usuario-row${u.activo===false?' inactivo':''}" data-uemail="${email}">
+      <span class="au-nombre">${esc(u.nombre||'(sin nombre)')}${esYo?' <span class="au-vos">(vos)</span>':''}</span>
+      <span class="au-email">${email}</span>
+      <span class="au-estado ${u.activo===false?'off':'on'}">${u.activo===false?'Inactivo':'Activo'}</span>
+      <div class="au-acciones">
+        <button type="button" class="rowbtn plain" data-au-editar="${email}" title="Editar nombre / activar o desactivar">✎</button>
+        <button type="button" class="rowbtn plain" data-au-reset="${email}" title="Enviar correo para restablecer la contraseña">🔑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+$('admin-usuarios-lista').addEventListener('click', async e=>{
+  const ed=e.target.closest('[data-au-editar]');
+  if(ed){ usuarioEnEdicion=ed.dataset.auEditar; pintarUsuariosAdmin(); return; }
+  const can=e.target.closest('[data-au-cancelar]');
+  if(can){ usuarioEnEdicion=null; pintarUsuariosAdmin(); return; }
+  const gu=e.target.closest('[data-au-guardar]');
+  if(gu){
+    const email=gu.dataset.auGuardar;
+    const fila=gu.closest('.admin-usuario-row');
+    const nombre=fila.querySelector('.au-nombre-input').value.trim();
+    const activo=fila.querySelector('.au-activo-chk').checked;
+    if(!nombre){ toast('El nombre no puede quedar vacío.'); return; }
+    const u=usuarios.find(x=>x.email===email);
+    if(u){
+      const miEmail=(FIREBASE_LISTO && firebase.auth().currentUser && firebase.auth().currentUser.email || '').toLowerCase();
+      if(!activo && email.toLowerCase()===miEmail && !confirm('¿Seguro que querés desactivar tu propia cuenta? Vas a perder el acceso de inmediato.')) return;
+      guardarParaDeshacer('modificación del usuario "'+(u.nombre||u.email)+'"');
+      const cambioEstado = (u.activo!==false) !== activo;
+      u.nombre=nombre; u.activo=activo;
+      registrarHistorial((cambioEstado?(activo?'Reactivó':'Desactivó')+' al usuario':'Modificó al usuario'),null,nombre+' ('+email+')');
+      save();
+    }
+    usuarioEnEdicion=null;
+    pintarUsuariosAdmin();
+    toast('Usuario actualizado.');
+    return;
+  }
+  const rs=e.target.closest('[data-au-reset]');
+  if(rs){
+    const email=rs.dataset.auReset;
+    if(!FIREBASE_LISTO) return;
+    if(!confirm('¿Enviar un correo a '+email+' para restablecer su contraseña?')) return;
+    try{ await firebase.auth().sendPasswordResetEmail(email); toast('Correo de restablecimiento enviado a '+email); }
+    catch(err){ toast(errorLegible(err)); }
+  }
+});
+function abrirGestionUsuarios(){
+  $('au-gate-cuit').value=''; $('au-gate-clave').value=''; $('au-gate-error').hidden=true;
+  $('au-vista-gate').hidden=false; $('au-vista-panel').hidden=true;
+  $('admin-usuarios-overlay').hidden=false;
+  $('au-gate-cuit').focus();
+}
+$('au-gate-cancelar').addEventListener('click',()=>{ $('admin-usuarios-overlay').hidden=true; });
+$('au-gate-clave').addEventListener('keydown',e=>{ if(e.key==='Enter') $('au-gate-btn').click(); });
+$('au-gate-btn').addEventListener('click',()=>{
+  const cuit=$('au-gate-cuit').value.trim();
+  const clave=$('au-gate-clave').value;
+  if(cuit===ADMIN_CUIT && clave===ADMIN_CLAVE){
+    $('au-gate-cuit').value=''; $('au-gate-clave').value='';
+    $('au-vista-gate').hidden=true; $('au-vista-panel').hidden=false;
+    usuarioEnEdicion=null;
+    pintarUsuariosAdmin();
+  } else {
+    $('au-gate-error').hidden=false; $('au-gate-error').textContent='Usuario o clave incorrectos.';
+  }
+});
+$('au-panel-cerrar').addEventListener('click',()=>{ $('admin-usuarios-overlay').hidden=true; });
+$('au-crear-btn').addEventListener('click',async()=>{
+  if(!FIREBASE_LISTO){ $('au-crear-error').hidden=false; $('au-crear-error').textContent='Firebase todavía no está configurado.'; return; }
+  const nombre=$('au-nuevo-nombre').value.trim();
+  const email=$('au-nuevo-email').value.trim();
+  const pass=$('au-nuevo-clave').value;
+  if(!nombre){ $('au-crear-error').hidden=false; $('au-crear-error').textContent='Falta el nombre y apellido.'; return; }
+  if(!email){ $('au-crear-error').hidden=false; $('au-crear-error').textContent='Falta el correo.'; return; }
+  if(!pass||pass.length<6){ $('au-crear-error').hidden=false; $('au-crear-error').textContent='La clave tiene que tener al menos 6 caracteres.'; return; }
+  $('au-crear-error').hidden=true;
+  $('au-crear-btn').disabled=true;
+  try{
+    await crearCuentaAdmin(nombre,email,pass);
+    guardarParaDeshacer('creación del usuario "'+nombre+'"');
+    usuarios.push({email,nombre,activo:true,creadoTs:new Date().toISOString(),creadoPor:usuarioActual||'—'});
+    registrarHistorial('Creó la cuenta de usuario',null,nombre+' ('+email+')');
+    save();
+    pintarUsuariosAdmin();
+    toast('Cuenta creada para '+nombre);
+    $('au-nuevo-nombre').value=''; $('au-nuevo-email').value=''; $('au-nuevo-clave').value='';
+  } catch(e){
+    $('au-crear-error').hidden=false; $('au-crear-error').textContent=errorLegible(e);
+  } finally { $('au-crear-btn').disabled=false; }
+});
+// Al iniciar sesión: si la cuenta todavía no está en el directorio, se suma sola (para que las
+// cuentas creadas antes de este panel, o desde el alta previa al login, también terminen
+// apareciendo). Si ya está pero un administrador la desactivó, se cierra la sesión enseguida.
+// Si un administrador le cambió el nombre desde el panel, se adopta para esta sesión.
+function registrarUsuarioActualSiHaceFalta(){
+  if(!FIREBASE_LISTO) return;
+  const u=firebase.auth().currentUser; if(!u||!u.email) return;
+  const email=u.email;
+  const reg=usuarios.find(x=>(x.email||'').toLowerCase()===email.toLowerCase());
+  if(!reg){
+    usuarios.push({email,nombre:usuarioActual||email,activo:true,creadoTs:new Date().toISOString(),creadoPor:'(cuenta ya existente)'});
+    save();
+  } else if(reg.activo===false){
+    toast('Esta cuenta fue desactivada por un administrador.');
+    firebase.auth().signOut();
+  } else if(reg.nombre && reg.nombre!==usuarioActual){
+    usuarioActual=reg.nombre;
+    actualizarUsuarioUI();
+  }
+}
+
 // Puerta principal: sin sesión iniciada no se ve ni se carga nada.
 function iniciarAuth(){
   if(!FIREBASE_LISTO){
@@ -1267,7 +1594,7 @@ function iniciarAuth(){
       usuarioActual = user.displayName || user.email || 'Usuario';
       actualizarUsuarioUI();
       $('login-overlay').hidden=true;
-      load();
+      load().then(registrarUsuarioActualSiHaceFalta);
       iniciarPresencia(user);
     } else {
       detenerPresencia(); // no-op si ya se llamó antes (p.ej. desde el botón de cerrar sesión)
@@ -1282,7 +1609,7 @@ function iniciarAuth(){
 /* ---------- Deshacer ---------- */
 // Guarda una instantánea del estado ANTES de aplicar una acción, para poder revertirla después.
 function guardarParaDeshacer(desc){
-  historialDeshacer.push({rows:JSON.stringify(rows),propios:JSON.stringify(propios),fijosExtra:JSON.stringify(fijosExtra),desc});
+  historialDeshacer.push({rows:JSON.stringify(rows),propios:JSON.stringify(propios),fijosExtra:JSON.stringify(fijosExtra),usuarios:JSON.stringify(usuarios),desc});
   if(historialDeshacer.length>20) historialDeshacer.shift();
   actualizarBotonDeshacer();
 }
@@ -1299,9 +1626,11 @@ async function deshacer(){
   rows=JSON.parse(ultimo.rows);
   propios=JSON.parse(ultimo.propios);
   fijosExtra=JSON.parse(ultimo.fijosExtra);
+  usuarios=JSON.parse(ultimo.usuarios||'[]');
   registrarHistorial('Deshizo: '+ultimo.desc,null);
   save();
   render(); pintarFxRubros(); pintarFijosExtra(); pintarMetodosPago(); pintarFxMetodosQuitar();
+  if(!$('admin-usuarios-overlay').hidden && !$('au-vista-panel').hidden) pintarUsuariosAdmin();
   actualizarBotonDeshacer();
   toast('Deshecho: '+ultimo.desc);
 }
@@ -1411,7 +1740,11 @@ function actualizarFechaDiferida(){
   $('wrap-fecha-diferida').hidden = !esEcheq;
   if(esEcheq && !$('f-fecha-diferida').value) $('f-fecha-diferida').value=hoyISO();
 }
+// Tocar el método de pago o la fecha de vencimiento sugeridos (ver sugerenciaFijo) los saca del
+// modo "orientativo": dejan de verse en cursiva/anaranjado, sea cual sea el valor elegido.
+$('f-fechapago').addEventListener('input',()=>{ $('f-fechapago').classList.remove('campo-tentativo'); });
 $('f-metodo-pago').addEventListener('change',async e=>{
+  $('f-metodo-pago').classList.remove('campo-tentativo');
   if(e.target.value!=='__nuevo'){ actualizarFechaDiferida(); return; }
   const nuevo=(prompt('Nombre del método de pago nuevo:')||'').trim();
   if(nuevo&&!METODOS_PAGO_BASE.includes(nuevo)&&!propios.metodos.includes(nuevo)){
@@ -1508,10 +1841,21 @@ $('btn-fijos-go').addEventListener('click',async()=>{
   const faltantes = fijosTodos().filter(f=>!yaCargados.has(f.item));
   if(!faltantes.length){ toast('Ya estaban cargados todos los gastos fijos de esta tanda.'); return; }
   if(!(await asegurarUsuario())) return;
-  const nuevos=faltantes.map(f=>({
-    id:uid(),tipo:'gasto',mesPago:mesTodos||'',mesCorr:'',rubro:f.rubro,item:f.item,bruto:0,
-    moneda:'ARS',cotizacion:0,tipoFac:'No posee',iva:0,fact:'',pago:false,comp:true,detalle:'',fijo:true,fechaVenc:vencTodos||'',loteMes:mesLote
-  }));
+  const nuevos=faltantes.map(f=>{
+    // La fecha de vencimiento escrita a mano para todos (vencTodos) tiene prioridad sobre la
+    // sugerencia automática; si no se escribió nada, se sugiere la del último registro de ese
+    // ítem, marcada como tentativa. El método de pago nunca se pre-carga como dato real (se
+    // borraría solo al guardar sin marcar "pagado"): queda aparte, en metodoTentativo.
+    const sug=sugerenciaFijo(f.item);
+    return {
+      id:uid(),tipo:'gasto',mesPago:mesTodos||'',mesCorr:'',rubro:f.rubro,item:f.item,bruto:0,
+      moneda:'ARS',cotizacion:0,tipoFac:'No posee',iva:0,fact:'',pago:false,comp:true,detalle:'',fijo:true,
+      fechaVenc: vencTodos || (sug&&sug.venc) || '',
+      vencTentativo: !vencTodos && !!(sug&&sug.venc),
+      metodoTentativo: (sug&&sug.metodo) || '',
+      loteMes:mesLote
+    };
+  });
   guardarParaDeshacer('cargar '+nuevos.length+' gastos fijos al libro');
   rows.push(...nuevos);
   registrarHistorial('Cargó gastos fijos',null,nuevos.length+' gastos fijos, sin mes asignado');
@@ -1547,7 +1891,8 @@ $('f-rubro').addEventListener('change',async e=>{
 // Separa entero y centavos de lo que hay tipeado. El separador decimal es el ÚLTIMO "," o "."
 // que tenga como máximo 2 dígitos después; cualquier otro punto (los de miles, ya formateados
 // automáticamente) se ignora. Así "," y "." sirven para centavos sin romper "10.000".
-function separarImporte(valor){
+function separarImporte(valor,permitirNegativo){
+  const neg = !!permitirNegativo && /^\s*-/.test(valor);
   let v=valor.replace(/[^\d,.]/g,'');
   const li=Math.max(v.lastIndexOf(','),v.lastIndexOf('.'));
   let ent=v, dec=null;
@@ -1556,13 +1901,18 @@ function separarImporte(valor){
     if(tras.length<=2){ dec=tras; ent=v.slice(0,li).replace(/[.,]/g,''); }
     else{ ent=v.replace(/[.,]/g,''); }
   }
-  return {ent,dec};
+  return {ent,dec,neg};
 }
+// Solo el importe bruto de Cargar/Modificar admite signo negativo (para poder cargar un saldo
+// negativo, ej. una nota de crédito o un reverso). IVA, cotización y las cuotas de un pago
+// dividido siguen sin admitirlo: no tienen sentido en negativo.
+const admiteNegativo=el=>el&&el.id==='f-bruto';
 const digitos=el=>{
-  const {ent,dec}=separarImporte(el.value);
+  const {ent,dec,neg}=separarImporte(el.value,admiteNegativo(el));
   if(!ent&&!dec) return 0;
   const n=parseFloat((ent||'0')+'.'+(dec||'0'));
-  return isNaN(n)?0:n;
+  if(isNaN(n)) return 0;
+  return neg?-n:n;
 };
 const brutoVal=()=>digitos($('f-bruto'));
 const ivaVal=()=>digitos($('f-iva'));
@@ -1570,11 +1920,16 @@ const ivaVal=()=>digitos($('f-iva'));
 // desglose de un resumen de tarjeta: mismo parseo de miles/decimales, sin el formateo en vivo.
 function valorSimple(id){ const el=$(id); if(!el) return 0; return digitos(el); }
 function formatCampo(el){
-  const antes=el.value.slice(0,el.selectionStart??el.value.length).replace(/[^\d,.]/g,'').length;
-  let {ent,dec}=separarImporte(el.value);
+  const neg=admiteNegativo(el);
+  const filtro = neg ? /[^\d,.\-]/g : /[^\d,.]/g;
+  const antes=el.value.slice(0,el.selectionStart??el.value.length).replace(filtro,'').length;
+  let {ent,dec,neg:esNeg}=separarImporte(el.value,neg);
   ent=ent.replace(/^0+(?=\d)/,'');
   let out = ent ? parseInt(ent,10).toLocaleString('es-AR') : (dec!==null?'0':'');
   if(dec!==null) out+=','+dec;
+  // El signo se conserva aunque todavía no haya dígitos (recién tipeado "-" solo), si no
+  // desaparece con la primera tecla y el usuario nunca puede volver a ponerlo.
+  if(esNeg) out = out ? ('-'+out) : '-';
   el.value=out;
   let pos=0,vistos=0;
   while(pos<el.value.length&&vistos<antes){ if(/[\d,]/.test(el.value[pos]))vistos++; pos++; }
@@ -1726,6 +2081,9 @@ $('cuotas-form').addEventListener('click',e=>{
 });
 
 /* ---------- Alta y edición ---------- */
+// Pone la fecha de vencimiento y el mes al que corresponde en la fecha/mes actual, y los deja
+// así guardados como el valor "pegajoso" vigente (se llama al entrar de nuevo a "Cargar nuevos").
+function resetStickyCarga(){ stickyFechaPago=hoyISO(); stickyMesCorr=mesActual(); }
 function limpiarForm(){
   $('f-item').value='';$('f-bruto').value='';$('f-iva').value='';ivaAuto=true;
   $('f-tipo').value='No posee';$('f-rubro').value='';$('f-fact').value='Facturado';
@@ -1733,7 +2091,9 @@ function limpiarForm(){
   $('f-fecha-real-pago').value='';$('wrap-fecha-real-pago').hidden=true;
   $('f-metodo-pago').value='';$('wrap-metodo-pago').hidden=true;
   $('f-fecha-diferida').value='';$('wrap-fecha-diferida').hidden=true;
-  $('f-fechapago').value=hoyISO();$('wrap-fechapago').hidden=false;
+  if(stickyFechaPago===null) resetStickyCarga();  // primera carga de la página: todavía no hay nada "pegajoso"
+  $('f-fechapago').value=stickyFechaPago;$('wrap-fechapago').hidden=false;
+  $('f-mescorr').value=stickyMesCorr;
   $('f-moneda').value='ARS';$('f-cotizacion').value='';$('wrap-cotizacion').hidden=true;
   $('lbl-fechapago').textContent = modo==='gasto'?'Fecha de vencimiento':'Fecha de cobro';
   cuotasForm=[]; $('cuotas-form').hidden=true;
@@ -1766,6 +2126,7 @@ async function abrirEdicion(id){
   $('f-mespago').value=r.mesPago||'';
   $('f-mescorr').value=r.mesCorr||'';
   $('f-fechapago').value = r.tipo==='ingreso' ? (r.fechaPago||'') : (r.fechaVenc||'');
+  $('f-fechapago').classList.toggle('campo-tentativo', r.tipo==='gasto' && !r.pago && !!r.vencTentativo && !!r.fechaVenc);
   $('f-item').value=r.item||'';
   $('f-bruto').value=money(r.bruto);
   $('f-tipo').value=r.tipoFac||'No posee';
@@ -1774,7 +2135,10 @@ async function abrirEdicion(id){
   $('wrap-fecha-real-pago').hidden = !r.pago;
   $('f-fecha-real-pago').value = r.pago ? (r.fechaPago||hoyISO()) : '';
   $('wrap-metodo-pago').hidden = !(r.pago && r.tipo==='gasto');
-  pintarMetodosPago(); $('f-metodo-pago').value = (r.pago && r.tipo==='gasto') ? (r.metodoPago||'') : '';
+  pintarMetodosPago();
+  const metodoEsTentativo = r.tipo==='gasto' && !r.pago && !!r.metodoTentativo;
+  $('f-metodo-pago').value = (r.pago && r.tipo==='gasto') ? (r.metodoPago||'') : (metodoEsTentativo ? r.metodoTentativo : '');
+  $('f-metodo-pago').classList.toggle('campo-tentativo', metodoEsTentativo);
   $('wrap-fecha-diferida').hidden = !(r.pago && r.tipo==='gasto' && r.metodoPago==='E-cheq');
   $('f-fecha-diferida').value = r.fechaDiferida||'';
   $('f-comp').checked = r.comp!==false;
@@ -1823,7 +2187,9 @@ $('btn-add').addEventListener('click',async()=>{
   const item = itemTexto || (modo==='ingreso' ? rubroSel : '');
   if(modo==='gasto'&&!item){toast('Falta el ítem.');$('f-item').focus();return;}
   const sinImportePermitido = modo==='gasto';
-  if(!(bruto>0) && !sinImportePermitido){toast('Cargá un importe.');$('f-bruto').focus();return;}
+  // El importe puede ser negativo (saldo negativo, nota de crédito, reverso); lo único que se
+  // exige acá es que no quede en blanco/en cero cuando el importe es obligatorio (ingresos).
+  if(bruto===0 && !sinImportePermitido){toast('Cargá un importe.');$('f-bruto').focus();return;}
   if(!$('f-mescorr').value){toast('Indicá el mes al que corresponde.');$('f-mescorr').focus();return;}
   const tipoFac = modo==='gasto'?$('f-tipo').value:'—';
   const esConIva = modo==='gasto' && (tipoFac==='A'||tipoFac==='A | 27%') && bruto>0;
@@ -1836,6 +2202,9 @@ $('btn-add').addEventListener('click',async()=>{
   const cotizacion=moneda==='USD'?cotizVal():0;
   if(moneda==='USD'&&!(cotizacion>0)){toast('Cargá la cotización del dólar.');$('f-cotizacion').focus();return;}
   const esDiv = modo==='gasto' && $('f-dividido').checked && moneda!=='USD';
+  // Las cuotas de un pago dividido se cargan por separado y no admiten importe negativo, así que
+  // no hay forma consistente de "dividir" un saldo negativo en cuotas.
+  if(esDiv && bruto<0){toast('Un importe negativo no se puede dividir en cuotas. Destildá "Pago dividido".');return;}
   if(!esDiv && $('f-pago').checked && !$('f-fecha-real-pago').value){
     toast('Indicá la fecha en que se '+(modo==='ingreso'?'cobró':'pagó')+'.');
     $('f-fecha-real-pago').focus();
@@ -1872,6 +2241,11 @@ $('btn-add').addEventListener('click',async()=>{
     const r=rows.find(x=>x.id===editId);
     if(r){
       guardarParaDeshacer('modificación de "'+(nombreDe(r))+'"');
+      // Datos orientativos (vencimiento/método sugeridos de un gasto fijo, ver sugerenciaFijo):
+      // dejan de mostrarse en cursiva/anaranjado en cuanto se confirma el pago, o en cuanto se
+      // cambia el valor sugerido por otro.
+      if(datos.pago){ r.vencTentativo=false; r.metodoTentativo=''; }
+      else if(r.vencTentativo && datos.fechaVenc!==r.fechaVenc){ r.vencTentativo=false; }
       Object.assign(r,datos);
       if(esDiv){
         r.cuotas = cuotasForm.map(c=>({importe:+c.importe||0,mesPago:c.mesPago||'',fecha:c.fecha||'',pago:!!c.pago,metodoPago:c.metodoPago||''}));
@@ -1894,6 +2268,9 @@ $('btn-add').addEventListener('click',async()=>{
     rows.push(nuevo);
     if(nuevo.fijo) agregarAFijosSiCorresponde(nuevo.item,nuevo.rubro);
     registrarHistorial('Agregó',nuevo);
+    // La fecha de vencimiento y el mes al que corresponde quedan "pegajosos" para el próximo
+    // movimiento a cargar, tal como se dejaron acá (limpiarForm() los va a volver a poner).
+    stickyFechaPago=$('f-fechapago').value; stickyMesCorr=$('f-mescorr').value;
     save(); limpiarForm(); render(); toast(modo==='ingreso'?'Ingreso agregado':'Gasto agregado');
     mostrarConfirmacionAgregado(nuevo);
   }
@@ -1925,8 +2302,9 @@ function pagadoCuotas(r){
 }
 
 /* ---------- Orden por columna (Registrados, Fijos mensuales y Detalle del período) ---------- */
-let sortRegistrados={col:'mesCorr',dir:'desc'};
+let sortRegistrados={col:'item',dir:'asc'}; // orden por defecto de Registrados: alfabético por ítem
 let sortDetallePeriodo={col:'mesCorr',dir:'desc'};
+let sortSemanaActual={col:'vencimiento',dir:'asc'}, sortSemanaProxima={col:'vencimiento',dir:'asc'};
 // valor a comparar por columna
 const COLS_ORDEN={
   tipo:      r=>r.tipo==='ingreso'?'variable':(r.fijo?'fijo':'variable'),
@@ -1964,28 +2342,81 @@ function ordenar(lista,sortState){
 // clic en un título de columna: ordena por esa columna, o invierte el orden si ya estaba activa
 // (la misma tabla se reutiliza en Registrados y en el Detalle del período del dashboard;
 // data-tabla en el contenedor indica cuál de las dos hay que reordenar y volver a pintar)
+const SORT_STATE_POR_TABLA={ periodo:()=>sortDetallePeriodo, 'semana-actual':()=>sortSemanaActual, 'semana-proxima':()=>sortSemanaProxima };
 document.addEventListener('click',e=>{
   const th=e.target.closest('th[data-sortcol]');
   if(!th) return;
   const tablaId = (th.closest('[data-tabla]')||{}).dataset ? th.closest('[data-tabla]').dataset.tabla : 'registrados';
-  const sortState = tablaId==='periodo' ? sortDetallePeriodo : sortRegistrados;
+  const sortState = (SORT_STATE_POR_TABLA[tablaId]||(()=>sortRegistrados))();
   const col=th.dataset.sortcol;
   if(sortState.col===col){ sortState.dir = sortState.dir==='asc'?'desc':'asc'; }
   else { sortState.col=col; sortState.dir = ['bruto','neto','mesPago','mesCorr','estado'].includes(col)?'desc':'asc'; }
   if(tablaId==='periodo') renderDetallePeriodo(filteredPeriodo());
+  else if(tablaId==='semana-actual'||tablaId==='semana-proxima') renderSemana();
   else renderTabla(filteredTabla());
 });
 
 /* ---------- Filtros ---------- */
 ['qi-cobro','qi-corr','qg-pago','qg-corr'].forEach(id=>$(id).addEventListener('input',render));
-const FILTROS_TABLA=['q-tipo','q-rubro','q-estado','q-comp','q-texto','qt-pago-desde','qt-pago-hasta','qt-corr-desde','qt-corr-hasta','qt-fecha-desde','qt-fecha-hasta'];
+const FILTROS_TABLA=['q-tipo','q-rubro','q-estado','q-comp','q-fijo','q-factura','q-metodo','q-texto',
+  'qt-pago-desde','qt-pago-hasta','qt-corr-desde','qt-corr-hasta','qt-fecha-desde','qt-fecha-hasta',
+  'qt-venc-desde','qt-venc-hasta','q-monto-desde','q-monto-hasta'];
 FILTROS_TABLA.forEach(id=>$(id).addEventListener('input',()=>renderTabla(filteredTabla())));
 $('btn-limpiar-per').addEventListener('click',()=>{ ['qi-cobro','qi-corr','qg-pago','qg-corr'].forEach(id=>$(id).value=''); render(); });
 $('btn-limpiar-filtros').addEventListener('click',()=>{
   FILTROS_TABLA.forEach(id=>$(id).value='');
-  sortRegistrados={col:'mesCorr',dir:'desc'};
+  sortRegistrados={col:'item',dir:'asc'};
   renderTabla(filteredTabla());
 });
+
+// Pagos semanales: mismos filtros que Registrados salvo Tipo y Estado (acá siempre son
+// gastos pendientes, así que esos dos quedan fijos por definición de la vista).
+const FILTROS_SEMANA=['qs-rubro','qs-comp','qs-texto','qs-pago-desde','qs-pago-hasta','qs-corr-desde','qs-corr-hasta'];
+FILTROS_SEMANA.forEach(id=>$(id).addEventListener('input',renderSemana));
+$('btn-semana-limpiar').addEventListener('click',()=>{ FILTROS_SEMANA.forEach(id=>$(id).value=''); renderSemana(); });
+
+// Al elegir el mes "desde" de un rango, se abre automáticamente el desplegable del mes "hasta"
+// correspondiente, para agilizar la carga del rango (mes de pago y mes correspondiente, en
+// Registrados y en Pagos semanales).
+[['qt-pago-desde','qt-pago-hasta'],['qt-corr-desde','qt-corr-hasta'],
+ ['qs-pago-desde','qs-pago-hasta'],['qs-corr-desde','qs-corr-hasta']].forEach(([desdeId,hastaId])=>{
+  $(desdeId).addEventListener('change',()=>{
+    if(!$(desdeId).value) return;
+    const hasta=$(hastaId);
+    try{ hasta.focus(); hasta.showPicker && hasta.showPicker(); }catch(e){}
+  });
+});
+// Lunes a domingo tomando como referencia hoy; offsetSemanas=0 es la semana en curso, 1 la que sigue.
+function limitesSemana(offsetSemanas){
+  const hoy=new Date();
+  const diffLunes = (hoy.getDay()===0?-6:1-hoy.getDay());
+  const lunes=new Date(hoy.getFullYear(),hoy.getMonth(),hoy.getDate()+diffLunes+offsetSemanas*7);
+  const domingo=new Date(lunes.getFullYear(),lunes.getMonth(),lunes.getDate()+6);
+  const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  return {desde:fmt(lunes), hasta:fmt(domingo)};
+}
+// Gastos pendientes de pago cuyo vencimiento cae en la semana pedida (0 = en curso, 1 = próxima).
+// Un gasto con pago dividido no tiene una única fecha de vencimiento (cada cuota la suya), así
+// que no entra acá — se sigue viendo igual en Registrados y en su propio desglose de cuotas.
+function filteredSemana(offsetSemanas){
+  const {desde,hasta}=limitesSemana(offsetSemanas);
+  const ru=$('qs-rubro').value, cp=$('qs-comp').value, tx=$('qs-texto').value;
+  const pd=$('qs-pago-desde').value, ph=$('qs-pago-hasta').value;
+  const cd=$('qs-corr-desde').value, ch=$('qs-corr-hasta').value;
+  const lista=rows.filter(r=>{
+    if(r.tipo!=='gasto'||r.pago||r.dividido||!r.fechaVenc) return false;
+    if(r.fechaVenc<desde||r.fechaVenc>hasta) return false;
+    if(ru&&r.rubro!==ru) return false;
+    if(cp&&(cp==='no'?r.comp!==false:r.comp===false)) return false;
+    if(pd&&(!r.mesPago||r.mesPago<pd)) return false;
+    if(ph&&(!r.mesPago||r.mesPago>ph)) return false;
+    if(cd&&(!r.mesCorr||r.mesCorr<cd)) return false;
+    if(ch&&(!r.mesCorr||r.mesCorr>ch)) return false;
+    if(!coincideTexto(r,tx)) return false;
+    return true;
+  });
+  return {desde,hasta,lista};
+}
 
 // Filtro de PERÍODO: aplica al dashboard y es la base de la tabla
 function filteredPeriodo(){
@@ -2005,26 +2436,44 @@ function coincideTexto(r,tx){
   const palabras=tx.toLowerCase().split(/\s+/).filter(Boolean);
   return palabras.every(p=>hay.includes(p));
 }
+// ¿el método de pago elegido en el filtro coincide con el de esta fila? Un gasto dividido no
+// tiene un único método (cada cuota puede tener el suyo), así que ahí se busca entre todas.
+function filaTieneMetodo(r,mt){
+  if(!mt) return true;
+  if(r.dividido&&Array.isArray(r.cuotas)) return r.cuotas.some(c=>c.metodoPago===mt);
+  return r.metodoPago===mt;
+}
 function filteredTabla(){
   const tp=$('q-tipo').value,ru=$('q-rubro').value,es=$('q-estado').value,cp=$('q-comp').value,tx=$('q-texto').value;
+  const fj=$('q-fijo').value, fc=$('q-factura').value, mt=$('q-metodo').value;
   const pd=$('qt-pago-desde').value, ph=$('qt-pago-hasta').value;
   const cd=$('qt-corr-desde').value, ch=$('qt-corr-hasta').value;
   const fd=$('qt-fecha-desde').value, fh=$('qt-fecha-hasta').value;
+  const vd=$('qt-venc-desde').value, vh=$('qt-venc-hasta').value;
+  const mdTxt=$('q-monto-desde').value, mhTxt=$('q-monto-hasta').value;
+  const md=mdTxt!==''?parseFloat(mdTxt):null, mh=mhTxt!==''?parseFloat(mhTxt):null;
   // Registrados no depende del filtro de Período (ese es solo para el Dashboard). Un gasto fijo
   // recién cargado sin datos ni mes asignado no aparece acá todavía (solo en Fijos mensuales);
   // en cuanto tiene importe, pago, o un mes ya asignado (por ej. desde "Registrar en bloque"), sí.
   const out=rows.filter(r=>{
-    if(r.fijo && !(r.bruto>0 || r.pago || r.mesPago || r.mesCorr)) return false;
+    if(r.fijo && !(r.bruto!==0 || r.pago || r.mesPago || r.mesCorr)) return false;
     if(tp&&r.tipo!==tp) return false;
     if(ru&&r.rubro!==ru) return false;
     if(es&&(es==='pag'?!r.pago:r.pago)) return false;
     if(cp&&(cp==='no'?r.comp!==false:r.comp===false)) return false;
+    if(fj){ const esFijo=(r.tipo==='gasto'&&r.fijo); if(fj==='fijo'&&!esFijo) return false; if(fj==='variable'&&esFijo) return false; }
+    if(fc&&r.tipoFac!==fc) return false;
+    if(mt&&!filaTieneMetodo(r,mt)) return false;
     if(pd&&(!r.mesPago||r.mesPago<pd)) return false;
     if(ph&&(!r.mesPago||r.mesPago>ph)) return false;
     if(cd&&(!r.mesCorr||r.mesCorr<cd)) return false;
     if(ch&&(!r.mesCorr||r.mesCorr>ch)) return false;
     if(fd&&(!r.fechaPago||r.fechaPago<fd)) return false;
     if(fh&&(!r.fechaPago||r.fechaPago>fh)) return false;
+    if(vd&&(r.tipo!=='gasto'||!r.fechaVenc||r.fechaVenc<vd)) return false;
+    if(vh&&(r.tipo!=='gasto'||!r.fechaVenc||r.fechaVenc>vh)) return false;
+    if(md!==null&&!(netoARS(r)>=md)) return false;
+    if(mh!==null&&!(netoARS(r)<=mh)) return false;
     if(!coincideTexto(r,tx)) return false;
     return true;
   });
@@ -2034,6 +2483,17 @@ function filteredTabla(){
 const ORDEN_RUBRO=['RRHH','ALQUILER HOTEL','ALQUILER COCHERA 1','ALQUILER COCHERA 2','IMPUESTOS','LAVADERO','MARKETING','DESAYUNOS','SERVICIOS','TASAS MUNICIPALES','IVA','GASTOS MANTENIMIENTO','INSUMOS','INVERSIONES','OTROS'];
 function ordenRubro(r){ const i=ORDEN_RUBRO.indexOf(r); return i<0?999:i; }
 // lista completa de fijos = base + agregados por el usuario, ordenada por rubro
+// Al cargar un gasto fijo mensual, busca en lo ya registrado el movimiento más reciente con ese
+// mismo ítem que tenga fecha de vencimiento y/o método de pago cargados, para sugerirlos "a modo
+// orientativo" (no se guardan como dato confirmado, solo como sugerencia visual en cursiva y
+// fondo anaranjado hasta que se confirmen o se cambien).
+function sugerenciaFijo(item){
+  const candidatos = rows.filter(r=>r.tipo==='gasto'&&r.item===item&&(r.fechaVenc||r.metodoPago))
+    .slice().sort((a,b)=>(b.mesCorr||b.mesPago||'').localeCompare(a.mesCorr||a.mesPago||''));
+  if(!candidatos.length) return null;
+  const ult=candidatos[0];
+  return {venc: ult.fechaVenc||'', metodo: ult.metodoPago||''};
+}
 function fijosTodos(){
   const todos=[...GASTOS_FIJOS.map(f=>({item:f[0],rubro:f[1],base:true})), ...fijosExtra.map(f=>({item:f.item,rubro:f.rubro,base:false}))];
   return todos.sort((a,b)=>a.item.localeCompare(b.item,'es'));
@@ -2046,6 +2506,18 @@ function syncSelect(id,field,plain,soloTipo){
   if(!plain) vals.reverse();
   sel.innerHTML='<option value="">Todos</option>'+vals.map(v=>`<option value="${esc(v)}"${v===cur?' selected':''}>${plain?esc(v):mesLabel(v)}</option>`).join('');
 }
+// Opciones del filtro "Método de pago" de Registrados: junta los métodos usados en gastos sueltos
+// (r.metodoPago) y en cuotas de gastos divididos (cada cuota tiene el suyo), para no perder ninguno.
+function syncSelectMetodo(){
+  const sel=$('q-metodo'), cur=sel.value, set=new Set();
+  rows.forEach(r=>{
+    if(r.tipo!=='gasto') return;
+    if(r.dividido&&Array.isArray(r.cuotas)) r.cuotas.forEach(c=>{ if(c.metodoPago) set.add(c.metodoPago); });
+    else if(r.metodoPago) set.add(r.metodoPago);
+  });
+  const vals=[...set].sort((a,b)=>a.localeCompare(b,'es'));
+  sel.innerHTML='<option value="">Todos</option>'+vals.map(v=>`<option value="${esc(v)}"${v===cur?' selected':''}>${esc(v)}</option>`).join('');
+}
 
 /* ---------- Render ---------- */
 function render(){
@@ -2055,6 +2527,7 @@ function render(){
   syncSelect('qg-pago','mesPago',false,'gasto');
   syncSelect('qg-corr','mesCorr',false,'gasto');
   syncSelect('q-rubro','rubro',true);
+  syncSelectMetodo();
 
   const icb=$('qi-cobro').value,icr=$('qi-corr').value,gpg=$('qg-pago').value,gcr=$('qg-corr').value;
   $('btn-limpiar-per').hidden = !(icb||icr||gpg||gcr);
@@ -2069,6 +2542,7 @@ function render(){
   renderDashboard(baseD);
   renderDetallePeriodo(baseD);
   renderTabla(filteredTabla());
+  renderSemana();
   renderEstadoFijos();
 }
 
@@ -2094,7 +2568,7 @@ function renderDashboard(base){
     ['Margen',(ing?mg.toFixed(1):'—')+' %',res<0?'neg':'ok'],
     ['Pagos impagos','$ '+money(pend),'pend']
   ];
-  if(nocomp>0) cards.push(['No computable','$ '+money(nocomp),'nc']);
+  if(nocomp!==0) cards.push(['No computable','$ '+money(nocomp),'nc']);
   $('totals').innerHTML=cards.map(([l,v,c])=>`<div class="tot"><div class="lbl">${l}</div><div class="val ${c}">${v}</div></div>`).join('');
 
   // el resultado por mes y los rubros excluyen los no computables
@@ -2124,7 +2598,10 @@ function renderRubros(base){
     $(cont).innerHTML=ks.map(k=>{
       const off=rubrosOff[tipo].has(k);
       const pct=totAct?(o[k]/totAct*100).toFixed(0):0;
-      const w=(o[k]/maxV*100).toFixed(1);
+      // Si el rubro da negativo en total (más notas de crédito/reversos que gastos o ingresos
+      // reales) la barra no tiene cómo representar eso proporcionalmente; se deja en 0 en vez de
+      // un ancho negativo inválido, pero el monto y el % siguen mostrando el número real.
+      const w=Math.max(0,o[k]/maxV*100).toFixed(1);
       const abierto=rubroAbierto[tipo]===k;
       const tip=esc(k+' — $ '+money(o[k])+(off?' (destildado, no entra al resultado)':' · '+pct+'% del total activo'));
       const fila=`<div class="rrow ${claseTipo}${off?' off':''}${abierto?' abierto':''}">
@@ -2356,9 +2833,36 @@ function togglePanel(bodyId,chevId,headId,hintId,hintTxt,force){
   $(chevId).textContent = abrir?'▾':'▸';
   head.setAttribute('aria-expanded', abrir?'true':'false');
   $(hintId).textContent = abrir?'':hintTxt;
+  actualizarCentradoPaneles();
 }
 function toggleDash(force){ togglePanel('dash-body','dash-chev','dash-toggle','dash-hint','(toca para ver los resultados)',force); }
 function toggleMovs(force){ togglePanel('movs-body','movs-chev','movs-toggle','movs-hint','(toca para ver los movimientos)',force); }
+// Con el Dashboard y Movimientos cerrados a la vez, la "zona de paneles" queda con solo los dos
+// encabezados visibles; este padding-top de arriba la empuja para que ese bloque quede centrado
+// en la parte de pantalla visible debajo de él. Apenas se abre cualquiera de los dos, el padding
+// vuelve a 0 y (por la transición en .paneles-zone) se ve subir hacia arriba.
+function actualizarCentradoPaneles(){
+  const zona=$('paneles-zone');
+  if(!zona) return;
+  const cerrado = $('dash-body').hidden && $('movs-body').hidden;
+  if(!cerrado){ zona.style.paddingTop='0px'; return; }
+  zona.style.paddingTop='0px';
+  const top=zona.getBoundingClientRect().top;
+  const disponible=window.innerHeight-top;
+  const alto=zona.scrollHeight;
+  const hueco=Math.max(0,(disponible-alto)/2);
+  zona.style.paddingTop=hueco+'px';
+}
+window.addEventListener('resize',actualizarCentradoPaneles);
+// Alinea el inicio de la franja de atajos (.atajos) con el borde inferior real del encabezado,
+// para que nunca se superponga con el título (la franja arranca justo debajo de la línea doble).
+function ajustarAtajos(){
+  const header=document.querySelector('header.masthead');
+  if(!header) return;
+  document.documentElement.style.setProperty('--atajos-top', header.getBoundingClientRect().bottom+'px');
+}
+ajustarAtajos();
+window.addEventListener('resize',ajustarAtajos);
 $('dash-toggle').addEventListener('click',()=>toggleDash());
 $('dash-toggle').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleDash(); } });
 $('movs-toggle').addEventListener('click',()=>toggleMovs());
@@ -2377,20 +2881,43 @@ document.querySelectorAll('.atajos button[data-atajo]').forEach(btn=>{
   });
 });
 
-// Sub-vistas dentro de Movimientos: Cargar nuevos / Registrados / Fijos mensuales
+// Sub-vistas dentro de Movimientos: Cargar nuevos / Registrados / Pagos semanales / Fijos mensuales
 let vistaMovActual='cargar';
 function setVistaMov(v){
+  // Entrar a "Cargar nuevos" viniendo de otra sub-vista resetea la fecha de vencimiento y el mes
+  // al que corresponde a la fecha/mes actual (aunque venga de abrirEdicion(): esa función pisa
+  // estos dos campos con los datos reales del movimiento justo después, así que no se nota).
+  const entrandoDeNuevoACargar = v==='cargar' && vistaMovActual!=='cargar';
   vistaMovActual=v;
-  ['cargar','registrados','fijos'].forEach(k=>{
+  ['cargar','registrados','semana','fijos'].forEach(k=>{
     $('subtab-'+k).className = k===v ? 'on' : '';
     $('vista-'+k).hidden = k!==v;
   });
+  if(entrandoDeNuevoACargar){
+    resetStickyCarga();
+    $('f-fechapago').value=stickyFechaPago;
+    $('f-mescorr').value=stickyMesCorr;
+  }
   if(v==='registrados') renderTabla(filteredTabla());
+  if(v==='semana') renderSemana();
   if(v==='fijos'){ renderEstadoFijos(); renderLoteFijos(); }
 }
 $('subtab-cargar').addEventListener('click',()=>setVistaMov('cargar'));
 $('subtab-registrados').addEventListener('click',()=>setVistaMov('registrados'));
+$('subtab-semana').addEventListener('click',()=>setVistaMov('semana'));
 $('subtab-fijos').addEventListener('click',()=>setVistaMov('fijos'));
+// Acceso directo a cargar un gasto nuevo desde Pagos semanales, sin pasar por Registrados.
+$('btn-semana-nuevo').addEventListener('click',()=>{
+  editId=null;
+  $('titulo-carga').textContent='Cargar movimiento';
+  $('btn-add').textContent='Agregar';
+  $('wrap-cancel').hidden=true;
+  $('vista-cargar').classList.remove('editando');
+  limpiarForm();
+  setModo('gasto');
+  setVistaMov('cargar');
+  $('f-item').focus();
+});
 
 /* ---------- Tooltip de los gráficos del dashboard (hover/foco sobre barras y puntos) ---------- */
 (function(){
@@ -2525,7 +3052,6 @@ function tablaHtml(view,sortState,tablaId){
     ...(mostrarFC?['factura']:[]), ...(mostrarFacturado?['facturado']:[]),
     'vencimiento','estado', ...(mostrarMetodo?['metodo']:[]), 'computable','rubro','detalle','acciones'];
   const totalCols=colOrder.length;
-  const idxBruto=colOrder.indexOf('bruto'), idxNeto=colOrder.indexOf('neto');
   const colgroupHtml=colOrder.map(c=>`<col style="width:${c==='detalle'?ANCHOS.detalle+extra:ANCHOS[c]}%">`).join('');
   const theadCeldas={
     tipo: thOrden('Tipo','tipo',sortState),
@@ -2570,7 +3096,7 @@ function tablaHtml(view,sortState,tablaId){
       const tdMetodo = mostrarMetodo ? `<td>${
           esIng ? '<span class="tag EG">—</span>'
           : div ? (r.cuotas.some(c=>c.pago) ? `<div class="cp-stack">${r.cuotas.filter(c=>c.pago).map(c=>`<span class="cp-stack-line">${esc(c.metodoPago||'—')}</span>`).join('')}</div>` : '<span class="tag EG">—</span>')
-          : (r.metodoPago ? esc(r.metodoPago) : '<span class="tag EG">—</span>')
+          : (r.metodoPago ? esc(r.metodoPago) : ((!r.pago && r.metodoTentativo) ? `<span class="tentativo" title="Método orientativo, según el último registro de este ítem. Todavía no está confirmado.">${esc(r.metodoTentativo)}</span>` : '<span class="tag EG">—</span>'))
         }</td>` : '';
       const claseImpago = (!esIng && !r.pago) ? (' gasto-impago'+((diasHasta(r.fechaVenc)!==null && diasHasta(r.fechaVenc)<=7) ? ' vence-pronto' : '')) : '';
       const clasePago = (!esIng && r.pago) ? ' gasto-pago' : '';
@@ -2586,10 +3112,10 @@ function tablaHtml(view,sortState,tablaId){
       <td class="mono">${div?'<span class="cp-let" title="Se paga en varias cuotas">varias</span>':'<b>'+mesLabel(r.mesPago).toUpperCase()+'</b>'}</td>
       <td class="mono"><b>${mesLabel(r.mesCorr)}</b></td>
       ${tdItem}
-      <td class="num${usd?' dual':''}">${montoCell(r.bruto,brutoARS(r),usd)}</td>
-      <td class="num${usd?' dual':''}${esIng?' ing':''}">${montoCell(n,netoARS(r),usd)}</td>
+      <td class="num${usd?' dual':''}${r.bruto<0?' negv':''}">${montoCell(r.bruto,brutoARS(r),usd)}</td>
+      <td class="num${usd?' dual':''}${n<0?' negv':(esIng?' ing':'')}">${montoCell(n,netoARS(r),usd)}</td>
       ${tdFactura}${tdFacturado}
-      <td class="mono">${(!esIng&&r.fechaVenc)?fmtFechaCorta(r.fechaVenc).toUpperCase():'—'}</td>
+      <td class="mono">${(!esIng&&r.fechaVenc)?((!r.pago&&r.vencTentativo)?`<span class="tentativo" title="Vencimiento orientativo, según el último registro de este ítem. Todavía no está confirmado.">${fmtFechaCorta(r.fechaVenc).toUpperCase()}</span>`:fmtFechaCorta(r.fechaVenc).toUpperCase()):'—'}</td>
       ${cpCell}
       ${tdMetodo}
       <td class="computable">${esIng?'<span class="tag EG">—</span>':`<input type="checkbox" ${r.comp!==false?'checked':''} data-comp="${r.id}" title="${r.comp!==false?'Computable: resta en el resultado. Destildá si se pagó pero no es gasto del hotel.':'No computable: se pagó pero no afecta el resultado. Tildá para contarlo como gasto.'}">`}</td>
@@ -2602,10 +3128,18 @@ function tablaHtml(view,sortState,tablaId){
       return filaPrincipal+filaDesglose+filaTarjeta;
     }).join('')}</tbody>
     <tfoot>
-      <tr><td colspan="${idxBruto}">Totales (${view.length}) — en pesos</td><td class="num">${money(tb)}</td><td class="num">${money(tn)}</td><td colspan="${totalCols-idxNeto-1}"></td></tr>
-      ${(tbNc||tnNc)?`<tr><td colspan="${idxBruto}" style="font-weight:400;color:var(--iva);border-top:none">No computable (no entra en el resultado)</td><td class="num" style="font-weight:400;color:var(--iva);border-top:none">${money(tbNc)}</td><td class="num" style="font-weight:400;color:var(--iva);border-top:none">${money(tnNc)}</td><td colspan="${totalCols-idxNeto-1}" style="border-top:none"></td></tr>`:''}
+      <tr><td colspan="${totalCols}"><div class="tot-fila"><span class="tot-fila-label">Totales (${view.length}) — en pesos</span><span class="tot-doble"><span class="tot-num">${money(tb)}</span><span class="tot-num">${money(tn)}</span></span></div></td></tr>
+      ${(tbNc||tnNc)?`<tr><td colspan="${totalCols}" style="font-weight:400;color:var(--iva);border-top:none"><div class="tot-fila"><span class="tot-fila-label">No computable (no entra en el resultado)</span><span class="tot-doble"><span class="tot-num">${money(tbNc)}</span><span class="tot-num">${money(tnNc)}</span></span></div></td></tr>`:''}
     </tfoot>
   </table></div>`;
+}
+// tablaHtml se reutiliza en Registrados, en el Detalle del período del dashboard y en Pagos de
+// la semana; esto decide cuál de las cuatro hay que volver a pintar según de dónde vino la acción.
+function refrescarTrasAccion(e){
+  const tablaId = (e.target.closest('[data-tabla]')||{}).dataset ? e.target.closest('[data-tabla]').dataset.tabla : 'registrados';
+  if(tablaId==='periodo') renderDetallePeriodo(filteredPeriodo());
+  else if(tablaId==='semana-actual'||tablaId==='semana-proxima') renderSemana();
+  else renderTabla(filteredTabla());
 }
 function renderTabla(view){
   if(!view.length){ $('tablezone').innerHTML='<div class="empty">No hay movimientos que coincidan con el filtro.</div>'; return; }
@@ -2617,6 +3151,20 @@ function renderTabla(view){
 function renderDetallePeriodo(base){
   if(!base.length){ $('detalle-periodo-zone').innerHTML='<div class="empty">No hay movimientos cargados para este período.</div>'; return; }
   $('detalle-periodo-zone').innerHTML=tablaHtml(ordenar(base,sortDetallePeriodo),sortDetallePeriodo,'periodo');
+}
+// Pagos semanales: gastos pendientes que vencen esta semana (énfasis normal) y, debajo con
+// menos énfasis, los que vencen la semana próxima. Mismo motor de filtros/tabla que Registrados.
+function renderSemana(){
+  syncSelect('qs-rubro','rubro',true,'gasto');
+  const actual=filteredSemana(0), proxima=filteredSemana(1);
+  $('semana-actual-titulo').textContent=`Esta semana (${fmtFechaCorta(actual.desde)} al ${fmtFechaCorta(actual.hasta)}) — ${actual.lista.length} pago${actual.lista.length===1?'':'s'} pendiente${actual.lista.length===1?'':'s'}`;
+  $('semana-actual-zone').innerHTML = actual.lista.length
+    ? tablaHtml(ordenar(actual.lista,sortSemanaActual),sortSemanaActual,'semana-actual')
+    : '<div class="empty">No hay pagos pendientes que venzan esta semana.</div>';
+  $('semana-proxima-titulo').textContent=`Semana próxima (${fmtFechaCorta(proxima.desde)} al ${fmtFechaCorta(proxima.hasta)}) — ${proxima.lista.length} pago${proxima.lista.length===1?'':'s'} pendiente${proxima.lista.length===1?'':'s'}`;
+  $('semana-proxima-zone').innerHTML = proxima.lista.length
+    ? tablaHtml(ordenar(proxima.lista,sortSemanaProxima),sortSemanaProxima,'semana-proxima')
+    : '<div class="empty">No hay pagos pendientes que venzan la semana próxima.</div>';
 }
 // Lista de plantillas de gastos fijos: siempre en blanco, reutilizable cada mes. Muestra si ya
 // se cargó (con datos reales) el mes en curso, y da acceso rápido para cargarlo o editarlo.
@@ -2642,10 +3190,19 @@ $('btn-lote-registrar').addEventListener('click',async()=>{
   const nuevosItems=seleccionados.filter(s=>!yaExiste.has(s.item));
   if(!nuevosItems.length){ toast('Ya estaban registrados todos los tildados para '+mesLabel(mes)+'.'); return; }
   if(!(await asegurarUsuario())) return;
-  const nuevos=nuevosItems.map(f=>({
-    id:uid(),tipo:'gasto',mesPago:mes,mesCorr:mes,rubro:f.rubro,item:f.item,bruto:0,
-    moneda:'ARS',cotizacion:0,tipoFac:'No posee',iva:0,fact:'',pago:false,comp:true,detalle:'',fijo:true,fechaVenc:'',loteMes:mes
-  }));
+  const nuevos=nuevosItems.map(f=>{
+    // Misma sugerencia orientativa que en "Cargar en el libro" (ver sugerenciaFijo): acá no hay
+    // fecha escrita a mano para todos, así que la sugerencia siempre puede aplicarse.
+    const sug=sugerenciaFijo(f.item);
+    return {
+      id:uid(),tipo:'gasto',mesPago:mes,mesCorr:mes,rubro:f.rubro,item:f.item,bruto:0,
+      moneda:'ARS',cotizacion:0,tipoFac:'No posee',iva:0,fact:'',pago:false,comp:true,detalle:'',fijo:true,
+      fechaVenc: (sug&&sug.venc) || '',
+      vencTentativo: !!(sug&&sug.venc),
+      metodoTentativo: (sug&&sug.metodo) || '',
+      loteMes:mes
+    };
+  });
   guardarParaDeshacer('registrar en bloque '+nuevos.length+' fijos para '+mesLabel(mes));
   rows.push(...nuevos);
   registrarHistorial('Registró en bloque gastos fijos',null,nuevos.length+' gastos fijos para '+mesLabel(mes));
@@ -2660,7 +3217,7 @@ function renderEstadoFijos(){
   if(!plantillas.length){ $('fijos-estado-lista').innerHTML='<div class="empty">Todavía no hay gastos fijos en la lista. Sumá alguno arriba.</div>'; return; }
   $('fijos-estado-lista').innerHTML=plantillas.map(f=>{
     const fila=rows.find(r=>r.tipo==='gasto'&&r.fijo&&r.item===f.item&&r.loteMes===mes);
-    const enRegistrados = fila && (fila.bruto>0 || fila.pago);
+    const enRegistrados = fila && (fila.bruto!==0 || fila.pago);
     const acc = fila
       ? `<span class="fijo-estado-info ${enRegistrados?'cargado':''}">${enRegistrados?('En Registrados — '+money(fila.bruto)+' · '+(fila.pago?'pago':'pendiente')):'Cargado, todavía sin importe'}</span>
          <button type="button" class="rowbtn plain" data-edit="${fila.id}" title="Modificar">✎</button>`
@@ -2699,7 +3256,7 @@ function encontrarFijosDuplicados(){
   const sobrantes=[];
   Object.values(grupos).forEach(g=>{
     if(g.length<2) return;
-    const puntaje=x=>(x.pago?2:0)+(x.bruto>0?1:0);
+    const puntaje=x=>(x.pago?2:0)+(x.bruto!==0?1:0);
     const ordenado=g.slice().sort((a,b)=>puntaje(b)-puntaje(a));
     sobrantes.push(...ordenado.slice(1));
   });
@@ -2798,13 +3355,13 @@ document.addEventListener('click',async e=>{
   // desplegar / plegar el desglose de pagos de un gasto dividido (puede estar en Registrados o en el Detalle del período)
   if(d.exp){
     if(expandidas.has(d.exp)) expandidas.delete(d.exp); else expandidas.add(d.exp);
-    if(e.target.closest('[data-tabla="periodo"]')) renderDetallePeriodo(filteredPeriodo()); else renderTabla(filteredTabla());
+    refrescarTrasAccion(e);
     return;
   }
   // ítems de tarjeta de crédito: abrir/cerrar el desglose del resumen
   if(d.tarjetaToggle){
     if(expandidasTarjeta.has(d.tarjetaToggle)) expandidasTarjeta.delete(d.tarjetaToggle); else expandidasTarjeta.add(d.tarjetaToggle);
-    if(e.target.closest('[data-tabla="periodo"]')) renderDetallePeriodo(filteredPeriodo()); else renderTabla(filteredTabla());
+    refrescarTrasAccion(e);
     return;
   }
   // desplegar/plegar el detalle de movimientos de un rubro (ring/rgas del dashboard). Un solo
@@ -2836,7 +3393,7 @@ document.addEventListener('click',async e=>{
     registrarHistorial('Agregó un movimiento al desglose de tarjeta',r,detalle||('$ '+money(bruto)));
     dzIvaAuto[r.id]=true;
     save();
-    if(e.target.closest('[data-tabla="periodo"]')) renderDetallePeriodo(filteredPeriodo()); else renderTabla(filteredTabla());
+    refrescarTrasAccion(e);
     return;
   }
   // eliminar un movimiento del desglose de un resumen de tarjeta
@@ -2848,7 +3405,7 @@ document.addEventListener('click',async e=>{
     r.desglose=r.desglose.filter(x=>x.id!==desgId);
     registrarHistorial('Eliminó un movimiento del desglose de tarjeta',r);
     save();
-    if(e.target.closest('[data-tabla="periodo"]')) renderDetallePeriodo(filteredPeriodo()); else renderTabla(filteredTabla());
+    refrescarTrasAccion(e);
     return;
   }
   // marcar / desmarcar como pago-cobrado (sin usar prompt/confirm, todo inline en la celda)
@@ -2864,7 +3421,7 @@ document.addEventListener('click',async e=>{
     const esEcheq=r.metodoPago==='E-cheq';
     td.innerHTML=`<div class="cp-editor">
       <input type="date" class="cp-fecha-input" value="${r.fechaPago||hoyISO()}">
-      ${esGasto?`<select class="cp-metodo-input">${metodosPagoOptionsHtml(r.metodoPago||'')}</select>`:''}
+      ${esGasto?`<select class="cp-metodo-input">${metodosPagoOptionsHtml(r.metodoPago||r.metodoTentativo||'')}</select>`:''}
       ${esGasto?`<input type="date" class="cp-diferida-input" title="Fecha diferida del cheque (cuándo se puede depositar)" value="${r.fechaDiferida||''}" ${esEcheq?'':'hidden'}>`:''}
       <button type="button" class="cp-ok" data-cp-ok="${r.id}" title="Confirmar">✓</button>
       <button type="button" class="cp-cancel" data-cp-cancel="1" title="Cancelar">✕</button>
@@ -2902,6 +3459,8 @@ document.addEventListener('click',async e=>{
     if(!r.mesPago) r.mesPago=fecha.slice(0,7);
     r.pago=true;
     if(r.tipo==='gasto'){ r.metodoPago=metodo; r.fechaDiferida = metodo==='E-cheq' ? fechaDiferida : ''; }
+    // El pago ya quedó confirmado: lo orientativo (ver sugerenciaFijo) deja de tener sentido.
+    r.vencTentativo=false; r.metodoTentativo='';
     registrarHistorial(r.tipo==='ingreso'?'Marcó como cobrado':'Marcó como pagado',r);
     save(); render();
     return;
@@ -2928,9 +3487,18 @@ document.addEventListener('change',async e=>{
     const r=rows.find(x=>x.id===c); if(!r) return;
     if(!(await asegurarUsuario())){ e.target.checked=!e.target.checked; return; }
     guardarParaDeshacer('cambio de computable en "'+(nombreDe(r))+'"');
+    // Se guarda de dónde vino el tilde ANTES de re-pintar: el tilde puede hacer que la fila deje
+    // de cumplir el filtro "Computable" de la lista desde la que se tocó, y sin este aviso el
+    // tilde parece "no hacer nada" cuando en realidad sí se guardó y solo dejó de mostrarse.
+    const tablaId = (e.target.closest('[data-tabla]')||{}).dataset ? e.target.closest('[data-tabla]').dataset.tabla : 'registrados';
     r.comp=e.target.checked;
     registrarHistorial(e.target.checked?'Marcó como computable':'Marcó como no computable',r);
     save(); render();
+    let visible=true;
+    if(tablaId==='registrados') visible=filteredTabla().some(x=>x.id===r.id);
+    else if(tablaId==='semana-actual') visible=filteredSemana(0).lista.some(x=>x.id===r.id);
+    else if(tablaId==='semana-proxima') visible=filteredSemana(1).lista.some(x=>x.id===r.id);
+    if(!visible) toast((e.target.checked?'Marcado como computable':'Marcado como no computable')+' — dejó de aparecer por el filtro "Computable" activo');
     return;
   }
 });
@@ -2980,12 +3548,18 @@ $('btn-csv').addEventListener('click',()=>{
 (function init(){
   $('firebase-warning').hidden = FIREBASE_LISTO;
   $('stamp').textContent='Actualizado '+new Date().toLocaleDateString('es-AR');
-  $('f-mespago').value=mesActual(); $('f-mescorr').value=mesActual(); $('f-fechapago').value=hoyISO();
-  $('q-tipo').value='gasto'; $('qt-pago-desde').value=mesActual(); $('qt-pago-hasta').value=mesActual();
+  $('f-mespago').value=mesActual();
+  resetStickyCarga(); $('f-mescorr').value=stickyMesCorr; $('f-fechapago').value=stickyFechaPago;
+  $('q-tipo').value='gasto'; $('q-estado').value='pend'; $('qt-pago-desde').value=mesActual(); $('qt-pago-hasta').value=mesActual();
   cargarTema();
   actualizarBotonDeshacer();
   $('titulo-carga').textContent='Cargar movimiento';
-  setModo('gasto'); iniciarAuth();
+  setModo('gasto');
+  // Al entrar al sitio, ambas solapas (Dashboard y Movimientos) quedan cerradas: el usuario las
+  // abre cuando las necesita (o usa los accesos rápidos, que las abren solos). Esto va antes de
+  // iniciarAuth() para que las solapas queden bien aunque el login/Firebase tarde o falle.
+  toggleDash(false); toggleMovs(false);
+  iniciarAuth();
 })();
 </script>
 </body>
