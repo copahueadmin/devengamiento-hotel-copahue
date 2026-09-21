@@ -2396,16 +2396,24 @@ function limitesSemana(offsetSemanas){
   return {desde:fmt(lunes), hasta:fmt(domingo)};
 }
 // Gastos pendientes de pago cuyo vencimiento cae en la semana pedida (0 = en curso, 1 = próxima).
-// Un gasto con pago dividido no tiene una única fecha de vencimiento (cada cuota la suya), así
-// que no entra acá — se sigue viendo igual en Registrados y en su propio desglose de cuotas.
+// Un gasto con pago dividido no tiene una única fecha de vencimiento (cada cuota la suya): entra
+// acá si ALGUNA de sus cuotas impagas tiene su propia fecha dentro de la semana pedida (una cuota
+// impaga todavía sin fecha no entra hasta que se le cargue una, pero se sigue viendo como
+// pendiente en rojo en Registrados y en su propio desglose de cuotas).
 function filteredSemana(offsetSemanas){
   const {desde,hasta}=limitesSemana(offsetSemanas);
   const ru=$('qs-rubro').value, cp=$('qs-comp').value, tx=$('qs-texto').value;
   const pd=$('qs-pago-desde').value, ph=$('qs-pago-hasta').value;
   const cd=$('qs-corr-desde').value, ch=$('qs-corr-hasta').value;
   const lista=rows.filter(r=>{
-    if(r.tipo!=='gasto'||r.pago||r.dividido||!r.fechaVenc) return false;
-    if(r.fechaVenc<desde||r.fechaVenc>hasta) return false;
+    if(r.tipo!=='gasto'||r.pago) return false;
+    if(r.dividido && Array.isArray(r.cuotas)){
+      const hayCuotaEnSemana = r.cuotas.some(c=>!c.pago && c.fecha && c.fecha>=desde && c.fecha<=hasta);
+      if(!hayCuotaEnSemana) return false;
+    } else {
+      if(!r.fechaVenc) return false;
+      if(r.fechaVenc<desde||r.fechaVenc>hasta) return false;
+    }
     if(ru&&r.rubro!==ru) return false;
     if(cp&&(cp==='no'?r.comp!==false:r.comp===false)) return false;
     if(pd&&(!r.mesPago||r.mesPago<pd)) return false;
@@ -2856,13 +2864,18 @@ function actualizarCentradoPaneles(){
 window.addEventListener('resize',actualizarCentradoPaneles);
 // Alinea el inicio de la franja de atajos (.atajos) con el borde inferior real del encabezado,
 // para que nunca se superponga con el título (la franja arranca justo debajo de la línea doble).
+// Al hacer scroll (por ej. al abrir un panel, que hace scrollIntoView) el encabezado se corre
+// hacia arriba de la pantalla; recalculamos también en cada scroll (clampeado a 0) para que la
+// franja "suba" con él hasta pegarse del todo arriba en cuanto el encabezado sale de vista.
 function ajustarAtajos(){
   const header=document.querySelector('header.masthead');
   if(!header) return;
-  document.documentElement.style.setProperty('--atajos-top', header.getBoundingClientRect().bottom+'px');
+  const top=Math.max(0, header.getBoundingClientRect().bottom);
+  document.documentElement.style.setProperty('--atajos-top', top+'px');
 }
 ajustarAtajos();
 window.addEventListener('resize',ajustarAtajos);
+window.addEventListener('scroll',ajustarAtajos,{passive:true});
 $('dash-toggle').addEventListener('click',()=>toggleDash());
 $('dash-toggle').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleDash(); } });
 $('movs-toggle').addEventListener('click',()=>toggleMovs());
