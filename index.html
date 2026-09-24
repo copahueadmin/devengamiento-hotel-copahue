@@ -113,11 +113,6 @@
   .fijos-add-row{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
   .fijos-add-row #fx-item{text-transform:uppercase}
   .fijos-add-row #fx-item::placeholder{text-transform:none}
-  #fijos-extra-list{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
-  .fx-chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--ing);padding:3px 8px;font-size:12px}
-  .fx-chip b{font-family:'IBM Plex Mono',monospace;font-weight:600}
-  .fx-chip .rb{color:var(--ink-soft);font-size:10px;font-family:'IBM Plex Mono',monospace}
-  .fx-chip button{background:none;border:none;color:var(--neg);cursor:pointer;font-size:14px;padding:0 2px;line-height:1}
 
   .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;align-items:end}
   /* en modo ingreso: sin Ítem, y Rubro a la izquierda del Importe */
@@ -144,6 +139,9 @@
   .field[hidden]{display:none!important}
   .field label{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
   input,select,textarea{font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:0;padding:8px 9px;width:100%}
+  /* Filtros de Movimientos (Registrados / Pagos semanales) con un valor cargado: se resaltan para
+     identificar de un vistazo cuáles están en uso (ver marcarFiltrosActivos()). */
+  input.filtro-activo,select.filtro-activo{background:var(--tint-ing);border-color:var(--ing)}
   select option:nth-child(odd){background:var(--surface);color:var(--ink)}
   select option:nth-child(even){background:var(--ledger);color:var(--ink)}
   #f-bruto,#f-iva{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;text-align:right}
@@ -169,6 +167,10 @@
   .semana-heading{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);margin:18px 0 8px;font-weight:600}
   .semana-proxima-box{margin-top:26px;padding-top:18px;border-top:1px dashed var(--rule-strong);opacity:.72}
   .semana-heading.suave{font-size:11px;font-weight:500;color:var(--ink-soft)}
+  /* Atrasados: pagos vencidos de semanas anteriores, sin marcar como abonados. Más énfasis que
+     "esta semana" (no menos, como "semana próxima"), con un borde rojo para que se note. */
+  .semana-vencida-box{margin-top:26px;padding-top:18px;border-top:2px solid var(--neg)}
+  .semana-heading.urgente{color:var(--neg)}
   .fijos-estado-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 10px;font-size:13px;color:var(--ink-soft)}
   .fijos-estado-head button{white-space:nowrap}
   #fijos-estado-lista{border:1px solid var(--rule)}
@@ -178,6 +180,7 @@
   .fijo-lote-row:last-child{border-bottom:none}
   .fijo-lote-row:nth-child(odd){background:var(--ledger)}
   .fijo-lote-row input{width:auto;flex:none}
+  .fijo-lote-yacargado{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--warn);background:var(--tint-warn);border:1px solid var(--warn);padding:2px 6px;white-space:nowrap}
   .fijo-estado-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:9px 12px;border-bottom:1px solid var(--rule);font-size:13px}
   .fijo-estado-row:last-child{border-bottom:none}
   .fijo-estado-row:nth-child(odd){background:var(--ledger)}
@@ -187,6 +190,12 @@
   .fijo-estado-info{font-size:12px;color:var(--ink-soft);white-space:nowrap}
   .fijo-estado-info.cargado{color:var(--ok)}
   .fijo-estado-acc button{padding:6px 10px;font-size:11px}
+  .fijo-estado-nombre{display:flex;align-items:center;gap:6px}
+  .fijo-estado-nombre .rowbtn{margin-left:2px}
+  .fijo-estado-edit-form{display:flex;flex-wrap:wrap;gap:8px;align-items:center;width:100%}
+  .fijo-estado-edit-form input{width:auto;flex:1 1 200px;text-transform:uppercase}
+  .fijo-estado-edit-form select{width:auto;flex:1 1 160px}
+  .fijo-estado-edit-form button{padding:6px 10px;font-size:11px}
 
   /* overflow-x:auto en este contenedor rompería el encabezado sticky (un contenedor con
      overflow-x no visible pasa a ser también el contexto de scroll vertical, y el sticky termina
@@ -622,6 +631,23 @@
     </div>
   </div>
 
+  <!-- Se muestra durante "Registrar en bloque" cuando un ítem tildado ya está cargado ese mes
+       (ver preguntarDuplicadoFijo()): deja elegir, ítem por ítem, si se carga igual (duplicado)
+       o se saca de la tanda, sin perder el resto de lo tildado. -->
+  <div id="dup-fijo-overlay" class="usuario-overlay" hidden>
+    <div class="usuario-box">
+      <h3>Ítem ya registrado</h3>
+      <p class="note" id="dup-fijo-msg"></p>
+      <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+        <button type="button" id="dup-fijo-duplicar">Cargar duplicado</button>
+        <button type="button" class="ghost" id="dup-fijo-sacar">Sacarlo de la lista</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button type="button" class="ghost" id="dup-fijo-cancelar">Cancelar todo el registro en bloque</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Envuelve los dos paneles colapsables: cuando ambos están cerrados, se centra verticalmente
        en la pantalla (ver actualizarCentradoPaneles()); apenas se abre alguno, sube arriba. -->
   <div class="paneles-zone" id="paneles-zone">
@@ -710,7 +736,12 @@
           <div class="field" id="wrap-detalle"><label for="f-detalle" id="lbl-detalle">Detalle</label><input type="text" id="f-detalle" placeholder="Proveedor, comprobante, observaciones"></div>
           <div class="field" id="wrap-pago"><label for="f-pago" id="lbl-pago">¿Está pago?</label><div style="padding:8px 0"><input type="checkbox" id="f-pago"></div></div>
           <div class="field" id="wrap-fecha-real-pago" hidden><label for="f-fecha-real-pago" id="lbl-fecha-real-pago">Fecha en que se pagó</label><input type="date" id="f-fecha-real-pago"></div>
-          <div class="field" id="wrap-metodo-pago" hidden><label for="f-metodo-pago">Método de pago</label><select id="f-metodo-pago"></select></div>
+          <div class="field" id="wrap-metodo-pago" hidden><label for="f-metodo-pago">Método de pago</label>
+            <div style="display:flex;gap:6px;align-items:center">
+              <select id="f-metodo-pago" style="flex:1"></select>
+              <button type="button" id="btn-quitar-metodo-tentativo" class="rowbtn plain" title="Quitar la sugerencia y dejar en blanco" hidden>✕</button>
+            </div>
+          </div>
           <div class="field" id="wrap-fecha-diferida" hidden><label for="f-fecha-diferida" title="Fecha en la que se puede depositar/cobrar el cheque — distinta de la fecha en que se emitió el pago">Fecha diferida del cheque</label><input type="date" id="f-fecha-diferida"></div>
           <div class="field" id="wrap-comp"><label for="f-comp">Computable</label><div style="padding:8px 0"><input type="checkbox" id="f-comp" checked></div></div>
           <div class="field" id="wrap-dividido"><label for="f-dividido" id="lbl-dividido" title="Dividir el pago de este gasto en varias cuotas con su propia fecha">Pago dividido</label><div style="padding:8px 0"><input type="checkbox" id="f-dividido"></div></div>
@@ -804,6 +835,10 @@
           <h3 class="semana-heading suave" id="semana-proxima-titulo">Semana próxima</h3>
           <div id="semana-proxima-zone" class="tablacompacta"></div>
         </div>
+        <div class="semana-vencida-box" id="semana-vencida-box" hidden>
+          <h3 class="semana-heading urgente" id="semana-vencida-titulo">Atrasados</h3>
+          <div id="semana-vencida-zone" class="tablacompacta"></div>
+        </div>
       </div>
 
       <!-- ---- Sub-vista: Fijos mensuales ---- -->
@@ -813,14 +848,13 @@
             <span>Se cargarán <b id="fijos-n"></b> gastos fijos con importe y mes en blanco. Después, en cada línea, completás el importe, el mes al que corresponde y el mes de pago.</span>
           </div>
           <div class="fijos-add">
-            <span class="fijos-add-tit">Agregar o quitar un rubro de gasto fijo, y sumar un ítem a la lista (queda guardado para todos los meses)</span>
+            <span class="fijos-add-tit">Sumar un ítem nuevo a la lista de gastos fijos (queda guardado para todos los meses)</span>
             <div class="fijos-add-row">
               <div class="field"><label for="fx-item">Ítem</label><input type="text" id="fx-item" placeholder="Ej. SEGURO INCENDIO"></div>
               <div class="field"><label for="fx-rubro">Rubro</label><select id="fx-rubro"></select></div>
-              <div class="field"><button class="ghost" id="btn-fx-rubro-quitar" type="button" title="Quitar de la lista el rubro elegido (solo los que agregaste vos)">Quitar rubro</button></div>
               <div class="field"><button class="ghost" id="btn-fx-add">Sumar ítem a la lista</button></div>
             </div>
-            <div id="fijos-extra-list"></div>
+            <p class="note" style="margin:8px 0 0">Para editar o quitar un ítem que ya está en la lista, hacelo desde el listado completo más abajo.</p>
           </div>
           <div class="fijos-add">
             <span class="fijos-add-tit">Quitar un método de pago agregado (los de la lista original no se pueden quitar)</span>
@@ -1090,7 +1124,7 @@ const netoDe=r=>neto(r.bruto,r.tipoFac,r.iva,r.tipo);
 const brutoARS=r=>(r.moneda==='USD') ? (r.bruto||0)*(r.cotizacion||0) : (r.bruto||0);
 const netoARS=r=>(r.moneda==='USD') ? netoDe(r)*(r.cotizacion||0) : netoDe(r);
 
-function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1800);}
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');const dur=Math.max(1800,Math.min(6000,m.length*50));clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.remove('on'),dur);}
 
 /* ---------- Persistencia ---------- */
 const FACTURAS=['A','A | 27%','A Especial','B','C','No posee'];
@@ -1719,9 +1753,6 @@ $('tab-ingreso').addEventListener('click',()=>{ if(editId) return toast('Termin�
 function contarFijos(){ return GASTOS_FIJOS.length + fijosExtra.length; }
 function pintarFijosExtra(){
   $('fijos-n').textContent = contarFijos();
-  const cont=$('fijos-extra-list');
-  if(!fijosExtra.length){ cont.innerHTML='<span style="color:var(--ink-soft);font-size:12px">Todavía no agregaste gastos fijos propios.</span>'; return; }
-  cont.innerHTML=fijosExtra.map((f,i)=>`<span class="fx-chip"><b>${esc(f.item)}</b><span class="rb">${esc(f.rubro)}</span><button data-fx-del="${i}" title="Quitar de la lista">×</button></span>`).join('');
 }
 /* ---------- Métodos de pago ---------- */
 function metodosPagoOptionsHtml(actual){
@@ -1743,8 +1774,17 @@ function actualizarFechaDiferida(){
 // Tocar el método de pago o la fecha de vencimiento sugeridos (ver sugerenciaFijo) los saca del
 // modo "orientativo": dejan de verse en cursiva/anaranjado, sea cual sea el valor elegido.
 $('f-fechapago').addEventListener('input',()=>{ $('f-fechapago').classList.remove('campo-tentativo'); });
+// Botón "✕" junto al método de pago sugerido: lo deja en blanco de un solo toque, en vez de tener
+// que abrir el desplegable y elegir la opción vacía a mano.
+$('btn-quitar-metodo-tentativo').addEventListener('click',()=>{
+  $('f-metodo-pago').value='';
+  $('f-metodo-pago').classList.remove('campo-tentativo');
+  $('btn-quitar-metodo-tentativo').hidden=true;
+  actualizarFechaDiferida();
+});
 $('f-metodo-pago').addEventListener('change',async e=>{
   $('f-metodo-pago').classList.remove('campo-tentativo');
+  $('btn-quitar-metodo-tentativo').hidden=true;
   if(e.target.value!=='__nuevo'){ actualizarFechaDiferida(); return; }
   const nuevo=(prompt('Nombre del método de pago nuevo:')||'').trim();
   if(nuevo&&!METODOS_PAGO_BASE.includes(nuevo)&&!propios.metodos.includes(nuevo)){
@@ -1778,17 +1818,6 @@ $('fx-rubro').addEventListener('change',async e=>{
   }
   pintarFxRubros(); $('fx-rubro').value=nuevo||'';
 });
-$('btn-fx-rubro-quitar').addEventListener('click',async()=>{
-  const r=$('fx-rubro').value;
-  if(!r||r==='__nuevo'){ toast('Elegí el rubro que querés quitar.'); return; }
-  if(!propios.gasto.includes(r)){ toast('Solo se pueden quitar rubros que agregaste vos.'); return; }
-  if(!confirm('¿Quitar el rubro "'+r+'" de la lista? Los gastos fijos que ya lo usan no se modifican.')) return;
-  if(!(await asegurarUsuario())) return;
-  guardarParaDeshacer('quitar rubro "'+r+'"');
-  propios.gasto = propios.gasto.filter(x=>x!==r);
-  registrarHistorial('Quitó el rubro',null,r);
-  save(); pintarFxRubros(); toast('Rubro quitado de la lista');
-});
 function pintarFxMetodosQuitar(){
   const cur=$('fx-metodo-quitar').value;
   const ordenados=[...propios.metodos].sort((a,b)=>a.localeCompare(b,'es'));
@@ -1821,16 +1850,58 @@ $('btn-fx-add').addEventListener('click',async()=>{
   save();
   $('fx-item').value=''; $('fx-rubro').value='';
   pintarFijosExtra(); $('fx-item').focus();
+  if(vistaMovActual==='fijos'){ renderEstadoFijos(); renderLoteFijos(); }
+});
+// Ítem del gasto fijo (no de base, ver GASTOS_FIJOS) que se está editando en el listado de abajo,
+// o null si ninguno. Solo puede haber uno a la vez (renderEstadoFijos() lo muestra como fila
+// editable en lugar del texto normal).
+let fijoExtraEditando = null;
+document.addEventListener('click',e=>{
+  const item=e.target.dataset&&e.target.dataset.fijoextraEditar;
+  if(item===undefined) return;
+  fijoExtraEditando=item;
+  renderEstadoFijos();
+});
+document.addEventListener('click',e=>{
+  if(e.target.id!=='btn-fx-edit-cancelar') return;
+  fijoExtraEditando=null;
+  renderEstadoFijos();
 });
 document.addEventListener('click',async e=>{
-  const i=e.target.dataset&&e.target.dataset.fxDel;
-  if(i===undefined) return;
+  if(e.target.id!=='btn-fx-edit-guardar') return;
+  const original=e.target.dataset.fijoextraItemOriginal;
+  const idx=fijosExtra.findIndex(x=>x.item===original);
+  if(idx<0){ fijoExtraEditando=null; renderEstadoFijos(); return; }
+  const nuevoItem=$('fx-edit-item').value.trim().toUpperCase();
+  const nuevoRubro=$('fx-edit-rubro').value;
+  if(!nuevoItem){ toast('Escribí el ítem.'); return; }
+  if(!nuevoRubro){ toast('Elegí el rubro.'); return; }
+  if(nuevoItem!==original){
+    const dup = GASTOS_FIJOS.some(f=>f[0]===nuevoItem) || fijosExtra.some(f=>f.item===nuevoItem);
+    if(dup){ toast('Ya existe un gasto fijo "'+nuevoItem+'".'); return; }
+  }
   if(!(await asegurarUsuario())) return;
-  const f=fijosExtra[+i];
-  guardarParaDeshacer('quitar "'+(f?f.item:'')+'" de la lista de fijos');
-  fijosExtra.splice(+i,1);
-  if(f) registrarHistorial('Quitó de la lista de fijos',null,f.item);
-  save(); pintarFijosExtra();
+  guardarParaDeshacer('editar "'+original+'" en la lista de fijos');
+  fijosExtra[idx]={item:nuevoItem,rubro:nuevoRubro};
+  registrarHistorial('Editó en la lista de fijos',null,original+' → '+nuevoItem+' ('+nuevoRubro+')');
+  save();
+  fijoExtraEditando=null;
+  pintarFijosExtra(); renderEstadoFijos(); renderLoteFijos();
+  toast('Gasto fijo actualizado.');
+});
+document.addEventListener('click',async e=>{
+  const item=e.target.dataset&&e.target.dataset.fijoextraBorrar;
+  if(item===undefined) return;
+  if(!confirm('¿Quitar "'+item+'" de la lista de gastos fijos?')) return;
+  if(!(await asegurarUsuario())) return;
+  const idx=fijosExtra.findIndex(x=>x.item===item);
+  if(idx<0) return;
+  guardarParaDeshacer('quitar "'+item+'" de la lista de fijos');
+  fijosExtra.splice(idx,1);
+  registrarHistorial('Quitó de la lista de fijos',null,item);
+  save();
+  pintarFijosExtra(); renderEstadoFijos(); renderLoteFijos();
+  toast('Gasto fijo quitado de la lista.');
 });
 $('btn-fijos-go').addEventListener('click',async()=>{
   const mesLote=mesActual();  // se usa solo internamente, para no duplicar si se aprieta más de una vez
@@ -2089,7 +2160,7 @@ function limpiarForm(){
   $('f-tipo').value='No posee';$('f-rubro').value='';$('f-fact').value='Facturado';
   $('f-pago').checked=false;$('f-comp').checked=true;$('f-dividido').checked=false;$('f-dividido').disabled=false;$('f-detalle').value='';$('f-marcar-fijo').checked=false;
   $('f-fecha-real-pago').value='';$('wrap-fecha-real-pago').hidden=true;
-  $('f-metodo-pago').value='';$('wrap-metodo-pago').hidden=true;
+  $('f-metodo-pago').value='';$('wrap-metodo-pago').hidden=true;$('f-metodo-pago').classList.remove('campo-tentativo');$('btn-quitar-metodo-tentativo').hidden=true;
   $('f-fecha-diferida').value='';$('wrap-fecha-diferida').hidden=true;
   if(stickyFechaPago===null) resetStickyCarga();  // primera carga de la página: todavía no hay nada "pegajoso"
   $('f-fechapago').value=stickyFechaPago;$('wrap-fechapago').hidden=false;
@@ -2139,6 +2210,7 @@ async function abrirEdicion(id){
   const metodoEsTentativo = r.tipo==='gasto' && !r.pago && !!r.metodoTentativo;
   $('f-metodo-pago').value = (r.pago && r.tipo==='gasto') ? (r.metodoPago||'') : (metodoEsTentativo ? r.metodoTentativo : '');
   $('f-metodo-pago').classList.toggle('campo-tentativo', metodoEsTentativo);
+  $('btn-quitar-metodo-tentativo').hidden = !metodoEsTentativo;
   $('wrap-fecha-diferida').hidden = !(r.pago && r.tipo==='gasto' && r.metodoPago==='E-cheq');
   $('f-fecha-diferida').value = r.fechaDiferida||'';
   $('f-comp').checked = r.comp!==false;
@@ -2304,7 +2376,7 @@ function pagadoCuotas(r){
 /* ---------- Orden por columna (Registrados, Fijos mensuales y Detalle del período) ---------- */
 let sortRegistrados={col:'item',dir:'asc'}; // orden por defecto de Registrados: alfabético por ítem
 let sortDetallePeriodo={col:'mesCorr',dir:'desc'};
-let sortSemanaActual={col:'vencimiento',dir:'asc'}, sortSemanaProxima={col:'vencimiento',dir:'asc'};
+let sortSemanaActual={col:'vencimiento',dir:'asc'}, sortSemanaProxima={col:'vencimiento',dir:'asc'}, sortSemanaVencida={col:'vencimiento',dir:'asc'};
 // valor a comparar por columna
 const COLS_ORDEN={
   tipo:      r=>r.tipo==='ingreso'?'variable':(r.fijo?'fijo':'variable'),
@@ -2342,7 +2414,7 @@ function ordenar(lista,sortState){
 // clic en un título de columna: ordena por esa columna, o invierte el orden si ya estaba activa
 // (la misma tabla se reutiliza en Registrados y en el Detalle del período del dashboard;
 // data-tabla en el contenedor indica cuál de las dos hay que reordenar y volver a pintar)
-const SORT_STATE_POR_TABLA={ periodo:()=>sortDetallePeriodo, 'semana-actual':()=>sortSemanaActual, 'semana-proxima':()=>sortSemanaProxima };
+const SORT_STATE_POR_TABLA={ periodo:()=>sortDetallePeriodo, 'semana-actual':()=>sortSemanaActual, 'semana-proxima':()=>sortSemanaProxima, 'semana-vencida':()=>sortSemanaVencida };
 document.addEventListener('click',e=>{
   const th=e.target.closest('th[data-sortcol]');
   if(!th) return;
@@ -2352,12 +2424,18 @@ document.addEventListener('click',e=>{
   if(sortState.col===col){ sortState.dir = sortState.dir==='asc'?'desc':'asc'; }
   else { sortState.col=col; sortState.dir = ['bruto','neto','mesPago','mesCorr','estado'].includes(col)?'desc':'asc'; }
   if(tablaId==='periodo') renderDetallePeriodo(filteredPeriodo());
-  else if(tablaId==='semana-actual'||tablaId==='semana-proxima') renderSemana();
+  else if(tablaId==='semana-actual'||tablaId==='semana-proxima'||tablaId==='semana-vencida') renderSemana();
   else renderTabla(filteredTabla());
 });
 
 /* ---------- Filtros ---------- */
 ['qi-cobro','qi-corr','qg-pago','qg-corr'].forEach(id=>$(id).addEventListener('input',render));
+// Resalta (fondo/borde verde) los campos de filtro que tienen un valor cargado, para poder ver de
+// un vistazo cuáles están en uso. Se llama desde renderTabla()/renderSemana(), así que se actualiza
+// solo en cada render sin necesidad de cablearlo aparte en cada listener.
+function marcarFiltrosActivos(ids){
+  ids.forEach(id=>{ const el=$(id); if(el) el.classList.toggle('filtro-activo', el.value!==''); });
+}
 const FILTROS_TABLA=['q-tipo','q-rubro','q-estado','q-comp','q-fijo','q-factura','q-metodo','q-texto',
   'qt-pago-desde','qt-pago-hasta','qt-corr-desde','qt-corr-hasta','qt-fecha-desde','qt-fecha-hasta',
   'qt-venc-desde','qt-venc-hasta','q-monto-desde','q-monto-hasta'];
@@ -2424,6 +2502,33 @@ function filteredSemana(offsetSemanas){
     return true;
   });
   return {desde,hasta,lista};
+}
+// Gastos pendientes cuyo vencimiento (el de la fila, o el de alguna cuota impaga si es un pago
+// dividido) quedó antes del lunes de la semana en curso: pagos atrasados que todavía no se
+// marcaron como abonados. Mismos filtros que "Pagos semanales", sin límite de fecha "hasta".
+function filteredVencidos(){
+  const {desde}=limitesSemana(0);
+  const ru=$('qs-rubro').value, cp=$('qs-comp').value, tx=$('qs-texto').value;
+  const pd=$('qs-pago-desde').value, ph=$('qs-pago-hasta').value;
+  const cd=$('qs-corr-desde').value, ch=$('qs-corr-hasta').value;
+  const lista=rows.filter(r=>{
+    if(r.tipo!=='gasto'||r.pago) return false;
+    if(r.dividido && Array.isArray(r.cuotas)){
+      const hayCuotaVencida = r.cuotas.some(c=>!c.pago && c.fecha && c.fecha<desde);
+      if(!hayCuotaVencida) return false;
+    } else {
+      if(!r.fechaVenc || r.fechaVenc>=desde) return false;
+    }
+    if(ru&&r.rubro!==ru) return false;
+    if(cp&&(cp==='no'?r.comp!==false:r.comp===false)) return false;
+    if(pd&&(!r.mesPago||r.mesPago<pd)) return false;
+    if(ph&&(!r.mesPago||r.mesPago>ph)) return false;
+    if(cd&&(!r.mesCorr||r.mesCorr<cd)) return false;
+    if(ch&&(!r.mesCorr||r.mesCorr>ch)) return false;
+    if(!coincideTexto(r,tx)) return false;
+    return true;
+  });
+  return {desde,lista};
 }
 
 // Filtro de PERÍODO: aplica al dashboard y es la base de la tabla
@@ -2842,6 +2947,7 @@ function togglePanel(bodyId,chevId,headId,hintId,hintTxt,force){
   head.setAttribute('aria-expanded', abrir?'true':'false');
   $(hintId).textContent = abrir?'':hintTxt;
   actualizarCentradoPaneles();
+  ajustarAnchoPaneles();
 }
 function toggleDash(force){ togglePanel('dash-body','dash-chev','dash-toggle','dash-hint','(toca para ver los resultados)',force); }
 function toggleMovs(force){ togglePanel('movs-body','movs-chev','movs-toggle','movs-hint','(toca para ver los movimientos)',force); }
@@ -2876,6 +2982,29 @@ function ajustarAtajos(){
 ajustarAtajos();
 window.addEventListener('resize',ajustarAtajos);
 window.addEventListener('scroll',ajustarAtajos,{passive:true});
+// Con el Dashboard o Movimientos abiertos, el panel se estira hasta los bordes reales de la
+// pantalla (hasta la franja de atajos a la izquierda y hasta el borde derecho) en vez de quedar
+// acotado por el ancho centrado de .wrap, para aprovechar mejor el espacio visible. Se calcula
+// por JS (con márgenes negativos) porque el ancho máximo/centrado de .wrap no es un valor fijo
+// (depende del viewport), así que no alcanza con una regla CSS estática. Cerrado (o en mobile,
+// donde los atajos no se muestran), el panel vuelve a su tamaño/posición normal.
+function ajustarAnchoPanel(panelId,bodyId){
+  const panel=$(panelId), body=$(bodyId);
+  if(!panel || !body) return;
+  const abierto = !body.hidden;
+  panel.style.marginLeft=''; panel.style.marginRight='';
+  if(!abierto || window.innerWidth<=900) return;
+  const atajos=document.querySelector('.atajos');
+  const anchoAtajos = atajos ? atajos.getBoundingClientRect().width : 0;
+  const rect=panel.getBoundingClientRect();
+  panel.style.marginLeft = (anchoAtajos - rect.left)+'px';
+  panel.style.marginRight = (rect.right - window.innerWidth)+'px';
+}
+function ajustarAnchoPaneles(){
+  ajustarAnchoPanel('resultados','dash-body');
+  ajustarAnchoPanel('panel-movs','movs-body');
+}
+window.addEventListener('resize',ajustarAnchoPaneles);
 $('dash-toggle').addEventListener('click',()=>toggleDash());
 $('dash-toggle').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleDash(); } });
 $('movs-toggle').addEventListener('click',()=>toggleMovs());
@@ -3029,6 +3158,16 @@ function diasHasta(fechaISO){
   if(isNaN(obj)) return null;
   return Math.round((obj-hoy)/86400000);
 }
+// Si vence pronto (dentro de los próximos 7 días, o ya vencido): mismo criterio que resalta en
+// rojo fuerte los pagos de "Pagos semanales". Un pago dividido no tiene una única fecha (cada
+// cuota la suya), así que se toma la cuota impaga con fecha más próxima entre las que la tengan.
+function vencePronto(r){
+  if(r.dividido && Array.isArray(r.cuotas)){
+    const dias=r.cuotas.filter(c=>!c.pago&&c.fecha).map(c=>diasHasta(c.fecha)).filter(d=>d!==null);
+    return dias.length>0 && Math.min(...dias)<=7;
+  }
+  return diasHasta(r.fechaVenc)!==null && diasHasta(r.fechaVenc)<=7;
+}
 function thOrden(label,col,sortState,opts){
   opts=opts||{};
   const activo=sortState.col===col;
@@ -3111,7 +3250,7 @@ function tablaHtml(view,sortState,tablaId){
           : div ? (r.cuotas.some(c=>c.pago) ? `<div class="cp-stack">${r.cuotas.filter(c=>c.pago).map(c=>`<span class="cp-stack-line">${esc(c.metodoPago||'—')}</span>`).join('')}</div>` : '<span class="tag EG">—</span>')
           : (r.metodoPago ? esc(r.metodoPago) : ((!r.pago && r.metodoTentativo) ? `<span class="tentativo" title="Método orientativo, según el último registro de este ítem. Todavía no está confirmado.">${esc(r.metodoTentativo)}</span>` : '<span class="tag EG">—</span>'))
         }</td>` : '';
-      const claseImpago = (!esIng && !r.pago) ? (' gasto-impago'+((diasHasta(r.fechaVenc)!==null && diasHasta(r.fechaVenc)<=7) ? ' vence-pronto' : '')) : '';
+      const claseImpago = (!esIng && !r.pago) ? (' gasto-impago'+(vencePronto(r) ? ' vence-pronto' : '')) : '';
       const clasePago = (!esIng && r.pago) ? ' gasto-pago' : '';
       // Ítems de tarjeta de crédito: al tocar el nombre se abre un desglose para clasificar los
       // movimientos del resumen sin duplicar el total (ese total sigue siendo el de esta fila).
@@ -3151,10 +3290,11 @@ function tablaHtml(view,sortState,tablaId){
 function refrescarTrasAccion(e){
   const tablaId = (e.target.closest('[data-tabla]')||{}).dataset ? e.target.closest('[data-tabla]').dataset.tabla : 'registrados';
   if(tablaId==='periodo') renderDetallePeriodo(filteredPeriodo());
-  else if(tablaId==='semana-actual'||tablaId==='semana-proxima') renderSemana();
+  else if(tablaId==='semana-actual'||tablaId==='semana-proxima'||tablaId==='semana-vencida') renderSemana();
   else renderTabla(filteredTabla());
 }
 function renderTabla(view){
+  marcarFiltrosActivos(FILTROS_TABLA);
   if(!view.length){ $('tablezone').innerHTML='<div class="empty">No hay movimientos que coincidan con el filtro.</div>'; return; }
   $('tablezone').innerHTML=tablaHtml(view,sortRegistrados,'registrados');
 }
@@ -3168,8 +3308,9 @@ function renderDetallePeriodo(base){
 // Pagos semanales: gastos pendientes que vencen esta semana (énfasis normal) y, debajo con
 // menos énfasis, los que vencen la semana próxima. Mismo motor de filtros/tabla que Registrados.
 function renderSemana(){
+  marcarFiltrosActivos(FILTROS_SEMANA);
   syncSelect('qs-rubro','rubro',true,'gasto');
-  const actual=filteredSemana(0), proxima=filteredSemana(1);
+  const actual=filteredSemana(0), proxima=filteredSemana(1), vencidos=filteredVencidos();
   $('semana-actual-titulo').textContent=`Esta semana (${fmtFechaCorta(actual.desde)} al ${fmtFechaCorta(actual.hasta)}) — ${actual.lista.length} pago${actual.lista.length===1?'':'s'} pendiente${actual.lista.length===1?'':'s'}`;
   $('semana-actual-zone').innerHTML = actual.lista.length
     ? tablaHtml(ordenar(actual.lista,sortSemanaActual),sortSemanaActual,'semana-actual')
@@ -3178,6 +3319,13 @@ function renderSemana(){
   $('semana-proxima-zone').innerHTML = proxima.lista.length
     ? tablaHtml(ordenar(proxima.lista,sortSemanaProxima),sortSemanaProxima,'semana-proxima')
     : '<div class="empty">No hay pagos pendientes que venzan la semana próxima.</div>';
+  // Atrasados: pagos con vencimiento anterior a esta semana que todavía no se marcaron como
+  // abonados. Solo se muestra el bloque cuando hay alguno, para no ocupar espacio de más.
+  $('semana-vencida-box').hidden = !vencidos.lista.length;
+  if(vencidos.lista.length){
+    $('semana-vencida-titulo').textContent=`Atrasados — pendientes de semanas anteriores (hasta ${fmtFechaCorta(vencidos.desde)}) — ${vencidos.lista.length} pago${vencidos.lista.length===1?'':'s'} pendiente${vencidos.lista.length===1?'':'s'}`;
+    $('semana-vencida-zone').innerHTML = tablaHtml(ordenar(vencidos.lista,sortSemanaVencida),sortSemanaVencida,'semana-vencida');
+  }
 }
 // Lista de plantillas de gastos fijos: siempre en blanco, reutilizable cada mes. Muestra si ya
 // se cargó (con datos reales) el mes en curso, y da acceso rápido para cargarlo o editarlo.
@@ -3186,24 +3334,61 @@ function renderLoteFijos(){
   if(!$('lote-mes').value) $('lote-mes').value=mesSiguiente();
   const plantillas=fijosTodos();
   if(!plantillas.length){ $('fijos-lote-lista').innerHTML='<div class="empty">Todavía no hay gastos fijos en la lista.</div>'; return; }
-  $('fijos-lote-lista').innerHTML=plantillas.map(f=>`
-    <label class="fijo-lote-row">
+  const mes=$('lote-mes').value;
+  const yaExiste=new Set(rows.filter(r=>r.tipo==='gasto'&&r.fijo&&r.mesPago===mes).map(r=>r.item));
+  $('fijos-lote-lista').innerHTML=plantillas.map(f=>{
+    const cargado=yaExiste.has(f.item);
+    return `<label class="fijo-lote-row">
       <input type="checkbox" class="lote-check" value="${esc(f.item)}" data-rubro="${esc(f.rubro)}" checked>
       <span class="fijo-estado-item">${esc(f.item)}</span><span class="fijo-estado-rubro">${esc(f.rubro)}</span>
-    </label>`).join('');
+      ${cargado?'<span class="fijo-lote-yacargado" title="Ya hay un gasto fijo cargado con este ítem para el mes elegido">ya cargado</span>':''}
+    </label>`;
+  }).join('');
 }
+// El listado (con el aviso "ya cargado") depende del mes elegido, así que se vuelve a armar
+// apenas se cambia.
+$('lote-mes').addEventListener('change',renderLoteFijos);
 $('btn-lote-todos').addEventListener('click',()=>{ document.querySelectorAll('#fijos-lote-lista .lote-check').forEach(cb=>cb.checked=true); });
 $('btn-lote-ninguno').addEventListener('click',()=>{ document.querySelectorAll('#fijos-lote-lista .lote-check').forEach(cb=>cb.checked=false); });
+// Pregunta, ítem por ítem, qué hacer con un gasto fijo tildado que ya está registrado ese mes:
+// cargarlo igual (queda duplicado) o sacarlo de la tanda. "Cancelar todo" aborta el registro en
+// bloque completo, sin guardar nada de lo ya decidido en ítems anteriores de la misma tanda.
+function preguntarDuplicadoFijo(item,mesTexto){
+  return new Promise(resolve=>{
+    $('dup-fijo-msg').textContent = `"${item}" ya está registrado en ${mesTexto}. ¿Qué querés hacer?`;
+    $('dup-fijo-overlay').hidden=false;
+    function cerrar(resultado){
+      $('dup-fijo-overlay').hidden=true;
+      $('dup-fijo-duplicar').removeEventListener('click',onDup);
+      $('dup-fijo-sacar').removeEventListener('click',onSacar);
+      $('dup-fijo-cancelar').removeEventListener('click',onCancelar);
+      resolve(resultado);
+    }
+    function onDup(){ cerrar('duplicar'); }
+    function onSacar(){ cerrar('sacar'); }
+    function onCancelar(){ cerrar('cancelar'); }
+    $('dup-fijo-duplicar').addEventListener('click',onDup);
+    $('dup-fijo-sacar').addEventListener('click',onSacar);
+    $('dup-fijo-cancelar').addEventListener('click',onCancelar);
+  });
+}
 $('btn-lote-registrar').addEventListener('click',async()=>{
   const mes=$('lote-mes').value;
   if(!mes){ toast('Elegí el mes a registrar.'); $('lote-mes').focus(); return; }
   const seleccionados=[...document.querySelectorAll('#fijos-lote-lista .lote-check:checked')].map(cb=>({item:cb.value,rubro:cb.dataset.rubro}));
   if(!seleccionados.length){ toast('No hay ítems tildados.'); return; }
   const yaExiste=new Set(rows.filter(r=>r.tipo==='gasto'&&r.fijo&&r.mesPago===mes).map(r=>r.item));
-  const nuevosItems=seleccionados.filter(s=>!yaExiste.has(s.item));
-  if(!nuevosItems.length){ toast('Ya estaban registrados todos los tildados para '+mesLabel(mes)+'.'); return; }
+  const aCargar=[];
+  for(const s of seleccionados){
+    if(!yaExiste.has(s.item)){ aCargar.push(s); continue; }
+    const decision = await preguntarDuplicadoFijo(s.item,mesLabel(mes));
+    if(decision==='cancelar'){ toast('Se canceló el registro en bloque.'); return; }
+    if(decision==='duplicar') aCargar.push(s);
+    // 'sacar': no se agrega, sigue con el próximo ítem tildado.
+  }
+  if(!aCargar.length){ toast('No quedó ningún ítem para registrar.'); return; }
   if(!(await asegurarUsuario())) return;
-  const nuevos=nuevosItems.map(f=>{
+  const nuevos=aCargar.map(f=>{
     // Misma sugerencia orientativa que en "Cargar en el libro" (ver sugerenciaFijo): acá no hay
     // fecha escrita a mano para todos, así que la sugerencia siempre puede aplicarse.
     const sug=sugerenciaFijo(f.item);
@@ -3229,6 +3414,19 @@ function renderEstadoFijos(){
   const plantillas=fijosTodos();
   if(!plantillas.length){ $('fijos-estado-lista').innerHTML='<div class="empty">Todavía no hay gastos fijos en la lista. Sumá alguno arriba.</div>'; return; }
   $('fijos-estado-lista').innerHTML=plantillas.map(f=>{
+    // Solo los ítems que el usuario sumó (no los de la lista base GASTOS_FIJOS, fijos en el
+    // código) se pueden editar o quitar de acá.
+    if(!f.base && fijoExtraEditando===f.item){
+      const todosRubros=[...RUBROS.gasto, ...propios.gasto].sort((a,b)=>a.localeCompare(b,'es'));
+      return `<div class="fijo-estado-row">
+        <div class="fijo-estado-edit-form">
+          <input type="text" id="fx-edit-item" value="${esc(f.item)}">
+          <select id="fx-edit-rubro">${todosRubros.map(r=>`<option${r===f.rubro?' selected':''}>${esc(r)}</option>`).join('')}</select>
+          <button type="button" id="btn-fx-edit-guardar" data-fijoextra-item-original="${esc(f.item)}">Guardar</button>
+          <button type="button" class="ghost" id="btn-fx-edit-cancelar">Cancelar</button>
+        </div>
+      </div>`;
+    }
     const fila=rows.find(r=>r.tipo==='gasto'&&r.fijo&&r.item===f.item&&r.loteMes===mes);
     const enRegistrados = fila && (fila.bruto!==0 || fila.pago);
     const acc = fila
@@ -3236,8 +3434,11 @@ function renderEstadoFijos(){
          <button type="button" class="rowbtn plain" data-edit="${fila.id}" title="Modificar">✎</button>`
       : `<span class="fijo-estado-info">Sin cargar este mes</span>
          <button type="button" class="ghost" data-fijo-cargar="${esc(f.item)}" data-fijo-rubro="${esc(f.rubro)}">Cargar este mes</button>`;
+    const controlesLista = f.base ? '' : `
+         <button type="button" class="rowbtn plain" data-fijoextra-editar="${esc(f.item)}" title="Editar ítem o rubro">✎</button>
+         <button type="button" class="rowbtn plain" data-fijoextra-borrar="${esc(f.item)}" title="Quitar de la lista de gastos fijos">×</button>`;
     return `<div class="fijo-estado-row">
-      <div><span class="fijo-estado-item">${esc(f.item)}</span><span class="fijo-estado-rubro">${esc(f.rubro)}</span></div>
+      <div class="fijo-estado-nombre"><span class="fijo-estado-item">${esc(f.item)}</span><span class="fijo-estado-rubro">${esc(f.rubro)}</span>${controlesLista}</div>
       <div class="fijo-estado-acc">${acc}</div>
     </div>`;
   }).join('');
