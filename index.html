@@ -105,12 +105,37 @@
   .tabs button+button{border-left:none}
   .tabs button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
   .tabs button.on.ing{background:var(--ing);border-color:var(--ing)}
-  #fijos-box{border:1px solid var(--ing);border-left:3px solid var(--ing);padding:14px;margin-bottom:16px;background:var(--tint-ing)}
+  .fijos-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+  .fijos-toolbar .fijos-buscar{flex:1 1 220px;min-width:180px}
+  #admin-listas-det{margin-top:18px;border:1px solid var(--rule);background:var(--surface);padding:10px 12px}
+  #admin-listas-det summary{cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+  #admin-listas-det[open] summary{margin-bottom:10px}
+  .usuario-box.fijo-modal-box{width:min(620px,94vw);max-width:620px;max-height:92vh;overflow-y:auto}
+  .usuario-box.fijo-mes-box{width:min(760px,94vw);max-width:760px}
+  .fm-row .fijo-estado-item{white-space:normal}
+  .fijo-modal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+  #fm-lista{border:1px solid var(--rule);background:var(--surface);max-height:48vh;overflow-y:auto}
+  .fm-row{display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid var(--rule);font-size:13px}
+  .fm-row:last-child{border-bottom:none}
+  .fm-row:nth-child(odd){background:var(--ledger)}
+  .fm-row input[type=checkbox]{width:auto;flex:none}
+  .fm-row .fm-nombre{flex:1;min-width:0;cursor:pointer}
+  .fm-row input[type=month]{width:140px;flex:none;padding:4px 6px;font-size:12px}
+  .fijo-estado-sub{color:var(--ink-soft);font-size:11px;font-family:'IBM Plex Mono',monospace;margin-left:8px}
   .fijos-head{font-size:14px;margin-bottom:12px}
   .fijos-row{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
   .fijos-add{border-top:1px dashed var(--ing);margin:12px 0;padding-top:12px}
   .fijos-add-tit{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ing);margin-bottom:8px}
   .fijos-add-row{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
+  .admin-listas-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  .admin-lista h4{margin:0 0 6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+  .admin-lista-items{max-height:240px;overflow-y:auto;border:1px solid var(--rule);background:var(--surface)}
+  .admin-lista-item{display:flex;align-items:center;gap:6px;padding:4px 8px;border-bottom:1px solid var(--rule);font-size:13px}
+  .admin-lista-item:last-child{border-bottom:none}
+  .admin-lista-item .al-nombre{flex:1;min-width:0;overflow-wrap:anywhere}
+  .admin-lista-item .al-uso{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-soft);white-space:nowrap}
+  .admin-lista-add{display:flex;gap:6px;margin-top:6px}
+  .admin-lista-add input{flex:1;min-width:0}
   .fijos-add-row #fx-item{text-transform:uppercase}
   .fijos-add-row #fx-item::placeholder{text-transform:none}
 
@@ -268,6 +293,9 @@
   tbody tr.nocomp td:first-child{box-shadow:inset 3px 0 0 var(--iva)!important}
   .tablacompacta tbody tr.gasto-impago:nth-child(odd){background:color-mix(in srgb, var(--neg) 10%, var(--paper))}
   .tablacompacta tbody tr.gasto-impago:nth-child(even){background:color-mix(in srgb, var(--neg) 6%, var(--paper))}
+  .tablacompacta tbody tr.gasto-pospuesto:nth-child(odd){background:color-mix(in srgb, var(--ink-soft) 16%, var(--paper))}
+  .tablacompacta tbody tr.gasto-pospuesto:nth-child(even){background:color-mix(in srgb, var(--ink-soft) 10%, var(--paper))}
+  .tag.pp{border-style:dashed;border-color:var(--ink-soft);color:var(--ink-soft);display:inline-block;margin-top:2px}
   .tablacompacta tbody tr.gasto-impago.vence-pronto:nth-child(odd){background:color-mix(in srgb, var(--neg) 48%, var(--paper))}
   .tablacompacta tbody tr.gasto-impago.vence-pronto:nth-child(even){background:color-mix(in srgb, var(--neg) 42%, var(--paper))}
   .tablacompacta tbody tr.gasto-pago:nth-child(odd){background:color-mix(in srgb, var(--ok) 12%, var(--paper))}
@@ -286,6 +314,7 @@
   .tag.FIJ{border-color:var(--warn);color:var(--warn);margin-left:3px}
   .tag.VAR{border-color:var(--rule-strong);color:var(--ink-soft);margin-left:3px}
   .tag.fa{border-color:var(--ing);color:var(--ing)}
+  .tag.SE{border-color:var(--warn);color:var(--warn);background:var(--tint-warn);font-weight:600}
   .tag.nf{border-color:var(--warn);color:var(--warn)}
   .ivanota{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--iva);white-space:nowrap;display:inline-block;margin-left:4px}
   .tablacompacta .ivanota{margin-left:3px}
@@ -317,6 +346,7 @@
   .cp-stack-line.pend{color:var(--warn)}
   td.item.tarjeta-item{cursor:pointer}
   td.item.tarjeta-item:hover{text-decoration:underline dotted}
+  .desg-tarjeta{display:inline-block;margin-left:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--iva);border:1px solid var(--iva);padding:0 5px;white-space:nowrap}
   .tarjeta-badge{display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0;text-transform:none;color:var(--iva);font-weight:600;margin-top:1px}
   .cp-editor{position:absolute;z-index:30;top:50%;left:0;transform:translateY(-50%);display:flex;align-items:center;gap:3px;background:var(--surface);border:1px solid var(--rule-strong);box-shadow:0 3px 10px rgba(0,0,0,.25);padding:4px 5px;white-space:nowrap}
   .cp-fecha-input{width:118px;font-size:11px;padding:3px 5px;display:inline-block}
@@ -631,10 +661,54 @@
     </div>
   </div>
 
+  <!-- Ventana emergente: agregar / editar un gasto fijo de la lista (todos los datos son opcionales) -->
+  <div id="fijo-edit-overlay" class="usuario-overlay" hidden>
+    <div class="usuario-box fijo-modal-box">
+      <h3 id="fe-titulo">Agregar gasto fijo</h3>
+      <p class="note" style="margin-top:0">Completá los datos que quieras; ninguno es obligatorio. Se usan como valores de partida cada vez que cargues el mes.</p>
+      <div class="fijo-modal-grid">
+        <div class="field" style="grid-column:1/-1"><label for="fe-item">Ítem</label><input type="text" id="fe-item" placeholder="Ej. SEGURO INCENDIO" autocomplete="off" style="text-transform:uppercase"></div>
+        <div class="field"><label for="fx-rubro">Rubro</label><select id="fx-rubro"></select></div>
+        <div class="field"><label for="fe-bruto">Importe bruto (de referencia)</label><input type="text" id="fe-bruto" inputmode="decimal" autocomplete="off" placeholder="0"></div>
+        <div class="field"><label for="fe-moneda">Moneda</label><select id="fe-moneda"><option value="ARS">ARS</option><option value="USD">USD</option></select></div>
+        <div class="field" id="fe-wrap-cotiz" hidden><label for="fe-cotiz">Cotización (1 USD = $)</label><input type="text" id="fe-cotiz" inputmode="decimal" autocomplete="off" placeholder="0"></div>
+        <div class="field"><label for="fe-tipo">Tipo de factura</label>
+          <select id="fe-tipo"><option value="No posee">No posee</option><option value="A">A</option><option value="A | 27%">A | 27%</option><option value="B">B</option><option value="C">C</option><option value="Sin emitir">Sin emitir (factura pendiente)</option></select></div>
+        <div class="field" id="fe-wrap-iva" hidden><label for="fe-iva">IVA a descontar</label><input type="text" id="fe-iva" inputmode="decimal" autocomplete="off" placeholder="0"></div>
+        <div class="field"><label for="fe-diavenc">Día de vencimiento (1 a 31)</label><input type="number" id="fe-diavenc" min="1" max="31" placeholder="Ej. 10"></div>
+        <div class="field"><label for="fe-metodo">Método de pago habitual</label><select id="fe-metodo"></select></div>
+        <div class="field"><label for="fe-comp">Computable</label><div style="padding:8px 0"><input type="checkbox" id="fe-comp" checked></div></div>
+        <div class="field" style="grid-column:1/-1"><label for="fe-detalle">Detalle</label><input type="text" id="fe-detalle" placeholder="Proveedor, comprobante, observaciones" autocomplete="off"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+        <button type="button" id="fe-guardar">Guardar</button>
+        <button type="button" class="ghost" id="fe-cancelar">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ventana emergente: cargar el mes (registrar en bloque los gastos fijos tildados) -->
+  <div id="fijo-mes-overlay" class="usuario-overlay" hidden>
+    <div class="usuario-box fijo-modal-box fijo-mes-box">
+      <h3>Cargar mes de gastos fijos</h3>
+      <div class="fijos-row" style="margin-bottom:6px">
+        <div class="field"><label for="fm-mes-pago">Mes de pago</label><input type="month" id="fm-mes-pago"></div>
+        <div class="field"><button type="button" class="ghost" id="fm-todos">Marcar todos</button></div>
+        <div class="field"><button type="button" class="ghost" id="fm-ninguno">Desmarcar todos</button></div>
+      </div>
+      <p class="note" style="margin:0 0 8px">Destildá los que no correspondan. "Corresponde a" se completa solo con el mes siguiente al que tenía ese gasto cuando lo cargaste el mes anterior; si no estaba cargado el mes anterior, queda en blanco (podés escribirlo vos).</p>
+      <div id="fm-lista"></div>
+      <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+        <button type="button" id="fm-registrar">Registrar tildados</button>
+        <button type="button" class="ghost" id="fm-cancelar">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Se muestra durante "Registrar en bloque" cuando un ítem tildado ya está cargado ese mes
        (ver preguntarDuplicadoFijo()): deja elegir, ítem por ítem, si se carga igual (duplicado)
        o se saca de la tanda, sin perder el resto de lo tildado. -->
-  <div id="dup-fijo-overlay" class="usuario-overlay" hidden>
+  <div id="dup-fijo-overlay" class="usuario-overlay" style="z-index:210" hidden>
     <div class="usuario-box">
       <h3>Ítem ya registrado</h3>
       <p class="note" id="dup-fijo-msg"></p>
@@ -725,6 +799,7 @@
             <select id="f-tipo">
               <option value="A">A</option><option value="A | 27%">A | 27%</option>
               <option value="B">B</option><option value="C">C</option><option value="No posee" selected>No posee</option>
+              <option value="Sin emitir">Sin emitir (factura pendiente)</option>
             </select>
           </div>
           <div class="field" id="wrap-iva" hidden><label for="f-iva" id="lbl-iva">IVA a descontar</label><input type="text" id="f-iva" inputmode="decimal" autocomplete="off" placeholder="0"></div>
@@ -735,6 +810,7 @@
           </div>
           <div class="field" id="wrap-detalle"><label for="f-detalle" id="lbl-detalle">Detalle</label><input type="text" id="f-detalle" placeholder="Proveedor, comprobante, observaciones"></div>
           <div class="field" id="wrap-pago"><label for="f-pago" id="lbl-pago">¿Está pago?</label><div style="padding:8px 0"><input type="checkbox" id="f-pago"></div></div>
+          <div class="field" id="wrap-pospuesto" hidden><label for="f-pospuesto" title="El gasto sigue impago y pendiente, pero no se va a abonar en el corto plazo: no se pinta en rojo y no aparece en Pagos semanales hasta que le saques esta marca.">Pospuesto (no se abona pronto)</label><div style="padding:8px 0"><input type="checkbox" id="f-pospuesto"></div></div>
           <div class="field" id="wrap-fecha-real-pago" hidden><label for="f-fecha-real-pago" id="lbl-fecha-real-pago">Fecha en que se pagó</label><input type="date" id="f-fecha-real-pago"></div>
           <div class="field" id="wrap-metodo-pago" hidden><label for="f-metodo-pago">Método de pago</label>
             <div style="display:flex;gap:6px;align-items:center">
@@ -769,12 +845,12 @@
         <div class="filters">
           <div class="field"><label for="q-tipo">Tipo</label><select id="q-tipo"><option value="">Todos</option><option value="ingreso">Ingresos</option><option value="gasto">Gastos</option></select></div>
           <div class="field"><label for="q-rubro">Rubro</label><select id="q-rubro"><option value="">Todos</option></select></div>
-          <div class="field"><label for="q-estado">Estado</label><select id="q-estado"><option value="">Todos</option><option value="pend">Pendientes</option><option value="pag">Cobrados / pagos</option></select></div>
+          <div class="field"><label for="q-estado">Estado</label><select id="q-estado"><option value="">Todos</option><option value="pend">Pendientes</option><option value="pag">Cobrados / pagos</option><option value="posp">Pospuestos (impagos sin apuro)</option></select></div>
           <div class="field"><label for="q-comp" title="Computable como gasto del resultado, o no (ej. IVA o pagos ajenos hechos desde la cuenta)">Computable</label><select id="q-comp"><option value="">Todos</option><option value="si">Computable</option><option value="no">No computable</option></select></div>
           <div class="field"><label for="q-fijo" title="Solo aplica a gastos: los ingresos se cuentan siempre como variable">Fijo / Variable</label><select id="q-fijo"><option value="">Ambos</option><option value="fijo">Fijo</option><option value="variable">Variable</option></select></div>
-          <div class="field"><label for="q-factura">Tipo de factura</label><select id="q-factura"><option value="">Todas</option><option value="A">A</option><option value="A | 27%">A | 27%</option><option value="B">B</option><option value="C">C</option><option value="No posee">No posee</option></select></div>
+          <div class="field"><label for="q-factura">Tipo de factura</label><select id="q-factura"><option value="">Todas</option><option value="A">A</option><option value="A | 27%">A | 27%</option><option value="B">B</option><option value="C">C</option><option value="No posee">No posee</option><option value="Sin emitir">Sin emitir</option></select></div>
           <div class="field"><label for="q-metodo">Método de pago</label><select id="q-metodo"><option value="">Todos</option></select></div>
-          <div class="field"><label for="q-texto">Buscar</label><input type="text" id="q-texto" placeholder="Ítem, rubro o detalle (podés escribir varias palabras)"></div>
+          <div class="field"><label for="q-texto">Buscar</label><input type="text" id="q-texto" placeholder="Ítem, rubro, detalle o comentarios (varias palabras)"></div>
           <div class="rango">
             <div class="field"><label for="q-monto-desde" title="Sobre el importe neto convertido a pesos">Importe neto (ARS), desde</label><input type="number" id="q-monto-desde" step="0.01" placeholder="Mínimo"></div>
             <span class="rango-sep">–</span>
@@ -816,7 +892,7 @@
         <div class="filters">
           <div class="field"><label for="qs-rubro">Rubro</label><select id="qs-rubro"><option value="">Todos</option></select></div>
           <div class="field"><label for="qs-comp" title="Computable como gasto del resultado, o no (ej. IVA o pagos ajenos hechos desde la cuenta)">Computable</label><select id="qs-comp"><option value="">Todos</option><option value="si">Computable</option><option value="no">No computable</option></select></div>
-          <div class="field"><label for="qs-texto">Buscar</label><input type="text" id="qs-texto" placeholder="Ítem, rubro o detalle (podés escribir varias palabras)"></div>
+          <div class="field"><label for="qs-texto">Buscar</label><input type="text" id="qs-texto" placeholder="Ítem, rubro, detalle o comentarios (varias palabras)"></div>
           <div class="rango">
             <div class="field"><label for="qs-pago-desde">Mes de pago previsto, desde</label><input type="month" id="qs-pago-desde"></div>
             <span class="rango-sep">–</span>
@@ -843,51 +919,29 @@
 
       <!-- ---- Sub-vista: Fijos mensuales ---- -->
       <div id="vista-fijos" hidden>
-        <div id="fijos-box">
-          <div class="fijos-head">
-            <span>Se cargarán <b id="fijos-n"></b> gastos fijos con importe y mes en blanco. Después, en cada línea, completás el importe, el mes al que corresponde y el mes de pago.</span>
-          </div>
-          <div class="fijos-add">
-            <span class="fijos-add-tit">Sumar un ítem nuevo a la lista de gastos fijos (queda guardado para todos los meses)</span>
-            <div class="fijos-add-row">
-              <div class="field"><label for="fx-item">Ítem</label><input type="text" id="fx-item" placeholder="Ej. SEGURO INCENDIO"></div>
-              <div class="field"><label for="fx-rubro">Rubro</label><select id="fx-rubro"></select></div>
-              <div class="field"><button class="ghost" id="btn-fx-add">Sumar ítem a la lista</button></div>
-            </div>
-            <p class="note" style="margin:8px 0 0">Para editar o quitar un ítem que ya está en la lista, hacelo desde el listado completo más abajo.</p>
-          </div>
-          <div class="fijos-add">
-            <span class="fijos-add-tit">Quitar un método de pago agregado (los de la lista original no se pueden quitar)</span>
-            <div class="fijos-add-row">
-              <div class="field"><label for="fx-metodo-quitar">Método de pago</label><select id="fx-metodo-quitar"></select></div>
-              <div class="field"><button class="ghost" id="btn-fx-metodo-quitar" type="button">Quitar método</button></div>
-            </div>
-          </div>
-          <div class="fijos-row">
-            <div class="field"><label for="fijos-mes-todos">Mes de pago para todos (opcional)</label><input type="month" id="fijos-mes-todos"></div>
-            <div class="field"><label for="fijos-venc-todos">Fecha de vencimiento para todos (opcional)</label><input type="date" id="fijos-venc-todos"></div>
-            <div class="field"><button id="btn-fijos-go">Cargar en el libro</button></div>
-          </div>
-          <p class="note">El mes al que corresponde queda en blanco a propósito: lo asignás vos en cada línea, desde Registrados. Si completás "mes de pago" o "fecha de vencimiento" acá arriba, se aplican a todas las líneas de la tanda.</p>
+        <div class="fijos-toolbar">
+          <button type="button" id="btn-fijo-nuevo">+ Agregar nuevo</button>
+          <button type="button" id="btn-fijo-cargar-mes">Cargar mes</button>
+          <div class="field fijos-buscar"><input type="text" id="fijos-buscar" placeholder="Buscar en la lista de gastos fijos…" aria-label="Buscar en la lista de gastos fijos"></div>
+          <button class="ghost" type="button" id="btn-quitar-duplicados" title="Busca gastos fijos cargados dos veces para el mismo mes y ofrece borrar los sobrantes">Buscar y quitar duplicados</button>
         </div>
-        <div id="fijos-lote-box">
-          <div class="fijos-add-tit">Registrar en bloque el mes que entra</div>
-          <p class="note" style="margin-top:0">Elegí el mes, destildá los que no correspondan ese mes, y registralos todos juntos — así cuando llegue cada factura, ya los tenés a mano en Registrados para completar el importe.</p>
-          <div class="fijos-row">
-            <div class="field"><label for="lote-mes">Mes a registrar</label><input type="month" id="lote-mes"></div>
-            <div class="field"><button type="button" class="ghost" id="btn-lote-todos">Marcar todos</button></div>
-            <div class="field"><button type="button" class="ghost" id="btn-lote-ninguno">Desmarcar todos</button></div>
-          </div>
-          <div id="fijos-lote-lista"></div>
-          <div class="fijos-row">
-            <div class="field"><button type="button" id="btn-lote-registrar">Registrar todos</button></div>
-          </div>
-        </div>
-        <div class="fijos-estado-head">
-          <span>Lista de gastos fijos — siempre en blanco, lista para reutilizar cada mes. Al completar uno con datos reales (importe, pago, etc.) pasa a "Registrados" sin mes asignado, para que lo completes vos; acá se sigue viendo disponible para el mes que viene.</span>
-          <button class="ghost" type="button" id="btn-quitar-duplicados">Buscar y quitar duplicados</button>
-        </div>
+        <p class="note" style="margin:0 0 10px">Lista de todos tus gastos fijos mensuales (<b id="fijos-n">0</b>). Con <b>Cargar mes</b> los registrás de una vez en el mes de pago que elijas; con ✎ o × editás o eliminás un gasto de la lista (los movimientos ya registrados no se modifican).</p>
         <div id="fijos-estado-lista"></div>
+        <details id="admin-listas-det">
+          <summary>Administrar rubros y métodos de pago (crear, renombrar o eliminar, también los que ya existen)</summary>
+          <div id="admin-listas">
+            
+            <div class="admin-listas-grid">
+              <div class="admin-lista"><h4>Rubros de gasto</h4><div class="admin-lista-items" id="al-gasto"></div>
+                <div class="admin-lista-add"><input type="text" id="al-nuevo-gasto" placeholder="Nuevo rubro de gasto"><button type="button" class="ghost" data-lista-add="gasto">Agregar</button></div></div>
+              <div class="admin-lista"><h4>Rubros de ingreso</h4><div class="admin-lista-items" id="al-ingreso"></div>
+                <div class="admin-lista-add"><input type="text" id="al-nuevo-ingreso" placeholder="Nuevo rubro de ingreso"><button type="button" class="ghost" data-lista-add="ingreso">Agregar</button></div></div>
+              <div class="admin-lista"><h4>Métodos de pago</h4><div class="admin-lista-items" id="al-metodos"></div>
+                <div class="admin-lista-add"><input type="text" id="al-nuevo-metodos" placeholder="Nuevo método de pago"><button type="button" class="ghost" data-lista-add="metodos">Agregar</button></div></div>
+            </div>
+            <p class="note" style="margin:8px 0 0">Renombrar actualiza también los movimientos ya cargados. Eliminar solo saca la opción de las listas: los movimientos que ya la usan no se modifican.</p>
+          </div>
+        </details>
       </div>
     </div>
   </section>
@@ -1013,6 +1067,41 @@ const RUBROS={
 // considera efectuado en la fecha de pago indicada, que es cuando se debitará el gasto.
 const METODOS_PAGO_BASE=['Efectivo','Débito automático','Pago de servicios','Transferencia','E-cheq',
   'Tarjeta de crédito de Feli','Tarjeta de crédito de Nora','Tarjeta de crédito de José','Tarjeta de débito','Mercado Pago de Nora'];
+// Listas editables de rubros y métodos de pago. La lista "base" (RUBROS / METODOS_PAGO_BASE) vive
+// en el código y no se puede tocar, así que lo que el usuario quita o renombra se guarda aparte
+// en propios.ocultos (nombres de la base que ya no se ofrecen) y propios.alias (nombre viejo →
+// nuevo, para los gastos fijos de la lista base que siguen apuntando al rubro con el nombre viejo).
+function normalizarPropios(){
+  if(!propios.gasto) propios.gasto=[];
+  if(!propios.ingreso) propios.ingreso=[];
+  if(!propios.metodos) propios.metodos=[];
+  if(!propios.ocultos) propios.ocultos={};
+  ['gasto','ingreso','metodos'].forEach(k=>{ if(!Array.isArray(propios.ocultos[k])) propios.ocultos[k]=[]; });
+  if(!propios.alias) propios.alias={};
+  ['gasto','ingreso','metodos'].forEach(k=>{ if(!propios.alias[k]) propios.alias[k]={}; });
+}
+function ocultosDe(k){ return (propios.ocultos&&propios.ocultos[k])||[]; }
+function aliasDe(k,nombre){ return (propios.alias&&propios.alias[k]&&propios.alias[k][nombre])||nombre; }
+function ordenarLista(a){ return [...new Set(a)].sort((x,y)=>x.localeCompare(y,'es')); }
+function rubrosLista(tipo){ const oc=ocultosDe(tipo); return ordenarLista([...RUBROS[tipo],...propios[tipo]].filter(r=>!oc.includes(r))); }
+function metodosLista(){ const oc=ocultosDe('metodos'); return ordenarLista([...METODOS_PAGO_BASE,...(propios.metodos||[])].filter(m=>!oc.includes(m))); }
+function tarjetasLista(){ return metodosLista().filter(m=>/tarjeta de cr[eé]dito/i.test(m)); }
+// Suma un nombre a la lista (si estaba oculto, lo vuelve a mostrar). k: 'gasto' | 'ingreso' | 'metodos'.
+function sumarALista(k,nombre){
+  if(!propios.ocultos) propios.ocultos={gasto:[],ingreso:[],metodos:[]};
+  propios.ocultos[k]=(propios.ocultos[k]||[]).filter(x=>x!==nombre);
+  const base = k==='metodos' ? METODOS_PAGO_BASE : RUBROS[k];
+  if(!base.includes(nombre) && !propios[k].includes(nombre)) propios[k].push(nombre);
+}
+// Quita un nombre de la lista: si es de la base se oculta, si lo agregó el usuario se borra.
+function quitarDeLista(k,nombre){
+  const base = k==='metodos' ? METODOS_PAGO_BASE : RUBROS[k];
+  propios[k]=propios[k].filter(x=>x!==nombre);
+  if(base.includes(nombre)){
+    if(!propios.ocultos) propios.ocultos={gasto:[],ingreso:[],metodos:[]};
+    if(!(propios.ocultos[k]||[]).includes(nombre)) (propios.ocultos[k]=propios.ocultos[k]||[]).push(nombre);
+  }
+}
 // Gastos fijos recurrentes (item + rubro). Importe se completa cada mes.
 // Orden: RRHH, Alquileres, Impuestos, Lavadero, Marketing, Desayunos, Servicios, Tasas Municipales, IVA.
 const GASTOS_FIJOS=[
@@ -1071,7 +1160,17 @@ const GASTOS_FIJOS=[
   // IVA
   ['ARCA HOTEL (IVA)','IVA']
 ];
-let rows=[], propios={gasto:[],ingreso:[]}, modo='gasto', editId=null, pendingDel=null;
+let rows=[], propios={gasto:[],ingreso:[],metodos:[],ocultos:{gasto:[],ingreso:[],metodos:[]},alias:{gasto:{},ingreso:{},metodos:{}}}, modo='gasto', editId=null, pendingDel=null;
+let fijosMigrado=false;  // true cuando la lista base (GASTOS_FIJOS) ya se copió a fijosExtra y es editable
+function normalizarFijosLista(){
+  if(!fijosMigrado){
+    const existentes=new Set(fijosExtra.map(f=>f.item));
+    const base=GASTOS_FIJOS.filter(f=>!existentes.has(f[0])).map(f=>({item:f[0],rubro:aliasDe('gasto',f[1])}));
+    fijosExtra=[...base,...fijosExtra];
+    fijosMigrado=true;
+  }
+  fijosExtra.forEach(f=>{ if(!f.id) f.id=uid(); });
+}
 let fijosExtra=[];  // gastos fijos que el usuario suma a la lista base, persistidos
 let usuarios=[];  // directorio de cuentas {email,nombre,activo,creadoTs,creadoPor}, persistido junto con propios/fijosExtra
 let usuarioEnEdicion=null;  // email de la fila que está en edición dentro del panel de Gestión de usuarios
@@ -1178,6 +1277,7 @@ async function load(){
       rowsViejas=d.rows||[];
       propios = d.propios || (d.rubros?{gasto:d.rubros,ingreso:[]}:{gasto:[],ingreso:[]});
       fijosExtra = Array.isArray(d.fijosExtra) ? d.fijosExtra : [];
+      fijosMigrado = false; normalizarFijosLista();
       historial = Array.isArray(d.historial) ? d.historial : [];
       usuarios = Array.isArray(d.usuarios) ? d.usuarios : [];
     }
@@ -1185,6 +1285,7 @@ async function load(){
     if(!propios.gasto) propios.gasto=[];
     if(!propios.ingreso) propios.ingreso=[];
     if(!propios.metodos) propios.metodos=[];
+    normalizarPropios();
     if(rows.length||historial.length||migrado){ await save(); toast(migrado?'Gastos anteriores importados':'Datos pasados al nuevo formato de guardado (uno por año)'); }
   }else{
     const rowYears=indice.rowYears||[], histYears=indice.histYears||[];
@@ -1195,11 +1296,14 @@ async function load(){
     const config = await leer('copahue:config') || {};
     propios = config.propios || {gasto:[],ingreso:[]};
     fijosExtra = Array.isArray(config.fijosExtra) ? config.fijosExtra : [];
+    fijosMigrado = !!config.fijosMigrado; normalizarFijosLista();
     usuarios = Array.isArray(config.usuarios) ? config.usuarios : [];
     if(!propios.gasto) propios.gasto=[];
     if(!propios.ingreso) propios.ingreso=[];
     if(!propios.metodos) propios.metodos=[];
+    normalizarPropios();
   }
+  normalizarFijosLista();  // arranque sin datos previos: siembra la lista base una vez
   fillRubros(); pintarFxRubros(); pintarFijosExtra(); pintarMetodosPago(); pintarFxMetodosQuitar(); render();
 }
 /* Guardado en segundo plano: antes, cada acción se quedaba esperando a que Firestore
@@ -1238,7 +1342,7 @@ async function guardarReal(){
     const tareas=[
       ...rowYears.map(a=>window.storage.set('copahue:movs:'+a, JSON.stringify(rowsPorAño[a]))),
       ...histYears.map(a=>window.storage.set('copahue:hist:'+a, JSON.stringify(histPorAño[a]))),
-      window.storage.set('copahue:config', JSON.stringify({propios,fijosExtra,usuarios})),
+      window.storage.set('copahue:config', JSON.stringify({propios,fijosExtra,usuarios,fijosMigrado:true})),
       window.storage.set('copahue:indice', JSON.stringify({rowYears,histYears}))
     ];
     await Promise.all(tareas);
@@ -1658,7 +1762,7 @@ async function deshacer(){
   if(!(await asegurarUsuario())) return;
   const ultimo=historialDeshacer.pop();
   rows=JSON.parse(ultimo.rows);
-  propios=JSON.parse(ultimo.propios);
+  propios=JSON.parse(ultimo.propios); normalizarPropios();
   fijosExtra=JSON.parse(ultimo.fijosExtra);
   usuarios=JSON.parse(ultimo.usuarios||'[]');
   registrarHistorial('Deshizo: '+ultimo.desc,null);
@@ -1750,13 +1854,10 @@ $('tab-gasto').addEventListener('click',()=>{ if(editId) return toast('Terminá 
 $('tab-ingreso').addEventListener('click',()=>{ if(editId) return toast('Terminá o cancelá la edición.'); setModo('ingreso'); $('f-rubro').value=''; });
 
 /* ---------- Gastos fijos del mes ---------- */
-function contarFijos(){ return GASTOS_FIJOS.length + fijosExtra.length; }
-function pintarFijosExtra(){
-  $('fijos-n').textContent = contarFijos();
-}
+function pintarFijosExtra(){ if($('fijos-n')) $('fijos-n').textContent = fijosExtra.length; }
 /* ---------- Métodos de pago ---------- */
 function metodosPagoOptionsHtml(actual){
-  const todos=[...METODOS_PAGO_BASE, ...propios.metodos].sort((a,b)=>a.localeCompare(b,'es'));
+  const todos=metodosLista();
   return '<option value="">Método de pago…</option>'
     + todos.map(m=>`<option${m===actual?' selected':''}>${esc(m)}</option>`).join('')
     + '<option value="__nuevo">+ Agregar otro método…</option>';
@@ -1787,10 +1888,10 @@ $('f-metodo-pago').addEventListener('change',async e=>{
   $('btn-quitar-metodo-tentativo').hidden=true;
   if(e.target.value!=='__nuevo'){ actualizarFechaDiferida(); return; }
   const nuevo=(prompt('Nombre del método de pago nuevo:')||'').trim();
-  if(nuevo&&!METODOS_PAGO_BASE.includes(nuevo)&&!propios.metodos.includes(nuevo)){
+  if(nuevo&&!metodosLista().includes(nuevo)){
     if(!(await asegurarUsuario())){ $('f-metodo-pago').value=''; return; }
     guardarParaDeshacer('agregar método de pago "'+nuevo+'"');
-    propios.metodos.push(nuevo);
+    sumarALista('metodos',nuevo);
     registrarHistorial('Agregó el método de pago',null,nuevo);
     save();
   }
@@ -1801,7 +1902,7 @@ $('f-metodo-pago').addEventListener('change',async e=>{
 
 function pintarFxRubros(){
   const cur=$('fx-rubro').value;
-  const todos=[...RUBROS.gasto, ...propios.gasto].sort((a,b)=>a.localeCompare(b,'es'));
+  const todos=rubrosLista('gasto');
   $('fx-rubro').innerHTML='<option value="">Rubro…</option>'+todos.map(r=>`<option>${esc(r)}</option>`).join('')
     + '<option value="__nuevo">+ Agregar un rubro nuevo…</option>';
   if(cur&&cur!=='__nuevo') $('fx-rubro').value=cur;
@@ -1809,137 +1910,95 @@ function pintarFxRubros(){
 $('fx-rubro').addEventListener('change',async e=>{
   if(e.target.value!=='__nuevo') return;
   const nuevo=(prompt('Nombre del rubro nuevo:')||'').trim().toUpperCase();
-  if(nuevo&&!propios.gasto.includes(nuevo)&&!RUBROS.gasto.includes(nuevo)){
+  if(nuevo&&!rubrosLista('gasto').includes(nuevo)){
     if(!(await asegurarUsuario())){ $('fx-rubro').value=''; return; }
     guardarParaDeshacer('agregar rubro "'+nuevo+'"');
-    propios.gasto.push(nuevo);
+    sumarALista('gasto',nuevo);
     registrarHistorial('Agregó el rubro',null,nuevo);
     save();
   }
   pintarFxRubros(); $('fx-rubro').value=nuevo||'';
 });
-function pintarFxMetodosQuitar(){
-  const cur=$('fx-metodo-quitar').value;
-  const ordenados=[...propios.metodos].sort((a,b)=>a.localeCompare(b,'es'));
-  $('fx-metodo-quitar').innerHTML = ordenados.length
-    ? '<option value="">Elegir…</option>'+ordenados.map(m=>`<option>${esc(m)}</option>`).join('')
-    : '<option value="">No agregaste ninguno todavía</option>';
-  if(cur&&ordenados.includes(cur)) $('fx-metodo-quitar').value=cur;
+// Administración de listas (rubros de gasto/ingreso y métodos de pago): crear, renombrar y eliminar,
+// incluidos los de la lista base (ver rubrosLista / metodosLista / quitarDeLista).
+function usosDeLista(k,nombre){
+  if(k==='metodos') return rows.filter(r=>r.tipo==='gasto' && (r.metodoPago===nombre || (Array.isArray(r.cuotas)&&r.cuotas.some(c=>c.metodoPago===nombre)))).length;
+  return rows.filter(r=>r.tipo===k && r.rubro===nombre).length;
 }
-$('btn-fx-metodo-quitar').addEventListener('click',async()=>{
-  const m=$('fx-metodo-quitar').value;
-  if(!m){ toast('Elegí el método que querés quitar.'); return; }
-  if(!confirm('¿Quitar el método de pago "'+m+'" de la lista? Los movimientos que ya lo usan no se modifican.')) return;
-  if(!(await asegurarUsuario())) return;
-  guardarParaDeshacer('quitar método de pago "'+m+'"');
-  propios.metodos = propios.metodos.filter(x=>x!==m);
-  registrarHistorial('Quitó el método de pago',null,m);
-  save(); pintarFxMetodosQuitar(); pintarMetodosPago(); toast('Método de pago quitado de la lista');
-});
-$('btn-fx-add').addEventListener('click',async()=>{
-  const item=$('fx-item').value.trim().toUpperCase();
-  const rubro=$('fx-rubro').value;
-  if(!item){ toast('Escribí el ítem.'); $('fx-item').focus(); return; }
-  if(!rubro){ toast('Elegí el rubro.'); $('fx-rubro').focus(); return; }
-  const dup = GASTOS_FIJOS.some(f=>f[0]===item) || fijosExtra.some(f=>f.item===item);
-  if(dup && !confirm('Ya existe un gasto fijo "'+item+'". ¿Agregarlo igual?')) return;
-  if(!(await asegurarUsuario())) return;
-  guardarParaDeshacer('sumar "'+item+'" a la lista de fijos');
-  fijosExtra.push({item,rubro});
-  registrarHistorial('Sumó a la lista de fijos',null,item+' ('+rubro+')');
-  save();
-  $('fx-item').value=''; $('fx-rubro').value='';
-  pintarFijosExtra(); $('fx-item').focus();
-  if(vistaMovActual==='fijos'){ renderEstadoFijos(); renderLoteFijos(); }
-});
-// Ítem del gasto fijo (no de base, ver GASTOS_FIJOS) que se está editando en el listado de abajo,
-// o null si ninguno. Solo puede haber uno a la vez (renderEstadoFijos() lo muestra como fila
-// editable en lugar del texto normal).
-let fijoExtraEditando = null;
-document.addEventListener('click',e=>{
-  const item=e.target.dataset&&e.target.dataset.fijoextraEditar;
-  if(item===undefined) return;
-  fijoExtraEditando=item;
-  renderEstadoFijos();
-});
-document.addEventListener('click',e=>{
-  if(e.target.id!=='btn-fx-edit-cancelar') return;
-  fijoExtraEditando=null;
-  renderEstadoFijos();
-});
-document.addEventListener('click',async e=>{
-  if(e.target.id!=='btn-fx-edit-guardar') return;
-  const original=e.target.dataset.fijoextraItemOriginal;
-  const idx=fijosExtra.findIndex(x=>x.item===original);
-  if(idx<0){ fijoExtraEditando=null; renderEstadoFijos(); return; }
-  const nuevoItem=$('fx-edit-item').value.trim().toUpperCase();
-  const nuevoRubro=$('fx-edit-rubro').value;
-  if(!nuevoItem){ toast('Escribí el ítem.'); return; }
-  if(!nuevoRubro){ toast('Elegí el rubro.'); return; }
-  if(nuevoItem!==original){
-    const dup = GASTOS_FIJOS.some(f=>f[0]===nuevoItem) || fijosExtra.some(f=>f.item===nuevoItem);
-    if(dup){ toast('Ya existe un gasto fijo "'+nuevoItem+'".'); return; }
-  }
-  if(!(await asegurarUsuario())) return;
-  guardarParaDeshacer('editar "'+original+'" en la lista de fijos');
-  fijosExtra[idx]={item:nuevoItem,rubro:nuevoRubro};
-  registrarHistorial('Editó en la lista de fijos',null,original+' → '+nuevoItem+' ('+nuevoRubro+')');
-  save();
-  fijoExtraEditando=null;
-  pintarFijosExtra(); renderEstadoFijos(); renderLoteFijos();
-  toast('Gasto fijo actualizado.');
-});
-document.addEventListener('click',async e=>{
-  const item=e.target.dataset&&e.target.dataset.fijoextraBorrar;
-  if(item===undefined) return;
-  if(!confirm('¿Quitar "'+item+'" de la lista de gastos fijos?')) return;
-  if(!(await asegurarUsuario())) return;
-  const idx=fijosExtra.findIndex(x=>x.item===item);
-  if(idx<0) return;
-  guardarParaDeshacer('quitar "'+item+'" de la lista de fijos');
-  fijosExtra.splice(idx,1);
-  registrarHistorial('Quitó de la lista de fijos',null,item);
-  save();
-  pintarFijosExtra(); renderEstadoFijos(); renderLoteFijos();
-  toast('Gasto fijo quitado de la lista.');
-});
-$('btn-fijos-go').addEventListener('click',async()=>{
-  const mesLote=mesActual();  // se usa solo internamente, para no duplicar si se aprieta más de una vez
-  const mesTodos=$('fijos-mes-todos').value;  // mes de pago, opcional
-  const vencTodos=$('fijos-venc-todos').value;  // fecha de vencimiento, opcional
-  // solo se cargan los que todavía no existen para esta tanda (evita duplicar si se aprieta más de una vez)
-  const yaCargados = new Set(rows.filter(r=>r.tipo==='gasto'&&r.fijo&&r.loteMes===mesLote).map(r=>r.item));
-  const faltantes = fijosTodos().filter(f=>!yaCargados.has(f.item));
-  if(!faltantes.length){ toast('Ya estaban cargados todos los gastos fijos de esta tanda.'); return; }
-  if(!(await asegurarUsuario())) return;
-  const nuevos=faltantes.map(f=>{
-    // La fecha de vencimiento escrita a mano para todos (vencTodos) tiene prioridad sobre la
-    // sugerencia automática; si no se escribió nada, se sugiere la del último registro de ese
-    // ítem, marcada como tentativa. El método de pago nunca se pre-carga como dato real (se
-    // borraría solo al guardar sin marcar "pagado"): queda aparte, en metodoTentativo.
-    const sug=sugerenciaFijo(f.item);
-    return {
-      id:uid(),tipo:'gasto',mesPago:mesTodos||'',mesCorr:'',rubro:f.rubro,item:f.item,bruto:0,
-      moneda:'ARS',cotizacion:0,tipoFac:'No posee',iva:0,fact:'',pago:false,comp:true,detalle:'',fijo:true,
-      fechaVenc: vencTodos || (sug&&sug.venc) || '',
-      vencTentativo: !vencTodos && !!(sug&&sug.venc),
-      metodoTentativo: (sug&&sug.metodo) || '',
-      loteMes:mesLote
-    };
+function pintarAdminListas(){
+  const listas={gasto:rubrosLista('gasto'),ingreso:rubrosLista('ingreso'),metodos:metodosLista()};
+  Object.keys(listas).forEach(k=>{
+    const cont=$('al-'+k); if(!cont) return;
+    cont.innerHTML=listas[k].map(n=>{
+      const u=usosDeLista(k,n);
+      return `<div class="admin-lista-item"><span class="al-nombre">${esc(n)}</span><span class="al-uso">${u?u+' mov.':''}</span>
+        <button type="button" class="rowbtn plain" data-lista-ren="${k}|${esc(n)}" title="Renombrar">✎</button>
+        <button type="button" class="rowbtn plain" data-lista-del="${k}|${esc(n)}" title="Eliminar de la lista">×</button></div>`;
+    }).join('') || '<div class="admin-lista-item"><span class="al-nombre" style="color:var(--ink-soft)">Lista vacía</span></div>';
   });
-  guardarParaDeshacer('cargar '+nuevos.length+' gastos fijos al libro');
-  rows.push(...nuevos);
-  registrarHistorial('Cargó gastos fijos',null,nuevos.length+' gastos fijos, sin mes asignado');
-  save();
-  $('fijos-mes-todos').value=''; $('fijos-venc-todos').value='';
-  ['qi-cobro','qi-corr','qg-pago','qg-corr'].forEach(id=>$(id).value='');
-  render();
-  toast(nuevos.length+' gastos fijos cargados sin mes asignado'+(mesTodos?', a pagar en '+mesLabel(mesTodos):'')+' — completalos desde Registrados.');
+}
+function pintarFxMetodosQuitar(){ pintarAdminListas(); }
+function refrescarListasTrasCambio(){
+  save(); fillRubros(); pintarFxRubros(); pintarMetodosPago(); pintarAdminListas(); render();
+  if(vistaMovActual==='fijos'){ renderEstadoFijos(); }
+}
+function nombreLista(k,t){ t=(t||'').trim(); return k==='metodos' ? t : t.toUpperCase(); }
+document.addEventListener('click',async e=>{
+  const d=e.target.dataset||{};
+  if(d.listaAdd){
+    const k=d.listaAdd, inp=$('al-nuevo-'+k), nuevo=nombreLista(k,inp.value);
+    if(!nuevo){ toast('Escribí el nombre.'); inp.focus(); return; }
+    const lista = k==='metodos' ? metodosLista() : rubrosLista(k);
+    if(lista.includes(nuevo)){ toast('Ya existe "'+nuevo+'".'); return; }
+    if(!(await asegurarUsuario())) return;
+    guardarParaDeshacer('agregar "'+nuevo+'" a la lista');
+    sumarALista(k,nuevo);
+    registrarHistorial(k==='metodos'?'Agregó el método de pago':'Agregó el rubro',null,nuevo);
+    inp.value=''; refrescarListasTrasCambio(); toast('Agregado a la lista');
+    return;
+  }
+  if(d.listaRen){
+    const [k,viejo]=d.listaRen.split('|');
+    const nuevo=nombreLista(k,prompt('Nuevo nombre para "'+viejo+'":',viejo)||'');
+    if(!nuevo||nuevo===viejo) return;
+    const lista = k==='metodos' ? metodosLista() : rubrosLista(k);
+    if(lista.includes(nuevo)){ toast('Ya existe "'+nuevo+'".'); return; }
+    if(!(await asegurarUsuario())) return;
+    guardarParaDeshacer('renombrar "'+viejo+'" a "'+nuevo+'"');
+    if(k==='metodos'){
+      rows.forEach(r=>{
+        if(r.metodoPago===viejo) r.metodoPago=nuevo;
+        if(r.metodoTentativo===viejo) r.metodoTentativo=nuevo;
+        if(Array.isArray(r.cuotas)) r.cuotas.forEach(c=>{ if(c.metodoPago===viejo) c.metodoPago=nuevo; });
+        if(Array.isArray(r.desglose)) r.desglose.forEach(x=>{ if(x.tarjeta===viejo) x.tarjeta=nuevo; });
+      });
+    } else {
+      rows.forEach(r=>{ if(r.tipo===k && r.rubro===viejo) r.rubro=nuevo; });
+      if(k==='gasto') fijosExtra.forEach(f=>{ if(f.rubro===viejo) f.rubro=nuevo; });
+      normalizarPropios();
+      Object.keys(propios.alias[k]).forEach(o=>{ if(propios.alias[k][o]===viejo) propios.alias[k][o]=nuevo; });
+      propios.alias[k][viejo]=nuevo;
+    }
+    quitarDeLista(k,viejo); sumarALista(k,nuevo);
+    registrarHistorial(k==='metodos'?'Renombró el método de pago':'Renombró el rubro',null,viejo+' → '+nuevo);
+    refrescarListasTrasCambio(); toast('Renombrado');
+    return;
+  }
+  if(d.listaDel){
+    const [k,nombre]=d.listaDel.split('|');
+    const u=usosDeLista(k,nombre);
+    if(!confirm('¿Eliminar "'+nombre+'" de la lista?'+(u?'\n\n'+u+' movimiento(s) ya lo usan y no se modifican.':''))) return;
+    if(!(await asegurarUsuario())) return;
+    guardarParaDeshacer('eliminar "'+nombre+'" de la lista');
+    quitarDeLista(k,nombre);
+    registrarHistorial(k==='metodos'?'Quitó el método de pago':'Quitó el rubro',null,nombre);
+    refrescarListasTrasCambio(); toast('Eliminado de la lista');
+    return;
+  }
 });
-
 function fillRubros(){
   const sel=$('f-rubro'),cur=sel.value;
-  const todos=[...RUBROS[modo], ...propios[modo]].sort((a,b)=>a.localeCompare(b,'es'));
+  const todos=rubrosLista(modo);
   let html='<option value="">Elegir rubro…</option>'+todos.map(r=>`<option>${esc(r)}</option>`).join('');
   html+='<option value="__nuevo">+ Agregar un rubro nuevo…</option>';
   sel.innerHTML=html;
@@ -1948,10 +2007,10 @@ function fillRubros(){
 $('f-rubro').addEventListener('change',async e=>{
   if(e.target.value!=='__nuevo') return;
   const nuevo=(prompt('Nombre del rubro nuevo:')||'').trim().toUpperCase();
-  if(nuevo&&!propios[modo].includes(nuevo)){
+  if(nuevo&&!rubrosLista(modo).includes(nuevo)){
     if(!(await asegurarUsuario())){ $('f-rubro').value=''; return; }
     guardarParaDeshacer('agregar rubro "'+nuevo+'"');
-    propios[modo].push(nuevo);
+    sumarALista(modo,nuevo);
     registrarHistorial('Agregó el rubro',null,nuevo);
     save();
   }
@@ -2016,8 +2075,15 @@ $('f-cotizacion').addEventListener('input',()=>{formatCampo($('f-cotizacion'));p
 function seleccionarAlFoco(e){ if(e.target.value) e.target.select(); }
 ['f-bruto','f-iva','f-cotizacion'].forEach(id=>$(id).addEventListener('focus',seleccionarAlFoco));
 $('cuotas-form').addEventListener('focusin',e=>{ if(e.target.classList&&e.target.classList.contains('cuota-imp')) seleccionarAlFoco(e); });
+// "Pospuesto" solo se ofrece al EDITAR un gasto impago (no al crear uno nuevo).
+function actualizarWrapPospuesto(){
+  const visible = !!editId && modo==='gasto' && !$('f-pago').checked;
+  $('wrap-pospuesto').hidden=!visible;
+  if(!visible) $('f-pospuesto').checked=false;
+}
 $('f-pago').addEventListener('change',()=>{
   const marcado=$('f-pago').checked;
+  setTimeout(actualizarWrapPospuesto,0);
   $('wrap-fecha-real-pago').hidden=!marcado;
   $('wrap-metodo-pago').hidden = !(marcado&&modo==='gasto');
   if(marcado&&!$('f-fecha-real-pago').value) $('f-fecha-real-pago').value=hoyISO();
@@ -2137,8 +2203,8 @@ $('cuotas-form').addEventListener('change',async e=>{
     let val=e.target.value;
     if(val==='__nuevo'){
       const nuevo=(prompt('Nombre del método de pago nuevo:')||'').trim();
-      if(nuevo&&!METODOS_PAGO_BASE.includes(nuevo)&&!propios.metodos.includes(nuevo)){
-        if(await asegurarUsuario()){ guardarParaDeshacer('agregar método de pago "'+nuevo+'"'); propios.metodos.push(nuevo); registrarHistorial('Agregó el método de pago',null,nuevo); save(); pintarFxMetodosQuitar(); }
+      if(nuevo&&!metodosLista().includes(nuevo)){
+        if(await asegurarUsuario()){ guardarParaDeshacer('agregar método de pago "'+nuevo+'"'); sumarALista('metodos',nuevo); registrarHistorial('Agregó el método de pago',null,nuevo); save(); pintarFxMetodosQuitar(); }
       }
       val=nuevo||'';
     }
@@ -2162,6 +2228,7 @@ function limpiarForm(){
   $('f-fecha-real-pago').value='';$('wrap-fecha-real-pago').hidden=true;
   $('f-metodo-pago').value='';$('wrap-metodo-pago').hidden=true;$('f-metodo-pago').classList.remove('campo-tentativo');$('btn-quitar-metodo-tentativo').hidden=true;
   $('f-fecha-diferida').value='';$('wrap-fecha-diferida').hidden=true;
+  $('f-pospuesto').checked=false;$('wrap-pospuesto').hidden=true;
   if(stickyFechaPago===null) resetStickyCarga();  // primera carga de la página: todavía no hay nada "pegajoso"
   $('f-fechapago').value=stickyFechaPago;$('wrap-fechapago').hidden=false;
   $('f-mescorr').value=stickyMesCorr;
@@ -2219,12 +2286,14 @@ async function abrirEdicion(id){
   $('f-cotizacion').value = r.cotizacion?money(r.cotizacion):'';
   $('f-dividido').disabled = r.moneda==='USD';
   $('f-dividido').checked = !!r.dividido;
+  $('f-pospuesto').checked = !!r.pospuesto && !r.pago;
+  actualizarWrapPospuesto();
   $('f-marcar-fijo').checked = !!r.fijo;
   cuotasForm = (r.dividido&&Array.isArray(r.cuotas)) ? r.cuotas.map(c=>({importe:+c.importe||0,mesPago:c.mesPago||'',fecha:c.fecha||'',pago:!!c.pago,metodoPago:c.metodoPago||''})) : [];
   $('wrap-fechapago').hidden = !!r.dividido;
   renderCuotasForm();
   $('f-detalle').value=r.detalle||'';
-  if(r.rubro&&!RUBROS[modo].includes(r.rubro)&&!propios[modo].includes(r.rubro)){ propios[modo].push(r.rubro); fillRubros(); }
+  if(r.rubro&&!rubrosLista(modo).includes(r.rubro)){ sumarALista(modo,r.rubro); fillRubros(); }
   $('f-rubro').value=r.rubro||'';
   $('f-fact').value=r.fact||'Facturado';
   previewNeto();
@@ -2298,6 +2367,8 @@ $('btn-add').addEventListener('click',async()=>{
     pago:$('f-pago').checked,comp:modo==='ingreso'?true:$('f-comp').checked,
     dividido:esDiv,detalle:$('f-detalle').value.trim().toUpperCase(),
     fijo: modo==='gasto' ? $('f-marcar-fijo').checked : false};
+  // Pospuesto: solo al editar, y solo mientras siga impago.
+  datos.pospuesto = !!(editId && modo==='gasto' && !datos.pago && $('f-pospuesto').checked);
   if(modo==='gasto') datos.fechaVenc = esDiv?'':$('f-fechapago').value;
   if(!esDiv && datos.pago){
     datos.fechaPago = $('f-fecha-real-pago').value;
@@ -2350,9 +2421,9 @@ $('btn-add').addEventListener('click',async()=>{
 // Si un gasto se marca como fijo, además de registrarse queda disponible como plantilla
 // reutilizable en Fijos mensuales (si no estaba ya en la lista).
 function agregarAFijosSiCorresponde(item,rubro){
-  const dup = GASTOS_FIJOS.some(f=>f[0]===item) || fijosExtra.some(f=>f.item===item);
+  const dup = !item || fijosExtra.some(f=>f.item===item);
   if(!dup){
-    fijosExtra.push({item,rubro});
+    fijosExtra.push({id:uid(),item,rubro});
     registrarHistorial('Sumó a la lista de fijos',null,item+' ('+rubro+')');
   }
 }
@@ -2484,7 +2555,7 @@ function filteredSemana(offsetSemanas){
   const pd=$('qs-pago-desde').value, ph=$('qs-pago-hasta').value;
   const cd=$('qs-corr-desde').value, ch=$('qs-corr-hasta').value;
   const lista=rows.filter(r=>{
-    if(r.tipo!=='gasto'||r.pago) return false;
+    if(r.tipo!=='gasto'||r.pago||r.pospuesto) return false;
     if(r.dividido && Array.isArray(r.cuotas)){
       const hayCuotaEnSemana = r.cuotas.some(c=>!c.pago && c.fecha && c.fecha>=desde && c.fecha<=hasta);
       if(!hayCuotaEnSemana) return false;
@@ -2512,7 +2583,7 @@ function filteredVencidos(){
   const pd=$('qs-pago-desde').value, ph=$('qs-pago-hasta').value;
   const cd=$('qs-corr-desde').value, ch=$('qs-corr-hasta').value;
   const lista=rows.filter(r=>{
-    if(r.tipo!=='gasto'||r.pago) return false;
+    if(r.tipo!=='gasto'||r.pago||r.pospuesto) return false;
     if(r.dividido && Array.isArray(r.cuotas)){
       const hayCuotaVencida = r.cuotas.some(c=>!c.pago && c.fecha && c.fecha<desde);
       if(!hayCuotaVencida) return false;
@@ -2543,10 +2614,23 @@ function filteredPeriodo(){
 // Filtro de la TABLA: período + los filtros propios de Movimientos Registrados
 // Búsqueda por palabras: cada palabra escrita tiene que aparecer en algún lugar del texto
 // (ítem, rubro o detalle), sin importar el orden. Así "sac provision" encuentra "Provisión SAC".
+// Búsqueda por palabras: cada palabra escrita tiene que aparecer en algún lugar del texto del
+// movimiento. Se busca en el nombre del ítem, el rubro, el detalle/comentarios (también el de
+// cada movimiento del desglose de tarjeta), el método de pago y el tipo de factura, sin
+// distinguir mayúsculas ni tildes ("comision" encuentra "COMISIÓN").
+const sinTildes=t=>(t||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+function textoBusqueda(r){
+  const partes=[r.item,r.rubro,r.detalle,r.metodoPago];
+  if(Array.isArray(r.desglose)) r.desglose.forEach(d=>partes.push(d.detalle,d.tarjeta));
+  if(Array.isArray(r.cuotas)) r.cuotas.forEach(c=>partes.push(c.metodoPago));
+  if(r.tipo==='gasto'&&r.tipoFac==='Sin emitir') partes.push('sin emitir factura pendiente');
+  if(r.pospuesto&&!r.pago) partes.push('pospuesto');
+  return sinTildes(partes.filter(Boolean).join(' '));
+}
 function coincideTexto(r,tx){
   if(!tx) return true;
-  const hay=((r.item||'')+' '+(r.rubro||'')+' '+(r.detalle||'')).toLowerCase();
-  const palabras=tx.toLowerCase().split(/\s+/).filter(Boolean);
+  const hay=textoBusqueda(r);
+  const palabras=sinTildes(tx).split(/\s+/).filter(Boolean);
   return palabras.every(p=>hay.includes(p));
 }
 // ¿el método de pago elegido en el filtro coincide con el de esta fila? Un gasto dividido no
@@ -2572,7 +2656,8 @@ function filteredTabla(){
     if(r.fijo && !(r.bruto!==0 || r.pago || r.mesPago || r.mesCorr)) return false;
     if(tp&&r.tipo!==tp) return false;
     if(ru&&r.rubro!==ru) return false;
-    if(es&&(es==='pag'?!r.pago:r.pago)) return false;
+    if(es==='posp'){ if(r.tipo!=='gasto'||r.pago||!r.pospuesto) return false; }
+    else if(es&&(es==='pag'?!r.pago:r.pago)) return false;
     if(cp&&(cp==='no'?r.comp!==false:r.comp===false)) return false;
     if(fj){ const esFijo=(r.tipo==='gasto'&&r.fijo); if(fj==='fijo'&&!esFijo) return false; if(fj==='variable'&&esFijo) return false; }
     if(fc&&r.tipoFac!==fc) return false;
@@ -2607,11 +2692,7 @@ function sugerenciaFijo(item){
   const ult=candidatos[0];
   return {venc: ult.fechaVenc||'', metodo: ult.metodoPago||''};
 }
-function fijosTodos(){
-  const todos=[...GASTOS_FIJOS.map(f=>({item:f[0],rubro:f[1],base:true})), ...fijosExtra.map(f=>({item:f.item,rubro:f.rubro,base:false}))];
-  return todos.sort((a,b)=>a.item.localeCompare(b.item,'es'));
-}
-function ordenFijo(item){ const list=[...GASTOS_FIJOS.map(f=>f[0]),...fijosExtra.map(f=>f.item)]; const i=list.indexOf(item); return i<0?999:i; }
+function fijosTodos(){ return fijosExtra.slice().sort((a,b)=>(a.item||'').localeCompare(b.item||'','es')); }
 function syncSelect(id,field,plain,soloTipo){
   const sel=$(id),cur=sel.value;
   const base = soloTipo ? rows.filter(r=>r.tipo===soloTipo) : rows;
@@ -3042,7 +3123,7 @@ function setVistaMov(v){
   }
   if(v==='registrados') renderTabla(filteredTabla());
   if(v==='semana') renderSemana();
-  if(v==='fijos'){ renderEstadoFijos(); renderLoteFijos(); }
+  if(v==='fijos'){ renderEstadoFijos(); pintarAdminListas(); }
 }
 $('subtab-cargar').addEventListener('click',()=>setVistaMov('cargar'));
 $('subtab-registrados').addEventListener('click',()=>setVistaMov('registrados'));
@@ -3231,17 +3312,20 @@ function tablaHtml(view,sortState,tablaId){
       const parcial=div&&r.pagoParcial;const abierta=expandidas.has(r.id);
       // Pago dividido: en vez de un único casillero, se listan todas las fechas (pagadas o
       // pendientes) apiladas dentro de la misma celda, para ver el estado de un vistazo.
+      const pospuesto = !esIng && !r.pago && !!r.pospuesto;
+      const claseImpago = pospuesto ? ' gasto-pospuesto' : ((!esIng && !r.pago) ? (' gasto-impago'+(vencePronto(r) ? ' vence-pronto' : '')) : '');
+      const tagPosp = pospuesto ? '<span class="tag pp" title="Impago pero pospuesto: no se abona en el corto plazo">pospuesto</span>' : '';
       const cpCell = div
         ? `<td class="cp cp-multi"><button class="cuotas-arrow ${parcial?'parcial':(r.pago?'ok':'')}" data-exp="${r.id}" title="Ver desglose de importes por cuota">${abierta?'▾':'▸'}</button><div class="cp-stack">${
             r.cuotas.map(c=>c.pago
               ? `<span class="cp-stack-line ok">${esc(fmtFechaCorta(c.fecha)||(c.mesPago?mesLabel(c.mesPago):'—'))}</span>`
               : `<span class="cp-stack-line pend">pendiente</span>`
             ).join('')
-          }</div></td>`
-        : `<td class="cp"><button type="button" class="cp-badge ${r.pago?'pagado':'pendiente'}" data-tog="${r.id}" title="${r.pago?('Pagado el '+fmtFechaCorta(r.fechaPago)+(r.metodoPago?' · '+esc(r.metodoPago):'')+(r.fechaDiferida?' · diferido al '+fmtFechaCorta(r.fechaDiferida):'')+' — clic para desmarcar'):(esIng?'Marcar como cobrado':'Marcar como pagado')}">${r.pago?fmtFechaCorta(r.fechaPago):(esIng?'Cobrar':'Pagar')}</button></td>`;
+          }</div>${tagPosp}</td>`
+        : `<td class="cp"><button type="button" class="cp-badge ${r.pago?'pagado':'pendiente'}" data-tog="${r.id}" title="${r.pago?('Pagado el '+fmtFechaCorta(r.fechaPago)+(r.metodoPago?' · '+esc(r.metodoPago):'')+(r.fechaDiferida?' · diferido al '+fmtFechaCorta(r.fechaDiferida):'')+' — clic para desmarcar'):(esIng?'Marcar como cobrado':'Marcar como pagado')}">${r.pago?fmtFechaCorta(r.fechaPago):(esIng?'Cobrar':'Pagar')}</button>${tagPosp}</td>`;
       const btnEdit = `<button class="rowbtn plain" data-edit="${r.id}" title="Modificar">✎</button>`;
       const btnDel = `<button class="rowbtn plain" data-del="${r.id}" title="Eliminar">✕</button>`;
-      const tdFactura = mostrarFC ? `<td>${esIng?'<span class="tag">—</span>':`<span class="tag ${r.tipoFac==='A'||r.tipoFac==='A | 27%'?'A':''}">${esc(r.tipoFac||'No posee')}</span>${(r.tipoFac==='A'||r.tipoFac==='A | 27%')?`<span class="ivanota">IVA ${money(r.iva)}</span>`:''}`}</td>` : '';
+      const tdFactura = mostrarFC ? `<td>${esIng?'<span class="tag">—</span>':`<span class="tag ${r.tipoFac==='A'||r.tipoFac==='A | 27%'?'A':(r.tipoFac==='Sin emitir'?'SE':'')}">${esc(r.tipoFac||'No posee')}</span>${(r.tipoFac==='A'||r.tipoFac==='A | 27%')?`<span class="ivanota">IVA ${money(r.iva)}</span>`:''}`}</td>` : '';
       const tdFacturado = mostrarFacturado ? `<td>${esIng?`<span class="tag ${r.fact==='No Facturado'?'nf':(r.fact==='Facturado'?'fa':'')}">${r.fact==='No Facturado'?'No':(r.fact==='Facturado'?'Sí':'—')}</span>`:'<span class="tag EG">—</span>'}</td>` : '';
       // Método de pago: si es un pago dividido, se listan los métodos de las cuotas ya pagas,
       // apilados igual que las fechas de Estado.
@@ -3250,7 +3334,7 @@ function tablaHtml(view,sortState,tablaId){
           : div ? (r.cuotas.some(c=>c.pago) ? `<div class="cp-stack">${r.cuotas.filter(c=>c.pago).map(c=>`<span class="cp-stack-line">${esc(c.metodoPago||'—')}</span>`).join('')}</div>` : '<span class="tag EG">—</span>')
           : (r.metodoPago ? esc(r.metodoPago) : ((!r.pago && r.metodoTentativo) ? `<span class="tentativo" title="Método orientativo, según el último registro de este ítem. Todavía no está confirmado.">${esc(r.metodoTentativo)}</span>` : '<span class="tag EG">—</span>'))
         }</td>` : '';
-      const claseImpago = (!esIng && !r.pago) ? (' gasto-impago'+(vencePronto(r) ? ' vence-pronto' : '')) : '';
+      
       const clasePago = (!esIng && r.pago) ? ' gasto-pago' : '';
       // Ítems de tarjeta de crédito: al tocar el nombre se abre un desglose para clasificar los
       // movimientos del resumen sin duplicar el total (ese total sigue siendo el de esta fila).
@@ -3330,26 +3414,6 @@ function renderSemana(){
 // Lista de plantillas de gastos fijos: siempre en blanco, reutilizable cada mes. Muestra si ya
 // se cargó (con datos reales) el mes en curso, y da acceso rápido para cargarlo o editarlo.
 // Checklist para "Registrar en bloque el mes que entra": todos los ítems, tildados por defecto.
-function renderLoteFijos(){
-  if(!$('lote-mes').value) $('lote-mes').value=mesSiguiente();
-  const plantillas=fijosTodos();
-  if(!plantillas.length){ $('fijos-lote-lista').innerHTML='<div class="empty">Todavía no hay gastos fijos en la lista.</div>'; return; }
-  const mes=$('lote-mes').value;
-  const yaExiste=new Set(rows.filter(r=>r.tipo==='gasto'&&r.fijo&&r.mesPago===mes).map(r=>r.item));
-  $('fijos-lote-lista').innerHTML=plantillas.map(f=>{
-    const cargado=yaExiste.has(f.item);
-    return `<label class="fijo-lote-row">
-      <input type="checkbox" class="lote-check" value="${esc(f.item)}" data-rubro="${esc(f.rubro)}" checked>
-      <span class="fijo-estado-item">${esc(f.item)}</span><span class="fijo-estado-rubro">${esc(f.rubro)}</span>
-      ${cargado?'<span class="fijo-lote-yacargado" title="Ya hay un gasto fijo cargado con este ítem para el mes elegido">ya cargado</span>':''}
-    </label>`;
-  }).join('');
-}
-// El listado (con el aviso "ya cargado") depende del mes elegido, así que se vuelve a armar
-// apenas se cambia.
-$('lote-mes').addEventListener('change',renderLoteFijos);
-$('btn-lote-todos').addEventListener('click',()=>{ document.querySelectorAll('#fijos-lote-lista .lote-check').forEach(cb=>cb.checked=true); });
-$('btn-lote-ninguno').addEventListener('click',()=>{ document.querySelectorAll('#fijos-lote-lista .lote-check').forEach(cb=>cb.checked=false); });
 // Pregunta, ítem por ítem, qué hacer con un gasto fijo tildado que ya está registrado ese mes:
 // cargarlo igual (queda duplicado) o sacarlo de la tanda. "Cancelar todo" aborta el registro en
 // bloque completo, sin guardar nada de lo ya decidido en ítems anteriores de la misma tanda.
@@ -3372,92 +3436,199 @@ function preguntarDuplicadoFijo(item,mesTexto){
     $('dup-fijo-cancelar').addEventListener('click',onCancelar);
   });
 }
-$('btn-lote-registrar').addEventListener('click',async()=>{
-  const mes=$('lote-mes').value;
-  if(!mes){ toast('Elegí el mes a registrar.'); $('lote-mes').focus(); return; }
-  const seleccionados=[...document.querySelectorAll('#fijos-lote-lista .lote-check:checked')].map(cb=>({item:cb.value,rubro:cb.dataset.rubro}));
-  if(!seleccionados.length){ toast('No hay ítems tildados.'); return; }
-  const yaExiste=new Set(rows.filter(r=>r.tipo==='gasto'&&r.fijo&&r.mesPago===mes).map(r=>r.item));
-  const aCargar=[];
-  for(const s of seleccionados){
-    if(!yaExiste.has(s.item)){ aCargar.push(s); continue; }
-    const decision = await preguntarDuplicadoFijo(s.item,mesLabel(mes));
-    if(decision==='cancelar'){ toast('Se canceló el registro en bloque.'); return; }
-    if(decision==='duplicar') aCargar.push(s);
-    // 'sacar': no se agrega, sigue con el próximo ítem tildado.
-  }
-  if(!aCargar.length){ toast('No quedó ningún ítem para registrar.'); return; }
-  if(!(await asegurarUsuario())) return;
-  const nuevos=aCargar.map(f=>{
-    // Misma sugerencia orientativa que en "Cargar en el libro" (ver sugerenciaFijo): acá no hay
-    // fecha escrita a mano para todos, así que la sugerencia siempre puede aplicarse.
-    const sug=sugerenciaFijo(f.item);
-    return {
-      id:uid(),tipo:'gasto',mesPago:mes,mesCorr:mes,rubro:f.rubro,item:f.item,bruto:0,
-      moneda:'ARS',cotizacion:0,tipoFac:'No posee',iva:0,fact:'',pago:false,comp:true,detalle:'',fijo:true,
-      fechaVenc: (sug&&sug.venc) || '',
-      vencTentativo: !!(sug&&sug.venc),
-      metodoTentativo: (sug&&sug.metodo) || '',
-      loteMes:mes
-    };
-  });
-  guardarParaDeshacer('registrar en bloque '+nuevos.length+' fijos para '+mesLabel(mes));
-  rows.push(...nuevos);
-  registrarHistorial('Registró en bloque gastos fijos',null,nuevos.length+' gastos fijos para '+mesLabel(mes));
-  save();
-  render(); renderLoteFijos();
-  toast(nuevos.length+' gastos fijos registrados para '+mesLabel(mes)+' — ya están en Registrados, esperando el importe de cada factura.');
-});
 
+/* ---------- Fijos mensuales: listado, "Agregar nuevo" y "Cargar mes" ---------- */
+// La lista de gastos fijos (fijosExtra, ver fijosTodos) se guarda completa y es 100% editable:
+// la primera vez se siembra con los de GASTOS_FIJOS (ver normalizarFijosLista).
+const sumarMes=(m,n)=>{ const [y,mm]=m.split('-').map(Number); const d=new Date(y,mm-1+n,1); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); };
+const diasDelMes=m=>{ const [y,mm]=m.split('-').map(Number); return new Date(y,mm,0).getDate(); };
+function ultimoRegistroFijo(f){
+  if(!f.item) return null;
+  const regs=rows.filter(r=>r.tipo==='gasto'&&r.fijo&&r.item===f.item);
+  if(!regs.length) return null;
+  const clave=r=>(r.mesCorr||r.mesPago||r.loteMes||'');
+  return regs.slice().sort((a,b)=>clave(b).localeCompare(clave(a)))[0];
+}
 function renderEstadoFijos(){
-  const mes=mesActual();
-  const plantillas=fijosTodos();
-  if(!plantillas.length){ $('fijos-estado-lista').innerHTML='<div class="empty">Todavía no hay gastos fijos en la lista. Sumá alguno arriba.</div>'; return; }
-  $('fijos-estado-lista').innerHTML=plantillas.map(f=>{
-    // Solo los ítems que el usuario sumó (no los de la lista base GASTOS_FIJOS, fijos en el
-    // código) se pueden editar o quitar de acá.
-    if(!f.base && fijoExtraEditando===f.item){
-      const todosRubros=[...RUBROS.gasto, ...propios.gasto].sort((a,b)=>a.localeCompare(b,'es'));
-      return `<div class="fijo-estado-row">
-        <div class="fijo-estado-edit-form">
-          <input type="text" id="fx-edit-item" value="${esc(f.item)}">
-          <select id="fx-edit-rubro">${todosRubros.map(r=>`<option${r===f.rubro?' selected':''}>${esc(r)}</option>`).join('')}</select>
-          <button type="button" id="btn-fx-edit-guardar" data-fijoextra-item-original="${esc(f.item)}">Guardar</button>
-          <button type="button" class="ghost" id="btn-fx-edit-cancelar">Cancelar</button>
-        </div>
-      </div>`;
-    }
-    const fila=rows.find(r=>r.tipo==='gasto'&&r.fijo&&r.item===f.item&&r.loteMes===mes);
-    const enRegistrados = fila && (fila.bruto!==0 || fila.pago);
-    const acc = fila
-      ? `<span class="fijo-estado-info ${enRegistrados?'cargado':''}">${enRegistrados?('En Registrados — '+money(fila.bruto)+' · '+(fila.pago?'pago':'pendiente')):'Cargado, todavía sin importe'}</span>
-         <button type="button" class="rowbtn plain" data-edit="${fila.id}" title="Modificar">✎</button>`
-      : `<span class="fijo-estado-info">Sin cargar este mes</span>
-         <button type="button" class="ghost" data-fijo-cargar="${esc(f.item)}" data-fijo-rubro="${esc(f.rubro)}">Cargar este mes</button>`;
-    const controlesLista = f.base ? '' : `
-         <button type="button" class="rowbtn plain" data-fijoextra-editar="${esc(f.item)}" title="Editar ítem o rubro">✎</button>
-         <button type="button" class="rowbtn plain" data-fijoextra-borrar="${esc(f.item)}" title="Quitar de la lista de gastos fijos">×</button>`;
+  const cont=$('fijos-estado-lista'); if(!cont) return;
+  const tx=($('fijos-buscar')||{}).value||'';
+  const todos=fijosTodos();
+  $('fijos-n').textContent=todos.length;
+  const lista=todos.filter(f=>coincideTexto({item:f.item,rubro:f.rubro,detalle:f.detalle,metodoPago:f.metodo},tx));
+  if(!lista.length){ cont.innerHTML='<div class="empty">'+(todos.length?'Ningún gasto fijo coincide con la búsqueda.':'Todavía no hay gastos fijos en la lista. Tocá "Agregar nuevo".')+'</div>'; return; }
+  cont.innerHTML=lista.map(f=>{
+    const ult=ultimoRegistroFijo(f);
+    const info = ult
+      ? `<span class="fijo-estado-info ${ult.pago?'cargado':''}">Último: ${ult.mesCorr?'corresp. '+mesLabel(ult.mesCorr):(ult.mesPago?'pago '+mesLabel(ult.mesPago):'sin mes')}${ult.bruto?' · '+money(ult.bruto):''} · ${ult.pago?'pago':'pendiente'}</span>`
+      : '<span class="fijo-estado-info">Nunca cargado</span>';
+    const extras=[f.bruto?('ref. '+money(f.bruto)):'', f.diaVenc?('vence día '+f.diaVenc):'', f.metodo||''].filter(Boolean).join(' · ');
     return `<div class="fijo-estado-row">
-      <div class="fijo-estado-nombre"><span class="fijo-estado-item">${esc(f.item)}</span><span class="fijo-estado-rubro">${esc(f.rubro)}</span>${controlesLista}</div>
-      <div class="fijo-estado-acc">${acc}</div>
+      <div class="fijo-estado-nombre"><span class="fijo-estado-item">${esc(f.item||'(sin ítem)')}</span><span class="fijo-estado-rubro">${esc(f.rubro||'sin rubro')}</span>${extras?`<span class="fijo-estado-sub">${esc(extras)}</span>`:''}</div>
+      <div class="fijo-estado-acc">${info}
+        <button type="button" class="rowbtn plain" data-fijo-edit="${f.id}" title="Editar este gasto fijo">✎</button>
+        <button type="button" class="rowbtn plain" data-fijo-del="${f.id}" title="Eliminar de la lista de gastos fijos">×</button>
+      </div>
     </div>`;
   }).join('');
 }
-// Cargar un único gasto fijo puntual para el mes en curso, y abrirlo para completar sus datos.
-document.addEventListener('click',async e=>{
-  const item=e.target.dataset&&e.target.dataset.fijoCargar;
-  if(item===undefined) return;
-  const rubro=e.target.dataset.fijoRubro||'';
+$('fijos-buscar').addEventListener('input',renderEstadoFijos);
+
+// --- Ventana "Agregar nuevo" / "Editar" ---
+let fijoEditandoId=null;
+function abrirModalFijo(id){
+  fijoEditandoId=id||null;
+  const f=id?fijosExtra.find(x=>x.id===id):null;
+  if(id&&!f) return;
+  pintarFxRubros();
+  if(f&&f.rubro&&!rubrosLista('gasto').includes(f.rubro)) $('fx-rubro').insertAdjacentHTML('beforeend',`<option>${esc(f.rubro)}</option>`);
+  $('fe-metodo').innerHTML='<option value="">— Sin definir —</option>'+metodosLista().map(m=>`<option>${esc(m)}</option>`).join('');
+  $('fe-titulo').textContent=f?'Editar gasto fijo':'Agregar gasto fijo';
+  $('fe-item').value=f?f.item||'':'';
+  $('fx-rubro').value=f?f.rubro||'':'';
+  $('fe-bruto').value=f&&f.bruto?money(f.bruto):'';
+  $('fe-moneda').value=f&&f.moneda||'ARS';
+  $('fe-cotiz').value=f&&f.cotizacion?money(f.cotizacion):'';
+  $('fe-tipo').value=f&&f.tipoFac||'No posee';
+  $('fe-iva').value=f&&f.iva?money(f.iva):'';
+  $('fe-diavenc').value=f&&f.diaVenc||'';
+  $('fe-metodo').value=f&&f.metodo||'';
+  $('fe-comp').checked=!f||f.comp!==false;
+  $('fe-detalle').value=f&&f.detalle||'';
+  actualizarCamposModalFijo();
+  $('fijo-edit-overlay').hidden=false;
+  $('fe-item').focus();
+}
+function actualizarCamposModalFijo(){
+  $('fe-wrap-cotiz').hidden=$('fe-moneda').value!=='USD';
+  const conIva=$('fe-tipo').value==='A'||$('fe-tipo').value==='A | 27%';
+  $('fe-wrap-iva').hidden=!conIva;
+}
+$('fe-moneda').addEventListener('change',actualizarCamposModalFijo);
+$('fe-tipo').addEventListener('change',actualizarCamposModalFijo);
+$('btn-fijo-nuevo').addEventListener('click',()=>abrirModalFijo(null));
+$('fe-cancelar').addEventListener('click',()=>{ $('fijo-edit-overlay').hidden=true; });
+$('fe-guardar').addEventListener('click',async()=>{
+  const item=$('fe-item').value.trim().toUpperCase();
+  const rubro=$('fx-rubro').value==='__nuevo'?'':$('fx-rubro').value;
+  const dia=parseInt($('fe-diavenc').value,10);
+  const datos={
+    item, rubro,
+    bruto:valorSimple('fe-bruto')||0,
+    moneda:$('fe-moneda').value,
+    cotizacion:$('fe-moneda').value==='USD'?valorSimple('fe-cotiz'):0,
+    tipoFac:$('fe-tipo').value,
+    iva:(!$('fe-wrap-iva').hidden)?valorSimple('fe-iva'):0,
+    comp:$('fe-comp').checked,
+    detalle:$('fe-detalle').value.trim().toUpperCase(),
+    diaVenc:(dia>=1&&dia<=31)?dia:'',
+    metodo:$('fe-metodo').value
+  };
+  if(item && fijosExtra.some(x=>x.item===item && x.id!==fijoEditandoId) && !confirm('Ya hay un gasto fijo "'+item+'" en la lista. ¿Guardarlo igual?')) return;
   if(!(await asegurarUsuario())) return;
-  const mes=mesActual();
-  const nuevo={id:uid(),tipo:'gasto',mesPago:'',mesCorr:'',rubro,item,bruto:0,
-    moneda:'ARS',cotizacion:0,tipoFac:'No posee',iva:0,fact:'',pago:false,comp:true,detalle:'',fijo:true,fechaVenc:'',loteMes:mes};
-  guardarParaDeshacer('cargar gasto fijo "'+item+'"');
-  rows.push(nuevo);
-  registrarHistorial('Cargó gasto fijo',nuevo);
+  if(fijoEditandoId){
+    const f=fijosExtra.find(x=>x.id===fijoEditandoId); if(!f) return;
+    guardarParaDeshacer('editar el gasto fijo "'+(f.item||'sin ítem')+'"');
+    Object.assign(f,datos);
+    registrarHistorial('Editó en la lista de fijos',null,(datos.item||'sin ítem')+(datos.rubro?' ('+datos.rubro+')':''));
+  } else {
+    guardarParaDeshacer('sumar "'+(item||'gasto fijo sin ítem')+'" a la lista de fijos');
+    fijosExtra.push({id:uid(),...datos});
+    registrarHistorial('Sumó a la lista de fijos',null,(datos.item||'sin ítem')+(datos.rubro?' ('+datos.rubro+')':''));
+  }
   save();
-  abrirEdicion(nuevo.id);
+  $('fijo-edit-overlay').hidden=true;
+  renderEstadoFijos();
+  toast(fijoEditandoId?'Gasto fijo actualizado':'Gasto fijo agregado a la lista');
 });
+document.addEventListener('click',async e=>{
+  const d=e.target.dataset||{};
+  if(d.fijoEdit){ abrirModalFijo(d.fijoEdit); return; }
+  if(d.fijoDel){
+    const f=fijosExtra.find(x=>x.id===d.fijoDel); if(!f) return;
+    if(!confirm('¿Eliminar "'+(f.item||'este gasto fijo')+'" de la lista de gastos fijos?\n\nLos movimientos que ya registraste no se modifican.')) return;
+    if(!(await asegurarUsuario())) return;
+    guardarParaDeshacer('quitar "'+(f.item||'gasto fijo')+'" de la lista de fijos');
+    fijosExtra=fijosExtra.filter(x=>x.id!==f.id);
+    registrarHistorial('Quitó de la lista de fijos',null,f.item||'sin ítem');
+    save(); renderEstadoFijos(); toast('Gasto fijo eliminado de la lista');
+  }
+});
+
+// --- Ventana "Cargar mes" ---
+// Mes al que corresponde sugerido: si ese gasto ya se registró el mes de pago anterior, el mes
+// siguiente al que tenía ("corresponde a"); si no se registró, queda en blanco.
+function mesCorrSugerido(f,mesPago){
+  if(!f.item||!mesPago) return '';
+  const previo=sumarMes(mesPago,-1);
+  const reg=rows.filter(r=>r.tipo==='gasto'&&r.fijo&&r.item===f.item&&r.mesPago===previo&&r.mesCorr)
+    .sort((a,b)=>b.mesCorr.localeCompare(a.mesCorr))[0];
+  return reg ? sumarMes(reg.mesCorr,1) : '';
+}
+function renderCargarMes(){
+  const mes=$('fm-mes-pago').value;
+  const previo={}; document.querySelectorAll('#fm-lista .fm-check').forEach(cb=>{ previo[cb.value]=cb.checked; });
+  const yaExiste=new Set(rows.filter(r=>r.tipo==='gasto'&&r.fijo&&r.mesPago===mes).map(r=>r.item));
+  const lista=fijosTodos();
+  if(!lista.length){ $('fm-lista').innerHTML='<div class="empty">Todavía no hay gastos fijos en la lista.</div>'; return; }
+  $('fm-lista').innerHTML=lista.map(f=>{
+    const marcado = previo[f.id]!==undefined ? previo[f.id] : true;
+    return `<div class="fm-row">
+      <input type="checkbox" class="fm-check" id="fm-c-${f.id}" value="${f.id}"${marcado?' checked':''}>
+      <label class="fm-nombre" for="fm-c-${f.id}"><span class="fijo-estado-item">${esc(f.item||'(sin ítem)')}</span><span class="fijo-estado-rubro">${esc(f.rubro||'sin rubro')}</span></label>
+      ${f.item&&yaExiste.has(f.item)?'<span class="fijo-lote-yacargado" title="Ya hay un gasto fijo cargado con este ítem para el mes de pago elegido">ya cargado</span>':''}
+      <input type="month" class="fm-corr" data-fm-corr="${f.id}" value="${mesCorrSugerido(f,mes)}" title="Mes al que corresponde">
+    </div>`;
+  }).join('');
+}
+$('btn-fijo-cargar-mes').addEventListener('click',()=>{
+  $('fm-mes-pago').value=mesSiguiente();
+  $('fm-lista').innerHTML='';
+  renderCargarMes();
+  $('fijo-mes-overlay').hidden=false;
+});
+$('fm-mes-pago').addEventListener('change',renderCargarMes);
+$('fm-todos').addEventListener('click',()=>{ document.querySelectorAll('#fm-lista .fm-check').forEach(cb=>cb.checked=true); });
+$('fm-ninguno').addEventListener('click',()=>{ document.querySelectorAll('#fm-lista .fm-check').forEach(cb=>cb.checked=false); });
+$('fm-cancelar').addEventListener('click',()=>{ $('fijo-mes-overlay').hidden=true; });
+$('fm-registrar').addEventListener('click',async()=>{
+  const mes=$('fm-mes-pago').value;
+  if(!mes){ toast('Elegí el mes de pago.'); $('fm-mes-pago').focus(); return; }
+  const seleccionados=[...document.querySelectorAll('#fm-lista .fm-check:checked')]
+    .map(cb=>({f:fijosExtra.find(x=>x.id===cb.value), corr:(document.querySelector('[data-fm-corr="'+cb.value+'"]')||{}).value||''}))
+    .filter(x=>x.f);
+  if(!seleccionados.length){ toast('No hay gastos tildados.'); return; }
+  const yaExiste=new Set(rows.filter(r=>r.tipo==='gasto'&&r.fijo&&r.mesPago===mes).map(r=>r.item));
+  const aCargar=[];
+  for(const s of seleccionados){
+    if(!s.f.item||!yaExiste.has(s.f.item)){ aCargar.push(s); continue; }
+    const decision=await preguntarDuplicadoFijo(s.f.item,mesLabel(mes));
+    if(decision==='cancelar'){ toast('Se canceló la carga del mes.'); return; }
+    if(decision==='duplicar') aCargar.push(s);
+  }
+  if(!aCargar.length){ toast('No quedó ningún gasto para registrar.'); return; }
+  if(!(await asegurarUsuario())) return;
+  const nuevos=aCargar.map(({f,corr})=>{
+    const sug=f.item?sugerenciaFijo(f.item):null;
+    const venc = f.diaVenc ? (mes+'-'+String(Math.min(+f.diaVenc,diasDelMes(mes))).padStart(2,'0')) : ((sug&&sug.venc)||'');
+    return {
+      id:uid(),tipo:'gasto',mesPago:mes,mesCorr:corr,rubro:f.rubro||'',item:f.item||'',bruto:f.bruto||0,
+      moneda:f.moneda||'ARS',cotizacion:f.cotizacion||0,tipoFac:f.tipoFac||'No posee',iva:f.iva||0,fact:'',pago:false,
+      comp:f.comp!==false,detalle:f.detalle||'',fijo:true,
+      fechaVenc:venc,
+      vencTentativo:!f.diaVenc && !!(sug&&sug.venc),
+      metodoTentativo:f.metodo || (sug&&sug.metodo) || '',
+      loteMes:mes
+    };
+  });
+  guardarParaDeshacer('cargar mes de '+nuevos.length+' gastos fijos ('+mesLabel(mes)+')');
+  rows.push(...nuevos);
+  registrarHistorial('Cargó el mes de gastos fijos',null,nuevos.length+' gastos fijos, mes de pago '+mesLabel(mes));
+  save();
+  $('fijo-mes-overlay').hidden=true;
+  render();
+  toast(nuevos.length+' gastos fijos cargados para '+mesLabel(mes)+' — ya están en Registrados.');
+});
+
 // Gastos fijos duplicados: mismo mes al que corresponden + mismo ítem. Se conserva el que
 // tenga más datos cargados (pago, o con importe) y se ofrece borrar el resto.
 function encontrarFijosDuplicados(){
@@ -3523,8 +3694,8 @@ function filaDesgloseTarjeta(r,totalCols){
   const filas=items.map(d=>`
     <div class="desg-row">
       <span class="desg-fecha">${fmtFecha(d.fechaPago)}</span>
-      <span>${d.tipoFac&&d.tipoFac!=='No posee'?`<span class="tag ${d.tipoFac==='A'||d.tipoFac==='A | 27%'?'A':''}">${esc(d.tipoFac)}</span>${d.iva>0?`<span class="ivanota">IVA ${money(d.iva)}</span>`:''}`:'<span class="tag EG">—</span>'}</span>
-      <span class="desg-n" style="text-transform:none;font-weight:400;color:var(--ink)">${esc(d.detalle||'')}</span>
+      <span>${d.tipoFac&&d.tipoFac!=='No posee'?`<span class="tag ${d.tipoFac==='A'||d.tipoFac==='A | 27%'?'A':(d.tipoFac==='Sin emitir'?'SE':'')}">${esc(d.tipoFac)}</span>${d.iva>0?`<span class="ivanota">IVA ${money(d.iva)}</span>`:''}`:'<span class="tag EG">—</span>'}</span>
+      <span class="desg-n" style="text-transform:none;font-weight:400;color:var(--ink)">${esc(d.detalle||'')}${d.tarjeta?`<span class="desg-tarjeta">${esc(d.tarjeta)}</span>`:''}</span>
       <span class="desg-imp">${money(d.bruto)}</span>
       <button type="button" class="cuota-del" data-desg-del="${r.id}|${d.id}" title="Eliminar este movimiento del desglose">✕</button>
     </div>`).join('');
@@ -3539,10 +3710,14 @@ function filaDesgloseTarjeta(r,totalCols){
           <select id="dz-tipo-${r.id}" data-dz-tipo="${r.id}">
             <option value="A">A</option><option value="A | 27%">A | 27%</option>
             <option value="B">B</option><option value="C">C</option><option value="No posee" selected>No posee</option>
+            <option value="Sin emitir">Sin emitir</option>
           </select>
         </div>
         <div class="field" style="min-width:110px" id="dz-wrap-iva-${r.id}" hidden><label>IVA a descontar</label><input type="text" id="dz-iva-${r.id}" inputmode="decimal" placeholder="0"></div>
         <div class="field" style="min-width:100px"><label>Importe</label><input type="text" id="dz-bruto-${r.id}" inputmode="decimal" placeholder="0"></div>
+        <div class="field" style="min-width:170px"><label>Tarjeta con la que se abonó</label>
+          <select id="dz-tarjeta-${r.id}"><option value="">— Sin aclarar —</option>${tarjetasLista().map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('')}</select>
+        </div>
         <div class="field" style="flex:1 1 170px"><label>Detalle</label><input type="text" id="dz-detalle-${r.id}" placeholder="Comercio, cuota, etc."></div>
         <div class="field"><button type="button" class="ghost" data-desg-add="${r.id}">+ Agregar movimiento</button></div>
       </div>
@@ -3600,10 +3775,11 @@ document.addEventListener('click',async e=>{
     const iva=(tipoFac==='A'||tipoFac==='A | 27%')?valorSimple('dz-iva-'+r.id):0;
     const fechaPago=($('dz-fecha-'+r.id)||{}).value||hoyISO();
     const detalle=(($('dz-detalle-'+r.id)||{}).value||'').trim();
+    const tarjeta=(($('dz-tarjeta-'+r.id)||{}).value||'');
     if(!(await asegurarUsuario())) return;
     guardarParaDeshacer('agregar movimiento al desglose de "'+(r.item||'')+'"');
     if(!Array.isArray(r.desglose)) r.desglose=[];
-    r.desglose.push({id:uid(),bruto,iva,tipoFac,fechaPago,detalle});
+    r.desglose.push({id:uid(),bruto,iva,tipoFac,fechaPago,detalle,tarjeta});
     registrarHistorial('Agregó un movimiento al desglose de tarjeta',r,detalle||('$ '+money(bruto)));
     dzIvaAuto[r.id]=true;
     save();
@@ -3657,7 +3833,7 @@ document.addEventListener('click',async e=>{
       if(val==='__nuevo'){
         const nuevo=(prompt('Nombre del método de pago nuevo:')||'').trim();
         if(!nuevo){ toast('Indicá el método de pago.'); return; }
-        if(!METODOS_PAGO_BASE.includes(nuevo)&&!propios.metodos.includes(nuevo)){ guardarParaDeshacer('agregar método de pago "'+nuevo+'"'); propios.metodos.push(nuevo); registrarHistorial('Agregó el método de pago',null,nuevo); }
+        if(!metodosLista().includes(nuevo)){ guardarParaDeshacer('agregar método de pago "'+nuevo+'"'); sumarALista('metodos',nuevo); registrarHistorial('Agregó el método de pago',null,nuevo); }
         val=nuevo;
       }
       if(!val){ toast('Elegí el método de pago.'); return; }
@@ -3671,7 +3847,7 @@ document.addEventListener('click',async e=>{
     guardarParaDeshacer('marcar pago de "'+(nombreDe(r))+'"');
     r.fechaPago=fecha;
     if(!r.mesPago) r.mesPago=fecha.slice(0,7);
-    r.pago=true;
+    r.pago=true; delete r.pospuesto;
     if(r.tipo==='gasto'){ r.metodoPago=metodo; r.fechaDiferida = metodo==='E-cheq' ? fechaDiferida : ''; }
     // El pago ya quedó confirmado: lo orientativo (ver sugerenciaFijo) deja de tener sentido.
     r.vencTentativo=false; r.metodoTentativo='';
