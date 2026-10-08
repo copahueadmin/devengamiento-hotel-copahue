@@ -192,8 +192,7 @@
   .semana-heading{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);margin:18px 0 8px;font-weight:600}
   .semana-proxima-box{margin-top:26px;padding-top:18px;border-top:1px dashed var(--rule-strong);opacity:.72}
   .semana-heading.suave{font-size:11px;font-weight:500;color:var(--ink-soft)}
-  /* Atrasados: pagos vencidos de semanas anteriores, sin marcar como abonados. Más énfasis que
-     "esta semana" (no menos, como "semana próxima"), con un borde rojo para que se note. */
+  /* Lista de atrasados pospuestos (los atrasados normales van directo a "Esta semana"). */
   .semana-vencida-box{margin-top:26px;padding-top:18px;border-top:2px solid var(--neg)}
   .semana-heading.urgente{color:var(--neg)}
   /* Atrasados que se marcaron como "pospuesto": lista aparte, con borde punteado y menos énfasis. */
@@ -922,10 +921,6 @@
         <div class="semana-proxima-box">
           <h3 class="semana-heading suave" id="semana-proxima-titulo">Semana próxima</h3>
           <div id="semana-proxima-zone" class="tablacompacta"></div>
-        </div>
-        <div class="semana-vencida-box" id="semana-vencida-box" hidden>
-          <h3 class="semana-heading urgente" id="semana-vencida-titulo">Atrasados</h3>
-          <div id="semana-vencida-zone" class="tablacompacta"></div>
         </div>
         <div class="semana-vencida-box semana-posp-box" id="semana-posp-box" hidden>
           <h3 class="semana-heading" id="semana-posp-titulo">Pagos atrasados pospuestos</h3>
@@ -2476,7 +2471,7 @@ function pagadoCuotas(r){
 /* ---------- Orden por columna (Registrados, Fijos mensuales y Detalle del período) ---------- */
 let sortRegistrados={col:'item',dir:'asc'}; // orden por defecto de Registrados: alfabético por ítem
 let sortDetallePeriodo={col:'mesCorr',dir:'desc'};
-let sortSemanaActual={col:'vencimiento',dir:'asc'}, sortSemanaProxima={col:'vencimiento',dir:'asc'}, sortSemanaVencida={col:'vencimiento',dir:'asc'}, sortSemanaVencidaPosp={col:'vencimiento',dir:'asc'};
+let sortSemanaActual={col:'vencimiento',dir:'asc'}, sortSemanaProxima={col:'vencimiento',dir:'asc'}, sortSemanaVencidaPosp={col:'vencimiento',dir:'asc'};
 // valor a comparar por columna
 const COLS_ORDEN={
   tipo:      r=>r.tipo==='ingreso'?'variable':(r.fijo?'fijo':'variable'),
@@ -2514,7 +2509,7 @@ function ordenar(lista,sortState){
 // clic en un título de columna: ordena por esa columna, o invierte el orden si ya estaba activa
 // (la misma tabla se reutiliza en Registrados y en el Detalle del período del dashboard;
 // data-tabla en el contenedor indica cuál de las dos hay que reordenar y volver a pintar)
-const SORT_STATE_POR_TABLA={ periodo:()=>sortDetallePeriodo, 'semana-actual':()=>sortSemanaActual, 'semana-proxima':()=>sortSemanaProxima, 'semana-vencida':()=>sortSemanaVencida, 'semana-vencida-posp':()=>sortSemanaVencidaPosp };
+const SORT_STATE_POR_TABLA={ periodo:()=>sortDetallePeriodo, 'semana-actual':()=>sortSemanaActual, 'semana-proxima':()=>sortSemanaProxima, 'semana-vencida-posp':()=>sortSemanaVencidaPosp };
 document.addEventListener('click',e=>{
   const th=e.target.closest('th[data-sortcol]');
   if(!th) return;
@@ -2567,9 +2562,10 @@ $('btn-semana-limpiar').addEventListener('click',()=>{ FILTROS_SEMANA.forEach(id
 // Semanas de pago. El día de pago es el JUEVES de cada semana, así que lo que vence antes del
 // jueves siguiente (inclusive el miércoles de la semana próxima) conviene pagarlo en el jueves
 // de la semana en curso, porque ya no habría otra tanda de pago antes del vencimiento.
-//   - Semana en curso (offset 0): vencimientos desde el lunes hasta el miércoles de la semana próxima.
+//   - Semana en curso (offset 0): vencimientos hasta el miércoles de la semana próxima (incluye los atrasados).
 //   - Semana próxima (offset 1): desde el jueves de la semana próxima hasta el miércoles siguiente.
-// Lo anterior al lunes de la semana en curso es "Atrasados". Devuelve además la fecha del jueves
+// Lo vencido antes del lunes de la semana en curso (y no pospuesto) también se paga en la tanda de la
+// semana en curso: no hay lista de atrasados aparte. Devuelve además la fecha del jueves
 // de pago de esa tanda.
 function limitesSemana(offsetSemanas){
   const hoy=new Date();
@@ -2581,24 +2577,29 @@ function limitesSemana(offsetSemanas){
   const hasta = jueves+6;                               // miércoles siguiente al jueves de pago
   return {desde:fmt(dia(desde)), hasta:fmt(dia(hasta)), jueves:fmt(dia(jueves))};
 }
-// Gastos pendientes de pago cuyo vencimiento cae en la semana pedida (0 = en curso, 1 = próxima).
+// Gastos pendientes de pago cuyo vencimiento cae en la semana pedida (0 = en curso, que además
+// incluye todo lo vencido de semanas anteriores; 1 = próxima).
 // Un gasto con pago dividido no tiene una única fecha de vencimiento (cada cuota la suya): entra
 // acá si ALGUNA de sus cuotas impagas tiene su propia fecha dentro de la semana pedida (una cuota
 // impaga todavía sin fecha no entra hasta que se le cargue una, pero se sigue viendo como
 // pendiente en rojo en Registrados y en su propio desglose de cuotas).
 function filteredSemana(offsetSemanas){
   const {desde,hasta,jueves}=limitesSemana(offsetSemanas);
+  // La semana en curso no tiene "piso": todo pago impago que ya venció y no se abonó el jueves que le
+  // tocaba pasa solo a la tanda de esta semana (no existe una lista aparte de atrasados), y así cada
+  // semana hasta que se lo pague o se lo marque como pospuesto.
+  const sinPiso = offsetSemanas===0;
   const ru=$('qs-rubro').value, cp=$('qs-comp').value, tx=$('qs-texto').value;
   const pd=$('qs-pago-desde').value, ph=$('qs-pago-hasta').value;
   const cd=$('qs-corr-desde').value, ch=$('qs-corr-hasta').value;
   const lista=rows.filter(r=>{
     if(r.tipo!=='gasto'||r.pago||r.pospuesto) return false;
     if(r.dividido && Array.isArray(r.cuotas)){
-      const hayCuotaEnSemana = r.cuotas.some(c=>!c.pago && c.fecha && c.fecha>=desde && c.fecha<=hasta);
+      const hayCuotaEnSemana = r.cuotas.some(c=>!c.pago && c.fecha && (sinPiso||c.fecha>=desde) && c.fecha<=hasta);
       if(!hayCuotaEnSemana) return false;
     } else {
       if(!r.fechaVenc) return false;
-      if(r.fechaVenc<desde||r.fechaVenc>hasta) return false;
+      if((!sinPiso&&r.fechaVenc<desde)||r.fechaVenc>hasta) return false;
     }
     if(ru&&r.rubro!==ru) return false;
     if(cp&&(cp==='no'?r.comp!==false:r.comp===false)) return false;
@@ -2615,7 +2616,7 @@ function filteredSemana(offsetSemanas){
 // dividido) quedó antes del lunes de la semana en curso: pagos atrasados que todavía no se
 // marcaron como abonados. Mismos filtros que "Pagos semanales", sin límite de fecha "hasta".
 // Con pospuestos=true devuelve, en cambio, los atrasados que están marcados como "pospuesto"
-// (van en su propia lista aparte y no cuentan en "Atrasados").
+// (van en su propia lista aparte y no cuentan en "Esta semana").
 function filteredVencidos(pospuestos){
   const {desde}=limitesSemana(0);
   const ru=$('qs-rubro').value, cp=$('qs-comp').value, tx=$('qs-texto').value;
@@ -3478,8 +3479,8 @@ function renderDetallePeriodo(base){
 function renderSemana(){
   marcarFiltrosActivos(FILTROS_SEMANA);
   syncSelect('qs-rubro','rubro',true,'gasto');
-  const actual=filteredSemana(0), proxima=filteredSemana(1), vencidos=filteredVencidos();
-  $('semana-actual-titulo').textContent=`Esta semana — pago el jueves ${fmtFechaCorta(actual.jueves)} (vencimientos del ${fmtFechaCorta(actual.desde)} al ${fmtFechaCorta(actual.hasta)}) — ${actual.lista.length} pago${actual.lista.length===1?'':'s'} pendiente${actual.lista.length===1?'':'s'}`;
+  const actual=filteredSemana(0), proxima=filteredSemana(1);
+  $('semana-actual-titulo').textContent=`Esta semana — pago el jueves ${fmtFechaCorta(actual.jueves)} (vencimientos hasta el ${fmtFechaCorta(actual.hasta)}, incluye atrasados) — ${actual.lista.length} pago${actual.lista.length===1?'':'s'} pendiente${actual.lista.length===1?'':'s'}`;
   $('semana-actual-zone').innerHTML = actual.lista.length
     ? tablaHtml(ordenar(actual.lista,sortSemanaActual),sortSemanaActual,'semana-actual')
     : '<div class="empty">No hay pagos pendientes para pagar esta semana.</div>';
@@ -3487,13 +3488,6 @@ function renderSemana(){
   $('semana-proxima-zone').innerHTML = proxima.lista.length
     ? tablaHtml(ordenar(proxima.lista,sortSemanaProxima),sortSemanaProxima,'semana-proxima')
     : '<div class="empty">No hay pagos pendientes para pagar la semana próxima.</div>';
-  // Atrasados: pagos con vencimiento anterior a esta semana que todavía no se marcaron como
-  // abonados. Solo se muestra el bloque cuando hay alguno, para no ocupar espacio de más.
-  $('semana-vencida-box').hidden = !vencidos.lista.length;
-  if(vencidos.lista.length){
-    $('semana-vencida-titulo').textContent=`Atrasados — pendientes de semanas anteriores (hasta ${fmtFechaCorta(vencidos.desde)}) — ${vencidos.lista.length} pago${vencidos.lista.length===1?'':'s'} pendiente${vencidos.lista.length===1?'':'s'}`;
-    $('semana-vencida-zone').innerHTML = tablaHtml(ordenar(vencidos.lista,sortSemanaVencida),sortSemanaVencida,'semana-vencida');
-  }
   // Atrasados pospuestos: los mismos pagos vencidos, pero marcados como "pospuesto"; se separan
   // para que no mezclen con los atrasados que hay que pagar.
   const posp=filteredVencidos(true);
