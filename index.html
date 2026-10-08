@@ -197,6 +197,14 @@
   .semana-vencida-box{margin-top:26px;padding-top:18px;border-top:2px solid var(--neg)}
   .semana-heading.urgente{color:var(--neg)}
   /* Atrasados que se marcaron como "pospuesto": lista aparte, con borde punteado y menos énfasis. */
+  /* Aviso de pagos pospuestos cuya fecha "hasta" llegó: banner arriba de Movimientos y globito en el encabezado. */
+  .aviso-posp{border:2px solid var(--neg);background:color-mix(in srgb, var(--neg) 9%, var(--paper));padding:10px 14px;margin:0 0 14px}
+  .aviso-posp-tit{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--neg);font-weight:700;margin-bottom:6px}
+  .aviso-posp-fila{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:5px 0;border-top:1px dashed var(--rule-strong);font-size:13px}
+  .aviso-posp-fila:first-of-type{border-top:none}
+  .aviso-posp-fila .txt{flex:1;min-width:220px}
+  .aviso-posp-fila button{padding:4px 10px;font-size:11px}
+  .aviso-posp-badge{display:inline-block;margin-left:10px;padding:1px 8px;background:var(--neg);color:#fff;font-size:11px;letter-spacing:.04em;text-transform:none;font-weight:600;border-radius:10px}
   .semana-posp-box{border-top:2px dashed var(--rule-strong);opacity:.85}
   .fijos-estado-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 10px;font-size:13px;color:var(--ink-soft)}
   .fijos-estado-head button{white-space:nowrap}
@@ -770,9 +778,10 @@
   <section class="panel" id="panel-movs">
     <h2 class="sec dash-head" id="movs-toggle" role="button" tabindex="0" aria-expanded="true">
       <span class="chev" id="movs-chev">▾</span> Movimientos
-      <span class="dash-hint" id="movs-hint"></span>
+      <span class="dash-hint" id="movs-hint"></span><span class="aviso-posp-badge" id="movs-aviso-badge" hidden></span>
     </h2>
     <div id="movs-body">
+      <div id="aviso-posp" class="aviso-posp" hidden></div>
       <div class="tabs">
         <button id="subtab-cargar" class="on">Cargar nuevos</button>
         <button id="subtab-registrados">Registrados</button>
@@ -813,6 +822,7 @@
           <div class="field" id="wrap-detalle"><label for="f-detalle" id="lbl-detalle">Detalle</label><input type="text" id="f-detalle" placeholder="Proveedor, comprobante, observaciones"></div>
           <div class="field" id="wrap-pago"><label for="f-pago" id="lbl-pago">¿Está pago?</label><div style="padding:8px 0"><input type="checkbox" id="f-pago"></div></div>
           <div class="field" id="wrap-pospuesto" hidden><label for="f-pospuesto" title="El gasto sigue impago y pendiente, pero no se va a abonar en el corto plazo: no se pinta en rojo y no aparece en Pagos semanales hasta que le saques esta marca.">Pospuesto (no se abona pronto)</label><div style="padding:8px 0"><input type="checkbox" id="f-pospuesto"></div></div>
+          <div class="field" id="wrap-posp-hasta" hidden><label for="f-posp-hasta" title="Desde ese día (y los siguientes, hasta que le saques la marca de pospuesto o lo pagues) aparece un aviso en Movimientos para que lo abones esa semana. Si lo dejás vacío, no hay aviso.">Pospuesto hasta el día</label><input type="date" id="f-posp-hasta"></div>
           <div class="field" id="wrap-fecha-real-pago" hidden><label for="f-fecha-real-pago" id="lbl-fecha-real-pago">Fecha en que se pagó</label><input type="date" id="f-fecha-real-pago"></div>
           <div class="field" id="wrap-metodo-pago" hidden><label for="f-metodo-pago">Método de pago</label>
             <div style="display:flex;gap:6px;align-items:center">
@@ -1311,6 +1321,7 @@ async function load(){
   }
   normalizarFijosLista();  // arranque sin datos previos: siembra la lista base una vez
   fillRubros(); pintarFxRubros(); pintarFijosExtra(); pintarMetodosPago(); pintarFxMetodosQuitar(); render();
+  avisarPospuestos(!$('movs-body').hidden);
 }
 /* Guardado en segundo plano: antes, cada acción se quedaba esperando a que Firestore
    confirmara el guardado antes de mostrar el cambio en pantalla (de ahí la demora de varios
@@ -2086,7 +2097,15 @@ function actualizarWrapPospuesto(){
   const visible = !!editId && modo==='gasto' && !$('f-pago').checked;
   $('wrap-pospuesto').hidden=!visible;
   if(!visible) $('f-pospuesto').checked=false;
+  actualizarWrapPospHasta();
 }
+// La fecha "pospuesto hasta" solo se ofrece mientras el tilde de pospuesto esté puesto.
+function actualizarWrapPospHasta(){
+  const ver = !$('wrap-pospuesto').hidden && $('f-pospuesto').checked;
+  $('wrap-posp-hasta').hidden=!ver;
+  if(!ver) $('f-posp-hasta').value='';
+}
+$('f-pospuesto').addEventListener('change',actualizarWrapPospHasta);
 $('f-pago').addEventListener('change',()=>{
   const marcado=$('f-pago').checked;
   setTimeout(actualizarWrapPospuesto,0);
@@ -2234,7 +2253,7 @@ function limpiarForm(){
   $('f-fecha-real-pago').value='';$('wrap-fecha-real-pago').hidden=true;
   $('f-metodo-pago').value='';$('wrap-metodo-pago').hidden=true;$('f-metodo-pago').classList.remove('campo-tentativo');$('btn-quitar-metodo-tentativo').hidden=true;
   $('f-fecha-diferida').value='';$('wrap-fecha-diferida').hidden=true;
-  $('f-pospuesto').checked=false;$('wrap-pospuesto').hidden=true;
+  $('f-pospuesto').checked=false;$('wrap-pospuesto').hidden=true;$('f-posp-hasta').value='';$('wrap-posp-hasta').hidden=true;
   if(stickyFechaPago===null) resetStickyCarga();  // primera carga de la página: todavía no hay nada "pegajoso"
   $('f-fechapago').value=stickyFechaPago;$('wrap-fechapago').hidden=false;
   $('f-mescorr').value=stickyMesCorr;
@@ -2294,6 +2313,9 @@ async function abrirEdicion(id){
   $('f-dividido').checked = !!r.dividido;
   $('f-pospuesto').checked = !!r.pospuesto && !r.pago;
   actualizarWrapPospuesto();
+  $('f-posp-hasta').value = (r.pospuesto && !r.pago && r.pospuestoHasta) ? r.pospuestoHasta : '';
+  actualizarWrapPospHasta();
+  if(r.pospuesto && !r.pago && r.pospuestoHasta) $('f-posp-hasta').value=r.pospuestoHasta;
   $('f-marcar-fijo').checked = !!r.fijo;
   cuotasForm = (r.dividido&&Array.isArray(r.cuotas)) ? r.cuotas.map(c=>({importe:+c.importe||0,mesPago:c.mesPago||'',fecha:c.fecha||'',pago:!!c.pago,metodoPago:c.metodoPago||''})) : [];
   $('wrap-fechapago').hidden = !!r.dividido;
@@ -2375,6 +2397,7 @@ $('btn-add').addEventListener('click',async()=>{
     fijo: modo==='gasto' ? $('f-marcar-fijo').checked : false};
   // Pospuesto: solo al editar, y solo mientras siga impago.
   datos.pospuesto = !!(editId && modo==='gasto' && !datos.pago && $('f-pospuesto').checked);
+  datos.pospuestoHasta = datos.pospuesto ? ($('f-posp-hasta').value||'') : '';
   if(modo==='gasto') datos.fechaVenc = esDiv?'':$('f-fechapago').value;
   if(!esDiv && datos.pago){
     datos.fechaPago = $('f-fecha-real-pago').value;
@@ -2754,6 +2777,7 @@ function render(){
   renderTabla(filteredTabla());
   renderSemana();
   renderEstadoFijos();
+  avisarPospuestos(false);
 }
 
 // activo en el dashboard = pasa el período Y su rubro está tildado
@@ -3047,7 +3071,51 @@ function togglePanel(bodyId,chevId,headId,hintId,hintTxt,force){
   ajustarAnchoPaneles();
 }
 function toggleDash(force){ togglePanel('dash-body','dash-chev','dash-toggle','dash-hint','(toca para ver los resultados)',force); }
-function toggleMovs(force){ togglePanel('movs-body','movs-chev','movs-toggle','movs-hint','(toca para ver los movimientos)',force); }
+function toggleMovs(force){
+  togglePanel('movs-body','movs-chev','movs-toggle','movs-hint','(toca para ver los movimientos)',force);
+  if(!$('movs-body').hidden) avisarPospuestos(true);
+}
+// Pagos pospuestos cuya fecha "hasta" ya llegó (hoy o antes) y que siguen impagos y con la marca de
+// pospuesto: hay que abonarlos esta semana. El aviso sigue apareciendo hasta que se los pague o
+// se les saque la marca de pospuesto (o se les cambie la fecha a una futura).
+function pospuestosPorAvisar(){
+  const hoy=hoyISO();
+  return rows.filter(r=>r.tipo==='gasto'&&!r.pago&&r.pospuesto&&r.pospuestoHasta&&r.pospuestoHasta<=hoy)
+    .sort((a,b)=>a.pospuestoHasta.localeCompare(b.pospuestoHasta)||(a.item||'').localeCompare(b.item||''));
+}
+let ultimoAvisoToast='';
+function avisarPospuestos(alAbrir){
+  const caja=$('aviso-posp'), badge=$('movs-aviso-badge');
+  if(!caja||!badge) return;
+  const lista=pospuestosPorAvisar();
+  badge.hidden = !lista.length || !$('movs-body').hidden;
+  badge.textContent = '⚠ ' + lista.length + ' pago' + (lista.length===1?'':'s') + ' pospuesto' + (lista.length===1?'':'s') + ' para abonar';
+  caja.hidden = !lista.length;
+  if(!lista.length){ caja.innerHTML=''; return; }
+  const fmt=f=>{ const [y,m,d]=f.split('-'); return d+'/'+m+'/'+y.slice(2); };
+  caja.innerHTML = `<div class="aviso-posp-tit">⚠ Pagos pospuestos que hay que abonar esta semana (${lista.length})</div>` +
+    lista.map(r=>{
+      const imp = r.dividido ? '' : ' · '+money(r.bruto)+(r.moneda==='USD'?' USD':'');
+      const venc = r.fechaVenc ? ' · venc. '+fmt(r.fechaVenc) : '';
+      return `<div class="aviso-posp-fila"><span class="txt"><b>${esc(nombreDe(r))}</b>${imp}${venc} — pospuesto hasta el ${fmt(r.pospuestoHasta)}</span>
+        <button type="button" data-posp-editar="${r.id}">Editar</button>
+        <button type="button" class="ghost" data-posp-quitar="${r.id}" title="Saca la marca de pospuesto: vuelve a las listas de Pagos semanales y deja de avisar">Quitar pospuesto</button></div>`;
+    }).join('');
+  // Al abrir Movimientos, además del banner, un aviso emergente (una vez por cada abrir).
+  if(alAbrir) toast('⚠ Tenés '+lista.length+' pago'+(lista.length===1?'':'s')+' pospuesto'+(lista.length===1?'':'s')+' para abonar esta semana: '+lista.slice(0,3).map(r=>nombreDe(r)).join(', ')+(lista.length>3?'…':''));
+}
+document.addEventListener('click',async e=>{
+  const d=e.target.dataset||{};
+  if(d.pospEditar){ abrirEdicion(d.pospEditar); return; }
+  if(d.pospQuitar){
+    const r=rows.find(x=>x.id===d.pospQuitar); if(!r) return;
+    if(!(await asegurarUsuario())) return;
+    guardarParaDeshacer('quitar pospuesto de "'+nombreDe(r)+'"');
+    r.pospuesto=false; r.pospuestoHasta='';
+    registrarHistorial('Quitó la marca de pospuesto',r);
+    save(); render(); toast('Se quitó la marca de pospuesto de "'+nombreDe(r)+'"');
+  }
+});
 // Con el Dashboard y Movimientos cerrados a la vez, la "zona de paneles" queda con solo los dos
 // encabezados visibles; este padding-top de arriba la empuja para que ese bloque quede centrado
 // en la parte de pantalla visible debajo de él. Apenas se abre cualquiera de los dos, el padding
@@ -3330,7 +3398,7 @@ function tablaHtml(view,sortState,tablaId){
       // pendientes) apiladas dentro de la misma celda, para ver el estado de un vistazo.
       const pospuesto = !esIng && !r.pago && !!r.pospuesto;
       const claseImpago = pospuesto ? ' gasto-pospuesto' : ((!esIng && !r.pago) ? (' gasto-impago'+(vencePronto(r) ? ' vence-pronto' : '')) : '');
-      const tagPosp = pospuesto ? '<span class="tag pp" title="Impago pero pospuesto: no se abona en el corto plazo">pospuesto</span>' : '';
+      const tagPosp = pospuesto ? `<span class="tag pp" title="Impago pero pospuesto: no se abona en el corto plazo${r.pospuestoHasta?' — aviso desde el '+r.pospuestoHasta.split('-').reverse().join('/'):''}">pospuesto${r.pospuestoHasta?' hasta '+r.pospuestoHasta.split('-').reverse().slice(0,2).join('/'):''}</span>` : '';
       const cpCell = div
         ? `<td class="cp cp-multi"><button class="cuotas-arrow ${parcial?'parcial':(r.pago?'ok':'')}" data-exp="${r.id}" title="Ver desglose de importes por cuota">${abierta?'▾':'▸'}</button><div class="cp-stack">${
             r.cuotas.map(c=>c.pago
@@ -3871,7 +3939,7 @@ document.addEventListener('click',async e=>{
     guardarParaDeshacer('marcar pago de "'+(nombreDe(r))+'"');
     r.fechaPago=fecha;
     if(!r.mesPago) r.mesPago=fecha.slice(0,7);
-    r.pago=true; delete r.pospuesto;
+    r.pago=true; delete r.pospuesto; delete r.pospuestoHasta;
     if(r.tipo==='gasto'){ r.metodoPago=metodo; r.fechaDiferida = metodo==='E-cheq' ? fechaDiferida : ''; }
     // El pago ya quedó confirmado: lo orientativo (ver sugerenciaFijo) deja de tener sentido.
     r.vencTentativo=false; r.metodoTentativo='';
