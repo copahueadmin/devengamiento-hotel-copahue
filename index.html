@@ -204,6 +204,222 @@
   .aviso-posp-fila .txt{flex:1;min-width:220px}
   .aviso-posp-fila button{padding:4px 10px;font-size:11px}
   .aviso-posp-badge{display:inline-block;margin-left:10px;padding:1px 8px;background:var(--neg);color:#fff;font-size:11px;letter-spacing:.04em;text-transform:none;font-weight:600;border-radius:10px}
+
+  /* Órdenes de pago */
+  .atajos button[data-atajo="panel-ordenes"]{background:#3A2A12;color:#F2DFC0;position:relative}
+  .atajo-badge{position:absolute;top:6px;right:5px;background:var(--neg);color:#fff;font-size:10px;line-height:1;border-radius:9px;padding:2px 5px;writing-mode:horizontal-tb}
+  .notif-btn{position:relative}
+  .notif-badge{position:absolute;top:-6px;right:-6px;background:var(--neg);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1;border-radius:9px;padding:2px 5px;min-width:16px;text-align:center}
+  .notif-item{padding:9px 12px;border-bottom:1px solid var(--rule);font-size:13px;cursor:pointer}
+  .notif-item:hover{background:var(--ledger)}
+  .notif-item.fuerte{border-left:3px solid var(--neg)}
+  .notif-fecha{font-size:11px;color:var(--ink-soft);margin-top:2px}
+  #ord-tabs .ord-nueva{margin-left:auto}
+  .ord-tabla{width:100%;border-collapse:collapse;font-size:13px}
+  .ord-tabla th{background:var(--ink);color:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;text-align:left;padding:7px 9px}
+  .ord-tabla td{padding:8px 9px;border-bottom:1px solid var(--rule);vertical-align:top}
+  .ord-tabla th.num,.ord-tabla td.num{text-align:right;white-space:nowrap}
+  .ord-fila-lista{cursor:pointer}
+  .ord-fila-lista:hover{background:var(--ledger)}
+  .ord-fila-lista.con-novedad{background:color-mix(in srgb, var(--warn) 12%, var(--paper))}
+  .ord-sub{font-size:11px;color:var(--ink-soft)}
+  .ord-estado{display:inline-block;font-size:11px;font-family:'IBM Plex Mono',monospace;padding:1px 7px;border:1px solid var(--rule-strong)}
+  .ord-estado.pend{color:var(--warn);border-color:var(--warn)}
+  .ord-estado.aut{color:var(--ok);border-color:var(--ok)}
+  .ord-cab{background:var(--surface);border:1px solid var(--rule-strong);padding:12px 14px;margin-bottom:14px}
+  .ord-cab-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+  .ord-titulo{margin:0;font-family:'IBM Plex Mono',monospace;font-size:14px;letter-spacing:.05em;text-transform:uppercase}
+  .ord-info{font-size:13px;color:var(--ink-soft);display:grid;gap:2px;margin-bottom:8px}
+  .ord-comgen{font-size:13px;background:var(--tint-warn);border-left:3px solid var(--warn);padding:6px 10px;margin-bottom:8px}
+  .ord-acciones{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:8px}
+  .ord-acciones .ord-orden-sel{margin-left:auto;display:flex;flex-direction:column;gap:2px;font-size:11px}
+  .ord-orden-sel select{width:auto}
+  button.peligro{color:var(--neg);border-color:var(--neg)}
+  .ord-total{font-size:13px}
+  .ord-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-bottom:8px}
+  .ord-barra{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0;font-size:13px}
+  .ord-grupo{border:1px solid var(--rule-strong);background:var(--surface);margin-bottom:14px}
+  .ord-grupo-tit{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;background:var(--ledger);padding:7px 12px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;border-bottom:1px solid var(--rule-strong)}
+  .ord-grupo-tit small{font-weight:400;text-transform:none;color:var(--ink-soft)}
+  .ord-grupo.g-semana .ord-grupo-tit{background:color-mix(in srgb, var(--neg) 14%, var(--paper))}
+  .ord-fila,.ord-fila-det{display:grid;grid-template-columns:32px minmax(180px,1fr) 150px 150px;gap:4px 10px;align-items:center;padding:7px 12px;border-bottom:1px solid var(--rule);font-size:13px}
+  .ord-fila-det{grid-template-columns:minmax(180px,1fr) 150px 150px auto}
+  .ord-fila.sel{background:color-mix(in srgb, var(--ok) 9%, var(--paper))}
+  .ord-fila.bloq{opacity:.55}
+  .ord-extra{grid-column:2 / -1;display:flex;gap:8px;flex-wrap:wrap}
+  .ord-extra select{width:210px;flex:none}
+  .ord-extra input{flex:1;min-width:220px}
+  .ord-rubro{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink-soft)}
+  .ord-venc{font-size:12px;color:var(--ink-soft)}
+  .ord-vencido{color:var(--neg);font-weight:600}
+  .ord-imp{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+  .ord-det-mov{font-size:11.5px;color:var(--ink-soft)}
+  .ord-item{border-bottom:1px solid var(--rule)}
+  .ord-item .ord-fila-det{border-bottom:none}
+  .ord-com-item{margin:0 12px 6px;font-size:12.5px;background:var(--tint-warn2);padding:4px 8px;border-left:3px solid var(--warn)}
+  .ord-item .ord-det-mov{margin:0 12px 4px}
+  .ord-preg{padding:4px 10px;font-size:11px}
+  .ord-conv{background:var(--surface);border:1px solid var(--rule-strong);padding:10px 14px}
+  .ord-conv h4{margin:0 0 8px;font-family:'IBM Plex Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+  .ord-msg{margin:4px 12px;padding:6px 10px;background:var(--ledger);border-left:3px solid var(--iva);font-size:13px;max-width:760px}
+  .ord-msg.mio{border-left-color:var(--ok);background:var(--tint-ing)}
+  .ord-msg-cab{font-size:11px;color:var(--ink-soft)}
+  .ord-vacio{font-size:12.5px;color:var(--ink-soft);padding:4px 0}
+  .ord-msg-form{display:grid;gap:6px;margin-top:10px;max-width:760px}
+  .ord-msg-form select{width:auto;max-width:100%}
+  @media (max-width:900px){.ord-fila{grid-template-columns:32px 1fr}.ord-fila .ord-venc,.ord-fila .ord-imp{grid-column:2}.ord-fila-det{grid-template-columns:1fr auto}}
+  .ord-estado.prog{color:var(--iva);border-color:var(--iva)}
+  .ord-estado.venc{color:var(--neg);border-color:var(--neg)}
+  .ord-aut{color:var(--ok);font-size:12px;font-weight:600}
+  .ord-aut-linea{margin:0 12px 4px}
+  .ord-item.autorizado{background:color-mix(in srgb, var(--ok) 8%, var(--paper));box-shadow:inset 3px 0 0 var(--ok)}
+  .ord-btn-aut{padding:4px 10px;font-size:11px;background:var(--ok);border-color:var(--ok);color:#fff}
+  .ord-acc-item{display:flex;gap:6px;justify-content:flex-end}
+  /* Marca de "movimiento autorizado en una orden" dentro de Pagos semanales: no agrega columnas ni altura */
+  .chip-op{display:inline;font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:600;letter-spacing:0;color:var(--ok);border:1px solid var(--ok);padding:0 3px;margin-right:4px;cursor:pointer;white-space:nowrap;background:transparent;line-height:1}
+  .chip-op:hover{background:var(--ok);color:#fff}
+  .chip-op.pend{color:var(--iva);border-color:var(--iva);border-style:dashed}
+  .chip-op.pend:hover{background:var(--iva);color:#fff}
+  tbody tr.unpaid.en-orden-aut td:first-child{box-shadow:inset 5px 0 0 var(--ok)}
+  tbody tr.unpaid.en-orden-pend td:first-child{box-shadow:inset 5px 0 0 var(--iva)}
+  /* Órdenes de pago v3 */
+  #ord-tabs .ord-nueva{margin-left:auto;border-left:1px solid var(--rule-strong)!important}
+  .ord-cab.det{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .ord-cab.det .ord-titulo{color:var(--paper)}
+  .ord-cab.det .ord-info,.ord-cab .ord-total{color:var(--paper)}
+  .ord-cab.det .ord-info{opacity:.9}
+  .ord-cab.det button.ghost{color:var(--paper);border-color:color-mix(in srgb, var(--paper) 70%, transparent);background:transparent}
+  .ord-cab.det button.ghost:hover{background:color-mix(in srgb, var(--paper) 18%, transparent)}
+  .ord-cab.det button.peligro{color:#FFB4A8;border-color:#FFB4A8}
+  .ord-cab.det .ord-estado{background:var(--paper)}
+  .ord-cab.det .ord-comgen{color:var(--ink)}
+  .ord-grupo-tit{justify-content:flex-start;align-items:baseline;gap:6px 26px}
+  .ord-grupo-tit span:first-child{font-weight:700;font-size:15px;letter-spacing:.05em;-webkit-text-stroke:.7px currentColor}
+  .ord-grupo-tit span+span{font-weight:500;font-size:12px;-webkit-text-stroke:0}
+  .ord-cab.det .ord-info{gap:6px;margin:12px 0 0;padding-top:10px;border-top:1px solid color-mix(in srgb, var(--paper) 28%, transparent)}
+  .ord-cab.det .ord-acciones{margin-top:12px}
+  .ord-cab.det .ord-total{display:flex;flex-direction:column;align-items:flex-end;gap:2px;line-height:1.1}
+  .ord-total-fila{display:flex;align-items:flex-start;gap:10px}
+  .ord-total-lbl{font-size:11px;line-height:1;letter-spacing:.1em;text-transform:uppercase;opacity:.85;padding-top:3px}
+  .ord-total-monto{font-family:'IBM Plex Mono',monospace;line-height:1;font-size:23px;font-weight:700;-webkit-text-stroke:.8px currentColor;letter-spacing:-.01em;white-space:nowrap}
+  .ord-sep-t{opacity:.6;font-weight:400;margin:0 24px}
+  .ord-titulo-n{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:none}
+  .ord-orden-barra{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin:0 0 8px;font-size:12px;color:var(--ink-soft)}
+  .ord-orden-barra select{width:auto;padding:3px 6px;font-size:12px}
+  .ord-orden-barra{flex-wrap:wrap}
+  .ord-orden-barra .ord-busq{flex:1 1 220px;min-width:180px;max-width:360px;margin-right:auto;padding:5px 8px;font-size:12px}
+  .ord-busq-res{font-size:12px;color:var(--ink-soft);margin:0 0 8px}
+  .ord-busq-gen{background:none;border:none;color:var(--iva);text-decoration:underline;padding:0;font:inherit;text-transform:none;letter-spacing:0;font-weight:600;cursor:pointer}
+  .ord-busq-gen:hover{background:none;color:var(--ink)}
+  .ord-nota-btn{display:inline-flex;align-items:center;justify-content:center;background:var(--warn);border:1px solid var(--warn);color:#fff;padding:2px 9px;margin-left:4px;font-size:16px;line-height:1.2;letter-spacing:0;cursor:pointer;vertical-align:middle;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+  .ord-nota-btn:hover{background:color-mix(in srgb, var(--warn) 80%, #000);border-color:color-mix(in srgb, var(--warn) 80%, #000);color:#fff}
+  .ord-nota-btn.on{background:color-mix(in srgb, var(--warn) 22%, var(--paper));border:2px solid var(--warn);padding:1px 8px;box-shadow:none}
+  .ord-nota-btn.on:hover{background:color-mix(in srgb, var(--warn) 35%, var(--paper));color:inherit}
+  .ord-com-item[data-ord-nota-txt]{cursor:pointer;user-select:none}
+  .ord-hit-tag{font-family:'IBM Plex Mono',monospace;font-size:10px;font-style:italic;color:var(--iva);border:1px solid var(--iva);padding:0 5px;white-space:nowrap}
+  .ord-msg.ord-hit{box-shadow:0 0 0 2px #F2C94C}
+  .ord-deshacer{background:none;border:none;color:var(--ink-soft);font-size:12px;text-decoration:underline;cursor:pointer;padding:0 4px;letter-spacing:0;text-transform:none;white-space:nowrap}
+  .ord-deshacer:hover{color:var(--ink)}
+  .ord-sep{opacity:.6;margin:0 8px}
+  .ord-met{font-weight:800;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;margin:6px 0 2px}
+  .ord-fila-det{align-items:center}
+  .ord-main{min-width:0}
+  .ord-tit{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline}
+  .ord-nombre{background:none;border:none;padding:0;margin:0;font:inherit;font-weight:700;color:var(--ink);cursor:pointer;text-align:left;text-transform:none;letter-spacing:0;text-decoration:underline dotted;text-underline-offset:3px}
+  .ord-nombre:hover{background:var(--ok);border-color:var(--ok);color:#fff;box-shadow:0 0 0 3px var(--ok)}
+  .ord-item .ord-com-item{margin:4px 0 0}
+  .ord-item.autorizado{background:color-mix(in srgb, var(--ok) 8%, var(--paper))}
+  .ord-item.rechazado{background:color-mix(in srgb, var(--neg) 7%, var(--paper))}
+  .ord-acc-item{display:flex;gap:6px;justify-content:flex-end;align-items:center;min-width:104px}
+  .ord-sq{position:relative;width:30px;height:30px;box-sizing:border-box;border:2px solid var(--c);color:var(--c);background:color-mix(in srgb, var(--c) 14%, var(--paper));display:inline-flex;align-items:center;justify-content:center;font-family:inherit;font-weight:800;font-size:17px;line-height:1;padding:0;margin:0;letter-spacing:0;text-transform:none;cursor:pointer;border-radius:0}
+  .ord-sq.ok{--c:var(--ok)} .ord-sq.no{--c:var(--neg)} .ord-sq.q{--c:var(--warn);font-size:12.5px}
+  button.ord-sq:hover{background:color-mix(in srgb, var(--c) 30%, var(--paper))}
+  .ord-sq.on,button.ord-sq.on:hover{background:var(--c);color:#fff}
+  span.ord-sq{cursor:default}
+  .ord-pt{position:absolute;top:-5px;right:-5px;width:10px;height:10px;border-radius:50%;background:var(--neg);border:2px solid var(--paper)}
+  .ord-sec-barra{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 6px;border-top:1px solid var(--rule-strong);border-bottom:1px solid var(--rule-strong);padding:6px 0}
+  .ord-sec-btn{background:none;border:none;color:var(--ink);font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;padding:6px 4px}
+  .ord-sec-btn:hover{color:var(--iva)}
+  .ord-sec-panel{background:var(--surface);border:1px solid var(--rule-strong);padding:10px 14px;margin-bottom:10px}
+  .ord-conv-item{margin-bottom:10px;border-bottom:1px dashed var(--rule);padding-bottom:6px}
+  .ord-conv-tit{display:flex;align-items:center;gap:10px;font-size:13px}
+  .ord-conv-tit .ord-preg{margin-left:auto}
+  .ord-tabla .aviso-posp-badge{white-space:nowrap;font-size:10px;padding:2px 7px}
+  .ord-tabla td,.ord-tabla th{padding-left:6px!important;padding-right:6px!important}
+  .ord-ojo{margin-left:auto;background:none;border:1px solid var(--rule-strong);color:var(--ink);width:32px;height:28px;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+  .ord-ojo:hover{background:var(--ledger)}
+  .ord-ojo.off{color:var(--ink-soft);background:var(--ledger)}
+  .ord-aut-todos{display:flex;justify-content:flex-end;margin:12px 0 4px}
+  .ord-btn-aut{background:var(--ok);border-color:var(--ok);color:#fff;padding:9px 20px}
+  .ord-btn-aut:hover{background:color-mix(in srgb, var(--ok) 78%, #000);border-color:color-mix(in srgb, var(--ok) 78%, #000);color:#fff}
+  .ord-flecha-col{width:34px;padding-right:0!important}
+  .ord-flecha{background:none;border:1px solid var(--rule-strong);color:var(--ink);width:26px;height:26px;padding:0;cursor:pointer;font-size:13px;line-height:1;letter-spacing:0}
+  .ord-flecha:hover{background:var(--ledger)}
+  .ord-fila-lista.desplegada{background:var(--ledger)}
+  .ord-subfila td{background:var(--surface);padding-top:2px!important}
+  .ord-sublista{display:grid;gap:4px;padding:2px 0 6px;max-width:680px}
+  .ord-sub-it{display:grid;grid-template-columns:minmax(160px,1fr) 150px 120px;gap:10px;align-items:center;font-size:12.5px;padding:2px 0}
+  .ord-sub-it .ord-imp{text-align:right}
+  .ord-sub-est{font-size:11.5px;color:var(--ink-soft)} .ord-sub-est.ok{color:var(--ok);font-weight:700} .ord-sub-est.no{color:var(--neg);font-weight:700}
+  .ord-modal{position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px}
+  .ord-modal[hidden]{display:none}
+  .ord-modal-box{background:var(--paper);color:var(--ink);border:1px solid var(--rule-strong);width:min(560px,100%);max-height:88vh;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+  .om-cab{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--ink);color:var(--paper);padding:10px 14px}
+  .om-cab h3{margin:0;font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.05em;text-transform:uppercase}
+  .om-cab small{opacity:.8;text-transform:none}
+  .om-x{background:none;border:none;color:var(--paper);font-size:16px;cursor:pointer;padding:2px 6px}
+  .om-cuerpo{padding:12px 14px}
+  .om-fila{display:grid;grid-template-columns:170px 1fr;gap:8px;padding:5px 0;border-bottom:1px solid var(--rule);font-size:13px}
+  .om-lab{color:var(--ink-soft);font-size:12px}
+  .om-orden{margin-top:12px;background:var(--ledger);padding:6px 10px}
+  .om-tit{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+  .om-botones{display:flex;gap:8px;margin-top:6px}
+  .ord-tip{position:fixed;z-index:3100;background:var(--paper);color:var(--ink);border:2px solid var(--warn);padding:8px 10px;max-width:340px;font-size:12.5px;box-shadow:0 6px 24px rgba(0,0,0,.3);pointer-events:none}
+  .ord-tip[hidden]{display:none}
+  .ord-tip-msg{margin-bottom:6px} .ord-tip-msg span{color:var(--ink-soft);font-size:11px}
+  .ord-tip-mas{font-size:11px;color:var(--ink-soft)}
+  /* v5: ventanas de comentarios/conversaciones, filas de ítems y columnas de método */
+  .ord-sec-barra{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 14px;border:none;padding:0;position:relative}
+  .ord-sec-col{position:relative;min-width:0}
+  .ord-sec-btn{display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;padding:10px 14px;color:#fff;border:1px solid transparent;font-size:12px}
+  .ord-sec-btn.g{background:#2F5D8A;border-color:#2F5D8A}
+  .ord-sec-btn.i{background:#6A4C93;border-color:#6A4C93}
+  .ord-sec-btn:hover{color:#fff;filter:brightness(1.15)}
+  .ord-sec-btn .aviso-posp-badge{margin-left:auto;border:1px solid #fff}
+  .ord-sec-pop{position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:60;background:var(--paper);border:2px solid var(--ink);box-shadow:0 10px 30px rgba(0,0,0,.35);padding:10px 14px;max-height:60vh;overflow:auto;min-width:280px}
+  .ord-fila-det{grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"tit imp bot";gap:6px 16px;align-items:center}
+  .ord-fila-det.con-nota{grid-template-areas:"tit tit tit" "nota imp bot"}
+  .ord-fila-det .ord-tit{grid-area:tit}
+  .ord-fila-det .ord-com-item{grid-area:nota;margin:0}
+  .ord-fila-det .ord-imp{grid-area:imp;min-width:130px;text-align:right}
+  .ord-fila-det .ord-acc-item{grid-area:bot}
+  .ord-grupo-tit span:first-child{display:inline-block;min-width:calc(var(--met-n,10)*(1ch + .05em) + 4px)}
+  .ord-grupo-tit span+span{display:inline-block;min-width:104px}
+  .ord-grupo-tit span+span+span{min-width:0}
+  /* v6: encabezado, hilos de mensajes, pie repetido, grises */
+  .ord-cab-top{justify-content:space-between}
+  .ord-cab.det .ord-total{margin-left:auto;text-align:right}
+  .ord-cab.det .ord-titulo{display:flex;align-items:center;gap:0;flex-wrap:wrap}
+  .ord-cab.det .ord-titulo>*:not(.ord-sep-t):not(.ord-titulo-n){margin-left:12px}
+  .ord-cab-pie{margin:14px 0 8px}
+  .ord-cab-pie .ord-cab-top{margin-bottom:0}
+  .ord-pie[hidden]{display:none}
+  .ord-pie .ord-sec-pop{top:auto;bottom:calc(100% + 4px)}
+  .ord-com-item,.ord-fila-det .ord-com-item{background:color-mix(in srgb, var(--ink) 9%, var(--paper));border-left:3px solid var(--ink-soft)}
+  .ord-grupo-tit span+span{font-style:italic}
+  .ord-met{background:var(--ledger);border-left:3px solid var(--ink-soft);padding:4px 8px;margin:8px 0 2px;color:var(--ink)}
+  .ord-sub-it{padding:2px 8px}
+  .ord-msg{max-width:none;border-left-width:4px}
+  .ord-msg.clic{cursor:pointer}
+  .ord-msg.clic:hover{filter:brightness(.96)}
+  .ord-msg.a0{border-left-color:#2F6B4F;background:color-mix(in srgb, #2F6B4F 14%, var(--paper))}
+  .ord-msg.a1{border-left-color:#3B5F86;background:color-mix(in srgb, #3B5F86 14%, var(--paper))}
+  .ord-msg.a2{border-left-color:#B0791C;background:color-mix(in srgb, #B0791C 16%, var(--paper))}
+  .ord-msg.a3{border-left-color:#6A4C93;background:color-mix(in srgb, #6A4C93 14%, var(--paper))}
+  .ord-msg.a4{border-left-color:#1F7A7A;background:color-mix(in srgb, #1F7A7A 14%, var(--paper))}
+  .ord-msg.a5{border-left-color:#A8465E;background:color-mix(in srgb, #A8465E 14%, var(--paper))}
+  .ord-resp{margin:4px 12px 8px;display:grid;gap:6px}
+  .ord-resp textarea{width:100%;box-sizing:border-box}
   .semana-posp-box{border-top:2px dashed var(--rule-strong);opacity:.85}
   .fijos-estado-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 10px;font-size:13px;color:var(--ink-soft)}
   .fijos-estado-head button{white-space:nowrap}
@@ -357,7 +573,28 @@
   td.item.tarjeta-item:hover{text-decoration:underline dotted}
   .desg-tarjeta{display:inline-block;margin-left:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--iva);border:1px solid var(--iva);padding:0 5px;white-space:nowrap}
   .tarjeta-badge{display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0;text-transform:none;color:var(--iva);font-weight:600;margin-top:1px}
-  .cp-editor{position:absolute;z-index:30;top:50%;left:0;transform:translateY(-50%);display:flex;align-items:center;gap:3px;background:var(--surface);border:1px solid var(--rule-strong);box-shadow:0 3px 10px rgba(0,0,0,.25);padding:4px 5px;white-space:nowrap}
+  .cp-editor{position:absolute;z-index:30;top:50%;left:0;transform:translateY(-50%);display:flex;flex-direction:column;align-items:stretch;gap:5px;background:var(--surface);border:1px solid var(--rule-strong);box-shadow:0 3px 10px rgba(0,0,0,.25);padding:4px 5px;white-space:nowrap}
+  .cp-editor.dividido{position:fixed;transform:none;z-index:60}
+  .cp-badge.echeq{border-style:dashed;font-style:italic}
+  .cp-row{display:flex;align-items:center;gap:3px}
+  .cp-div-fila{display:flex;align-items:center;gap:10px}
+  .cp-div-fila .cp-cuota-add{background:none;border:1px solid var(--rule-strong);color:var(--ink-soft);cursor:pointer;font-size:10px;padding:2px 6px}
+  .cuota-auto{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);font-style:italic;white-space:nowrap}
+  .cp-tick{color:var(--ok);font-weight:700;margin-left:3px}
+  .cp-div-chk{display:flex;align-items:center;gap:5px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);cursor:pointer;padding:2px 0 0}
+  .cp-div-chk input{margin:0}
+  .cp-cuotas{border-top:1px dashed var(--rule-strong);padding-top:5px;display:flex;flex-direction:column;gap:4px}
+  .cp-cuota{display:flex;align-items:center;gap:5px}
+  .cp-cuota .cp-cuota-n{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);width:58px}
+  .cp-cuota input[type=text]{width:104px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:11px;padding:3px 5px}
+  .cp-cuota input[type=date]{width:118px;font-size:11px;padding:3px 5px}
+  .cp-cuota label{display:flex;align-items:center;gap:3px;font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);cursor:pointer}
+  .cp-cuota .cp-cuota-del{background:none;border:none;color:var(--neg);cursor:pointer;font-size:14px;padding:0 3px;margin-left:auto}
+  .cp-cuotas-foot{display:flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:10px}
+  .cp-cuotas-foot .cp-cuota-add{background:none;border:1px solid var(--rule-strong);color:var(--ink-soft);cursor:pointer;font-size:10px;padding:2px 6px}
+  .cp-cuotas-foot .cp-cuota-add:hover{color:var(--ink);border-color:var(--ink-soft)}
+  .cp-cuotas-nota{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-soft);font-style:italic}
+  .cp-cuotas-aviso{color:var(--warn)} .cp-cuotas-ok{color:var(--ok)}
   .cp-fecha-input{width:118px;font-size:11px;padding:3px 5px;display:inline-block}
   .cp-metodo-input{max-width:160px;font-size:11px;padding:3px 5px;display:inline-block}
   .cp-diferida-input{width:118px;font-size:11px;padding:3px 5px;display:inline-block}
@@ -373,6 +610,9 @@
   .add-confirm span{font-size:13px;color:var(--ink)}
   @keyframes flashRow{0%{background:var(--tint-warn)}100%{background:transparent}}
   .tablacompacta tr.flash td{animation:flashRow 2.4s ease}
+  .fijo-estado-row.flash{animation:flashRow 2.4s ease}
+  /* Espacio libre debajo de las listas para poder centrar en pantalla también los últimos renglones. */
+  #vista-registrados,#vista-semana,#vista-fijos{padding-bottom:42vh}
   .icon-btn{display:inline-flex;align-items:center;justify-content:center;background:none;border:1px solid var(--rule-strong);color:var(--ink-soft);padding:8px 10px;cursor:pointer;line-height:1}
   .icon-btn:hover{border-color:var(--ink-soft);color:var(--ink)}
   .icon-btn.identificado{color:var(--ink);border-color:var(--ink-soft)}
@@ -501,6 +741,9 @@
   .rdi-acciones{flex:none;display:flex;gap:3px}
 
   /* presencia en vivo: burbujas con la inicial de cada usuario conectado, en el header */
+  .banner-prueba{background:var(--warn);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.06em;padding:4px 8px;display:inline-flex;align-items:center;gap:6px}
+  .banner-prueba label{font-weight:400;text-transform:uppercase}
+  .banner-prueba select{padding:1px 4px;font-size:11px;width:auto;margin:0}
   .presencia-zone{display:flex;align-items:center}
   .presencia-zone:empty{display:none}
   .presencia-bubble{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--pcolor,var(--ink-soft));color:#fff;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border:2px solid var(--paper);margin-left:-8px;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:opacity .3s,transform .3s;cursor:default}
@@ -532,6 +775,7 @@
 <nav class="atajos" aria-label="Accesos rápidos">
   <button type="button" data-atajo="resultados" title="Ir al Dashboard de resultados"><span class="atajos-ico">▤</span><span class="atajos-txt">Dashboard</span></button>
   <button type="button" data-atajo="panel-movs" title="Ir a Movimientos"><span class="atajos-ico">≡</span><span class="atajos-txt">Movimientos</span></button>
+  <button type="button" data-atajo="panel-ordenes" title="Ir a Órdenes de pago"><span class="atajos-ico">✉</span><span class="atajos-txt">Órdenes de pago</span><span id="atajo-ordenes-badge" class="atajo-badge" hidden>0</span></button>
 </nav>
 <!-- El encabezado queda fuera de .wrap para poder pintarlo de un color claro que llegue de punta
      a punta de la pantalla; de la línea doble para abajo (ya dentro de .wrap) el fondo es oscuro. -->
@@ -542,6 +786,7 @@
       <div class="sub">Hotel Copahue · Saavedra 80, Junín</div>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
+      <span id="banner-prueba" class="banner-prueba" hidden title="Datos de ejemplo: no se lee ni se guarda nada online">MODO PRUEBA <label for="prueba-como">ver como</label> <select id="prueba-como"></select></span>
       <span id="guardado-estado" class="guardado-estado" hidden></span>
       <div id="presencia-zone" class="presencia-zone" title="Quiénes están conectados ahora"></div>
       <span id="usuario-nombre-header" class="usuario-nombre-header"></span>
@@ -551,6 +796,14 @@
       <button type="button" id="btn-deshacer" class="icon-btn" title="No hay nada para deshacer" disabled>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="17" height="17"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>
       </button>
+      <button type="button" id="btn-notif" class="icon-btn notif-btn" title="Notificaciones de órdenes de pago">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="17" height="17"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+        <span id="notif-badge" class="notif-badge" hidden>0</span>
+      </button>
+      <div id="notif-pop" class="historial-popover" hidden>
+        <div class="historial-popover-head"><span>Órdenes de pago — notificaciones</span><button type="button" id="notif-cerrar" title="Cerrar">✕</button></div>
+        <div id="notif-lista"></div>
+      </div>
       <button type="button" id="btn-historial" class="icon-btn" title="Ver historial de cambios">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="17" height="17"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
       </button>
@@ -829,7 +1082,7 @@
               <button type="button" id="btn-quitar-metodo-tentativo" class="rowbtn plain" title="Quitar la sugerencia y dejar en blanco" hidden>✕</button>
             </div>
           </div>
-          <div class="field" id="wrap-fecha-diferida" hidden><label for="f-fecha-diferida" title="Fecha en la que se puede depositar/cobrar el cheque — distinta de la fecha en que se emitió el pago">Fecha diferida del cheque</label><input type="date" id="f-fecha-diferida"></div>
+          <div class="field" id="wrap-fecha-diferida" hidden><label for="f-fecha-diferida" title="Fecha en la que se puede depositar/cobrar el cheque — distinta de la fecha en que se emitió el pago">Fecha diferida del cheque</label><input type="date" id="f-fecha-diferida"><button type="button" class="ghost" id="btn-echeq-dividir" style="margin-top:6px" title="Dividir este pago en varios e-cheqs, cada uno con su fecha diferida">+ Agregar pago dividido</button></div>
           <div class="field" id="wrap-comp"><label for="f-comp">Computable</label><div style="padding:8px 0"><input type="checkbox" id="f-comp" checked></div></div>
           <div class="field" id="wrap-dividido"><label for="f-dividido" id="lbl-dividido" title="Dividir el pago de este gasto en varias cuotas con su propia fecha">Pago dividido</label><div style="padding:8px 0"><input type="checkbox" id="f-dividido"></div></div>
           <div class="field" id="wrap-marcar-fijo"><label for="f-marcar-fijo" title="Además de registrarse este mes, queda sumado a la lista de Fijos mensuales para reutilizar en los meses siguientes">Gasto fijo mensual</label><div style="padding:8px 0"><input type="checkbox" id="f-marcar-fijo"></div></div>
@@ -898,6 +1151,7 @@
       <div id="vista-semana" hidden>
         <div class="semana-toolbar">
           <button type="button" id="btn-semana-nuevo">+ Nuevo gasto</button>
+          <button type="button" class="ghost" id="btn-generar-orden" style="order:99;margin-left:auto" title="Armar una orden de pago con movimientos pendientes y enviarla a otro usuario para que la autorice">Generar orden</button>
           <p class="note" style="margin:0">Gastos pendientes de pago según su fecha de vencimiento. No depende de los filtros de Registrados ni del período del dashboard.</p>
         </div>
         <div class="filters">
@@ -956,6 +1210,24 @@
       </div>
     </div>
   </section>
+
+  <!-- ============ ÓRDENES DE PAGO (colapsable, como Dashboard y Movimientos) ============ -->
+  <section class="panel" id="panel-ordenes">
+    <h2 class="sec dash-head" id="ord-toggle" role="button" tabindex="0" aria-expanded="false">
+      <span class="chev" id="ord-chev">▸</span> Órdenes de pago
+      <span class="dash-hint" id="ord-hint">(toca para ver las órdenes de pago)</span><span class="aviso-posp-badge" id="ord-badge" hidden>0</span>
+    </h2>
+    <div id="ord-body" hidden>
+      <div class="tabs" id="ord-tabs">
+        <button type="button" data-ord-filtro="recibidas" class="on">Pendientes</button>
+        <button type="button" data-ord-filtro="emitidas" id="ord-tab-emitidas" hidden>Emitidas por mí</button>
+        <button type="button" data-ord-filtro="autorizadas">Autorizadas</button>
+        <button type="button" data-ord-filtro="todas">Todas</button>
+        <button type="button" id="ord-nueva" class="ord-nueva">Nueva orden</button>
+      </div>
+      <div id="ord-zona"></div>
+    </div>
+  </section>
   </div>
 
 </div>
@@ -964,6 +1236,8 @@
 <div id="reporte-pdf" class="reporte-pdf"></div>
 <div class="toast" id="toast"></div>
 <div id="texto-popover" class="texto-popover" hidden></div>
+<div id="ord-modal" class="ord-modal" hidden><div class="ord-modal-box" id="ord-modal-box" role="dialog" aria-modal="true"></div></div>
+<div id="ord-tip" class="ord-tip" hidden></div>
 <div id="chart-tooltip" class="chart-tooltip" hidden></div>
 
 <!-- ============ FIREBASE ============
@@ -1049,19 +1323,26 @@ if(FIREBASE_LISTO){
 // Colección donde se guarda todo, con la MISMA forma que tenía window.storage
 // (get/set por clave), para no tener que tocar el resto del código.
 const FS_COLECCION='copahue_kv';
+// Modo prueba: usuario de demostración que NO toca la base online. Todo lo que lee o guarda va a
+// una memoria local que se pierde al cerrar la página (ver "Modo prueba" más abajo).
+let modoPrueba=false;
+const pruebaKV=new Map();
 window.storage = {
   async get(key){
+    if(modoPrueba){ if(!pruebaKV.has(key)) throw new Error('no existe'); return {key,value:pruebaKV.get(key)}; }
     if(!db) throw new Error('Firebase no está configurado');
     const snap = await db.collection(FS_COLECCION).doc(key).get();
     if(!snap.exists) throw new Error('no existe');
     return { key, value: (snap.data()||{}).value };
   },
   async set(key,value){
+    if(modoPrueba){ pruebaKV.set(key,value); return {key,value}; }
     if(!db) throw new Error('Firebase no está configurado');
     await db.collection(FS_COLECCION).doc(key).set({value});
     return { key, value };
   },
   async delete(key){
+    if(modoPrueba){ pruebaKV.delete(key); return {key,deleted:true}; }
     if(!db) throw new Error('Firebase no está configurado');
     await db.collection(FS_COLECCION).doc(key).delete();
     return { key, deleted:true };
@@ -1408,6 +1689,10 @@ const ADMIN_CLAVE='Copahue';
 
 function actualizarUsuarioUI(){
   const btn=$('usuario-chip');
+  if(modoPrueba){
+    btn.title='Modo prueba — tocá para salir'; btn.classList.add('identificado');
+    $('usuario-nombre-header').textContent=usuarioActual; return;
+  }
   const u = FIREBASE_LISTO ? firebase.auth().currentUser : null;
   btn.title = u ? ('Conectado como '+(usuarioActual||u.email)+' — tocá para cerrar sesión') : 'Cerrar sesión';
   btn.classList.toggle('identificado',!!u);
@@ -1415,8 +1700,10 @@ function actualizarUsuarioUI(){
 }
 async function asegurarUsuario(){ return !!usuarioActual; }  // el login ya garantiza que hay alguien identificado
 $('usuario-chip').addEventListener('click',async()=>{
+  if(modoPrueba){ if(confirm('¿Salir del modo prueba? Los datos de ejemplo se descartan.')) location.reload(); return; }
   if(!FIREBASE_LISTO) return;
   if(!confirm('¿Cerrar sesión de '+(usuarioActual||'')+'?')) return;
+  OrdenesDB.detener();
   await detenerPresencia(); // borra el latido ANTES de cerrar sesión (con la sesión ya cerrada no tendría permiso para escribir)
   firebase.auth().signOut();
 });
@@ -1529,6 +1816,12 @@ function errorLegible(e){
   return (e&&e.message) || 'Ocurrió un error. Reintentá.';
 }
 $('login-signin-btn').addEventListener('click',async()=>{
+  // Usuario de prueba: se valida acá en el código y entra a un modo aislado con datos de ejemplo.
+  if($('login-email').value.trim().toLowerCase()===PRUEBA_EMAIL && $('login-password').value===PRUEBA_CLAVE){
+    $('login-email').value=''; $('login-password').value='';
+    await entrarModoPrueba();
+    return;
+  }
   if(!FIREBASE_LISTO){ $('login-signin-error').hidden=false; $('login-signin-error').textContent='Firebase todavía no está configurado (ver el comentario al principio del código).'; return; }
   const email=$('login-email').value.trim(), pass=$('login-password').value;
   if(!email||!pass){ $('login-signin-error').hidden=false; $('login-signin-error').textContent='Completá correo y clave.'; return; }
@@ -1732,6 +2025,1099 @@ function registrarUsuarioActualSiHaceFalta(){
   }
 }
 
+/* ---------- Modo prueba ----------
+   Usuario de demostración: correo "prueba@prueba.com" y clave "prueba" (definidos acá abajo, en el
+   código; NO existe como cuenta en Firebase). Al entrar con esas credenciales:
+   - no se lee ni se escribe nada en la base online (window.storage va a una memoria local, ver
+     modoPrueba) ni se inicia la presencia en vivo ni las órdenes de pago online;
+   - se cargan movimientos de ejemplo, relativos a la fecha de hoy, y órdenes de pago de ejemplo;
+   - arriba aparece un cartel "MODO PRUEBA" y un selector para ver la app como otros dos usuarios
+     ficticios (así se puede probar una orden de pago de punta a punta: emitir, recibir, preguntar,
+     autorizar);
+   - al salir (o recargar la página) todo se descarta. */
+const PRUEBA_EMAIL='prueba@prueba.com', PRUEBA_CLAVE='prueba';
+const PRUEBA_USUARIOS=[
+  {email:PRUEBA_EMAIL,nombre:'Usuario de Prueba',activo:true},
+  {email:'ana@prueba.com',nombre:'Ana (prueba)',activo:true},
+  {email:'luis@prueba.com',nombre:'Luis (prueba)',activo:true}
+];
+let emailPrueba=PRUEBA_EMAIL;  // con qué usuario ficticio se está viendo la app en modo prueba
+function datosDePrueba(){
+  const f=n=>{ const d=new Date(); d.setDate(d.getDate()+n); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+  const ym=n=>f(n).slice(0,7);
+  let i=0;
+  const g=(item,rubro,bruto,venc,x)=>Object.assign({id:'demo'+(++i),tipo:'gasto',mesPago:ym(venc),mesCorr:ym(venc-30),rubro,item,bruto,moneda:'ARS',cotizacion:0,tipoFac:'No posee',iva:0,fact:'',pago:false,comp:true,detalle:'',fechaVenc:f(venc)},x||{});
+  const ing=(item,rubro,bruto,dia,x)=>Object.assign({id:'demo'+(++i),tipo:'ingreso',mesPago:ym(dia),mesCorr:ym(dia),rubro,item,bruto,moneda:'ARS',cotizacion:0,tipoFac:'—',iva:0,fact:'Facturado',pago:true,fechaPago:f(dia),comp:true,detalle:''},x||{});
+  return [
+    g('ALQUILER HOTEL','ALQUILER HOTEL',1850000,-2,{fijo:true,metodoTentativo:'Transferencia',detalle:'CONTRATO ANUAL'}),
+    g('SUELDOS','RRHH',4200000,-5,{fijo:true,metodoTentativo:'Transferencia'}),
+    g('LUZ','SERVICIOS',385000,1,{tipoFac:'A',iva:66826,fijo:true,metodoTentativo:'Débito automático'}),
+    g('GAS JUNIN','SERVICIOS',120500,3,{fijo:true,metodoTentativo:'Débito automático'}),
+    g('INTERNET','SERVICIOS',64000,6,{fijo:true,metodoTentativo:'Tarjeta de crédito'}),
+    g('PROVEEDOR LIMPIEZA','INSUMOS',210000,12,{tipoFac:'B',detalle:'REPOSICIÓN MENSUAL'}),
+    g('LAVANDERIA PLANCHA','LAVADERO',98000,20),
+    g('ARCA HOTEL (IVA)','IVA',510000,18,{comp:false,fijo:true}),
+    g('REPARACION CALDERA','GASTOS MANTENIMIENTO',730000,-40,{tipoFac:'A',iva:126694,mesPago:ym(-40),detalle:'PRESUPUESTO ACEPTADO, PENDIENTE DE PAGO'}),
+    g('PUBLICIDAD INSTAGRAM','MARKETING',150,4,{moneda:'USD',cotizacion:1180}),
+    g('MARMOL BAÑOS','INVERSIONES',900000,2,{dividido:true,fechaVenc:'',cuotas:[
+      {id:'c1',importe:300000,fecha:f(-10),pago:true,metodoPago:'Transferencia'},
+      {id:'c2',importe:300000,fecha:f(2),pago:false,metodoPago:''},
+      {id:'c3',importe:300000,fecha:f(32),pago:false,metodoPago:''}]}),
+    g('SEGURO INCENDIO','SERVICIOS',280000,-8,{pospuesto:true,pospuestoHasta:f(-1),detalle:'NEGOCIANDO DESCUENTO'}),
+    g('DESAYUNOS PROVEEDOR','DESAYUNOS',175000,9,{tipoFac:'Sin emitir'}),
+    g('CERRAJERIA','GASTOS MANTENIMIENTO',45000,-3,{pago:true,fechaPago:f(-3),metodoPago:'Efectivo',tipoFac:'C'}),
+    ing('RESERVAS BOOKING','ALOJAMIENTO',3900000,-6,{detalle:'LIQUIDACIÓN QUINCENAL'}),
+    ing('EVENTO CASAMIENTO','EVENTOS',1250000,-1),
+    ing('COCHERAS ABONADOS','COCHERAS',420000,-4)
+  ];
+}
+async function entrarModoPrueba(){
+  modoPrueba=true; pruebaKV.clear();
+  try{ await detenerPresencia(); }catch(e){}
+  usuarioActual=PRUEBA_USUARIOS[0].nombre; emailPrueba=PRUEBA_EMAIL;
+  propios={gasto:[],ingreso:[],metodos:[],ocultos:{gasto:[],ingreso:[],metodos:[]},alias:{gasto:{},ingreso:{},metodos:{}}};
+  normalizarPropios();
+  fijosExtra=[]; fijosMigrado=false; normalizarFijosLista();
+  historial=[]; historialDeshacer=[];
+  usuarios=PRUEBA_USUARIOS.map(u=>({...u,creadoTs:new Date().toISOString(),creadoPor:'(modo prueba)'}));
+  rows=normalizar(datosDePrueba());
+  if(typeof sembrarOrdenesPrueba==='function') await sembrarOrdenesPrueba();
+  $('login-overlay').hidden=true;
+  $('banner-prueba').hidden=false;
+  const sel=$('prueba-como');
+  sel.innerHTML=PRUEBA_USUARIOS.map(u=>`<option value="${u.email}">${esc(u.nombre)}</option>`).join('');
+  sel.value=PRUEBA_EMAIL;
+  actualizarUsuarioUI();
+  fillRubros(); pintarFxRubros(); pintarFijosExtra(); pintarMetodosPago(); pintarFxMetodosQuitar(); render();
+  toast('Modo prueba: datos de ejemplo, no se guarda nada online.');
+  setTimeout(()=>{ if(typeof iniciarOrdenes==='function') iniciarOrdenes(); },400);
+}
+$('prueba-como').addEventListener('change',()=>{
+  const u=PRUEBA_USUARIOS.find(x=>x.email===$('prueba-como').value); if(!u) return;
+  emailPrueba=u.email; usuarioActual=u.nombre;
+  actualizarUsuarioUI();
+  if(typeof ordenesCambioDeUsuario==='function') ordenesCambioDeUsuario();
+  toast('Ahora ves la app como '+u.nombre+'.');
+});
+
+/* ================= Órdenes de pago =================
+   Una orden de pago es una selección de movimientos pendientes que quien la emite le envía a otro
+   usuario para que la autorice. Se guarda en la colección "ordenes_pago" de Firestore (un
+   documento por orden, id "OP-0001", "OP-0002"… con un contador transaccional, así el número es
+   único aunque dos personas emitan a la vez) y se escucha en tiempo real, así la otra persona la
+   recibe al instante. En modo prueba usa una lista local en memoria.
+   Reglas: quien la emite puede modificarla o eliminarla hasta 36 hs después de emitirla, siempre
+   que nadie haya autorizado nada; con el primer movimiento autorizado ya no se puede cambiar ni
+   eliminar. Quien la recibe puede preguntar (sobre toda la orden o sobre un movimiento) y
+   autorizar los movimientos UNO POR UNO (o, a elección, todos a la vez). La orden VENCE a las 23:59
+   del día en que se emitió si no se autorizó por completo. Se puede programar para que se publique
+   (y se considere emitida) en un día y hora futuros; hasta entonces solo la ve quien la emitió.
+   Los movimientos de una orden vencida quedan libres para otra orden; mientras una orden esté
+   vigente (o el movimiento ya esté autorizado) no se puede asignar a otra.
+   Las dos partes reciben notificaciones (campanita + aviso al abrir) mientras esté pendiente o tenga novedades.
+   Las reglas se aplican en la aplicación; si se quiere blindarlas del lado del servidor, hay que
+   escribirlas también como reglas de Firestore. */
+const ORD_COL='ordenes_pago', ORD_META='ordenes_meta', ORD_VENTANA_MS=36*60*60*1000;
+const claveUsuario=e=>(e||'').toLowerCase().replace(/[^a-z0-9]/g,'_');
+function miEmail(){
+  if(modoPrueba) return emailPrueba;
+  try{ const u=firebase.auth().currentUser; return ((u&&u.email)||'').toLowerCase(); }catch(e){ return ''; }
+}
+function miPersona(){ return {email:miEmail(),nombre:usuarioActual||miEmail()}; }
+// Siempre es la misma persona quien autoriza o rechaza las órdenes de pago, y esa persona no las crea.
+const ORD_AUTORIZADOR='jose.bazzani@hotelcopahue.com';
+const autorizadorEmail=()=>modoPrueba?'prueba@prueba.com':ORD_AUTORIZADOR;
+const esAutorizador=()=>miEmail()===autorizadorEmail();
+function personaAutorizador(){
+  const em=autorizadorEmail(), u=(typeof usuarios!=='undefined'?usuarios:[]).find(x=>(x.email||'').toLowerCase()===em);
+  return {email:em,nombre:(u&&u.nombre)||(modoPrueba?'Usuario de Prueba':'José Bazzani')};
+}
+function actualizarBotonesOrdenes(){
+  const oculto=esAutorizador();
+  const n=$('ord-nueva'); if(n) n.hidden=oculto;
+  const g=$('btn-generar-orden'); if(g) g.style.display=oculto?'none':'';
+}
+const ahoraISO=()=>new Date().toISOString();
+const montoFmt=(n,mon)=>(mon==='USD'?'U$S ':'$ ')+money(n);
+
+const OrdenesDB={
+  lista:[], unsub:null, local:false, contadorLocal:0,
+  iniciar(){
+    if(this.unsub){ this.unsub(); this.unsub=null; }
+    if(modoPrueba||!db){ this.local=true; procesarCambiosOrdenes(true); return; }
+    this.local=false; this.lista=[];
+    let primera=true;
+    this.unsub=db.collection(ORD_COL).onSnapshot(snap=>{
+      this.lista=snap.docs.map(d=>d.data());
+      procesarCambiosOrdenes(primera); primera=false;
+    }, err=>{ console.warn('Órdenes de pago:',err); });
+  },
+  detener(){
+    if(this.unsub){ this.unsub(); this.unsub=null; }
+    this.lista=[]; ordenesPrevias=null; ordenForm=null; ordenesVista='lista'; ordenAbiertaId=null;
+    renderNotifOrdenes(); renderOrdenes();
+  },
+  async siguienteNumero(){
+    if(this.local) return ++this.contadorLocal;
+    const ref=db.collection(ORD_META).doc('contador');
+    return db.runTransaction(async tx=>{ const s=await tx.get(ref); const n=((s.exists&&s.data().n)||0)+1; tx.set(ref,{n}); return n; });
+  },
+  async crear(o){
+    if(this.local){ this.lista.push(o); procesarCambiosOrdenes(false); return; }
+    await db.collection(ORD_COL).doc(o.id).set(o);
+  },
+  // fn(ordenActual) valida y devuelve {set:{campo:valor,'lecturas.clave':ts}, union:{mensajes:[..],eventos:[..]}, eliminar:bool}
+  async mutar(id,fn){
+    if(this.local){
+      const o=this.lista.find(x=>x.id===id); if(!o) throw new Error('La orden ya no existe.');
+      const c=fn(JSON.parse(JSON.stringify(o)))||{};
+      if(c.eliminar) this.lista=this.lista.filter(x=>x.id!==id);
+      else {
+        Object.entries(c.set||{}).forEach(([k,v])=>{ if(k.includes('.')){ const [a,b]=k.split('.'); (o[a]=o[a]||{})[b]=v; } else o[k]=v; });
+        Object.entries(c.union||{}).forEach(([k,arr])=>{ o[k]=(o[k]||[]).concat(JSON.parse(JSON.stringify(arr))); });
+      }
+      procesarCambiosOrdenes(false); return;
+    }
+    const ref=db.collection(ORD_COL).doc(id);
+    await db.runTransaction(async tx=>{
+      const snap=await tx.get(ref); if(!snap.exists) throw new Error('La orden ya no existe.');
+      const c=fn(snap.data())||{};
+      if(c.eliminar){ tx.delete(ref); return; }
+      const upd={...(c.set||{})};
+      Object.entries(c.union||{}).forEach(([k,arr])=>{ upd[k]=firebase.firestore.FieldValue.arrayUnion(...arr); });
+      if(Object.keys(upd).length) tx.update(ref,upd);
+    });
+  }
+};
+
+// ---- Estado de pantalla ----
+let ordenesVista='lista';      // 'lista' | 'detalle' | 'form'
+let ordenesFiltro='recibidas'; // 'recibidas' (Pendientes) | 'emitidas' | 'autorizadas' | 'todas'
+let ordenAbiertaId=null;
+let ordNotasAbiertas={};   // comentarios de ítem desplegados: 'OP-0001|rowId' -> true
+let ordNotaTimer=null;
+let ordenBusqueda='';   // texto buscado dentro del detalle de una orden
+// Búsqueda por palabras (sin importar mayúsculas ni tildes): todas las palabras tienen que aparecer.
+const ordTerminos=()=>sinTildes(ordenBusqueda).split(/\s+/).filter(Boolean);
+const ordCoincide=(texto,ter)=>{ const t=sinTildes(texto); return ter.every(w=>t.includes(w)); };
+// Dónde coincide la búsqueda para un ítem: su ficha, su nota o sus conversaciones/preguntas
+function ordDondeCoincide(o,i){
+  const ter=ordTerminos(); if(!ter.length) return [];
+  const ficha=[i.item,i.rubro,i.detalle,i.metodo,i.mesPago].join(' ');
+  const nota=i.comentario||'';
+  const conv=mensajesItem(o,i.rowId).map(m=>m.texto+' '+m.autorNombre).join(' ');
+  const todo=[ficha,nota,conv].join(' ');
+  if(!ordCoincide(todo,ter)) return [];
+  const r=[];
+  if(ordCoincide(ficha,ter)) r.push('ítem');
+  if(nota&&ordCoincide(nota,ter)) r.push('nota');
+  if(conv&&ordCoincide(conv,ter)) r.push('conversación');
+  return r.length?r:['ítem + comentarios'];
+}
+const ordMsgCoincide=m=>{ const ter=ordTerminos(); return ter.length>0 && ordCoincide(m.texto+' '+m.autorNombre,ter); };
+let ordenDetalleOrden='alfa';  // orden dentro de cada método en el detalle: 'alfa' | 'importe'
+let ordenForm=null;            // {editId, receptor, comentarioGeneral, agrupar, orden, sel:{rowId:{comentario,metodo}}, meta:{rowId:item}}
+let ordenesPrevias=null;       // id -> {msgs,estado,edit}: último estado visto, para detectar novedades
+
+// ---- Utilidades de datos ----
+const finDelDiaTs=iso=>{ const d=new Date(iso); d.setHours(23,59,59,999); return d.getTime(); };
+// Estado efectivo (se calcula con la hora actual, no se guarda):
+// 'programada' | 'pendiente' | 'parcial' | 'vencida' | 'autorizada' | 'resuelta' (mezcla de autorizados y rechazados) | 'rechazada'
+function estadoOrden(o){
+  const items=o.items||[], n=items.length, nA=items.filter(i=>i.aut).length, nR=items.filter(i=>i.rech).length;
+  if((n&&nA===n) || (o.estado==='autorizada'&&!nR)) return 'autorizada';
+  if(n&&nA+nR===n) return nR===n?'rechazada':'resuelta';
+  const ahora=Date.now();
+  if(Date.parse(o.emitidaTs)>ahora) return 'programada';
+  if(ahora>finDelDiaTs(o.emitidaTs)) return 'vencida';
+  return (nA+nR)?'parcial':'pendiente';
+}
+const ordenVigente=o=>['programada','pendiente','parcial'].includes(estadoOrden(o));
+const ordenAbierta=o=>['pendiente','parcial'].includes(estadoOrden(o));   // admite mensajes y decisiones
+const itemsAutorizados=o=>(o.items||[]).filter(i=>i.aut).length;
+const itemsRechazados=o=>(o.items||[]).filter(i=>i.rech).length;
+const itemsResueltos=o=>itemsAutorizados(o)+itemsRechazados(o);
+const itemPendiente=i=>!i.aut&&!i.rech;
+const venceTsISO=o=>new Date(finDelDiaTs(o.emitidaTs)).toISOString();
+// El receptor no ve una orden programada hasta que llega su hora de publicación.
+function misOrdenes(){ const e=miEmail(); return OrdenesDB.lista.filter(o=>o.emisor.email===e||(esAutorizador()&&estadoOrden(o)!=='programada')); }
+function ordenPorId(id){ return OrdenesDB.lista.find(o=>o.id===id); }
+function ultimaActividad(o){
+  const ms=(o.mensajes||[]).map(m=>m.ts);
+  const aut=(o.items||[]).map(i=>i.aut?i.aut.ts:(i.rech?i.rech.ts:''));
+  const ven=estadoOrden(o)==='vencida'?[venceTsISO(o)]:[];
+  return [o.emitidaTs,o.editadaTs,o.autorizadaTs,...ms,...aut,...ven].filter(Boolean).sort().pop()||'';
+}
+function lecturaMia(o){ return (o.lecturas||{})[claveUsuario(miEmail())]||''; }
+// Lectura de mensajes: "G" = comentarios generales (uno solo por orden); "I" = conversaciones de cada ítem (una marca por ítem)
+const claveItemLect=rowId=>claveUsuario(miEmail())+'__'+claveUsuario(rowId);
+const mensajesG=o=>(o.mensajes||[]).filter(m=>!m.rowId);
+const mensajesItem=(o,rowId)=>(o.mensajes||[]).filter(m=>m.rowId===rowId);
+function sinLeerG(o){ const l=((o.leidoG||{})[claveUsuario(miEmail())])||'', e=miEmail(); return mensajesG(o).filter(m=>m.autorEmail!==e&&m.ts>l).length; }
+function sinLeerItem(o,rowId){ const l=((o.leidoI||{})[claveItemLect(rowId)])||'', e=miEmail(); return mensajesItem(o,rowId).filter(m=>m.autorEmail!==e&&m.ts>l).length; }
+const sinLeerI=o=>[...new Set((o.mensajes||[]).filter(m=>m.rowId).map(m=>m.rowId))].reduce((s,id)=>s+sinLeerItem(o,id),0);
+const mensajesSinLeer=o=>sinLeerG(o)+sinLeerI(o);
+function tsLectura(ms){ const ahora=ahoraISO(), ult=ms.map(m=>m.ts).sort().pop()||''; return ult>ahora?ult:ahora; }
+function marcarGLeida(o){
+  if(!sinLeerG(o)) return;
+  const k=claveUsuario(miEmail()), ts=tsLectura(mensajesG(o));
+  OrdenesDB.mutar(o.id,()=>({set:{['leidoG.'+k]:ts}})).catch(()=>{});
+}
+function marcarItemLeido(o,rowId){
+  if(!sinLeerItem(o,rowId)) return;
+  const k=claveItemLect(rowId), ts=tsLectura(mensajesItem(o,rowId));
+  OrdenesDB.mutar(o.id,()=>({set:{['leidoI.'+k]:ts}})).catch(()=>{});
+}
+function marcarILeida(o){ [...new Set((o.mensajes||[]).filter(m=>m.rowId).map(m=>m.rowId))].forEach(id=>marcarItemLeido(o,id)); }
+function autorizacionesSinLeer(o){ const l=lecturaMia(o); return (o.items||[]).filter(i=>i.aut&&i.aut.ts>l).length; }
+function rechazosSinLeer(o){ const l=lecturaMia(o); return (o.items||[]).filter(i=>i.rech&&i.rech.ts>l).length; }
+function vencimientoSinLeer(o){ return estadoOrden(o)==='vencida' && o.emisor.email===miEmail() && venceTsISO(o)>lecturaMia(o); }
+function novedadesOrden(o){
+  const l=lecturaMia(o), e=miEmail();
+  let n=mensajesSinLeer(o);
+  if(o.emisor.email===e){ n+=autorizacionesSinLeer(o)+rechazosSinLeer(o); if(vencimientoSinLeer(o)) n++; }
+  if(o.editadaTs && esAutorizador() && o.editadaTs>l) n++;
+  return n;
+}
+function msRestantes(o){ return ORD_VENTANA_MS-(Date.now()-Date.parse(o.emitidaTs)); }
+// Se puede modificar/eliminar mientras siga vigente sin ningún movimiento autorizado y dentro de las 36 hs.
+function puedeModificar(o){ return ['programada','pendiente'].includes(estadoOrden(o)) && o.emisor.email===miEmail() && msRestantes(o)>0; }
+function limiteModificar(o){ return fmtFechaHora(new Date(Math.min(Date.parse(o.emitidaTs)+ORD_VENTANA_MS,finDelDiaTs(o.emitidaTs))).toISOString()); }
+function marcarLeida(o){
+  const k=claveUsuario(miEmail()), act=ultimaActividad(o);
+  if((o.lecturas||{})[k]>=act && act) return;
+  const ahora=ahoraISO(), ts=act>ahora?act:ahora;
+  OrdenesDB.mutar(o.id,()=>({set:{['lecturas.'+k]:ts}})).catch(()=>{});
+}
+function totalesDe(items){ const t={}; items.forEach(i=>{ const m=i.moneda||'ARS'; t[m]=(t[m]||0)+(+i.importe||0); }); return t; }
+function totalesTxt(items){ const t=totalesDe(items), k=Object.keys(t).sort(); return k.length?k.map(m=>montoFmt(t[m],m)).join(' + '):'—'; }
+function ordenarItems(arr,modo){
+  const a=arr.slice();
+  if(modo==='importe') a.sort((x,y)=>(+y.importe||0)-(+x.importe||0)||(x.item||'').localeCompare(y.item||'','es'));
+  else if(modo==='importe-asc') a.sort((x,y)=>(+x.importe||0)-(+y.importe||0)||(x.item||'').localeCompare(y.item||'','es'));
+  else a.sort((x,y)=>(x.item||'').localeCompare(y.item||'','es'));
+  return a;
+}
+function agruparPorMetodo(items,modo){
+  const g={}; items.forEach(i=>{ const k=i.metodo||''; (g[k]=g[k]||[]).push(i); });
+  return Object.keys(g).sort((a,b)=>a===''?1:b===''?-1:a.localeCompare(b,'es')).map(k=>({metodo:k,items:ordenarItems(g[k],modo)}));
+}
+const etiquetaMetodo=m=>m||'Sin método de pago definido';
+
+// Movimientos que se pueden incluir en una orden: gastos impagos del mes en curso, los que se
+// pagan en la tanda de esta semana (incluye atrasados) y los de meses anteriores todavía impagos.
+// E-cheq ya emitido con fecha diferida: el pago ya está abonado y solo espera que llegue la fecha (se
+// debita solo). No pasa por Pagos semanales ni por las órdenes de pago (eso es para lo que todavía
+// espera aprobación); queda en Registrados como impago hasta que se cumpla la última fecha.
+function esEcheqPendiente(r){
+  if(!r||r.tipo!=='gasto'||r.pago) return false;
+  if(r.echeqEmitido) return true;
+  return !!(r.dividido&&Array.isArray(r.cuotas)&&r.cuotas.length&&r.cuotas.every(c=>c.metodoPago==='E-cheq'));
+}
+function itemDeRow(r){
+  let venc=r.fechaVenc||'';
+  if(r.dividido&&Array.isArray(r.cuotas)){ const f=r.cuotas.filter(c=>!c.pago&&c.fecha).map(c=>c.fecha).sort(); venc=f[0]||''; }
+  return {rowId:r.id,item:nombreDe(r),rubro:r.rubro||'',importe:r.dividido?saldoCuotas(r):(+r.bruto||0),moneda:r.moneda||'ARS',venc,metodo:r.metodoTentativo||'',detalle:r.detalle||'',mesPago:r.mesPago||'',dividido:!!r.dividido,pospuesto:!!r.pospuesto};
+}
+function candidatosOrden(){
+  const hasta=limitesSemana(0).hasta, mesAct=mesActual();
+  const out=[];
+  rows.forEach(r=>{
+    if(r.tipo!=='gasto'||r.pago||esEcheqPendiente(r)) return;
+    const it=itemDeRow(r);
+    const enSemana=!r.pospuesto && (r.dividido&&Array.isArray(r.cuotas) ? r.cuotas.some(c=>!c.pago&&c.fecha&&c.fecha<=hasta) : !!(r.fechaVenc&&r.fechaVenc<=hasta));
+    const mes=r.mesPago||mesAct;
+    const grupo=enSemana?'semana':(mes===mesAct?'adelante':(mes<mesAct?'viejos':null));
+    if(grupo) out.push({it,grupo});
+  });
+  return out;
+}
+function itemsEnOrdenesActivas(exceptoId){
+  const m={};
+  // Un movimiento queda reservado mientras su orden esté vigente (sin vencer) o si ya fue autorizado;
+  // los de una orden vencida (no autorizados) o rechazados vuelven a estar disponibles.
+  OrdenesDB.lista.forEach(o=>{ if(o.id===exceptoId) return; const vig=ordenVigente(o); (o.items||[]).forEach(i=>{ if((vig&&!i.rech)||i.aut) m[i.rowId]=o.id; }); });
+  return m;
+}
+
+// ---- Notificaciones ----
+function notificacionesOrdenes(){
+  const lista=[], e=miEmail();
+  misOrdenes().sort((a,b)=>b.numero-a.numero).forEach(o=>{
+    const soyRec=esAutorizador(), soyEmi=o.emisor.email===e, est=estadoOrden(o), n=(o.items||[]).length;
+    if(est==='programada'&&soyEmi) lista.push({id:o.id,texto:`${o.id} programada: se publicará el ${fmtFechaHora(o.emitidaTs)}`,ts:o.emitidaTs});
+    if(est==='pendiente'||est==='parcial'){
+      const parc=est==='parcial'?` (${itemsResueltos(o)} de ${n} resueltos)`:'';
+      if(soyRec) lista.push({id:o.id,texto:`${o.id} de ${o.emisor.nombre}: pendiente de tu aprobación${parc}`,ts:o.emitidaTs,fuerte:true});
+      else if(soyEmi) lista.push({id:o.id,texto:`${o.id} emitida: pendiente de aprobación${parc}`,ts:o.emitidaTs});
+    }
+    const nc=mensajesSinLeer(o);
+    if(nc) lista.push({id:o.id,texto:`${o.id} tiene ${nc} comentario${nc===1?'':'s'} nuevo${nc===1?'':'s'}`,ts:ultimaActividad(o),fuerte:true});
+    if(soyEmi){
+      const a=autorizacionesSinLeer(o), r=rechazosSinLeer(o);
+      if(a||r){
+        const partes=[a?`se autorizaron ${a} movimiento${a===1?'':'s'}`:'',r?`se rechazaron ${r}`:''].filter(Boolean).join(' y ');
+        lista.push({id:o.id,texto:est==='autorizada'?`${o.id} fue autorizada por completo`:`${o.id}: ${partes}`,ts:ultimaActividad(o),fuerte:true});
+      }
+    }
+    if(vencimientoSinLeer(o)) lista.push({id:o.id,texto:`${o.id} venció sin resolverse por completo (${itemsResueltos(o)} de ${n} resueltos)`,ts:venceTsISO(o),fuerte:true});
+    if(o.editadaTs&&soyRec&&ordenAbierta(o)&&o.editadaTs>lecturaMia(o)) lista.push({id:o.id,texto:`${o.id} fue modificada por ${o.emisor.nombre}`,ts:o.editadaTs,fuerte:true});
+  });
+  return lista;
+}
+function renderNotifOrdenes(){
+  const n=notificacionesOrdenes().length;
+  [['notif-badge',n],['atajo-ordenes-badge',n],['ord-badge',n]].forEach(([id,cant])=>{
+    const el=$(id); if(!el) return;
+    el.hidden=!cant; el.textContent=cant;
+  });
+  if(!$('notif-pop').hidden) pintarPopoverNotif();
+}
+function pintarPopoverNotif(){
+  const l=notificacionesOrdenes();
+  $('notif-lista').innerHTML = l.length
+    ? l.map(x=>`<div class="notif-item${x.fuerte?' fuerte':''}" data-notif-orden="${esc(x.id)}" role="button" tabindex="0"><div>${esc(x.texto)}</div><div class="notif-fecha">${fmtFechaHora(x.ts)}</div></div>`).join('')
+    : '<div class="empty">No tenés notificaciones de órdenes de pago.</div>';
+}
+
+// Se llama con cada cambio de la lista de órdenes (Firestore en vivo o lista local) y cada 30 s
+// (para detectar órdenes programadas que llegan a su hora y órdenes que vencen a las 23:59).
+let firmaAutorizados='';
+function procesarCambiosOrdenes(primera){
+  const e=miEmail(), mias=misOrdenes(), avisos=[];
+  const esPrimera=(!ordenesPrevias || primera);
+  if(esPrimera){
+    const pend=mias.filter(o=>ordenAbierta(o)&&esAutorizador()).length;
+    const nov=mias.filter(o=>novedadesOrden(o)>0).length;
+    if(pend) avisos.push(`Tenés ${pend} orden${pend===1?'':'es'} de pago pendiente${pend===1?'':'s'} de tu autorización`);
+    if(nov) avisos.push(`${nov} orden${nov===1?'':'es'} con novedades`);
+  } else {
+    mias.forEach(o=>{
+      const p=ordenesPrevias[o.id], est=estadoOrden(o);
+      if(!p){ if(esAutorizador()&&o.emisor.email!==e) avisos.push(`Nueva orden de pago ${o.id} de ${o.emisor.nombre}: pendiente de tu autorización`); return; }
+      const nuevos=(o.mensajes||[]).slice(p.msgs).filter(m=>m.autorEmail!==e);
+      if(nuevos.length) avisos.push(`${o.id}: ${nuevos[nuevos.length-1].autorNombre} dejó un comentario`);
+      if(o.emisor.email===e){
+        const res=itemsResueltos(o);
+        if(res>p.res) avisos.push(est==='autorizada'?`${o.id} fue autorizada por completo`:est==='rechazada'?`${o.id} fue rechazada por completo`:`${o.id}: ${res} de ${(o.items||[]).length} movimientos resueltos (${itemsAutorizados(o)} autorizados, ${itemsRechazados(o)} rechazados)`);
+        if(est==='vencida'&&p.estado!=='vencida') avisos.push(`${o.id} venció sin ser aprobada por completo`);
+        if(p.estado==='programada'&&est!=='programada') avisos.push(`${o.id} se publicó y ya está disponible para autorizarse`);
+      }
+      if(o.editadaTs&&o.editadaTs!==p.edit&&esAutorizador()) avisos.push(`${o.id} fue modificada por ${o.emisor.nombre}`);
+    });
+  }
+  ordenesPrevias={}; mias.forEach(o=>{ ordenesPrevias[o.id]={msgs:(o.mensajes||[]).length,estado:estadoOrden(o),edit:o.editadaTs||'',res:itemsResueltos(o)}; });
+  if(ordenAbiertaId && !ordenPorId(ordenAbiertaId) && ordenesVista==='detalle'){ ordenesVista='lista'; ordenAbiertaId=null; }
+  actualizarBotonesOrdenes();
+  renderNotifOrdenes();
+  // las tablas de movimientos marcan los autorizados con su orden: se repintan solo si eso cambió
+  const firma=OrdenesDB.lista.map(o=>o.id+'='+(ordenAbierta(o)?'a':'c')+':'+(o.items||[]).map(i=>i.rowId+(i.aut?'+':(i.rech?'-':''))).join(',')).join('|');
+  if(firma!==firmaAutorizados){ firmaAutorizados=firma; try{ renderSemana(); renderTabla(filteredTabla()); }catch(err){} }
+  if(avisos.length){
+    toast('⚠ '+avisos.slice(0,2).join(' · '));
+    // Al ingresar todas las solapas arrancan cerradas: el panel solo se abre solo cuando llega algo nuevo mientras se usa el sistema.
+    if(!esPrimera) abrirPanelOrdenes();
+  }
+  if(!$('ord-body').hidden && ordenesVista!=='form') renderOrdenes();
+}
+setInterval(()=>{ if(ordenesPrevias) procesarCambiosOrdenes(false); },30000);
+// "Ventana emergente especial": al llegar una orden o un comentario, se despliega el panel de
+// Órdenes de pago (salvo que se esté en plena carga de otra orden, para no pisarla).
+function abrirPanelOrdenes(){
+  if(!$('ord-body').hidden) return;
+  toggleOrdenes(true);
+  setTimeout(()=>{ const s=$('panel-ordenes'); s.scrollIntoView({behavior:'smooth',block:'start'}); s.classList.remove('atajo-flash'); requestAnimationFrame(()=>{ s.classList.add('atajo-flash'); setTimeout(()=>s.classList.remove('atajo-flash'),1000); }); },60);
+}
+// Movimientos autorizados en una orden: se marcan en Pagos semanales con una franja lateral y una
+// chip "✓ OP-0003" dentro de la celda Detalle (sin columnas nuevas ni más altura de fila).
+function opAutorizadaDe(rowId){
+  // 1º: la orden donde el movimiento ya fue autorizado; 2º: una orden vigente (pendiente/parcial) que lo incluye sin autorizar
+  let aut=null, pend=null;
+  OrdenesDB.lista.forEach(o=>{ (o.items||[]).forEach(i=>{
+    if(i.rowId!==rowId) return;
+    if(i.aut){ if(!aut||Date.parse(i.aut.ts)>Date.parse(aut.item.aut.ts)) aut={orden:o,item:i,aprobado:true}; }
+    else if(!i.rech&&ordenAbierta(o)){ pend={orden:o,item:i,aprobado:false}; }
+  }); });
+  return aut||pend;
+}
+function chipOrdenHtml(x){
+  if(x.aprobado){
+    const t=`Aprobado en la orden ${x.orden.id} por ${x.item.aut.por.nombre} el ${fmtFechaHora(x.item.aut.ts)} — tocá para abrirla`;
+    return `<span class="chip-op" role="button" tabindex="0" data-ver-orden="${esc(x.orden.id)}" title="${esc(t)}">✓ ${esc(x.orden.id)}</span>`;
+  }
+  const t=`En la orden ${x.orden.id} (emitida por ${x.orden.emisor.nombre}), pendiente de autorización. Vence hoy a las 23:59 — tocá para abrirla`;
+  return `<span class="chip-op pend" role="button" tabindex="0" data-ver-orden="${esc(x.orden.id)}" title="${esc(t)}">⏳ ${esc(x.orden.id)} pendiente</span>`;
+}
+document.addEventListener('click',e=>{
+  const c=e.target.closest('[data-ver-orden]'); if(!c) return;
+  e.stopPropagation();
+  const id=c.dataset.verOrden; if(!ordenPorId(id)) return;
+  ordenAbiertaId=id; ordenesVista='detalle'; ordenForm=null; ordSecOrden=null;
+  abrirPanelOrdenesYMostrar();
+},true);
+function iniciarOrdenes(){ OrdenesDB.iniciar(); }
+function ordenesCambioDeUsuario(){  // solo modo prueba: cambiar el usuario ficticio con el que se ve la app
+  ordenesVista='lista'; ordenesFiltro='recibidas'; ordenAbiertaId=null; ordenForm=null; ordenesPrevias=null; cerrarModalOrden();
+  procesarCambiosOrdenes(true);
+  renderOrdenes();
+}
+let ordenesMantener=false;   // true cuando el panel se abre para mostrar algo puntual (una orden, el formulario)
+function toggleOrdenes(force){
+  const estaba=!$('ord-body').hidden;
+  togglePanel('ord-body','ord-chev','ord-toggle','ord-hint','(toca para ver las órdenes de pago)',force);
+  if(!$('ord-body').hidden){
+    // Al entrar siempre se arranca en la hoja "Pendientes"
+    if(!estaba && !ordenesMantener){ ordenesVista='lista'; ordenesFiltro='recibidas'; ordenAbiertaId=null; ordenForm=null; cerrarModalOrden(); }
+    renderOrdenes();
+  }
+}
+
+// ---- Pantallas ----
+const hayEmitidas=()=>{ const e=miEmail(); return OrdenesDB.lista.some(o=>o.emisor.email===e); };
+function renderOrdenes(){
+  actualizarBotonesOrdenes();
+  if($('ord-body').hidden) return;
+  // "Emitidas por mí" solo existe para quienes alguna vez emitieron una orden
+  const hayEm=hayEmitidas();
+  $('ord-tab-emitidas').hidden=!hayEm;
+  if(!hayEm&&ordenesFiltro==='emitidas') ordenesFiltro='recibidas';
+  document.querySelectorAll('#ord-tabs [data-ord-filtro]').forEach(b=>{ b.classList.toggle('on', ordenesVista!=='form' && b.dataset.ordFiltro===ordenesFiltro); });
+  if(ordenesVista!=='detalle') $('ord-zona').style.minHeight='';
+  if(ordenesVista==='form' && ordenForm) renderOrdenForm();
+  else if(ordenesVista==='detalle' && ordenPorId(ordenAbiertaId)) renderOrdenDetalle();
+  else { ordenesVista='lista'; renderOrdenesLista(); }
+  if(ordModal) pintarModalOrden();
+  if(typeof ajustarAnchoPaneles==='function') ajustarAnchoPaneles();
+}
+function estadoOrdenTxt(o){
+  const est=estadoOrden(o), n=(o.items||[]).length;
+  if(est==='autorizada') return `<span class="ord-estado aut">Autorizada ${fmtFechaHora(o.autorizadaTs||ultimaActividad(o))}</span>`;
+  if(est==='resuelta') return `<span class="ord-estado aut">Resuelta: ${itemsAutorizados(o)} autorizados · ${itemsRechazados(o)} rechazados</span>`;
+  if(est==='rechazada') return `<span class="ord-estado venc">Rechazada por completo</span>`;
+  if(est==='programada') return `<span class="ord-estado prog">Programada para ${fmtFechaHora(o.emitidaTs)}</span>`;
+  if(est==='vencida') return `<span class="ord-estado venc">Vencida ${fmtFechaHora(venceTsISO(o))}${itemsResueltos(o)?` · ${itemsResueltos(o)} de ${n} resueltos`:''}</span>`;
+  if(est==='parcial') return `<span class="ord-estado pend">Parcial: ${itemsResueltos(o)} de ${n} resueltos</span>`;
+  return `<span class="ord-estado pend">Pendiente de autorización</span>`;
+}
+const itemsActivos=o=>(o.items||[]).filter(i=>!i.rech);   // lo que realmente se paga: los rechazados no suman
+const ordFilasAbiertas=new Set();
+const ORD_VACIO={recibidas:'No tenés órdenes de pago pendientes de autorización.',emitidas:'Todavía no emitiste ninguna orden de pago.',autorizadas:'Todavía no hay órdenes de pago autorizadas.',todas:'Todavía no hay órdenes de pago.'};
+function filtrarOrdenes(){
+  const e=miEmail();
+  let l=misOrdenes();
+  if(ordenesFiltro==='recibidas') l=l.filter(ordenAbierta);
+  else if(ordenesFiltro==='emitidas') l=l.filter(o=>o.emisor.email===e);
+  else if(ordenesFiltro==='autorizadas') l=l.filter(o=>['autorizada','resuelta'].includes(estadoOrden(o)));
+  // de la más nueva a la más antigua según cuándo se emitió (una orden programada cuenta desde que se publica)
+  return l.sort((a,b)=>(Date.parse(b.emitidaTs)||0)-(Date.parse(a.emitidaTs)||0)||b.numero-a.numero);
+}
+function estadoItemTxt(i){ return i.aut?'<span class="ord-sub-est ok">✓ autorizado</span>':i.rech?'<span class="ord-sub-est no">✕ rechazado</span>':'<span class="ord-sub-est"></span>'; }
+function subListaOrden(o){
+  return agruparPorMetodo(o.items||[],'alfa').map(g=>`<div class="ord-sub-met"><div class="ord-met">${esc(etiquetaMetodo(g.metodo))}</div>${g.items.map(i=>
+    `<div class="ord-sub-it"><button type="button" class="ord-nombre" data-ord-info="${esc(i.rowId)}" data-ord-de="${esc(o.id)}">${esc(i.item)}</button><span class="ord-imp">${montoFmt(i.importe,i.moneda)}</span>${estadoItemTxt(i)}</div>`).join('')}</div>`).join('');
+}
+function renderOrdenesLista(){
+  const e=miEmail(), l=filtrarOrdenes();
+  if(!l.length){ $('ord-zona').innerHTML=`<div class="empty">${ORD_VACIO[ordenesFiltro]}</div>`; return; }
+  $('ord-zona').innerHTML=`<div class="tablacompacta"><table class="ord-tabla"><thead><tr><th class="ord-flecha-col"></th><th>N°</th><th>Emitida</th><th>De</th><th>Ítems</th><th class="num">Total</th><th>Estado</th><th></th></tr></thead><tbody>`+
+    l.map(o=>{
+      const nov=novedadesOrden(o), abierta=ordFilasAbiertas.has(o.id), est0=estadoOrden(o);
+      const editable=puedeModificar(o)?`<div class="ord-sub">modificable hasta ${limiteModificar(o)}</div>`:'';
+      return `<tr class="ord-fila-lista${nov?' con-novedad':''}${abierta?' desplegada':''}" data-ord-abrir="${esc(o.id)}" tabindex="0">
+        <td class="ord-flecha-col"><button type="button" class="ord-flecha" data-ord-flecha="${esc(o.id)}" aria-expanded="${abierta}" title="${abierta?'Ocultar':'Ver'} los ítems de la orden">${abierta?'▾':'▸'}</button></td>
+        <td><b>${esc(o.id)}</b></td><td>${fmtFechaHora(o.emitidaTs)}</td>
+        <td>${esc(o.emisor.nombre)}${o.emisor.email===e?' <span class="tag">vos</span>':''}</td>
+        <td>${itemsActivos(o).length}</td><td class="num">${totalesTxt(itemsActivos(o))}</td>
+        <td>${(est0==='pendiente'&&ordenesFiltro==='recibidas')?'':estadoOrdenTxt(o)}${editable}</td>
+        <td>${nov?`<span class="aviso-posp-badge">${nov} novedad${nov===1?'':'es'}</span>`:''}</td></tr>`
+        +(abierta?`<tr class="ord-subfila"><td></td><td colspan="7"><div class="ord-sublista">${subListaOrden(o)}</div></td></tr>`:'');
+    }).join('')+`</tbody></table></div>`;
+}
+
+// Color de cada mensaje según quien lo dejó (quien autoriza siempre en verde)
+function claseAutor(email){
+  email=(email||'').toLowerCase();
+  if(email===autorizadorEmail()) return 'a0';
+  let s=0; for(const c of email) s=(s*31+c.charCodeAt(0))>>>0;
+  return 'a'+(1+s%5);
+}
+// Hilo: cada respuesta se corre un poco a la derecha de aquello a lo que responde
+function profundidadMsg(m,lista){
+  const porId={}; lista.forEach(x=>{ porId[x.id]=x; });
+  const padre=x=>{ if(x.parent&&porId[x.parent]) return porId[x.parent]; const i=lista.indexOf(x); return i>0?lista[i-1]:null; };
+  let d=0, cur=m;
+  while(d<12){ const p=padre(cur); if(!p) break; d++; cur=p; }
+  return Math.min(d,8);
+}
+let ordResponder=null, ordRespTxt='', ordRespFoco=false;   // mensaje al que se está respondiendo (en la misma ventana)
+function mensajeHtml(m,items,op){
+  op=op||{};
+  const sobre=m.rowId?(items.find(i=>i.rowId===m.rowId)||{}).item:'';
+  const d=op.lista?profundidadMsg(m,op.lista):0;
+  let h=`<div class="ord-msg ${claseAutor(m.autorEmail)}${op.inline?' clic':''}${ordMsgCoincide(m)?' ord-hit':''}"${op.inline?` data-ord-msg="${esc(m.id)}" title="Tocá para responder"`:''} style="margin-left:${12+d*20}px"><div class="ord-msg-cab"><b>${esc(m.autorNombre)}</b> · ${fmtFechaHora(m.ts)}${sobre?` · sobre <i>${esc(sobre)}</i>`:''}</div><div>${esc(m.texto).replace(/\n/g,'<br>')}</div></div>`;
+  if(op.inline && ordResponder===m.id)
+    h+=`<div class="ord-resp" style="margin-left:${12+(d+1)*20}px"><textarea class="ord-resp-texto" rows="2" placeholder="Escribí tu respuesta… (Enter para enviar, Shift+Enter para otra línea)"></textarea><div class="om-botones"><button type="button" data-ord-accion="enviar-resp">Enviar</button><button type="button" class="ghost" data-ord-accion="cancelar-resp">Cancelar</button></div></div>`;
+  return h;
+}
+// Botones cuadrados de cada ítem: ✓ autorizar (verde), ✕ rechazar (rojo), ¿? preguntar (naranja).
+// Un botón "marcado" cambia a un tono lleno. Para deshacer (15 min) se vuelve a tocar el botón marcado.
+function botonesItem(o,i,soyRec,abierta){
+  const rid=esc(i.rowId), nm=mensajesItem(o,i.rowId).length, sl=sinLeerItem(o,i.rowId);
+  let h='';
+  if(i.aut||i.rech){
+    const d=i.aut||i.rech, tipo=i.aut?'ok':'no', sim=i.aut?'✓':'✕', que=i.aut?'Autorizado':'Rechazado';
+    const base=`${que} por ${esc(d.por.nombre)} el ${fmtFechaHora(d.ts)}`;
+    if(puedeDeshacer(o,i)) h+=`<button type="button" class="ord-sq ${tipo} on" data-ord-deshacer="${rid}" title="${base}. Tocá de nuevo para deshacerlo (hasta las ${new Date(Date.parse(d.ts)+ORD_UNDO_MS).toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})})">${sim}</button>`;
+    else h+=`<span class="ord-sq ${tipo} on" title="${base}">${sim}</span>`;
+  }
+  else if(abierta&&soyRec) h+=`<button type="button" class="ord-sq ok" data-ord-aut="${rid}" title="Autorizar">✓</button><button type="button" class="ord-sq no" data-ord-rech="${rid}" title="Rechazar">✕</button>`;
+  if(nm||(abierta&&soyRec&&itemPendiente(i)))
+    h+=`<button type="button" class="ord-sq q${nm?' on':''}" data-ord-preg="${rid}" title="${nm?'Ver la conversación ('+nm+' mensaje'+(nm===1?'':'s')+')':'Preguntar'}">¿?${sl?'<i class="ord-pt"></i>':''}</button>`;
+  return h;
+}
+const convOculta=(o,rowId)=>!!((o.ocultoI||{})[claveItemLect(rowId)]);   // preferencia de cada usuario, guardada en la orden
+const ICO_OJO='<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+const ICO_OJO_X='<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/><path d="M3 3l18 18"/></svg>';
+let ordSecAbiertas={G:false,I:false}, ordSecOrden=null, ordSecDonde={G:'arriba',I:'arriba'};
+function renderOrdenDetalle(){
+  const o=ordenPorId(ordenAbiertaId); if(!o){ ordenesVista='lista'; renderOrdenesLista(); return; }
+  if(ordSecOrden!==o.id){ ordSecAbiertas={G:false,I:false}; ordSecOrden=o.id; ordResponder=null; ordRespTxt=''; }
+  const e=miEmail(), soyRec=esAutorizador(), soyEmi=o.emisor.email===e, est=estadoOrden(o);
+  // conservar lo que se estaba escribiendo (y el foco) si el detalle se repinta por un cambio en vivo
+  const txtPrevio=($('ord-msg-texto')||{}).value||'', teniaFoco=document.activeElement&&document.activeElement.id==='ord-msg-texto';
+  const rt=document.querySelector('.ord-resp-texto'); if(rt){ ordRespTxt=rt.value; if(document.activeElement===rt) ordRespFoco=true; }
+  const scrolls=[...document.querySelectorAll('.ord-sec-pop')].map(p=>p.scrollTop);
+  const items=o.items||[], n=items.length;
+  const buscando=ordTerminos().length>0;
+  // el comentario de un ítem solo se ve si se lo despliega (o si la búsqueda coincide justo en esa nota)
+  const notaAbierta=i=>!!i.comentario && (!!ordNotasAbiertas[o.id+'|'+i.rowId] || (buscando && (hallazgos[i.rowId]||[]).includes('nota')));
+  const hallazgos={}; if(buscando) items.forEach(i=>{ const d=ordDondeCoincide(o,i); if(d.length) hallazgos[i.rowId]=d; });
+  const itemsVista=buscando?items.filter(i=>hallazgos[i.rowId]):items;
+  const nGenHit=buscando?mensajesG(o).filter(ordMsgCoincide).length:0;
+  const grupos=agruparPorMetodo(itemsVista,ordenDetalleOrden);
+  const abierta=ordenAbierta(o);
+  const pendientes=items.filter(itemPendiente);
+  const acciones=[];
+  if(puedeModificar(o)) acciones.push(`<button type="button" class="ghost" data-ord-accion="editar">Modificar</button><button type="button" class="ghost peligro" data-ord-accion="eliminar">Eliminar</button>`);
+  const info=[];
+  const venceTxt=ordenAbierta(o)?`<span class="ord-sep">|</span>Vence hoy 23:59hs`:(est==='programada'?`<span class="ord-sep">|</span>Vence el ${new Date(o.emitidaTs).toLocaleDateString('es-AR')} 23:59hs`:'');
+  info.push(`${est==='programada'?'Programada por':'Emitida por'} <b>${esc(o.emisor.nombre)}</b> ${est==='programada'?'para publicarse el':'el'} ${fmtFechaHora(o.emitidaTs)}${venceTxt}`);
+  if(est==='programada') info.push(`Hasta que llegue esa fecha y hora solo la ves vos; quien debe autorizarla no recibe ninguna notificación.`);
+  if(o.editadaTs) info.push(`Modificada el ${fmtFechaHora(o.editadaTs)}`);
+  if(est==='autorizada') info.push(`<b>Autorizada por completo${o.autorizadaPor?' por '+esc(o.autorizadaPor.nombre):''} el ${fmtFechaHora(o.autorizadaTs||ultimaActividad(o))}</b> — ya no se puede modificar ni eliminar.`);
+  else if(est==='resuelta') info.push(`<b>Resuelta:</b> ${itemsAutorizados(o)} movimientos autorizados y ${itemsRechazados(o)} rechazados. Los rechazados quedaron libres para otra orden.`);
+  else if(est==='rechazada') info.push(`<b>Se rechazaron todos los movimientos.</b> Quedaron libres para otra orden.`);
+  else if(est==='vencida') info.push(`<b>Venció el ${fmtFechaHora(venceTsISO(o))}</b> sin resolverse por completo${itemsResueltos(o)?` (${itemsAutorizados(o)} autorizados, ${itemsRechazados(o)} rechazados)`:''}. Los movimientos sin autorizar quedaron libres para otra orden.`);
+  else if(soyEmi&&puedeModificar(o)) info.push(`Podés modificarla o eliminarla hasta el ${limiteModificar(o)}, mientras no autoricen ni rechacen ningún movimiento.`);
+  const itemHtml=i=>`<div class="ord-item${i.aut?' autorizado':''}${i.rech?' rechazado':''}">
+        <div class="ord-fila-det${notaAbierta(i)?' con-nota':''}"><div class="ord-tit"><button type="button" class="ord-nombre" data-ord-info="${esc(i.rowId)}" title="Ver toda la información del movimiento (vencimiento, mes, factura…)">${esc(i.item)}</button> <span class="ord-rubro">${esc(i.rubro)}</span>${i.comentario?`<button type="button" class="ord-nota-btn${notaAbierta(i)?' on':''}" data-ord-nota="${esc(i.rowId)}" title="${notaAbierta(i)?'Ocultar el comentario':'Ver el comentario de este ítem'}" aria-expanded="${notaAbierta(i)}">📝</button>`:''}${hallazgos[i.rowId]&&hallazgos[i.rowId][0]!=='ítem'?` <span class="ord-hit-tag" title="La búsqueda coincide en ${esc(hallazgos[i.rowId].join(' y '))}">coincide en ${esc(hallazgos[i.rowId].join(' y '))}</span>`:''}${i.dividido?' <span class="tag">pago dividido (saldo)</span>':''}${i.pospuesto?' <span class="tag pp">pospuesto</span>':''}</div>
+          ${i.comentario&&notaAbierta(i)?`<div class="ord-com-item" data-ord-nota-txt="${esc(i.rowId)}" title="Un clic: ocultar · doble clic: preguntar sobre este ítem">💬 ${esc(i.comentario)}</div>`:''}
+          <div class="ord-imp">${montoFmt(i.importe,i.moneda)}</div>
+          <div class="ord-acc-item">${botonesItem(o,i,soyRec,abierta)}</div></div>
+      </div>`;
+  const gen=mensajesG(o), nG=sinLeerG(o), nI=sinLeerI(o);
+  const conItem=[...new Set((o.mensajes||[]).filter(m=>m.rowId).map(m=>m.rowId))];
+  const badge=c=>c?` <span class="aviso-posp-badge" title="${c} mensaje${c===1?'':'s'} sin leer">${c}</span>`:'';
+  const panelG=`<div class="ord-sec-pop">
+      ${gen.length?gen.map(m=>mensajeHtml(m,items,{inline:abierta})).join(''):'<div class="ord-vacio">Todavía no hay comentarios generales.</div>'}
+      ${abierta?`<div class="ord-msg-form"><textarea id="ord-msg-texto" rows="2" placeholder="Escribí un comentario… (Enter para enviar, Shift+Enter para otra línea)"></textarea>
+        <button type="button" data-ord-accion="enviar-msg">Enviar comentario</button></div>`:`<div class="ord-vacio">${est==='programada'?'La orden todavía no se publicó.':'La orden ya no admite comentarios.'}</div>`}</div>`;
+  const panelI=`<div class="ord-sec-pop">
+      ${conItem.length?conItem.map(id=>{ const it=items.find(x=>x.rowId===id), ms=mensajesItem(o,id), oc=convOculta(o,id); return `<div class="ord-conv-item"><div class="ord-conv-tit"><b>${esc(it?it.item:'(ítem eliminado)')}</b>${sinLeerItem(o,id)?` <span class="aviso-posp-badge">${sinLeerItem(o,id)}</span>`:''}<button type="button" class="ord-ojo${oc?' off':''}" data-ord-ojo="${esc(id)}" title="${oc?'Mostrar la conversación':'Ocultar la conversación'}" aria-pressed="${oc}">${oc?ICO_OJO_X:ICO_OJO}</button></div>${oc?`<div class="ord-vacio">Conversación oculta (${ms.length} mensaje${ms.length===1?'':'s'}). Tocá el ojo para volver a verla.</div>`:ms.map(m=>mensajeHtml(m,[],{lista:ms,inline:abierta})).join('')}</div>`; }).join(''):'<div class="ord-vacio">Todavía no hay preguntas ni conversaciones sobre los ítems.</div>'}</div>`;
+  const barra=donde=>`<div class="ord-sec-barra${donde==='abajo'?' pie-barra':''}">
+      <div class="ord-sec-col"><button type="button" class="ord-sec-btn g" data-ord-sec="G" data-ord-donde="${donde}" aria-expanded="${ordSecAbiertas.G}"><span class="ord-sec-flecha">${ordSecAbiertas.G?'▾':'▸'}</span> Comentarios generales${badge(nG)}</button>${ordSecAbiertas.G&&ordSecDonde.G===donde?panelG:''}</div>
+      <div class="ord-sec-col"><button type="button" class="ord-sec-btn i" data-ord-sec="I" data-ord-donde="${donde}" aria-expanded="${ordSecAbiertas.I}"><span class="ord-sec-flecha">${ordSecAbiertas.I?'▾':'▸'}</span> Conversaciones &amp; preguntas${badge(nI)}</button>${ordSecAbiertas.I&&ordSecDonde.I===donde?panelI:''}</div>
+    </div>`;
+  const totalTxt=`<div class="ord-total-fila"><span class="ord-total-lbl">Total</span><b class="ord-total-monto">${totalesTxt(itemsActivos(o))}</b></div>`;
+  const nItemsTxt=`<span class="ord-sep-t">|</span><span class="ord-titulo-n">${itemsActivos(o).length} ítem${itemsActivos(o).length===1?'':'s'}</span>`;
+  $('ord-zona').innerHTML=`
+    <div class="ord-cab det">
+      <div class="ord-cab-top"><h3 class="ord-titulo">${esc(o.id)} ${nItemsTxt} ${est==='pendiente'?'':estadoOrdenTxt(o)}</h3><div class="ord-total">${totalTxt}</div></div>
+      ${acciones.length?`<div class="ord-acciones">${acciones.join('')}</div>`:''}
+      <div class="ord-info">${info.map(x=>`<div>${x}</div>`).join('')}</div>
+    </div>
+    ${barra('arriba')}
+    <div class="ord-orden-barra"><input type="search" id="ord-det-busq" class="ord-busq" placeholder="Buscar por palabra (ítem, notas, comentarios y preguntas)…" value="${esc(ordenBusqueda)}" autocomplete="off"><label for="ord-det-orden">Ordenar dentro de cada método:</label><select id="ord-det-orden"><option value="alfa"${ordenDetalleOrden==='alfa'?' selected':''}>Alfabético (A–Z)</option><option value="importe"${ordenDetalleOrden==='importe'?' selected':''}>Por importe (mayor a menor)</option><option value="importe-asc"${ordenDetalleOrden==='importe-asc'?' selected':''}>Por importe (menor a mayor)</option></select></div>
+    ${buscando?`<div class="ord-busq-res">${itemsVista.length} de ${n} ítem${n===1?'':'s'} coinciden con «${esc(ordenBusqueda.trim())}»${nGenHit?` · <button type="button" class="ord-busq-gen" data-ord-sec="G" data-ord-donde="arriba">${nGenHit} comentario${nGenHit===1?'':'s'} general${nGenHit===1?'':'es'} coincide${nGenHit===1?'':'n'}</button>`:''}${!itemsVista.length?'<div class="ord-vacio">Ningún ítem coincide con la búsqueda.</div>':''}</div>`:''}
+    <div class="ord-grupos" style="--met-n:${Math.max(8,...grupos.map(g=>etiquetaMetodo(g.metodo).length))}">${grupos.map(g=>`<div class="ord-grupo"><div class="ord-grupo-tit"><span>${esc(etiquetaMetodo(g.metodo))}</span><span>${g.items.filter(i=>!i.rech).length} ítem${g.items.filter(i=>!i.rech).length===1?'':'s'}</span><span>${totalesTxt(g.items.filter(i=>!i.rech))}</span></div>
+      ${g.items.map(itemHtml).join('')}</div>`).join('')}</div>
+    ${abierta&&soyRec&&pendientes.length>1?`<div class="ord-aut-todos"><button type="button" class="ord-btn-aut" data-ord-accion="autorizar-todos">Autorizar todos (${pendientes.length})</button></div>`:''}
+    <div class="ord-pie" hidden>
+      <div class="ord-cab det ord-cab-pie"><div class="ord-cab-top"><h3 class="ord-titulo">${esc(o.id)} ${nItemsTxt}</h3><div class="ord-total">${totalTxt}</div></div></div>
+      ${barra('abajo')}
+    </div>`;
+  if(txtPrevio&&$('ord-msg-texto')){ $('ord-msg-texto').value=txtPrevio; if(teniaFoco) $('ord-msg-texto').focus(); }
+  const rt2=document.querySelector('.ord-resp-texto');
+  if(rt2){ rt2.value=ordRespTxt; if(ordRespFoco){ rt2.focus(); rt2.setSelectionRange(rt2.value.length,rt2.value.length); ordRespFoco=false; } }
+  document.querySelectorAll('.ord-sec-pop').forEach((p,k)=>{ if(scrolls[k]) p.scrollTop=scrolls[k]; });
+  if(est!=='programada'){
+    marcarLeida(o);
+    if(ordSecAbiertas.G) marcarGLeida(o);
+    if(ordSecAbiertas.I) marcarILeida(o);
+  }
+  actualizarPieOrden();
+}
+// Si el encabezado (nro de orden, total y botones de comentarios) quedó fuera de la pantalla, se repite al pie.
+function actualizarPieOrden(){
+  const pie=document.querySelector('.ord-pie'); if(!pie) return;
+  const cab=document.querySelector('.ord-cab.det:not(.ord-cab-pie)'), bar=document.querySelector('.ord-sec-barra:not(.pie-barra)');
+  if(!cab||!bar){ pie.hidden=true; return; }
+  const arriba=cab.getBoundingClientRect().top, abajo=bar.getBoundingClientRect().bottom;
+  pie.hidden=(arriba>=0&&abajo<=window.innerHeight);
+}
+window.addEventListener('scroll',actualizarPieOrden,{passive:true});
+window.addEventListener('resize',actualizarPieOrden);
+
+// ---- Ventanas emergentes: información completa del movimiento y conversación de un ítem ----
+let ordModal=null;   // {tipo:'info'|'preg', rowId, ordId}
+function abrirModalOrden(m){ ordModal=m; $('ord-modal').hidden=false; pintarModalOrden(); }
+function cerrarModalOrden(){ ordModal=null; const m=$('ord-modal'); if(m) m.hidden=true; $('ord-tip').hidden=true; }
+function infoMovimientoHtml(rowId,o){
+  const oi=o&&(o.items||[]).find(i=>i.rowId===rowId);
+  const r=rows.find(x=>x.id===rowId);
+  const fila=(t,v)=>`<div class="om-fila"><span class="om-lab">${t}</span><span class="om-val">${v}</span></div>`;
+  let h='';
+  if(r){
+    const usd=r.moneda==='USD';
+    const fc=r.tipoFac||'No posee';
+    const venc=r.fechaVenc?fmtFechaCorta(r.fechaVenc)+(!r.pago&&r.vencTentativo?' (orientativo)':''):'—';
+    const estado=r.pago?`Pagado el ${fmtFechaCorta(r.fechaPago)}${r.metodoPago?' · '+esc(r.metodoPago):''}`:(r.pospuesto?`Pendiente — pospuesto${r.pospuestoHasta?' hasta el '+fmtFechaCorta(r.pospuestoHasta):''}`:'Pendiente de pago');
+    h+=fila('Ítem',`<b>${esc(nombreDe(r))}</b>`)+fila('Tipo',`GASTO · ${r.fijo?'FIJO':'VARIABLE'}`)
+      +fila('Mes de pago',r.dividido?'Varias cuotas':esc(mesLabel(r.mesPago).toUpperCase()))
+      +fila('Mes al que corresponde',esc(mesLabel(r.mesCorr)))
+      +fila('Importe bruto',montoFmt(r.bruto,r.moneda)+(usd?` <small>(≈ $ ${money(brutoARS(r))})</small>`:''))
+      +fila('Importe neto',montoFmt(netoDe(r),r.moneda)+(usd?` <small>(≈ $ ${money(netoARS(r))})</small>`:''))
+      +fila('Factura (FC)',esc(fc)+((fc==='A'||fc==='A | 27%')?` · IVA ${money(r.iva)}`:''))
+      +fila('Vencimiento',venc)+fila('Estado de pago',estado)
+      +fila('Método de pago',esc(r.metodoPago||(r.metodoTentativo?r.metodoTentativo+' (orientativo)':'—')))
+      +fila('Computable',r.comp!==false?'Sí':'No')+fila('Rubro',esc(r.rubro||'—'))+fila('Detalle',esc(r.detalle||'—'));
+    if(r.dividido&&Array.isArray(r.cuotas)) h+=fila('Cuotas',r.cuotas.map((c,i)=>`Cuota ${i+1}: ${money(c.importe)} · ${c.fecha?fmtFechaCorta(c.fecha):(c.mesPago?mesLabel(c.mesPago):'sin fecha')} · ${c.pago?'✓ pago':(c.metodoPago==='E-cheq'?'se debita solo':'pendiente')}`).join('<br>'));
+  } else if(oi){
+    h+=`<p class="note">Este movimiento ya no figura en Registrados. Datos guardados en la orden:</p>`+fila('Ítem',`<b>${esc(oi.item)}</b>`)+fila('Importe',montoFmt(oi.importe,oi.moneda))+fila('Vencimiento',oi.venc?fmtFechaCorta(oi.venc):'—')+fila('Rubro',esc(oi.rubro||'—'))+fila('Detalle',esc(oi.detalle||'—'));
+  }
+  if(oi){
+    h+=`<div class="om-orden"><div class="om-tit">En la orden ${esc(o.id)}</div>`
+      +fila('Método de pago de la orden',`<b>${esc(etiquetaMetodo(oi.metodo))}</b>`)
+      +(oi.comentario?fila('Nota de quien emitió',esc(oi.comentario)):'')
+      +fila('Estado en la orden',oi.aut?`✓ Autorizado por ${esc(oi.aut.por.nombre)} el ${fmtFechaHora(oi.aut.ts)}`:oi.rech?`✕ Rechazado por ${esc(oi.rech.por.nombre)} el ${fmtFechaHora(oi.rech.ts)}`:'Pendiente')+`</div>`;
+  }
+  return h;
+}
+function pintarModalOrden(){
+  const m=ordModal; if(!m) return;
+  const o=ordenPorId(m.ordId), oi=o&&(o.items||[]).find(i=>i.rowId===m.rowId);
+  const caja=$('ord-modal-box');
+  if(!o){ cerrarModalOrden(); return; }
+  if(m.tipo==='info'){
+    caja.innerHTML=`<div class="om-cab"><h3>Información del movimiento</h3><button type="button" class="om-x" data-ord-modal="cerrar" aria-label="Cerrar">✕</button></div><div class="om-cuerpo">${infoMovimientoHtml(m.rowId,o)}</div>`;
+    return;
+  }
+  const txtPrevio=($('ord-modal-texto')||{}).value||'';
+  const msgs=mensajesItem(o,m.rowId), abierta=ordenAbierta(o);
+  caja.innerHTML=`<div class="om-cab"><h3>${msgs.length?'Conversación':'Nueva pregunta'} · ${esc(oi?oi.item:'ítem')} <small>(${esc(o.id)})</small></h3><button type="button" class="om-x" data-ord-modal="cerrar" aria-label="Cerrar">✕</button></div>
+    <div class="om-cuerpo">${msgs.length?msgs.map(x=>mensajeHtml(x,[],{lista:msgs})).join(''):'<div class="ord-vacio">Todavía no hay mensajes sobre este ítem.</div>'}
+    ${abierta?`<div class="ord-msg-form"><label for="ord-modal-texto">${msgs.length?'Responder':'Tu pregunta'}</label><textarea id="ord-modal-texto" rows="3" placeholder="Escribí tu ${msgs.length?'respuesta':'pregunta'}… (Enter para enviar)"></textarea>
+      <div class="om-botones"><button type="button" data-ord-modal="enviar">${msgs.length?'Enviar':'Enviar pregunta'}</button><button type="button" class="ghost" data-ord-modal="cerrar">${msgs.length?'Cerrar':'Cancelar'}</button></div></div>`
+      :`<div class="ord-vacio">La orden ya no admite mensajes.</div><div class="om-botones"><button type="button" class="ghost" data-ord-modal="cerrar">Cerrar</button></div>`}</div>`;
+  if(txtPrevio&&$('ord-modal-texto')) $('ord-modal-texto').value=txtPrevio;
+  if(msgs.length) marcarItemLeido(o,m.rowId);
+}
+function mostrarTipConversacion(btn){
+  const o=ordenPorId(ordenAbiertaId); if(!o) return;
+  const ms=mensajesItem(o,btn.dataset.ordPreg); if(!ms.length) return;
+  const tip=$('ord-tip');
+  tip.innerHTML=ms.slice(-4).map(m=>`<div class="ord-tip-msg"><b>${esc(m.autorNombre)}</b> <span>${fmtFechaHora(m.ts)}</span><div>${esc(m.texto).replace(/\n/g,'<br>')}</div></div>`).join('')+(ms.length>4?`<div class="ord-tip-mas">… y ${ms.length-4} más (tocá para abrir)</div>`:'')+`<div class="ord-tip-mas">Tocá ¿? para responder</div>`;
+  tip.hidden=false;
+  const r=btn.getBoundingClientRect(), w=tip.offsetWidth, h=tip.offsetHeight;
+  let left=Math.min(Math.max(8,r.right-w),window.innerWidth-w-8), top=r.bottom+6;
+  if(top+h>window.innerHeight-8) top=Math.max(8,r.top-h-6);
+  tip.style.left=left+'px'; tip.style.top=top+'px';
+}
+
+// ---- Formulario (nueva orden / modificar) ----
+const aLocalInput=d=>{ d=new Date(d); const p=n=>String(n).padStart(2,'0'); return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes()); };
+function abrirNuevaOrden(){
+  if(esAutorizador()){ toast('Quien autoriza las órdenes no puede crearlas.'); return; }
+  ordenForm={editId:null,sel:{},meta:{},programable:true,cuando:'ahora',programar:''};
+  ordenesVista='form'; ordenAbiertaId=null;
+  abrirPanelOrdenesYMostrar();
+}
+function abrirEdicionOrden(o){
+  const sel={}, meta={};
+  (o.items||[]).forEach(i=>{ sel[i.rowId]={comentario:i.comentario||'',metodo:i.metodo||''}; meta[i.rowId]={...i}; });
+  const prog=estadoOrden(o)==='programada';
+  ordenForm={editId:o.id,sel,meta,
+    programable:prog,cuando:prog?'programar':'ahora',programar:prog?aLocalInput(o.emitidaTs):''};
+  ordenesVista='form';
+  abrirPanelOrdenesYMostrar();
+}
+function abrirPanelOrdenesYMostrar(){
+  ordenesMantener=true; toggleOrdenes(true); ordenesMantener=false;
+  renderOrdenes();
+  $('panel-ordenes').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function resumenSeleccionOrden(){
+  const f=ordenForm, ids=Object.keys(f.sel);
+  const items=ids.map(id=>({...f.meta[id],importe:f.meta[id].importe,moneda:f.meta[id].moneda}));
+  const el=$('ord-resumen-sel'); if(el) el.innerHTML=`Seleccionados: <b>${ids.length}</b> · Total: <b>${totalesTxt(items)}</b>`;
+}
+function filaCandidato(c,bloq,f){
+  const i=c.it, sel=!!f.sel[i.rowId], hoy=hoyISO();
+  const venc=i.venc?(i.venc<hoy?`<span class="ord-vencido">vencido ${fmtFechaCorta(i.venc)}</span>`:'vence '+fmtFechaCorta(i.venc)):'sin fecha';
+  const enOtra=bloq[i.rowId];
+  const metodoSel=(f.sel[i.rowId]||{}).metodo!==undefined?(f.sel[i.rowId]||{}).metodo:i.metodo;
+  return `<div class="ord-fila${sel?' sel':''}${enOtra?' bloq':''}" data-ord-fila="${esc(i.rowId)}">
+    <label class="ord-check"><input type="checkbox" data-ord-sel="${esc(i.rowId)}"${sel?' checked':''}${enOtra?' disabled':''}></label>
+    <div class="ord-main"><b>${esc(i.item)}</b> <span class="ord-rubro">${esc(i.rubro)}</span>
+      ${i.dividido?'<span class="tag">pago dividido (saldo)</span>':''}${i.pospuesto?'<span class="tag pp">pospuesto</span>':''}${enOtra?`<span class="tag">ya está en ${esc(enOtra)}</span>`:''}${c.nota?`<span class="tag">${esc(c.nota)}</span>`:''}${c.grupo==='semana'?'<span class="tag pp">esta semana</span>':(c.grupo==='viejos'&&!c.nota?'<span class="tag">mes anterior</span>':'')}
+      ${i.detalle?`<div class="ord-det-mov">${esc(i.detalle)}</div>`:''}</div>
+    <div class="ord-venc">${venc}</div><div class="ord-imp">${montoFmt(i.importe,i.moneda)}</div>
+    <div class="ord-extra"${sel?'':' hidden'}>
+      <select data-ord-metodo="${esc(i.rowId)}" title="Método de pago con el que se abonaría"><option value="">Sin método definido</option>${metodosLista().map(m=>`<option${m===metodoSel?' selected':''}>${esc(m)}</option>`).join('')}</select>
+      <input type="text" data-ord-com="${esc(i.rowId)}" placeholder="Comentario para quien autoriza (opcional)" value="${esc((f.sel[i.rowId]||{}).comentario||'')}">
+    </div></div>`;
+}
+function renderOrdenForm(){
+  const f=ordenForm, e=miEmail();
+  const bloq=itemsEnOrdenesActivas(f.editId);
+  let cands=candidatosOrden();
+  Object.keys(f.meta).forEach(id=>{ if(f.sel[id] && !cands.some(c=>c.it.rowId===id)) cands.push({it:f.meta[id],grupo:'viejos',nota:'ya no figura pendiente'}); });
+  cands.forEach(c=>{ if(!c.nota) f.meta[c.it.rowId]=c.it; });
+  // el método elegido en la orden manda sobre el tentativo del movimiento
+  const efectivo=c=>({...c.it,metodo:(f.sel[c.it.rowId]&&f.sel[c.it.rowId].metodo!==undefined)?f.sel[c.it.rowId].metodo:c.it.metodo});
+  // Siempre agrupado por método de pago y, dentro de cada uno, en orden alfabético
+  const mapa={}; cands.forEach(c=>{ const it=efectivo(c); (mapa[it.metodo||'']=mapa[it.metodo||'']||[]).push(c); });
+  const metN=Math.max(8,...Object.keys(mapa).map(k=>etiquetaMetodo(k).length));
+  const cuerpo=`<div class="ord-grupos" style="--met-n:${metN}">`+Object.keys(mapa).sort((a,b)=>a===''?1:b===''?-1:a.localeCompare(b,'es')).map(k=>{
+    const arr=mapa[k].slice().sort((x,y)=>x.it.item.localeCompare(y.it.item,'es'));
+    return `<div class="ord-grupo"><div class="ord-grupo-tit"><span>${esc(etiquetaMetodo(k))}</span><span>${arr.length} movimiento${arr.length===1?'':'s'}</span><span>${totalesTxt(arr.map(c=>c.it))}</span></div>${arr.map(c=>filaCandidato(c,bloq,f)).join('')}</div>`;
+  }).join('')+'</div>';
+  const destinatarios=usuarios.filter(u=>u.activo!==false&&(u.email||'').toLowerCase()!==e);
+  $('ord-zona').innerHTML=`
+    <div class="ord-cab">
+      <div class="ord-cab-top"><button type="button" class="ghost" data-ord-accion="cancelar-form">← Cancelar</button>
+        <h3 class="ord-titulo">${f.editId?'Modificar orden de pago '+esc(f.editId):'Nueva orden de pago'}</h3></div>
+      ${f.programable?`<div class="ord-form-grid">
+        <div class="field"><label for="ord-cuando">Emisión</label>
+          <select id="ord-cuando"><option value="ahora"${f.cuando==='ahora'?' selected':''}>Emitir ahora</option><option value="programar"${f.cuando==='programar'?' selected':''}>Programar para un día y hora</option></select></div>
+        <div class="field" id="ord-programar-wrap"${f.cuando==='programar'?'':' hidden'}><label for="ord-programar">Se publica (y se considera emitida) el</label>
+          <input type="datetime-local" id="ord-programar" min="${aLocalInput(Date.now())}" value="${esc(f.programar)}"></div>
+      </div>
+      <p class="note" style="margin:0 0 8px">${f.cuando==='programar'?'Hasta ese momento la orden solo la ves vos: quien debe autorizarla no recibe ningún aviso. La fecha y hora de emisión (y el vencimiento a las 23:59 de ese día) cuentan desde la publicación.':'La orden vence a las 23:59 del día en que se emite si no se autorizan todos sus movimientos.'}</p>`:`<p class="note" style="margin:0 0 8px">La orden vence a las 23:59 del día en que se emitió si no se autorizan todos sus movimientos.</p>`}
+      <p class="note" style="margin:6px 0">Tildá los movimientos que querés incluir; al tildar podés elegir el método de pago y dejar un comentario en cada uno. El método elegido acá es solo para la orden: no modifica el movimiento.</p>
+      <div class="ord-barra"><span id="ord-resumen-sel"></span>
+        <span><button type="button" data-ord-accion="${f.editId?'guardar-edicion':'emitir'}">${f.editId?'Guardar cambios':'Emitir orden de pago'}</button></span></div>
+    </div>
+    ${cands.length?cuerpo:'<div class="empty">No hay movimientos pendientes de pago para incluir en una orden.</div>'}
+    <div class="ord-barra"><span></span><span><button type="button" data-ord-accion="${f.editId?'guardar-edicion':'emitir'}">${f.editId?'Guardar cambios':'Emitir orden de pago'}</button></span></div>`;
+  resumenSeleccionOrden();
+}
+const ORD_GRUPOS={semana:'Para abonar esta semana',adelante:'Más adelante (mes en curso)',viejos:'Meses anteriores'};
+
+async function guardarOrdenForm(){
+  const f=ordenForm; if(!f) return;
+  const ids=Object.keys(f.sel);
+  if(!ids.length){ toast('Tildá al menos un movimiento.'); return; }
+  if(esAutorizador()){ toast('Quien autoriza las órdenes no puede crearlas.'); return; }
+  let programadaTs='';
+  if(f.programable && f.cuando==='programar'){
+    const t=Date.parse(f.programar);
+    if(!f.programar||isNaN(t)){ toast('Elegí el día y la hora en que se va a publicar la orden.'); return; }
+    if(t<=Date.now()){ toast('El día y la hora programados tienen que ser posteriores a este momento.'); return; }
+    programadaTs=new Date(t).toISOString();
+  }
+  if(!(await asegurarUsuario())) return;
+  const items=ids.map(id=>({...f.meta[id],metodo:f.sel[id].metodo!==undefined?f.sel[id].metodo:(f.meta[id].metodo||''),comentario:(f.sel[id].comentario||'').trim(),aut:null}));
+  const receptor=personaAutorizador();
+  const yo=miPersona(), k=claveUsuario(yo.email);
+  try{
+    if(f.editId){
+      const idEd=f.editId;
+      await OrdenesDB.mutar(idEd,o=>{
+        const est=estadoOrden(o);
+        if(!['programada','pendiente'].includes(est)) throw new Error(est==='vencida'?'La orden venció: ya no se puede modificar.':'Ya se resolvieron movimientos de la orden: no se puede modificar.');
+        if(o.emisor.email!==yo.email) throw new Error('Solo quien emitió la orden puede modificarla.');
+        if(Date.now()-Date.parse(o.emitidaTs)>ORD_VENTANA_MS) throw new Error('Pasaron más de 36 hs desde la emisión: ya no se puede modificar.');
+        const ts=ahoraISO();
+        const set={items,receptor,editadaTs:ts,['lecturas.'+k]:ts};
+        if(est==='programada') set.emitidaTs=programadaTs||ts;   // reprogramada, o publicada ahora
+        return {set,union:{eventos:[{ts,tipo:'editada',por:yo}]}};
+      });
+      ordenAbiertaId=idEd; ordenesVista='detalle'; ordenForm=null;
+      toast('Orden '+idEd+' modificada.');
+    } else {
+      const n=await OrdenesDB.siguienteNumero(), id='OP-'+String(n).padStart(4,'0'), ts=ahoraISO();
+      await OrdenesDB.crear({id,numero:n,estado:'pendiente',emisor:yo,receptor,creadaTs:ts,emitidaTs:programadaTs||ts,editadaTs:'',autorizadaTs:'',autorizadaPor:null,
+        comentarioGeneral:'',items,mensajes:[],lecturas:{[k]:ts},eventos:[{ts,tipo:programadaTs?'programada':'emitida',por:yo}]});
+      ordenAbiertaId=id; ordenesVista='detalle'; ordenForm=null;
+      toast(programadaTs?'Orden '+id+' programada: se publicará el '+fmtFechaHora(programadaTs)+'.':'Orden de pago '+id+' emitida.');
+    }
+  }catch(err){ toast(err.message||'No se pudo guardar la orden.'); return; }
+  renderOrdenes();
+  $('panel-ordenes').scrollIntoView({behavior:'smooth',block:'start'});
+}
+// Quien autorizó o rechazó un ítem puede deshacerlo dentro de los 15 minutos posteriores.
+const ORD_UNDO_MS=15*60*1000;
+function puedeDeshacer(o,i){ const d=i.aut||i.rech; return !!d && d.por.email===miEmail() && Date.now()-Date.parse(d.ts)<=ORD_UNDO_MS && estadoOrden(o)!=='programada'; }
+async function deshacerItemOrden(id,rowId){
+  const yo=miPersona(), k=claveUsuario(yo.email);
+  await OrdenesDB.mutar(id,x=>{
+    const it=(x.items||[]).find(i=>i.rowId===rowId); if(!it) throw new Error('El movimiento ya no está en la orden.');
+    const d=it.aut||it.rech; if(!d) throw new Error('Ese movimiento no está resuelto.');
+    if(d.por.email!==yo.email) throw new Error('Solo quien tomó la decisión puede deshacerla.');
+    if(Date.now()-Date.parse(d.ts)>ORD_UNDO_MS) throw new Error('Pasaron más de 15 minutos: ya no se puede deshacer.');
+    if(it.rech){ const otra=itemsEnOrdenesActivas(x.id)[rowId]; if(otra) throw new Error('No se puede deshacer: el movimiento ya está en la orden '+otra+'.'); }
+    const ts=ahoraISO();
+    const items=(x.items||[]).map(i=>{ if(i.rowId!==rowId) return i; const {rech,...r}=i; return {...r,aut:null}; });
+    return {set:{items,estado:'pendiente',autorizadaTs:'',autorizadaPor:null,['lecturas.'+k]:ts},union:{eventos:[{ts,tipo:'deshizo-decision',por:yo}]}};
+  });
+}
+// Decide sobre movimientos de una orden: 'aut' (autoriza) o 'rech' (rechaza). Por defecto de a uno;
+// "Autorizar todos" pasa la lista completa de los que siguen pendientes.
+async function decidirItemsOrden(id,rowIds,tipo){
+  const yo=miPersona(), k=claveUsuario(yo.email);
+  await OrdenesDB.mutar(id,x=>{
+    if(!ordenAbierta(x)) throw new Error(estadoOrden(x)==='vencida'?'La orden venció: ya no se puede resolver.':'La orden ya no admite decisiones.');
+    if(yo.email!==autorizadorEmail()) throw new Error('Solo '+personaAutorizador().nombre+' puede autorizar o rechazar las órdenes.');
+    const ts=ahoraISO(); let cant=0;
+    const items=(x.items||[]).map(i=>{ if(rowIds.includes(i.rowId)&&itemPendiente(i)){ cant++; return {...i,[tipo]:{ts,por:yo}}; } return i; });
+    if(!cant) throw new Error('Ese movimiento ya estaba resuelto.');
+    const todosAut=items.every(i=>i.aut);
+    const set={items,['lecturas.'+k]:ts};
+    if(todosAut){ set.estado='autorizada'; set.autorizadaTs=ts; set.autorizadaPor=yo; }
+    return {set,union:{eventos:[{ts,tipo:tipo==='aut'?(todosAut?'autorizada':'autorizó-movimientos'):'rechazó-movimientos',por:yo,cant}]}};
+  });
+}
+const autorizarItemsOrden=(id,rowIds)=>decidirItemsOrden(id,rowIds,'aut');
+const rechazarItemsOrden=(id,rowIds)=>decidirItemsOrden(id,rowIds,'rech');
+async function enviarMensajeOrden(ordId,rowId,texto,parent){
+  const yo=miPersona(), k=claveUsuario(yo.email);
+  const msg={id:uid(),ts:ahoraISO(),autorEmail:yo.email,autorNombre:yo.nombre,texto,rowId:rowId||''}; if(parent) msg.parent=parent;
+  await OrdenesDB.mutar(ordId,x=>{
+    if(!ordenAbierta(x)) throw new Error('La orden ya no admite mensajes.');
+    return {union:{mensajes:[msg]},set:{['lecturas.'+k]:msg.ts}};
+  });
+}
+async function accionOrden(accion,el){
+  const o=ordenPorId(ordenAbiertaId), yo=miPersona(), k=claveUsuario(yo.email);
+  try{
+    if(accion==='volver'){ ordenesVista='lista'; ordenAbiertaId=null; ordSecOrden=null; renderOrdenes(); return; }
+    if(accion==='cancelar-form'){ ordenForm=null; ordenesVista=ordenAbiertaId?'detalle':'lista'; renderOrdenes(); return; }
+    if(accion==='emitir'||accion==='guardar-edicion'){ await guardarOrdenForm(); return; }
+    if(!o) return;
+    if(accion==='editar'){ if(!puedeModificar(o)){ toast('Esta orden ya no se puede modificar.'); renderOrdenes(); return; } abrirEdicionOrden(o); return; }
+    if(accion==='eliminar'){
+      if(!puedeModificar(o)){ toast('Esta orden ya no se puede eliminar.'); renderOrdenes(); return; }
+      if(!confirm('¿Eliminar la orden '+o.id+'? Esta acción no se puede deshacer.')) return;
+      await OrdenesDB.mutar(o.id,x=>{
+        const est=estadoOrden(x);
+        if(!['programada','pendiente'].includes(est)) throw new Error(est==='vencida'?'La orden venció: ya no se puede eliminar.':'Ya se resolvieron movimientos de la orden: no se puede eliminar.');
+        if(x.emisor.email!==yo.email) throw new Error('Solo quien emitió la orden puede eliminarla.');
+        if(Date.now()-Date.parse(x.emitidaTs)>ORD_VENTANA_MS) throw new Error('Pasaron más de 36 hs desde la emisión: ya no se puede eliminar.');
+        return {eliminar:true};
+      });
+      ordenAbiertaId=null; ordenesVista='lista'; toast('Orden '+o.id+' eliminada.'); renderOrdenes(); return;
+    }
+    if(accion==='autorizar-item'){
+      const rowId=el.dataset.ordAut, it=(o.items||[]).find(i=>i.rowId===rowId);
+      await autorizarItemsOrden(o.id,[rowId]);
+      toast('Autorizaste "'+(it?it.item:'el movimiento')+'".'); return;
+    }
+    if(accion==='rechazar-item'){
+      const rowId=el.dataset.ordRech, it=(o.items||[]).find(i=>i.rowId===rowId);
+      if(!confirm('¿Rechazar "'+(it?it.item:'el movimiento')+'"?\n\nQuedará resuelto como rechazado, ya no figurará pendiente en esta orden y se podrá incluir en otra.')) return;
+      await rechazarItemsOrden(o.id,[rowId]);
+      toast('Rechazaste "'+(it?it.item:'el movimiento')+'".'); return;
+    }
+    if(accion==='deshacer-item'){
+      const rowId=el.dataset.ordDeshacer, it=(o.items||[]).find(i=>i.rowId===rowId);
+      await deshacerItemOrden(o.id,rowId);
+      toast('Deshiciste la decisión sobre "'+(it?it.item:'el movimiento')+'".'); return;
+    }
+    if(accion==='autorizar-todos'){
+      const pend=(o.items||[]).filter(itemPendiente);
+      if(!confirm('¿Autorizar los '+pend.length+' movimientos pendientes de la orden '+o.id+' ('+totalesTxt(pend)+')? No se puede revertir.')) return;
+      await autorizarItemsOrden(o.id,pend.map(i=>i.rowId));
+      toast('Autorizaste todos los movimientos pendientes de '+o.id+'.'); return;
+    }
+    if(accion==='cancelar-resp'){ ordResponder=null; ordRespTxt=''; renderOrdenes(); return; }
+    if(accion==='enviar-resp'){
+      const ta=document.querySelector('.ord-resp-texto'), texto=((ta&&ta.value)||'').trim(), base=(o.mensajes||[]).find(m=>m.id===ordResponder);
+      if(!texto){ toast('Escribí la respuesta.'); return; }
+      await enviarMensajeOrden(o.id,base?base.rowId:'',texto,ordResponder);
+      ordResponder=null; ordRespTxt=''; renderOrdenes(); return;
+    }
+    if(accion==='enviar-msg'){
+      const texto=($('ord-msg-texto').value||'').trim();
+      if(!texto){ toast('Escribí el comentario.'); return; }
+      await enviarMensajeOrden(o.id,'',texto);
+      $('ord-msg-texto').value=''; renderOrdenes(); return;
+    }
+  }catch(err){ toast(err.message||'No se pudo completar la acción.'); }
+}
+
+// ---- Eventos ----
+$('ord-toggle').addEventListener('click',()=>toggleOrdenes());
+$('ord-toggle').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleOrdenes(); } });
+$('ord-tabs').addEventListener('click',e=>{
+  const b=e.target.closest('[data-ord-filtro]');
+  if(b){ ordenesFiltro=b.dataset.ordFiltro; ordenesVista='lista'; ordenAbiertaId=null; ordenForm=null; ordSecOrden=null; renderOrdenes(); return; }
+  if(e.target.closest('#ord-nueva')) abrirNuevaOrden();
+});
+$('btn-generar-orden').addEventListener('click',abrirNuevaOrden);
+function abrirOrdenDetalle(id){
+  ordenAbiertaId=id; ordenesVista='detalle'; ordenForm=null; ordSecOrden=null; ordenDetalleOrden='alfa'; ordenBusqueda=''; $('ord-zona').style.minHeight='';
+  ordenesMantener=true; if($('ord-body').hidden) toggleOrdenes(true); else renderOrdenes(); ordenesMantener=false;
+}
+$('ord-zona').addEventListener('dblclick',e=>{
+  const nt=e.target.closest('[data-ord-nota-txt]'); if(!nt) return;
+  clearTimeout(ordNotaTimer); window.getSelection&&window.getSelection().removeAllRanges();
+  abrirModalOrden({tipo:'preg',rowId:nt.dataset.ordNotaTxt,ordId:ordenAbiertaId});
+});
+$('ord-zona').addEventListener('click',e=>{
+  const fl=e.target.closest('[data-ord-flecha]');
+  if(fl){ const id=fl.dataset.ordFlecha; ordFilasAbiertas.has(id)?ordFilasAbiertas.delete(id):ordFilasAbiertas.add(id); renderOrdenes(); return; }
+  const inf=e.target.closest('[data-ord-info]'); if(inf){ abrirModalOrden({tipo:'info',rowId:inf.dataset.ordInfo,ordId:inf.dataset.ordDe||ordenAbiertaId}); return; }
+  const nb=e.target.closest('[data-ord-nota]');
+  if(nb){ const k=ordenAbiertaId+'|'+nb.dataset.ordNota; if(ordNotasAbiertas[k]) delete ordNotasAbiertas[k]; else ordNotasAbiertas[k]=true; renderOrdenes(); return; }
+  // Comentario desplegado: 1 clic lo reduce, 2 clics abren el panel de preguntar (se espera un instante para distinguirlos)
+  const nt=e.target.closest('[data-ord-nota-txt]');
+  if(nt){
+    const rid=nt.dataset.ordNotaTxt; clearTimeout(ordNotaTimer);
+    ordNotaTimer=setTimeout(()=>{ delete ordNotasAbiertas[ordenAbiertaId+'|'+rid]; renderOrdenes(); },260);
+    return;
+  }
+  const pg=e.target.closest('[data-ord-preg]'); if(pg){ abrirModalOrden({tipo:'preg',rowId:pg.dataset.ordPreg,ordId:ordenAbiertaId}); return; }
+  const oj=e.target.closest('[data-ord-ojo]');
+  if(oj){
+    const o=ordenPorId(ordenAbiertaId); if(!o) return;
+    const id=oj.dataset.ordOjo, k=claveItemLect(id), nuevo=!convOculta(o,id);
+    if(nuevo&&ordResponder&&(o.mensajes||[]).some(m=>m.id===ordResponder&&m.rowId===id)){ ordResponder=null; ordRespTxt=''; }
+    OrdenesDB.mutar(o.id,()=>({set:{['ocultoI.'+k]:nuevo}})).catch(err=>toast(err.message||'No se pudo guardar.'));
+    return;
+  }
+  const sec=e.target.closest('[data-ord-sec]');
+  if(sec){ const s=sec.dataset.ordSec; ordSecAbiertas[s]=!ordSecAbiertas[s]; ordSecDonde[s]=sec.dataset.ordDonde||'arriba'; ordResponder=null; ordRespTxt=''; renderOrdenes(); return; }
+  const msgEl=e.target.closest('[data-ord-msg]');
+  if(msgEl&&!e.target.closest('.ord-resp')){ const id=msgEl.dataset.ordMsg; ordResponder=(ordResponder===id)?null:id; ordRespTxt=''; ordRespFoco=true; renderOrdenes(); return; }
+  const des=e.target.closest('[data-ord-deshacer]'); if(des){ accionOrden('deshacer-item',des); return; }
+  const au=e.target.closest('[data-ord-aut]'); if(au){ accionOrden('autorizar-item',au); return; }
+  const rc=e.target.closest('[data-ord-rech]'); if(rc){ accionOrden('rechazar-item',rc); return; }
+  const ac=e.target.closest('[data-ord-accion]'); if(ac){ accionOrden(ac.dataset.ordAccion,ac); return; }
+  const fila=e.target.closest('[data-ord-abrir]'); if(fila){ abrirOrdenDetalle(fila.dataset.ordAbrir); return; }
+});
+$('ord-zona').addEventListener('keydown',e=>{ const fila=e.target.closest&&e.target.closest('[data-ord-abrir]'); if(fila&&e.target===fila&&(e.key==='Enter'||e.key===' ')){ e.preventDefault(); abrirOrdenDetalle(fila.dataset.ordAbrir); } });
+// Vista previa de la conversación al pasar el mouse por un ¿? que ya tiene mensajes
+$('ord-zona').addEventListener('mouseover',e=>{ const b=e.target.closest('.ord-sq.q.on'); if(b) mostrarTipConversacion(b); });
+$('ord-zona').addEventListener('mouseout',e=>{ if(e.target.closest('.ord-sq.q.on')) $('ord-tip').hidden=true; });
+// Ventana emergente (información del movimiento / conversación)
+$('ord-modal').addEventListener('click',async e=>{
+  if(e.target===$('ord-modal')){ cerrarModalOrden(); return; }
+  const b=e.target.closest('[data-ord-modal]'); if(!b) return;
+  if(b.dataset.ordModal==='cerrar'){ cerrarModalOrden(); return; }
+  if(b.dataset.ordModal==='enviar'&&ordModal){
+    const texto=($('ord-modal-texto').value||'').trim();
+    if(!texto){ toast('Escribí el mensaje.'); return; }
+    try{ await enviarMensajeOrden(ordModal.ordId,ordModal.rowId,texto); $('ord-modal-texto').value=''; toast('Mensaje enviado.'); pintarModalOrden(); renderOrdenes(); }
+    catch(err){ toast(err.message||'No se pudo enviar el mensaje.'); }
+  }
+});
+function cerrarPanelesOrden(){ if(!ordSecAbiertas.G&&!ordSecAbiertas.I) return false; ordSecAbiertas={G:false,I:false}; if(ordenesVista==='detalle') renderOrdenes(); return true; }
+// Enter envía (Shift+Enter hace un salto de línea) en comentarios, preguntas y respuestas
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter'||e.shiftKey||e.isComposing) return;
+  const t=e.target; if(!t||t.tagName!=='TEXTAREA') return;
+  if(t.id==='ord-msg-texto'){ e.preventDefault(); accionOrden('enviar-msg'); }
+  else if(t.id==='ord-modal-texto'){ e.preventDefault(); const b=$('ord-modal').querySelector('[data-ord-modal="enviar"]'); if(b) b.click(); }
+  else if(t.classList.contains('ord-resp-texto')){ e.preventDefault(); accionOrden('enviar-resp'); }
+});
+document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return; if(ordModal) cerrarModalOrden(); else cerrarPanelesOrden(); });
+// Las ventanas de comentarios/conversaciones se cierran al tocar afuera
+document.addEventListener('click',e=>{
+  if(ordModal||(!ordSecAbiertas.G&&!ordSecAbiertas.I)) return;
+  if(e.target.closest('.ord-sec-col')||e.target.closest('.ord-busq-gen')||e.target.closest('#ord-modal')) return;
+  cerrarPanelesOrden();
+});
+$('ord-zona').addEventListener('change',e=>{
+  const t=e.target, f=ordenForm;
+  if(t.id==='ord-det-orden'){ ordenDetalleOrden=t.value; renderOrdenes(); return; }
+  if(!f) return;
+  else if(t.id==='ord-cuando'){ f.cuando=t.value; const y=window.scrollY; renderOrdenForm(); window.scrollTo(0,y); }
+  else if(t.id==='ord-programar') f.programar=t.value;
+  else if(t.dataset.ordSel){
+    const id=t.dataset.ordSel;
+    if(t.checked){ const base=f.meta[id]||(candidatosOrden().find(c=>c.it.rowId===id)||{}).it; if(!base){ t.checked=false; return; } f.meta[id]=base; f.sel[id]={comentario:'',metodo:base.metodo||''}; }
+    else delete f.sel[id];
+    const fila=t.closest('.ord-fila'); fila.classList.toggle('sel',t.checked); fila.querySelector('.ord-extra').hidden=!t.checked;
+    resumenSeleccionOrden();
+  }
+  else if(t.dataset.ordMetodo){
+    const id=t.dataset.ordMetodo; if(f.sel[id]) f.sel[id].metodo=t.value;
+    { const y=window.scrollY; renderOrdenForm(); window.scrollTo(0,y); }
+  }
+});
+$('ord-zona').addEventListener('input',e=>{
+  if(e.target.id==='ord-det-busq'){
+    // La ventana no se mueve al filtrar: se guarda el scroll y se mantiene la altura de la lista
+    // (si hay pocos o ningún resultado, la página no se acorta ni "baja").
+    const pos=e.target.selectionStart, y=window.scrollY, zona=$('ord-zona');
+    ordenBusqueda=e.target.value;
+    if(ordenBusqueda.trim()) zona.style.minHeight=Math.max(parseFloat(zona.style.minHeight)||0,zona.offsetHeight)+'px'; else zona.style.minHeight='';
+    renderOrdenes();
+    const el=$('ord-det-busq'); if(el){ el.focus({preventScroll:true}); try{ el.setSelectionRange(pos,pos); }catch(err){} }
+    window.scrollTo(0,y);
+    return;
+  }
+  const t=e.target, f=ordenForm; if(!f) return;
+  if(t.dataset.ordCom){ const s=f.sel[t.dataset.ordCom]; if(s) s.comentario=t.value; }
+});
+// Campanita
+$('btn-notif').addEventListener('click',e=>{
+  e.stopPropagation();
+  const pop=$('notif-pop'), abrir=pop.hidden;
+  pop.hidden=!abrir; if(abrir) pintarPopoverNotif();
+});
+$('notif-cerrar').addEventListener('click',()=>{ $('notif-pop').hidden=true; });
+document.addEventListener('click',e=>{
+  const it=e.target.closest('[data-notif-orden]');
+  if(it){ $('notif-pop').hidden=true; abrirOrdenDetalle(it.dataset.notifOrden); $('panel-ordenes').scrollIntoView({behavior:'smooth',block:'start'}); return; }
+  const pop=$('notif-pop');
+  if(pop.hidden||pop.contains(e.target)||e.target.closest('#btn-notif')) return;
+  pop.hidden=true;
+});
+
+// ---- Datos de ejemplo del modo prueba ----
+async function sembrarOrdenesPrueba(){
+  const ts=h=>new Date(Date.now()-h*3600*1000).toISOString();
+  const p=PRUEBA_USUARIOS, yo={email:p[0].email,nombre:p[0].nombre}, ana={email:p[1].email,nombre:p[1].nombre}, luis={email:p[2].email,nombre:p[2].nombre};
+  const rid=nombre=>(rows.find(r=>r.item===nombre)||{}).id;
+  const it=(nombre,metodo,comentario,aut)=>({...itemDeRow(rows.find(r=>r.id===rid(nombre))),metodo,comentario,aut:aut||null});
+  // órdenes de ayer para atrás: para que la prueba muestre una vencida y una ya autorizada
+  const ayer=new Date(); ayer.setDate(ayer.getDate()-1); ayer.setHours(10,0,0,0);
+  const manana=new Date(); manana.setDate(manana.getDate()+1); manana.setHours(9,0,0,0);
+  OrdenesDB.lista=[
+    {id:'OP-0001',numero:1,estado:'autorizada',emisor:ana,receptor:yo,creadaTs:ts(80),emitidaTs:ts(80),editadaTs:'',autorizadaTs:ts(70),autorizadaPor:yo,comentarioGeneral:'',
+      items:[it('CERRAJERIA','Efectivo','Ya abonado en caja',{ts:ts(70),por:yo})],mensajes:[{id:'m1',ts:ts(75),autorEmail:yo.email,autorNombre:yo.nombre,texto:'Perfecto, autorizo.',rowId:''}],
+      lecturas:{[claveUsuario(ana.email)]:ts(60),[claveUsuario(yo.email)]:ts(70)},eventos:[{ts:ts(80),tipo:'emitida',por:ana},{ts:ts(70),tipo:'autorizada',por:yo}]},
+    {id:'OP-0002',numero:2,estado:'pendiente',emisor:ana,receptor:yo,creadaTs:ts(3),emitidaTs:ts(3),editadaTs:'',autorizadaTs:'',autorizadaPor:null,comentarioGeneral:'',
+      items:[it('ALQUILER HOTEL','Transferencia','Vence esta semana, no se puede demorar'),it('SUELDOS','Transferencia',''),it('LUZ','Débito automático','Factura A, con IVA'),it('GAS JUNIN','Débito automático',''),it('INTERNET','Tarjeta de crédito','')],
+      mensajes:[{id:'m2',ts:ts(2),autorEmail:ana.email,autorNombre:ana.nombre,texto:'Esta es la tanda del jueves. Cualquier duda sobre algún ítem me avisás.',rowId:''},
+        {id:'m3',ts:ts(2.5),autorEmail:yo.email,autorNombre:yo.nombre,texto:'¿El alquiler tiene aumento este mes?',rowId:rid('ALQUILER HOTEL')},
+        {id:'m4',ts:ts(1.5),autorEmail:ana.email,autorNombre:ana.nombre,texto:'Sí, viene con el aumento del 8% de este mes.',rowId:rid('ALQUILER HOTEL'),parent:'m3'}],
+      lecturas:{[claveUsuario(ana.email)]:ts(1)},eventos:[{ts:ts(3),tipo:'emitida',por:ana}]},
+    {id:'OP-0003',numero:3,estado:'pendiente',emisor:luis,receptor:yo,creadaTs:ts(1),emitidaTs:ts(1),editadaTs:'',autorizadaTs:'',autorizadaPor:null,comentarioGeneral:'',
+      items:[it('PROVEEDOR LIMPIEZA','Transferencia','Reposición mensual'),it('LAVANDERIA PLANCHA','Efectivo','')],mensajes:[],
+      lecturas:{[claveUsuario(luis.email)]:ts(1)},eventos:[{ts:ts(1),tipo:'emitida',por:luis}]},
+    {id:'OP-0004',numero:4,estado:'pendiente',emisor:ana,receptor:yo,creadaTs:ayer.toISOString(),emitidaTs:ayer.toISOString(),editadaTs:'',autorizadaTs:'',autorizadaPor:null,comentarioGeneral:'',
+      items:[it('DESAYUNOS PROVEEDOR','Transferencia','')],mensajes:[],
+      lecturas:{[claveUsuario(ana.email)]:ayer.toISOString()},eventos:[{ts:ayer.toISOString(),tipo:'emitida',por:ana}]},
+    {id:'OP-0005',numero:5,estado:'pendiente',emisor:luis,receptor:yo,creadaTs:ts(0.5),emitidaTs:manana.toISOString(),editadaTs:'',autorizadaTs:'',autorizadaPor:null,comentarioGeneral:'',
+      items:[it('ARCA HOTEL (IVA)','Transferencia','Impuesto del mes')],mensajes:[],
+      lecturas:{[claveUsuario(luis.email)]:ts(0.5)},eventos:[{ts:ts(0.5),tipo:'programada',por:luis}]}
+  ];
+  OrdenesDB.contadorLocal=5;
+}
+
 // Puerta principal: sin sesión iniciada no se ve ni se carga nada.
 function iniciarAuth(){
   if(!FIREBASE_LISTO){
@@ -1740,14 +3126,16 @@ function iniciarAuth(){
     return;
   }
   firebase.auth().onAuthStateChanged(user=>{
+    if(modoPrueba) return;  // en modo prueba no hay sesión real: no se toca nada
     if(user){
       usuarioActual = user.displayName || user.email || 'Usuario';
       actualizarUsuarioUI();
       $('login-overlay').hidden=true;
-      load().then(registrarUsuarioActualSiHaceFalta);
+      load().then(registrarUsuarioActualSiHaceFalta).then(()=>iniciarOrdenes());
       iniciarPresencia(user);
     } else {
       detenerPresencia(); // no-op si ya se llamó antes (p.ej. desde el botón de cerrar sesión)
+      OrdenesDB.detener();
       usuarioActual='';
       $('login-overlay').hidden=false;
       mostrarVistaLogin('signin');
@@ -1821,8 +3209,19 @@ function mostrarConfirmacionAgregado(r){
   addConfirmTimers.push(setTimeout(()=>box.classList.add('fade'),4000));
   addConfirmTimers.push(setTimeout(()=>{ box.hidden=true; box.classList.remove('fade'); },5200));
 }
-function resaltarFila(id){
-  const tr=document.querySelector(`.tablacompacta tr[data-row-id="${id}"]`);
+// Centra en pantalla (y destella) el renglón del movimiento `id` en la lista que esté a la vista
+// (Registrados o alguna de las de Pagos semanales). Con limpiarFiltros=true, si el movimiento no
+// se ve porque lo esconde algún filtro (de la tabla o del período), los limpia para mostrarlo.
+function resaltarFila(id,limpiarFiltros){
+  const buscar=()=>[...document.querySelectorAll(`.tablacompacta tr[data-row-id="${id}"]`)].find(t=>t.offsetParent!==null);
+  let tr=buscar();
+  if(!tr && limpiarFiltros){
+    FILTROS_TABLA.forEach(fid=>{ $(fid).value=''; });
+    ['qi-cobro','qi-corr','qg-pago','qg-corr'].forEach(fid=>{ $(fid).value=''; });
+    render();
+    tr=buscar();
+    if(tr) toast('Se limpiaron los filtros para poder mostrar el movimiento.');
+  }
   if(!tr) return;
   tr.scrollIntoView({behavior:'smooth',block:'center'});
   tr.classList.add('flash');
@@ -1833,7 +3232,7 @@ $('add-confirm-ver').addEventListener('click',()=>{
   $('add-confirm').hidden=true;
   toggleMovs(true);
   setVistaMov('registrados');
-  setTimeout(()=>resaltarFila(ultimoAgregadoId),60);
+  setTimeout(()=>resaltarFila(ultimoAgregadoId,true),80);
 });
 
 /* ---------- Modo gasto / ingreso ---------- */
@@ -1881,9 +3280,20 @@ function pintarMetodosPago(){
 }
 function actualizarFechaDiferida(){
   const esEcheq = modo==='gasto' && $('f-metodo-pago').value==='E-cheq';
-  $('wrap-fecha-diferida').hidden = !esEcheq;
+  $('wrap-fecha-diferida').hidden = !esEcheq || $('f-dividido').checked;
   if(esEcheq && !$('f-fecha-diferida').value) $('f-fecha-diferida').value=hoyISO();
 }
+// "+ Agregar pago dividido" (junto a la fecha diferida): tilda solo la casilla "Pago dividido" y
+// arma 2 cheques para repartir el importe.
+$('btn-echeq-dividir').addEventListener('click',()=>{
+  const b=brutoVal();
+  if($('f-moneda').value==='USD'){ toast('El pago dividido todavía no está disponible para movimientos en USD.'); return; }
+  if(!(b>0)){ toast('Cargá primero el importe bruto para poder dividirlo.'); $('f-bruto').focus(); return; }
+  const f0=$('f-fecha-diferida').value||hoyISO();
+  cuotasForm=partirEnCheques(b,f0).map(c=>({importe:c.importe,fecha:c.fecha,mesPago:c.fecha.slice(0,7),metodoPago:'E-cheq',pago:false}));
+  $('f-dividido').checked=true;
+  $('f-dividido').dispatchEvent(new Event('change'));
+});
 // Tocar el método de pago o la fecha de vencimiento sugeridos (ver sugerenciaFijo) los saca del
 // modo "orientativo": dejan de verse en cursiva/anaranjado, sea cual sea el valor elegido.
 $('f-fechapago').addEventListener('input',()=>{ $('f-fechapago').classList.remove('campo-tentativo'); });
@@ -2173,6 +3583,7 @@ $('f-dividido').addEventListener('change',()=>{
     cuotasForm=[]; $('cuotas-form').hidden=true;
     $('wrap-fechapago').hidden = modo==='ingreso'?false:false;
   }
+  actualizarFechaDiferida();
   renderCuotasForm();
 });
 function renderCuotasForm(){
@@ -2182,10 +3593,12 @@ function renderCuotasForm(){
     <div class="cuota-row">
       <span class="cuota-n">Cuota ${i+1}</span>
       <label>Importe <input type="text" inputmode="numeric" class="cuota-imp" data-cf-imp="${i}" value="${c.importe?money(+c.importe):''}" placeholder="0"></label>
-      <label>Mes de pago <input type="month" data-cf-mes="${i}" value="${c.mesPago||''}"></label>
-      <label>Fecha de pago <input type="date" data-cf-fecha="${i}" value="${c.fecha||''}"></label>
+      ${c.metodoPago==='E-cheq'?'':`<label>Mes de pago <input type="month" data-cf-mes="${i}" value="${c.mesPago||''}"></label>`}
+      <label>${c.metodoPago==='E-cheq'?'Fecha diferida':'Fecha de pago'} <input type="date" data-cf-fecha="${i}" value="${c.fecha||''}"></label>
       <label>Método de pago <select data-cf-metodo="${i}">${metodosPagoOptionsHtml(c.metodoPago||'')}</select></label>
-      <label class="cuota-pago"><input type="checkbox" data-cf-pago="${i}" ${c.pago?'checked':''}> Pago</label>
+      ${c.metodoPago==='E-cheq'
+        ? `<span class="cuota-auto" title="Los e-cheqs se debitan solos: se marcan como pago al llegar su fecha">${(c.fecha&&c.fecha<=hoyISO())?'<span class="cp-tick">✓</span> pagado':'se paga solo'}</span>`
+        : `<label class="cuota-pago"><input type="checkbox" data-cf-pago="${i}" ${c.pago?'checked':''}> Pago</label>`}
       <button type="button" class="cuota-del" data-cf-del="${i}" title="Quitar cuota">×</button>
     </div>`).join('');
   const suma=cuotasForm.reduce((a,c)=>a+(+c.importe||0),0);
@@ -2199,7 +3612,8 @@ function renderCuotasForm(){
 }
 $('btn-cuota-add-form').addEventListener('click',()=>{
   const suma=cuotasForm.reduce((a,c)=>a+(+c.importe||0),0);
-  cuotasForm.push({importe:Math.max(0,brutoVal()-suma),mesPago:mesActual(),fecha:hoyISO(),pago:false});
+  const mh=(cuotasForm[0]&&cuotasForm.every(c=>c.metodoPago==='E-cheq'))?'E-cheq':'';
+  cuotasForm.push({importe:Math.max(0,brutoVal()-suma),mesPago:mesActual(),fecha:hoyISO(),pago:false,metodoPago:mh});
   renderCuotasForm();
 });
 $('cuotas-form').addEventListener('input',e=>{
@@ -2228,7 +3642,11 @@ $('cuotas-form').addEventListener('change',async e=>{
       }
       val=nuevo||'';
     }
+    const prevM=cuotasForm[+mt].metodoPago||'';
     cuotasForm[+mt].metodoPago=val;
+    // Un pago nunca se divide entre E-cheq y otro método: si una cuota pasa a E-cheq (o deja de serlo)
+    // las demás la acompañan.
+    if(val==='E-cheq'||prevM==='E-cheq'){ cuotasForm.forEach(c=>{ c.metodoPago=val; }); if(val==='E-cheq') cuotasForm.forEach(c=>{ if(!c.fecha) c.fecha=hoyISO(); }); }
     renderCuotasForm();
   }
 });
@@ -2269,7 +3687,7 @@ function salirEdicion(){
     const vista=volverVistaTrasEditar, idResaltar=volverIdTrasEditar;
     volverVistaTrasEditar=null; volverIdTrasEditar=null;
     setVistaMov(vista);
-    if(vista==='registrados') setTimeout(()=>resaltarFila(idResaltar),60);
+    if(vista==='registrados'||vista==='semana') setTimeout(()=>resaltarFila(idResaltar),80);
   }
 }
 let volverVistaTrasEditar=null, volverIdTrasEditar=null;
@@ -2289,16 +3707,17 @@ async function abrirEdicion(id){
   $('f-bruto').value=money(r.bruto);
   $('f-tipo').value=r.tipoFac||'No posee';
   $('f-iva').value=r.iva?money(r.iva):'';ivaAuto=!(r.iva>0);
-  $('f-pago').checked=!!r.pago;
-  $('wrap-fecha-real-pago').hidden = !r.pago;
-  $('f-fecha-real-pago').value = r.pago ? (r.fechaPago||hoyISO()) : '';
-  $('wrap-metodo-pago').hidden = !(r.pago && r.tipo==='gasto');
+  const pagoForm = !!r.pago || !!r.echeqEmitido;   // un e-cheq emitido ya está abonado: se edita como pago con E-cheq
+  $('f-pago').checked=pagoForm;
+  $('wrap-fecha-real-pago').hidden = !pagoForm;
+  $('f-fecha-real-pago').value = pagoForm ? (r.fechaPago||hoyISO()) : '';
+  $('wrap-metodo-pago').hidden = !(pagoForm && r.tipo==='gasto');
   pintarMetodosPago();
   const metodoEsTentativo = r.tipo==='gasto' && !r.pago && !!r.metodoTentativo;
-  $('f-metodo-pago').value = (r.pago && r.tipo==='gasto') ? (r.metodoPago||'') : (metodoEsTentativo ? r.metodoTentativo : '');
+  $('f-metodo-pago').value = (pagoForm && r.tipo==='gasto') ? (r.metodoPago||'') : (metodoEsTentativo ? r.metodoTentativo : '');
   $('f-metodo-pago').classList.toggle('campo-tentativo', metodoEsTentativo);
   $('btn-quitar-metodo-tentativo').hidden = !metodoEsTentativo;
-  $('wrap-fecha-diferida').hidden = !(r.pago && r.tipo==='gasto' && r.metodoPago==='E-cheq');
+  $('wrap-fecha-diferida').hidden = !(pagoForm && r.tipo==='gasto' && r.metodoPago==='E-cheq') || !!r.dividido;
   $('f-fecha-diferida').value = r.fechaDiferida||'';
   $('f-comp').checked = r.comp!==false;
   $('f-moneda').value = r.moneda||'ARS';
@@ -2384,7 +3803,14 @@ $('btn-add').addEventListener('click',async()=>{
     $('f-fecha-diferida').focus();
     return;
   }
-  const datos={tipo:modo,mesPago:$('f-mespago').value,mesCorr:$('f-mescorr').value,
+  let mesEcheqDiv='';
+  if(esDiv && cuotasForm.some(c=>c.metodoPago==='E-cheq')){
+    if(!cuotasForm.every(c=>c.metodoPago==='E-cheq')){ toast('No se puede dividir un pago entre E-cheq y otro método: todas las cuotas deben ser E-cheq.'); return; }
+    if(cuotasForm.some(c=>!c.fecha)){ toast('Indicá la fecha diferida de cada cheque.'); return; }
+    cuotasForm.forEach(c=>{ c.pago=c.fecha<=hoyISO(); c.mesPago=c.fecha.slice(0,7); });
+    mesEcheqDiv=cuotasForm.map(c=>c.fecha).sort().pop().slice(0,7);   // cuenta en el mes del último cheque
+  }
+  const datos={tipo:modo,mesPago:mesEcheqDiv||$('f-mespago').value,mesCorr:$('f-mescorr').value,
     rubro:rubroSel,
     item,bruto,moneda,cotizacion,tipoFac,iva:ivaManual,fact:modo==='ingreso'?$('f-fact').value:'',
     pago:$('f-pago').checked,comp:modo==='ingreso'?true:$('f-comp').checked,
@@ -2403,6 +3829,17 @@ $('btn-add').addEventListener('click',async()=>{
   }
   else if(modo==='ingreso' && !datos.pago) datos.fechaPago = $('f-fechapago').value;
   else if(modo==='gasto' && !esDiv && !datos.pago){ datos.metodoPago = ''; datos.fechaDiferida=''; }
+  // E-cheq con fecha futura: no se marca pago a mano, queda emitido y se debita solo ese día.
+  if(modo==='gasto' && !esDiv && datos.pago && datos.metodoPago==='E-cheq' && datos.fechaDiferida>hoyISO()){
+    const prev=editId?rows.find(x=>x.id===editId):null;
+    datos.mesPagoAntesEcheq=(prev&&prev.mesPagoAntesEcheq!==undefined)?prev.mesPagoAntesEcheq:(datos.mesPago||'');
+    datos.pago=false; datos.echeqEmitido=true;
+  }
+  // El gasto con E-cheq se registra en el mes de la fecha del cheque, no en el que se cargó o venció.
+  if(modo==='gasto' && !esDiv && $('f-pago').checked && datos.metodoPago==='E-cheq' && datos.fechaDiferida){
+    datos.mesPago=datos.fechaDiferida.slice(0,7);
+    if(datos.pago) datos.fechaPago=datos.fechaDiferida;
+  }
   if(!(await asegurarUsuario())) return;
   if(editId){
     const r=rows.find(x=>x.id===editId);
@@ -2411,6 +3848,7 @@ $('btn-add').addEventListener('click',async()=>{
       // Datos orientativos (vencimiento/método sugeridos de un gasto fijo, ver sugerenciaFijo):
       // dejan de mostrarse en cursiva/anaranjado en cuanto se confirma el pago, o en cuanto se
       // cambia el valor sugerido por otro.
+      if(!datos.echeqEmitido){ delete r.echeqEmitido; delete r.mesPagoAntesEcheq; }
       if(datos.pago){ r.vencTentativo=false; r.metodoTentativo=''; }
       else if(r.vencTentativo && datos.fechaVenc!==r.fechaVenc){ r.vencTentativo=false; }
       Object.assign(r,datos);
@@ -2593,7 +4031,7 @@ function filteredSemana(offsetSemanas){
   const pd=$('qs-pago-desde').value, ph=$('qs-pago-hasta').value;
   const cd=$('qs-corr-desde').value, ch=$('qs-corr-hasta').value;
   const lista=rows.filter(r=>{
-    if(r.tipo!=='gasto'||r.pago||r.pospuesto) return false;
+    if(r.tipo!=='gasto'||r.pago||r.pospuesto||esEcheqPendiente(r)) return false;
     if(r.dividido && Array.isArray(r.cuotas)){
       const hayCuotaEnSemana = r.cuotas.some(c=>!c.pago && c.fecha && (sinPiso||c.fecha>=desde) && c.fecha<=hasta);
       if(!hayCuotaEnSemana) return false;
@@ -2623,7 +4061,7 @@ function filteredVencidos(pospuestos){
   const pd=$('qs-pago-desde').value, ph=$('qs-pago-hasta').value;
   const cd=$('qs-corr-desde').value, ch=$('qs-corr-hasta').value;
   const lista=rows.filter(r=>{
-    if(r.tipo!=='gasto'||r.pago||!!r.pospuesto!==!!pospuestos) return false;
+    if(r.tipo!=='gasto'||r.pago||esEcheqPendiente(r)||!!r.pospuesto!==!!pospuestos) return false;
     if(r.dividido && Array.isArray(r.cuotas)){
       const hayCuotaVencida = r.cuotas.some(c=>!c.pago && c.fecha && c.fecha<desde);
       if(!hayCuotaVencida) return false;
@@ -2754,7 +4192,42 @@ function syncSelectMetodo(){
 }
 
 /* ---------- Render ---------- */
+// E-cheq: al llegar la fecha diferida el dinero se debita solo, así que el movimiento (o cada cheque
+// de un pago dividido) se marca como pagado con método E-cheq sin intervención manual.
+function aplicarDebitosEcheq(){
+  const hoy=hoyISO(); let cambios=0;
+  const hist=(r,det)=>{ historial.push({ts:new Date().toISOString(),usuario:'Sistema (débito automático)',accion:'Débito automático de e-cheq',item:nombreDe(r)+(det?' — '+det:''),rubro:r.rubro||'',tipo:r.tipo,monto:typeof r.bruto==='number'?r.bruto:null,moneda:r.moneda,metodo:'E-cheq'}); if(historial.length>1000) historial=historial.slice(-1000); };
+  (rows||[]).forEach(r=>{
+    if(r.tipo!=='gasto') return;
+    // Datos de antes: un E-cheq marcado como pago con fecha diferida todavía futura pasa a "emitido" (impago hasta esa fecha).
+    if(r.pago && !r.dividido && r.metodoPago==='E-cheq' && r.fechaDiferida && r.fechaDiferida>hoy){
+      r.mesPagoAntesEcheq=r.mesPago||''; r.mesPago=r.fechaDiferida.slice(0,7); r.pago=false; r.echeqEmitido=true; cambios++;
+    }
+    if(r.pago && r.dividido && Array.isArray(r.cuotas) && r.cuotas.some(c=>c.metodoPago==='E-cheq' && c.pago && c.fecha>hoy)){
+      r.cuotas.forEach(c=>{ if(c.metodoPago==='E-cheq' && c.pago && c.fecha>hoy) c.pago=false; }); sincronizarPagoDividido(r); cambios++;
+    }
+    if(!r.pago && r.dividido && Array.isArray(r.cuotas) && r.cuotas.some(c=>c.metodoPago==='E-cheq' && c.pago && c.fecha>hoy)){
+      r.cuotas.forEach(c=>{ if(c.metodoPago==='E-cheq' && c.pago && c.fecha>hoy) c.pago=false; }); sincronizarPagoDividido(r); cambios++;
+    }
+    if(r.vencAntesEcheq!==undefined){ r.fechaVenc=r.vencAntesEcheq; delete r.vencAntesEcheq; cambios++; }   // migración de la versión anterior
+    if(r.echeqEmitido && !r.pago && r.fechaDiferida && r.fechaDiferida<=hoy){
+      r.pago=true; r.fechaPago=r.fechaDiferida; r.metodoPago='E-cheq';
+      r.mesPago=r.fechaDiferida.slice(0,7);   // se registra con la fecha en que se debitó el cheque
+      delete r.echeqEmitido; delete r.mesPagoAntesEcheq; delete r.pospuesto; delete r.pospuestoHasta;
+      hist(r,''); cambios++;
+    }
+    if(r.dividido && Array.isArray(r.cuotas)){
+      let n=0;
+      r.cuotas.forEach(c=>{ if(!c.pago && c.metodoPago==='E-cheq' && c.fecha && c.fecha<=hoy){ c.pago=true; n++; } });
+      if(n){ sincronizarPagoDividido(r); if(r.pago){ const f=r.cuotas.map(c=>c.fecha).filter(Boolean).sort().pop(); if(f){ r.fechaPago=f; r.mesPago=f.slice(0,7); } } hist(r,n+' cheque'+(n===1?'':'s')); cambios++; }
+    }
+  });
+  if(cambios) save();
+  return cambios>0;
+}
+setInterval(()=>{ if(typeof rows!=='undefined' && aplicarDebitosEcheq()) render(); },10*60*1000);
 function render(){
+  aplicarDebitosEcheq();
   pintarFxMetodosQuitar();
   syncSelect('qi-cobro','mesPago',false,'ingreso');
   syncSelect('qi-corr','mesCorr',false,'ingreso');
@@ -3124,7 +4597,7 @@ document.addEventListener('click',async e=>{
 function actualizarCentradoPaneles(){
   const zona=$('paneles-zone');
   if(!zona) return;
-  const cerrado = $('dash-body').hidden && $('movs-body').hidden;
+  const cerrado = $('dash-body').hidden && $('movs-body').hidden && $('ord-body').hidden;
   if(!cerrado){ zona.style.paddingTop='0px'; return; }
   zona.style.paddingTop='0px';
   const top=zona.getBoundingClientRect().top;
@@ -3154,7 +4627,7 @@ window.addEventListener('scroll',ajustarAtajos,{passive:true});
 // por JS (con márgenes negativos) porque el ancho máximo/centrado de .wrap no es un valor fijo
 // (depende del viewport), así que no alcanza con una regla CSS estática. Cerrado (o en mobile,
 // donde los atajos no se muestran), el panel vuelve a su tamaño/posición normal.
-function ajustarAnchoPanel(panelId,bodyId){
+function ajustarAnchoPanel(panelId,bodyId,mitad){
   const panel=$(panelId), body=$(bodyId);
   if(!panel || !body) return;
   const abierto = !body.hidden;
@@ -3163,12 +4636,21 @@ function ajustarAnchoPanel(panelId,bodyId){
   const atajos=document.querySelector('.atajos');
   const anchoAtajos = atajos ? atajos.getBoundingClientRect().width : 0;
   const rect=panel.getBoundingClientRect();
+  if(mitad){
+    // Órdenes de pago: la mitad del ancho disponible (mínimo 680 px), centrada, para leer más rápido de borde a borde
+    const disp=window.innerWidth-anchoAtajos, w=Math.min(disp,Math.max(680,Math.round(disp/2)));
+    const izq=anchoAtajos+Math.round((disp-w)/2);
+    panel.style.marginLeft=(izq-rect.left)+'px';
+    panel.style.marginRight=(rect.right-(izq+w))+'px';
+    return;
+  }
   panel.style.marginLeft = (anchoAtajos - rect.left)+'px';
   panel.style.marginRight = (rect.right - window.innerWidth)+'px';
 }
 function ajustarAnchoPaneles(){
   ajustarAnchoPanel('resultados','dash-body');
   ajustarAnchoPanel('panel-movs','movs-body');
+  ajustarAnchoPanel('panel-ordenes','ord-body',true);
 }
 window.addEventListener('resize',ajustarAnchoPaneles);
 $('dash-toggle').addEventListener('click',()=>toggleDash());
@@ -3181,7 +4663,7 @@ $('movs-toggle').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '
 document.querySelectorAll('.atajos button[data-atajo]').forEach(btn=>{
   btn.addEventListener('click',()=>{
     const id=btn.dataset.atajo;
-    if(id==='resultados') toggleDash(true); else toggleMovs(true);
+    if(id==='resultados') toggleDash(true); else if(id==='panel-ordenes') toggleOrdenes(true); else toggleMovs(true);
     const sec=$(id);
     sec.scrollIntoView({behavior:'smooth',block:'start'});
     sec.classList.remove('atajo-flash');
@@ -3328,6 +4810,7 @@ function diasHasta(fechaISO){
 // rojo fuerte los pagos de "Pagos semanales". Un pago dividido no tiene una única fecha (cada
 // cuota la suya), así que se toma la cuota impaga con fecha más próxima entre las que la tengan.
 function vencePronto(r){
+  if(esEcheqPendiente(r)) return false;
   if(r.dividido && Array.isArray(r.cuotas)){
     const dias=r.cuotas.filter(c=>!c.pago&&c.fecha).map(c=>diasHasta(c.fecha)).filter(d=>d!==null);
     return dias.length>0 && Math.min(...dias)<=7;
@@ -3402,12 +4885,16 @@ function tablaHtml(view,sortState,tablaId){
       const tagPosp = pospuesto ? `<span class="tag pp" title="Impago pero pospuesto: no se abona en el corto plazo${r.pospuestoHasta?' — aviso desde el '+r.pospuestoHasta.split('-').reverse().join('/'):''}">pospuesto${r.pospuestoHasta?' hasta '+r.pospuestoHasta.split('-').reverse().slice(0,2).join('/'):''}</span>` : '';
       const cpCell = div
         ? `<td class="cp cp-multi"><button class="cuotas-arrow ${parcial?'parcial':(r.pago?'ok':'')}" data-exp="${r.id}" title="Ver desglose de importes por cuota">${abierta?'▾':'▸'}</button><div class="cp-stack">${
-            r.cuotas.map(c=>c.pago
+            r.cuotas.map(c=>c.metodoPago==='E-cheq'
+              ? `<span class="cp-stack-line ${c.pago?'ok':'pend'}" title="E-cheq ${c.pago?'debitado':'se debita solo'} el ${esc(fmtFechaCorta(c.fecha))}">${esc(fmtFechaCorta(c.fecha)||'—')}${c.pago?'<span class="cp-tick">✓</span>':''}</span>`
+              : c.pago
               ? `<span class="cp-stack-line ok">${esc(fmtFechaCorta(c.fecha)||(c.mesPago?mesLabel(c.mesPago):'—'))}</span>`
-              : `<span class="cp-stack-line pend">pendiente</span>`
+              : `<span class="cp-stack-line pend">${c.metodoPago==='E-cheq'&&c.fecha?'E-cheq '+esc(fmtFechaCorta(c.fecha)):'pendiente'}</span>`
             ).join('')
           }</div>${tagPosp}</td>`
-        : `<td class="cp"><button type="button" class="cp-badge ${r.pago?'pagado':'pendiente'}" data-tog="${r.id}" title="${r.pago?('Pagado el '+fmtFechaCorta(r.fechaPago)+(r.metodoPago?' · '+esc(r.metodoPago):'')+(r.fechaDiferida?' · diferido al '+fmtFechaCorta(r.fechaDiferida):'')+' — clic para desmarcar'):(esIng?'Marcar como cobrado':'Marcar como pagado')}">${r.pago?fmtFechaCorta(r.fechaPago):(esIng?'Cobrar':'Pagar')}</button>${tagPosp}</td>`;
+        : (r.echeqEmitido && !r.pago)
+        ? `<td class="cp"><button type="button" class="cp-badge pendiente echeq" data-tog="${r.id}" title="E-cheq emitido: se marca como pagado solo el ${fmtFechaCorta(r.fechaDiferida)} — clic para anularlo">${fmtFechaCorta(r.fechaDiferida)}</button>${tagPosp}</td>`
+        : `<td class="cp"><button type="button" class="cp-badge ${r.pago?'pagado':'pendiente'}" data-tog="${r.id}" title="${r.pago?('Pagado el '+fmtFechaCorta(r.fechaPago)+(r.metodoPago?' · '+esc(r.metodoPago):'')+(r.fechaDiferida?' · diferido al '+fmtFechaCorta(r.fechaDiferida):'')+' — clic para desmarcar'):(esIng?'Marcar como cobrado':'Marcar como pagado')}">${r.pago?fmtFechaCorta(r.fechaPago)+((!esIng&&r.metodoPago==='E-cheq')?'<span class="cp-tick">✓</span>':''):(esIng?'Cobrar':'Pagar')}</button>${tagPosp}</td>`;
       const btnEdit = `<button class="rowbtn plain" data-edit="${r.id}" title="Modificar">✎</button>`;
       const btnDel = `<button class="rowbtn plain" data-del="${r.id}" title="Eliminar">✕</button>`;
       const tdFactura = mostrarFC ? `<td>${esIng?'<span class="tag">—</span>':`<span class="tag ${r.tipoFac==='A'||r.tipoFac==='A | 27%'?'A':(r.tipoFac==='Sin emitir'?'SE':'')}">${esc(r.tipoFac||'No posee')}</span>${(r.tipoFac==='A'||r.tipoFac==='A | 27%')?`<span class="ivanota">IVA ${money(r.iva)}</span>`:''}`}</td>` : '';
@@ -3416,7 +4903,7 @@ function tablaHtml(view,sortState,tablaId){
       // apilados igual que las fechas de Estado.
       const tdMetodo = mostrarMetodo ? `<td>${
           esIng ? '<span class="tag EG">—</span>'
-          : div ? (r.cuotas.some(c=>c.pago) ? `<div class="cp-stack">${r.cuotas.filter(c=>c.pago).map(c=>`<span class="cp-stack-line">${esc(c.metodoPago||'—')}</span>`).join('')}</div>` : '<span class="tag EG">—</span>')
+          : div ? ((r.cuotas.length&&r.cuotas.every(c=>c.metodoPago==='E-cheq')) ? `<div class="cp-stack">${r.cuotas.map(c=>`<span class="cp-stack-line">E-cheq</span>`).join('')}</div>` : r.cuotas.some(c=>c.pago) ? `<div class="cp-stack">${r.cuotas.filter(c=>c.pago).map(c=>`<span class="cp-stack-line">${esc(c.metodoPago||'—')}</span>`).join('')}</div>` : '<span class="tag EG">—</span>')
           : (r.metodoPago ? esc(r.metodoPago) : ((!r.pago && r.metodoTentativo) ? `<span class="tentativo" title="Método orientativo, según el último registro de este ítem. Todavía no está confirmado.">${esc(r.metodoTentativo)}</span>` : '<span class="tag EG">—</span>'))
         }</td>` : '';
       
@@ -3428,7 +4915,8 @@ function tablaHtml(view,sortState,tablaId){
       const nDesglose = (r.desglose||[]).length;
       const tdItem = esIng ? `<td class="item" title="${esc(r.item||'')}">${r.item?esc(r.item):'—'}</td>`
         : `<td class="item${esTarjeta?' tarjeta-item':''}" title="${esc(r.item)}${esTarjeta?' — tocá para ver/cargar el desglose del resumen':''}"${esTarjeta?` data-tarjeta-toggle="${r.id}"`:''}>${esc(r.item)}${esTarjeta?`<span class="tarjeta-badge">${abiertaTarjeta?'▾':'▸'} desglose${nDesglose?' ('+nDesglose+')':''}</span>`:''}</td>`;
-      const filaPrincipal = `<tr data-row-id="${r.id}" class="${r.pago?'paid':'unpaid'}${parcial?' parcial':''}${r.id===editId?' editing':''}${r.comp===false?' nocomp':''}${claseImpago}${clasePago}">
+      const opAut = (!esIng && !r.pago) ? opAutorizadaDe(r.id) : null;
+      const filaPrincipal = `<tr data-row-id="${r.id}" class="${r.pago?'paid':'unpaid'}${parcial?' parcial':''}${r.id===editId?' editing':''}${r.comp===false?' nocomp':''}${claseImpago}${clasePago}${opAut?(opAut.aprobado?' en-orden-aut':' en-orden-pend'):''}">
       <td><span class="tag ${esIng?'IN':'EG'}">${esIng?'INGRESO':'GASTO'}</span>${!esIng?`<span class="tag ${r.fijo?'FIJ':'VAR'}">${r.fijo?'FIJO':'VARIABLE'}</span>`:''}</td>
       <td class="mono">${div?'<span class="cp-let" title="Se paga en varias cuotas">varias</span>':'<b>'+mesLabel(r.mesPago).toUpperCase()+'</b>'}</td>
       <td class="mono"><b>${mesLabel(r.mesCorr)}</b></td>
@@ -3441,7 +4929,7 @@ function tablaHtml(view,sortState,tablaId){
       ${tdMetodo}
       <td class="computable">${esIng?'<span class="tag EG">—</span>':`<input type="checkbox" ${r.comp!==false?'checked':''} data-comp="${r.id}" title="${r.comp!==false?'Computable: resta en el resultado. Destildá si se pagó pero no es gasto del hotel.':'No computable: se pagó pero no afecta el resultado. Tildá para contarlo como gasto.'}">`}</td>
       <td class="rubro" data-vertexto="${esc(r.rubro||'')}" title="Tocá para ver completo">${esc(r.rubro||'—')}</td>
-      <td class="detalle" data-vertexto="${esc(r.detalle||'')}" title="Tocá para ver completo">${esc(r.detalle||'')}</td>
+      <td class="detalle" data-vertexto="${esc(r.detalle||'')}" title="Tocá para ver completo">${opAut?chipOrdenHtml(opAut):''}${esc(r.detalle||'')}</td>
       <td class="acciones">${btnEdit}${btnDel}</td>
     </tr>`;
       const filaDesglose = (div&&abierta) ? filaDesgloseCuotas(r,totalCols) : '';
@@ -3548,7 +5036,7 @@ function renderEstadoFijos(){
       ? `<span class="fijo-estado-info ${ult.pago?'cargado':''}">Último: ${ult.mesCorr?'corresp. '+mesLabel(ult.mesCorr):(ult.mesPago?'pago '+mesLabel(ult.mesPago):'sin mes')}${ult.bruto?' · '+money(ult.bruto):''} · ${ult.pago?'pago':'pendiente'}</span>`
       : '<span class="fijo-estado-info">Nunca cargado</span>';
     const extras=[f.bruto?('ref. '+money(f.bruto)):'', f.diaVenc?('vence día '+f.diaVenc):'', f.metodo||''].filter(Boolean).join(' · ');
-    return `<div class="fijo-estado-row">
+    return `<div class="fijo-estado-row" data-fijo-fila="${f.id}">
       <div class="fijo-estado-nombre"><span class="fijo-estado-item">${esc(f.item||'(sin ítem)')}</span><span class="fijo-estado-rubro">${esc(f.rubro||'sin rubro')}</span>${extras?`<span class="fijo-estado-sub">${esc(extras)}</span>`:''}</div>
       <div class="fijo-estado-acc">${info}
         <button type="button" class="rowbtn plain" data-fijo-edit="${f.id}" title="Editar este gasto fijo">✎</button>
@@ -3558,6 +5046,16 @@ function renderEstadoFijos(){
   }).join('');
 }
 $('fijos-buscar').addEventListener('input',renderEstadoFijos);
+// Centra (y destella) en la lista de fijos el gasto fijo que se acaba de agregar o editar; si la
+// búsqueda lo esconde, la limpia.
+function resaltarFijo(id){
+  let el=document.querySelector(`#fijos-estado-lista [data-fijo-fila="${id}"]`);
+  if(!el && $('fijos-buscar').value){ $('fijos-buscar').value=''; renderEstadoFijos(); el=document.querySelector(`#fijos-estado-lista [data-fijo-fila="${id}"]`); }
+  if(!el) return;
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  el.classList.add('flash');
+  setTimeout(()=>el.classList.remove('flash'),2400);
+}
 
 // --- Ventana "Agregar nuevo" / "Editar" ---
 let fijoEditandoId=null;
@@ -3611,6 +5109,7 @@ $('fe-guardar').addEventListener('click',async()=>{
   };
   if(item && fijosExtra.some(x=>x.item===item && x.id!==fijoEditandoId) && !confirm('Ya hay un gasto fijo "'+item+'" en la lista. ¿Guardarlo igual?')) return;
   if(!(await asegurarUsuario())) return;
+  let idDestacar=fijoEditandoId;
   if(fijoEditandoId){
     const f=fijosExtra.find(x=>x.id===fijoEditandoId); if(!f) return;
     guardarParaDeshacer('editar el gasto fijo "'+(f.item||'sin ítem')+'"');
@@ -3618,12 +5117,14 @@ $('fe-guardar').addEventListener('click',async()=>{
     registrarHistorial('Editó en la lista de fijos',null,(datos.item||'sin ítem')+(datos.rubro?' ('+datos.rubro+')':''));
   } else {
     guardarParaDeshacer('sumar "'+(item||'gasto fijo sin ítem')+'" a la lista de fijos');
-    fijosExtra.push({id:uid(),...datos});
+    idDestacar=uid();
+    fijosExtra.push({id:idDestacar,...datos});
     registrarHistorial('Sumó a la lista de fijos',null,(datos.item||'sin ítem')+(datos.rubro?' ('+datos.rubro+')':''));
   }
   save();
   $('fijo-edit-overlay').hidden=true;
   renderEstadoFijos();
+  setTimeout(()=>resaltarFijo(idDestacar),60);
   toast(fijoEditandoId?'Gasto fijo actualizado':'Gasto fijo agregado a la lista');
 });
 document.addEventListener('click',async e=>{
@@ -3645,8 +5146,10 @@ document.addEventListener('click',async e=>{
 // siguiente al que tenía ("corresponde a"); si no se registró, queda en blanco.
 function mesCorrSugerido(f,mesPago){
   if(!f.item||!mesPago) return '';
-  const previo=sumarMes(mesPago,-1);
-  const reg=rows.filter(r=>r.tipo==='gasto'&&r.fijo&&r.item===f.item&&r.mesPago===previo&&r.mesCorr)
+  const previo=sumarMes(mesPago,-1), clave=sinTildes(f.item).replace(/\s+/g,' ').trim();
+  // Se busca cualquier gasto con ese ítem (sin importar mayúsculas/tildes ni si quedó marcado como
+  // fijo) cuyo mes de pago sea el mes anterior al que se está cargando.
+  const reg=rows.filter(r=>r.tipo==='gasto'&&r.mesCorr&&r.mesPago===previo&&sinTildes(r.item).replace(/\s+/g,' ').trim()===clave)
     .sort((a,b)=>b.mesCorr.localeCompare(a.mesCorr))[0];
   return reg ? sumarMes(reg.mesCorr,1) : '';
 }
@@ -3757,7 +5260,7 @@ function filaDesgloseCuotas(r,totalCols){
       <span class="desg-n">Cuota ${i+1}</span>
       <span class="desg-imp">${money(c.importe)}</span>
       <span class="desg-fecha">${c.fecha?fmtFecha(c.fecha):(c.mesPago?mesLabel(c.mesPago):'sin fecha')}</span>
-      <span class="desg-estado">${c.pago?'✓ pago':'pendiente'}${c.metodoPago?' · '+esc(c.metodoPago):''}</span>
+      <span class="desg-estado">${c.pago?'✓ pago':(c.metodoPago==='E-cheq'?'se debita solo':'pendiente')}${c.metodoPago?' · '+esc(c.metodoPago):''}</span>
     </div>`).join('');
   return `<tr class="desglose-fila"><td></td><td colspan="${totalCols-1}">
     <div class="desglose-box">
@@ -3810,6 +5313,73 @@ function filaDesgloseTarjeta(r,totalCols){
     </div>
   </td></tr>`;
 }
+
+
+// Reparte el importe en 2 cheques (mitad y resto), el 2.º a 30 días del 1.º
+function partirEnCheques(bruto,f0){
+  const a=redondear2(Math.floor(bruto/2)), dt=new Date(f0+'T12:00:00'); dt.setDate(dt.getDate()+30);
+  const f1=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+  return [{importe:a,fecha:f0},{importe:redondear2(bruto-a),fecha:f1}];
+}
+// Editor "Pagar" con E-cheq dividido: lista de cheques (importe + fecha diferida + pagado)
+function pintarCpCuotas(cont,r){
+  const box=cont.querySelector('.cp-cuotas'); const cu=cont._cuotas||[];
+  const bruto=+r.bruto||0;
+  box.innerHTML=cu.map((c,i)=>`<div class="cp-cuota">
+      <span class="cp-cuota-n">Cheque ${i+1}</span>
+      <input type="text" inputmode="decimal" data-cpc-imp="${i}" value="${c.importe?money(+c.importe):''}" placeholder="Importe">
+      <input type="date" data-cpc-fecha="${i}" value="${c.fecha||''}" title="Fecha diferida de este cheque">
+      ${cu.length>1?`<button type="button" class="cp-cuota-del" data-cpc-del="${i}" title="Quitar cheque">×</button>`:''}
+    </div>`).join('')+`<div class="cp-cuotas-foot"><button type="button" class="cp-cuota-add" data-cpc-add="1">+ Agregar cheque</button><span class="cp-cuotas-msg"></span></div><div class="cp-cuotas-nota">Cada cheque se marca como pago solo (E-cheq) al llegar su fecha.</div>`;
+  avisoCpCuotas(cont,r);
+  ubicarCpEditor(cont);
+}
+// El editor con cheques es más alto que la fila: se ubica fijo en pantalla (sin recortarse por la tabla ni por el encabezado).
+function ubicarCpEditor(cont){
+  if(!cont||!cont.classList.contains('dividido')) return;
+  const td=cont.closest('td.cp'); if(!td) return;
+  const r=td.getBoundingClientRect();
+  const h=cont.offsetHeight, w=cont.offsetWidth;
+  cont.style.top=Math.max(60,Math.min(r.top,window.innerHeight-h-8))+'px';
+  cont.style.left=Math.max(8,Math.min(r.left,window.innerWidth-w-8))+'px';
+}
+window.addEventListener('scroll',()=>{ ubicarCpEditor(document.querySelector('.cp-editor.dividido')); },true);
+window.addEventListener('resize',()=>{ ubicarCpEditor(document.querySelector('.cp-editor.dividido')); });
+function avisoCpCuotas(cont,r){
+  const msg=cont.querySelector('.cp-cuotas-msg'); if(!msg) return;
+  const suma=redondear2((cont._cuotas||[]).reduce((a,c)=>a+(+c.importe||0),0)), bruto=+r.bruto||0, dif=redondear2(suma-bruto);
+  if(Math.abs(dif)<0.005){ msg.textContent='Suma = '+money(bruto); msg.className='cp-cuotas-msg cp-cuotas-ok'; }
+  else { msg.textContent='Suma '+money(suma)+' de '+money(bruto)+' (dif. '+money(dif)+')'; msg.className='cp-cuotas-msg cp-cuotas-aviso'; }
+}
+function rowDeEditorCp(el){
+  const td=el.closest('td.cp'); const ok=td&&td.querySelector('[data-cp-ok]');
+  return ok?rows.find(x=>x.id===ok.dataset.cpOk):null;
+}
+document.addEventListener('input',e=>{
+  const t=e.target; if(!(t.dataset&&t.dataset.cpcImp!==undefined)) return;
+  formatCampo(t);
+  const cont=t.closest('.cp-editor'); cont._cuotas[+t.dataset.cpcImp].importe=digitos(t);
+  const r=rowDeEditorCp(t); if(r) avisoCpCuotas(cont,r);
+});
+document.addEventListener('focusin',e=>{ if(e.target.dataset&&e.target.dataset.cpcImp!==undefined) seleccionarAlFoco(e); });
+document.addEventListener('click',e=>{
+  const t=e.target; const d=t.dataset||{};
+  if(d.cpDivAgregar!==undefined){
+    const cont=t.closest('.cp-editor'); const chk=cont&&cont.querySelector('.cp-dividido-chk');
+    if(chk&&!chk.checked){ chk.checked=true; chk.dispatchEvent(new Event('change',{bubbles:true})); }
+    return;
+  }
+  if(d.cpcAdd===undefined&&d.cpcDel===undefined) return;
+  const cont=t.closest('.cp-editor'); const r=rowDeEditorCp(t); if(!cont||!r) return;
+  if(d.cpcAdd!==undefined){
+    const suma=redondear2(cont._cuotas.reduce((a,c)=>a+(+c.importe||0),0));
+    const ult=(cont._cuotas[cont._cuotas.length-1]||{}).fecha||hoyISO();
+    const dt=new Date(ult+'T12:00:00'); dt.setDate(dt.getDate()+30);
+    const nf=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+    cont._cuotas.push({importe:Math.max(0,redondear2((+r.bruto||0)-suma)),fecha:nf});
+  } else { cont._cuotas.splice(+d.cpcDel,1); }
+  pintarCpCuotas(cont,r);
+});
 
 /* ---------- Acciones ---------- */
 document.addEventListener('click',async e=>{
@@ -3888,19 +5458,28 @@ document.addEventListener('click',async e=>{
   if(d.tog){
     const r=rows.find(x=>x.id===d.tog); if(!r) return;
     if(!(await asegurarUsuario())) return;
+    if(r.echeqEmitido && !r.pago){
+      guardarParaDeshacer('anular e-cheq de "'+(nombreDe(r))+'"');
+      if(r.mesPagoAntesEcheq!==undefined) r.mesPago=r.mesPagoAntesEcheq||r.mesPago; r.metodoPago=''; r.fechaDiferida=''; delete r.echeqEmitido; delete r.mesPagoAntesEcheq;
+      registrarHistorial('Anuló el e-cheq emitido',r); save(); render(); toast('E-cheq anulado'); return;
+    }
     if(r.pago){
       guardarParaDeshacer('desmarcar pago de "'+(nombreDe(r))+'"');
-      r.pago=false; if(r.tipo==='gasto') r.metodoPago=''; registrarHistorial('Desmarcó el pago/cobro',r); save(); render(); return;
+      r.pago=false; if(r.tipo==='gasto') r.metodoPago=''; delete r.echeqEmitido; delete r.mesPagoAntesEcheq; registrarHistorial('Desmarcó el pago/cobro',r); save(); render(); return;
     }
     const td=e.target.closest('td.cp'); if(!td) return;
     const esGasto=r.tipo==='gasto';
     const esEcheq=r.metodoPago==='E-cheq';
+    const puedeDividir = esGasto && r.moneda!=='USD' && (+r.bruto||0)>0 && !r.dividido;
     td.innerHTML=`<div class="cp-editor">
-      <input type="date" class="cp-fecha-input" value="${r.fechaPago||hoyISO()}">
-      ${esGasto?`<select class="cp-metodo-input">${metodosPagoOptionsHtml(r.metodoPago||r.metodoTentativo||'')}</select>`:''}
-      ${esGasto?`<input type="date" class="cp-diferida-input" title="Fecha diferida del cheque (cuándo se puede depositar)" value="${r.fechaDiferida||''}" ${esEcheq?'':'hidden'}>`:''}
-      <button type="button" class="cp-ok" data-cp-ok="${r.id}" title="Confirmar">✓</button>
-      <button type="button" class="cp-cancel" data-cp-cancel="1" title="Cancelar">✕</button>
+      <div class="cp-row">
+        <input type="date" class="cp-fecha-input" value="${r.fechaPago||hoyISO()}">
+        ${esGasto?`<select class="cp-metodo-input">${metodosPagoOptionsHtml(r.metodoPago||r.metodoTentativo||'')}</select>`:''}
+        ${esGasto?`<input type="date" class="cp-diferida-input" title="Fecha diferida del cheque (cuándo se puede depositar)" value="${r.fechaDiferida||''}" ${esEcheq?'':'hidden'}>`:''}
+        <button type="button" class="cp-ok" data-cp-ok="${r.id}" title="Confirmar">✓</button>
+        <button type="button" class="cp-cancel" data-cp-cancel="1" title="Cancelar">✕</button>
+      </div>
+      ${puedeDividir?`<div class="cp-div-fila" ${esEcheq?'':'hidden'}><label class="cp-div-chk"><input type="checkbox" class="cp-dividido-chk"> Pago dividido</label><button type="button" class="cp-cuota-add cp-div-agregar" data-cp-div-agregar="1">+ Agregar pago dividido</button></div><div class="cp-cuotas" hidden></div>`:''}
     </div>`;
     const inp=td.querySelector('.cp-fecha-input');
     inp.focus();
@@ -3926,13 +5505,46 @@ document.addEventListener('click',async e=>{
       metodo=val;
       if(metodo==='E-cheq'){
         const difInp=td&&td.querySelector('.cp-diferida-input');
+        const ed=td&&td.querySelector('.cp-editor');
+        const chk=ed&&ed.querySelector('.cp-dividido-chk');
+        if(chk&&chk.checked){
+          // Pago dividido en varios cheques: cada uno con su importe, su fecha diferida y su tilde de pagado.
+          const cu=(ed._cuotas||[]).map(c=>({importe:redondear2(+c.importe||0),fecha:c.fecha||''}));
+          if(cu.length<2){ toast('Agregá al menos 2 cheques, o destildá "Pago dividido".'); return; }
+          if(cu.some(c=>!(c.importe>0))){ toast('Cada cheque necesita un importe mayor a 0.'); return; }
+          if(cu.some(c=>!c.fecha)){ toast('Indicá la fecha diferida de cada cheque.'); return; }
+          const suma=redondear2(cu.reduce((a,c)=>a+c.importe,0));
+          if(Math.abs(suma-(+r.bruto||0))>0.005){ toast('La suma de los cheques ('+money(suma)+') no coincide con el importe ('+money(+r.bruto||0)+').'); return; }
+          guardarParaDeshacer('marcar pago dividido (E-cheq) de "'+(nombreDe(r))+'"');
+          delete r.pospuesto; delete r.pospuestoHasta;
+          r.dividido=true; r.fechaVenc=''; r.metodoPago=''; r.fechaDiferida='';
+          r.cuotas=cu.map(c=>({importe:c.importe,mesPago:c.fecha.slice(0,7),fecha:c.fecha,pago:c.fecha<=hoyISO(),metodoPago:'E-cheq'}));
+          r.mesPago=cu.map(c=>c.fecha).sort().pop().slice(0,7);   // el gasto cuenta en el mes del último cheque
+          delete r.echeqEmitido; delete r.vencAntesEcheq;
+          sincronizarPagoDividido(r);
+          r.vencTentativo=false; r.metodoTentativo='';
+          registrarHistorial('Emitió e-cheqs divididos',r,cu.length+' cheques');
+          save(); render();
+          return;
+        }
         fechaDiferida=(difInp&&difInp.value)||'';
         if(!fechaDiferida){ toast('Indicá la fecha diferida del cheque.'); return; }
+        if(fechaDiferida>hoyISO()){
+          // Cheque a futuro: queda emitido y se marca como pagado solo al llegar la fecha (débito automático).
+          guardarParaDeshacer('emitir e-cheq de "'+(nombreDe(r))+'"');
+          if(!r.echeqEmitido) r.mesPagoAntesEcheq=r.mesPago||'';
+          r.echeqEmitido=true; r.pago=false; r.metodoPago='E-cheq'; r.fechaDiferida=fechaDiferida;
+          r.mesPago=fechaDiferida.slice(0,7);   // para el registro de gastos cuenta la fecha del cheque
+          delete r.pospuesto; delete r.pospuestoHasta; r.vencTentativo=false; r.metodoTentativo='';
+          registrarHistorial('Emitió e-cheq (se debita el '+fmtFechaCorta(fechaDiferida)+')',r);
+          save(); render(); return;
+        }
       }
     }
     guardarParaDeshacer('marcar pago de "'+(nombreDe(r))+'"');
-    r.fechaPago=fecha;
-    if(!r.mesPago) r.mesPago=fecha.slice(0,7);
+    r.fechaPago = (metodo==='E-cheq'&&fechaDiferida) ? fechaDiferida : fecha;
+    if(metodo==='E-cheq'&&fechaDiferida) r.mesPago=fechaDiferida.slice(0,7);
+    else if(!r.mesPago) r.mesPago=fecha.slice(0,7);
     r.pago=true; delete r.pospuesto; delete r.pospuestoHasta;
     if(r.tipo==='gasto'){ r.metodoPago=metodo; r.fechaDiferida = metodo==='E-cheq' ? fechaDiferida : ''; }
     // El pago ya quedó confirmado: lo orientativo (ver sugerenciaFijo) deja de tener sentido.
@@ -3955,8 +5567,38 @@ document.addEventListener('change',async e=>{
   if(e.target.classList&&e.target.classList.contains('cp-metodo-input')){
     const cont=e.target.closest('.cp-editor');
     const dif=cont&&cont.querySelector('.cp-diferida-input');
-    if(dif){ dif.hidden = e.target.value!=='E-cheq'; if(!dif.hidden&&!dif.value) dif.value=hoyISO(); }
+    const esE=e.target.value==='E-cheq';
+    const chk=cont&&cont.querySelector('.cp-dividido-chk');
+    if(dif){ dif.hidden = !esE || !!(chk&&chk.checked); if(esE&&!dif.hidden&&!dif.value) dif.value=hoyISO(); }
+    const lbl=cont&&cont.querySelector('.cp-div-fila');
+    if(lbl) lbl.hidden=!esE;
+    const box=cont&&cont.querySelector('.cp-cuotas');
+    if(box&&!esE){ if(chk) chk.checked=false; box.hidden=true; }
     return;
+  }
+  if(e.target.classList&&e.target.classList.contains('cp-dividido-chk')){
+    const cont=e.target.closest('.cp-editor');
+    const td=cont.closest('td.cp');
+    const r=rows.find(x=>x.id===(td.querySelector('[data-cp-ok]')||{dataset:{}}).dataset.cpOk);
+    const dif=cont.querySelector('.cp-diferida-input');
+    const box=cont.querySelector('.cp-cuotas');
+    cont.classList.toggle('dividido',e.target.checked);
+    if(!e.target.checked) cont.removeAttribute('style');
+    if(e.target.checked){
+      const f0=(dif&&dif.value)||hoyISO();
+      cont._cuotas=partirEnCheques(+r.bruto||0,f0);
+      if(dif) dif.hidden=true;
+      const bt=cont.querySelector('.cp-div-agregar'); if(bt) bt.hidden=true;
+      box.hidden=false; pintarCpCuotas(cont,r);
+    } else {
+      cont._cuotas=[]; box.hidden=true;
+      const bt=cont.querySelector('.cp-div-agregar'); if(bt) bt.hidden=false;
+      if(dif){ dif.hidden=false; if(!dif.value) dif.value=hoyISO(); }
+    }
+    return;
+  }
+  if(e.target.dataset&&e.target.dataset.cpcFecha!==undefined){
+    const cont=e.target.closest('.cp-editor'); cont._cuotas[+e.target.dataset.cpcFecha].fecha=e.target.value; return;
   }
   const c=e.target.dataset&&e.target.dataset.comp;
   if(c){
