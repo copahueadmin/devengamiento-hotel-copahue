@@ -792,6 +792,12 @@
   .empty{padding:26px;text-align:center;color:var(--ink-soft);background:var(--surface);border:1px dashed var(--rule-strong)}
   .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:12px;padding:10px 18px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9}
   .toast.on{opacity:1}
+  .nueva-version{position:fixed;left:50%;bottom:64px;transform:translateX(-50%);z-index:4000;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;max-width:min(560px,calc(100% - 24px));background:var(--ink);color:var(--paper);border-left:5px solid var(--warn);font-size:13px;padding:10px 14px;box-shadow:0 6px 24px rgba(0,0,0,.35)}
+  .nueva-version[hidden]{display:none}
+  .nueva-version b{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.04em}
+  .nueva-version button{font-family:'IBM Plex Mono',monospace;font-size:12px;padding:6px 12px;cursor:pointer;border:1px solid var(--paper);background:transparent;color:var(--paper)}
+  .nueva-version button.primary{background:var(--paper);color:var(--ink);font-weight:700}
+  @media print{.nueva-version{display:none!important}}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
   @media (max-width:700px){.masthead h1{font-size:23px}.split{grid-template-columns:1fr}}
 </style>
@@ -1266,6 +1272,7 @@
      impresión — ver exportarPDF() y las reglas @media print. -->
 <div id="reporte-pdf" class="reporte-pdf"></div>
 <div class="toast" id="toast"></div>
+<div id="nueva-version" class="nueva-version" role="alert" hidden><span><b>HAY UNA VERSIÓN NUEVA</b><br>Se actualizó el sistema. Recargá la página para usar la versión más reciente.</span><button type="button" class="primary" id="nv-recargar">Recargar ahora</button><button type="button" id="nv-luego">Más tarde</button></div>
 <div id="texto-popover" class="texto-popover" hidden></div>
 <div id="bk-modal" class="ord-modal ord-popup" hidden><div class="ord-modal-box" role="dialog" aria-modal="true" aria-labelledby="bk-tit" style="width:min(640px,100%)">
   <div class="om-cab"><h3 id="bk-tit">Copias de seguridad y restauración</h3><button type="button" class="om-x" id="bk-x" aria-label="Cerrar">✕</button></div>
@@ -1274,6 +1281,10 @@
     <div class="bk-bloque"><b>Descargar una copia ahora</b>
       <div class="note">Genera el .zip con el estado actual y lo guarda en tu computadora.</div>
       <div class="bk-acc"><button type="button" id="bk-descargar">Descargar copia</button></div></div>
+    <div class="bk-bloque" id="bk-prueba-mail" hidden><b>Probar el envío de correos</b>
+      <div class="note">Manda un correo de prueba (marcado como automático) a la dirección que escribas, para comprobar que el envío funciona. Si falla, abajo aparece el motivo.</div>
+      <div class="bk-acc"><input type="email" id="bk-mail-destino" placeholder="correo@ejemplo.com" autocomplete="off" style="flex:1;min-width:200px"><button type="button" id="bk-mail-enviar">Enviar prueba</button></div>
+      <div id="bk-mail-estado" class="note" role="status"></div></div>
     <div class="bk-bloque bk-peligro"><b>Restaurar desde una copia</b>
       <div class="note">Elegí el .zip que llegó por correo. <b>Se reemplazan todos los datos actuales</b> por los de la copia (lo que se cargó después de esa copia se pierde). Antes de restaurar se descarga automáticamente una copia del estado actual, por si hay que volver atrás.</div>
       <div class="bk-acc"><input type="file" id="bk-archivo" accept=".zip,application/zip"></div>
@@ -1798,7 +1809,7 @@ function bkEstado(t,error){ const el=$('bk-estado'); el.textContent=t||''; el.st
 function bkReiniciar(){
   bkCopia=null; $('bk-archivo').value=''; $('bk-resumen').hidden=true; $('bk-confirma').hidden=true; $('bk-entiendo').checked=false; $('bk-restaurar').disabled=true; bkEstado('');
 }
-function abrirBackup(){ if(!puedeRestaurar()) return; bkReiniciar(); $('bk-modal').hidden=false; }
+function abrirBackup(){ if(!puedeRestaurar()) return; bkReiniciar(); $('bk-prueba-mail').hidden=!(!modoPrueba&&esRestauradorFijo(miEmail())); bkMailEstado(''); $('bk-modal').hidden=false; }
 function cerrarBackup(){ $('bk-modal').hidden=true; bkReiniciar(); }
 async function leerZipCopia(archivo){
   const JSZip=await cargarJSZip(), z=await JSZip.loadAsync(archivo);
@@ -1837,6 +1848,25 @@ async function aplicarRestauracion(c){
   await kvRef(BK_RESTAURACION_KEY).set({value:JSON.stringify({ts:new Date().toISOString(),por:usuarioActual||miEmail()})});
   return true;
 }
+function bkMailEstado(t,error,ok){ const el=$('bk-mail-estado'); el.textContent=t||''; el.style.color=error?'var(--neg)':(ok?'var(--ok)':''); }
+async function enviarPruebaMail(){
+  const destino=$('bk-mail-destino').value.trim();
+  if(!/^[^\s@,;<>]+@[^\s@,;<>]+\.[^\s@,;<>]{2,}$/.test(destino)){ bkMailEstado('Escribí un correo válido (uno solo).',true); return; }
+  if(modoPrueba||!FIREBASE_LISTO||!esRestauradorFijo(miEmail())) return;
+  $('bk-mail-enviar').disabled=true; bkMailEstado('Enviando…');
+  try{
+    const u=firebase.auth().currentUser; if(!u) throw new Error('No hay una sesión iniciada.');
+    const token=await u.getIdToken();
+    const r=await fetch('/.netlify/functions/probar-mail',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({destino})});
+    const txt=await r.text(); let j={}; try{ j=JSON.parse(txt); }catch(e){}
+    if(r.ok&&j.ok) bkMailEstado('✔ Correo de prueba enviado a '+destino+' (servicio: '+(j.via||'—')+'). Revisá la bandeja y la carpeta de spam.',false,true);
+    else if(r.status===404) bkMailEstado('La función de envío no está publicada en Netlify (falta subir probar-mail.mjs y volver a publicar).',true);
+    else bkMailEstado('No se pudo enviar: '+(j.error||('error '+r.status))+(j.via?' · servicio: '+j.via:''),true);
+  }catch(e){ bkMailEstado('No se pudo enviar: '+(e.message||e),true); }
+  finally{ $('bk-mail-enviar').disabled=false; }
+}
+$('bk-mail-enviar').addEventListener('click',enviarPruebaMail);
+$('bk-mail-destino').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); enviarPruebaMail(); } });
 $('btn-restaurar').addEventListener('click',abrirBackup);
 $('bk-x').addEventListener('click',cerrarBackup);
 $('bk-modal').addEventListener('click',e=>{ if(e.target===$('bk-modal')) cerrarBackup(); });
@@ -5966,6 +5996,37 @@ $('btn-csv').addEventListener('click',()=>{
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='resultados-copahue.csv';a.click();
   toast('CSV exportado');
 });
+
+/* ---------- Aviso de versión nueva ----------
+   Cada pocos minutos (y al volver a la pestaña) se consulta el index.html publicado; si cambió respecto del que está
+   cargado, aparece un aviso para recargar. No recarga solo: así nadie pierde lo que está escribiendo. */
+(function avisoVersionNueva(){
+  if(!/^https?:$/.test(location.protocol)) return;   // abierto como archivo local: no aplica
+  const URL_PAG=location.pathname, CADA_MS=3*60*1000, POSPONER_MS=30*60*1000;
+  let base=null, hayNueva=false, posponeHasta=0, usaEtag=false;
+  const hash=t=>{ let h=5381; for(let i=0;i<t.length;i++) h=((h<<5)+h+t.charCodeAt(i))|0; return String(h)+':'+t.length; };
+  async function huella(completo){
+    const r=await fetch(URL_PAG,{method:(usaEtag&&!completo)?'HEAD':'GET',cache:'no-store'});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const et=r.headers.get('etag');
+    if(completo) usaEtag=!!et;
+    return et?('e:'+et):hash(await r.text());
+  }
+  function mostrar(){ if(Date.now()<posponeHasta) return; const el=$('nueva-version'); if(el) el.hidden=false; }
+  async function revisar(){
+    if(hayNueva){ mostrar(); return; }
+    try{
+      if(base===null){ base=await huella(true); return; }
+      const ahora=await huella(false);
+      if(ahora!==base){ hayNueva=true; mostrar(); }
+    }catch(e){ /* sin conexión o error de red: se reintenta en la próxima */ }
+  }
+  $('nv-recargar').addEventListener('click',()=>location.reload());
+  $('nv-luego').addEventListener('click',()=>{ $('nueva-version').hidden=true; posponeHasta=Date.now()+POSPONER_MS; });
+  revisar(); setInterval(revisar,CADA_MS);
+  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') revisar(); });
+  window.addEventListener('online',revisar);
+})();
 
 /* ---------- Inicio ---------- */
 (function init(){
