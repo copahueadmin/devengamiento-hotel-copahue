@@ -1,0 +1,7 @@
+# Sitio estático (index.html) + funciones. No hay paso de build.
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"

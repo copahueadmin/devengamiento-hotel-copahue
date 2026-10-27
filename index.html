@@ -358,11 +358,24 @@
   .ord-fila-lista.desplegada{background:var(--ledger)}
   .ord-subfila td{background:var(--surface);padding-top:2px!important}
   .ord-sublista{display:grid;gap:4px;padding:2px 0 6px;max-width:680px}
-  .ord-sub-it{display:grid;grid-template-columns:minmax(160px,1fr) 150px 120px;gap:10px;align-items:center;font-size:12.5px;padding:2px 0}
+  .ord-sub-it{display:grid;grid-template-columns:minmax(160px,1fr) 150px 52px 120px;gap:10px;align-items:center;font-size:12.5px;padding:2px 0}
   .ord-sub-it .ord-imp{text-align:right}
   .ord-sub-est{font-size:11.5px;color:var(--ink-soft)} .ord-sub-est.ok{color:var(--ok);font-weight:700} .ord-sub-est.no{color:var(--neg);font-weight:700}
   .ord-modal{position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px}
   .ord-modal[hidden]{display:none}
+  .ord-popup{z-index:3500}
+  .bk-bloque{border:1px solid var(--rule-strong);padding:10px 12px;margin:0 0 10px;background:var(--ledger)}
+  .bk-bloque.bk-peligro{border-left:5px solid var(--neg)}
+  .bk-acc{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+  .bk-resumen{margin-top:8px;padding:8px 10px;background:var(--paper);border:1px dashed var(--rule-strong);font-size:13px;line-height:1.5}
+  .bk-chk{display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:13px;text-transform:none;letter-spacing:0}
+  #bk-estado{margin-top:8px;min-height:1em}
+  .au-restaura{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border:1px solid var(--rule-strong);color:var(--ink-soft);flex:0 0 auto}
+  .au-restaura.on{color:var(--ok);border-color:var(--ok)}
+  .ord-popup .ord-modal-box{border:2px solid var(--ink)}
+  .ord-popup-it{display:block;width:100%;text-align:left;box-sizing:border-box;padding:10px 12px;margin:0 0 6px;background:var(--ledger);border:1px solid var(--rule-strong);border-left:5px solid var(--accent,#B8791F);color:var(--ink);font:14px/1.35 'IBM Plex Sans',sans-serif;text-transform:none;letter-spacing:0;cursor:pointer}
+  .ord-popup-it:hover{background:var(--ok);color:#fff}
+  .ord-popup-acc{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}
   .ord-modal-box{background:var(--paper);color:var(--ink);border:1px solid var(--rule-strong);width:min(560px,100%);max-height:88vh;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.35)}
   .om-cab{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--ink);color:var(--paper);padding:10px 14px}
   .om-cab h3{margin:0;font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.05em;text-transform:uppercase}
@@ -387,8 +400,10 @@
   .ord-sec-btn:hover{color:#fff;filter:brightness(1.15)}
   .ord-sec-btn .aviso-posp-badge{margin-left:auto;border:1px solid #fff}
   .ord-sec-pop{position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:60;background:var(--paper);border:2px solid var(--ink);box-shadow:0 10px 30px rgba(0,0,0,.35);padding:10px 14px;max-height:60vh;overflow:auto;min-width:280px}
-  .ord-fila-det{grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"tit imp bot";gap:6px 16px;align-items:center}
-  .ord-fila-det.con-nota{grid-template-areas:"tit tit tit" "nota imp bot"}
+  .ord-fila-det{grid-template-columns:minmax(0,1fr) 118px 130px 108px;grid-template-areas:"tit venc imp bot";gap:6px 16px;align-items:center}
+  .ord-fila-det.con-nota{grid-template-areas:"tit venc imp bot" "nota nota nota nota"}
+  .ord-fila-det .ord-venc{grid-area:venc;font-size:12px;color:var(--ink-soft);white-space:nowrap}
+  .ord-fila-det .ord-acc-item{justify-self:end}
   .ord-fila-det .ord-tit{grid-area:tit}
   .ord-fila-det .ord-com-item{grid-area:nota;margin:0}
   .ord-fila-det .ord-imp{grid-area:imp;min-width:130px;text-align:right}
@@ -409,6 +424,7 @@
   .ord-grupo-tit span+span{font-style:italic}
   .ord-met{background:var(--ledger);border-left:3px solid var(--ink-soft);padding:4px 8px;margin:8px 0 2px;color:var(--ink)}
   .ord-sub-it{padding:2px 8px}
+  .ord-com-sub{margin:0 8px 4px !important}
   .ord-msg{max-width:none;border-left-width:4px}
   .ord-msg.clic{cursor:pointer}
   .ord-msg.clic:hover{filter:brightness(.96)}
@@ -525,6 +541,17 @@
   .tablacompacta tbody tr.gasto-impago.vence-pronto:nth-child(even){background:color-mix(in srgb, var(--neg) 42%, var(--paper))}
   .tablacompacta tbody tr.gasto-pago:nth-child(odd){background:color-mix(in srgb, var(--ok) 12%, var(--paper))}
   .tablacompacta tbody tr.gasto-pago:nth-child(even){background:color-mix(in srgb, var(--ok) 7%, var(--paper))}
+  /* servicios (tasas) todavía sin vencimiento, orden de pago ni pago */
+  tbody tr.serv-bloq td{background:#7b7b7b !important;color:#fff !important;font-style:italic}
+  tbody tr.serv-bloq td *{color:#fff !important;font-style:italic}
+  tbody tr.serv-bloq td .cp-badge,tbody tr.serv-bloq td .rowbtn{background:transparent;border-color:rgba(255,255,255,.7)}
+  tbody tr.serv-bloq td .tag{background:transparent;border-color:rgba(255,255,255,.7)}
+  tbody tr.serv-bloq td:first-child{box-shadow:inset 3px 0 0 #444 !important}
+  .ord-fila.serv-bloq{background:#7b7b7b;color:#fff;font-style:italic}
+  .ord-fila.serv-bloq *{color:#fff}
+  .ord-fila.serv-bloq .tag{background:transparent;border-color:rgba(255,255,255,.7)}
+  .ord-fila.serv-bloq .ord-extra select,.ord-fila.serv-bloq .ord-extra input{color:var(--ink);font-style:normal}
+  .ord-grupo.serv-aparte .ord-grupo-tit{background:#5f5f5f;color:#fff;font-style:italic}
   td.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
   td.num.ing{color:var(--ing);font-weight:500}
   td.mono{font-family:'IBM Plex Mono',monospace;font-size:13px;white-space:nowrap}
@@ -793,6 +820,9 @@
       <button type="button" id="usuario-chip" class="icon-btn" title="Cerrar sesión">
         <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
       </button>
+      <button type="button" id="btn-restaurar" class="icon-btn" title="Copias de seguridad y restauración" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="17" height="17"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 9 8 9"/><path d="M12 8v5l3 2"/></svg>
+      </button>
       <button type="button" id="btn-deshacer" class="icon-btn" title="No hay nada para deshacer" disabled>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="17" height="17"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>
       </button>
@@ -911,6 +941,7 @@
           <input type="email" id="au-nuevo-email" placeholder="usuario@hotelcopahue.com" autocomplete="off">
           <label for="au-nuevo-clave" style="font-size:12px;color:var(--ink-soft);margin-top:8px;display:block">Clave (mínimo 6 caracteres)</label>
           <input type="password" id="au-nuevo-clave" placeholder="Clave" autocomplete="off">
+          <label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:13px;text-transform:none;letter-spacing:0"><input type="checkbox" id="au-nuevo-restaurar"> Puede restaurar copias de seguridad (versiones anteriores del sistema)</label>
           <div id="au-crear-error" class="login-error" hidden></div>
           <div style="display:flex;gap:8px;margin-top:12px">
             <button type="button" id="au-crear-btn">Crear cuenta</button>
@@ -1236,6 +1267,26 @@
 <div id="reporte-pdf" class="reporte-pdf"></div>
 <div class="toast" id="toast"></div>
 <div id="texto-popover" class="texto-popover" hidden></div>
+<div id="bk-modal" class="ord-modal ord-popup" hidden><div class="ord-modal-box" role="dialog" aria-modal="true" aria-labelledby="bk-tit" style="width:min(640px,100%)">
+  <div class="om-cab"><h3 id="bk-tit">Copias de seguridad y restauración</h3><button type="button" class="om-x" id="bk-x" aria-label="Cerrar">✕</button></div>
+  <div class="om-cuerpo">
+    <p class="note" style="margin:0 0 10px">Todas las noches a las 23:59 hs el sistema envía por correo a <b>copahueadmin@gmail.com</b> un archivo .zip con todos los datos (movimientos, historial, configuración, usuarios y órdenes de pago). Ese mismo archivo sirve para restaurar el sistema si algo falla.</p>
+    <div class="bk-bloque"><b>Descargar una copia ahora</b>
+      <div class="note">Genera el .zip con el estado actual y lo guarda en tu computadora.</div>
+      <div class="bk-acc"><button type="button" id="bk-descargar">Descargar copia</button></div></div>
+    <div class="bk-bloque bk-peligro"><b>Restaurar desde una copia</b>
+      <div class="note">Elegí el .zip que llegó por correo. <b>Se reemplazan todos los datos actuales</b> por los de la copia (lo que se cargó después de esa copia se pierde). Antes de restaurar se descarga automáticamente una copia del estado actual, por si hay que volver atrás.</div>
+      <div class="bk-acc"><input type="file" id="bk-archivo" accept=".zip,application/zip"></div>
+      <div id="bk-resumen" class="bk-resumen" hidden></div>
+      <div id="bk-confirma" hidden>
+        <label class="bk-chk"><input type="checkbox" id="bk-entiendo"> Entiendo que se reemplazan los datos actuales por los de esta copia.</label>
+        <div class="bk-acc"><button type="button" id="bk-restaurar" disabled>Restaurar esta copia</button></div>
+      </div>
+      <div id="bk-estado" class="note" role="status"></div>
+    </div>
+  </div>
+</div></div>
+<div id="ord-popup" class="ord-modal ord-popup" hidden><div class="ord-modal-box" role="alertdialog" aria-modal="true" aria-labelledby="ord-popup-tit"><div class="om-cab"><h3 id="ord-popup-tit">Órdenes de pago</h3><button type="button" class="om-x" id="ord-popup-x" aria-label="Cerrar">✕</button></div><div class="om-cuerpo"><div id="ord-popup-lista"></div><div class="ord-popup-acc"><button type="button" class="primary" id="ord-popup-ver">Ver órdenes de pago</button><button type="button" id="ord-popup-cerrar">Cerrar</button></div></div></div></div>
 <div id="ord-modal" class="ord-modal" hidden><div class="ord-modal-box" id="ord-modal-box" role="dialog" aria-modal="true"></div></div>
 <div id="ord-tip" class="ord-tip" hidden></div>
 <div id="chart-tooltip" class="chart-tooltip" hidden></div>
@@ -1596,6 +1647,7 @@ async function load(){
     normalizarPropios();
   }
   normalizarFijosLista();  // arranque sin datos previos: siembra la lista base una vez
+  actualizarBtnRestaurar();
   fillRubros(); pintarFxRubros(); pintarFijosExtra(); pintarMetodosPago(); pintarFxMetodosQuitar(); render();
   avisarPospuestos(!$('movs-body').hidden);
 }
@@ -1654,6 +1706,189 @@ function save(){
   return tarea;
 }
 
+/* ---------- Copias de seguridad y restauración ----------
+   La copia NOCTURNA (23:59 hs, por correo a copahueadmin@gmail.com) la genera una función programada
+   de Netlify (netlify/functions/backup-nocturno.mjs), porque una página web no puede correr sola cuando
+   nadie la tiene abierta. Este panel sirve para descargar una copia a mano y, sobre todo, para
+   RESTAURAR el sistema desde el .zip que llega por correo.
+   Formato del .zip (igual en la función y acá):
+     copia.json                 datos de la copia (app, versión, fecha, resumen)
+     datos/copahue_kv.json      {clave: valor} de la colección copahue_kv (movimientos por año, historial, config, índice)
+     datos/ordenes_pago.json    {id: orden} de las órdenes de pago
+     datos/ordenes_meta.json    {id: documento} (contador de órdenes)
+     movimientos.csv, LEEME.txt (solo para leer; no se usan al restaurar)
+   Permiso: giuliano.zolvini@hotelcopahue.com siempre; el resto, solo si al crear/editar el usuario se tildó
+   "Puede restaurar". (Es un control de la pantalla: la seguridad real de los datos la dan las reglas de Firebase.) */
+const RESTAURADOR_FIJO='giuliano.zolvini@hotelcopahue.com';
+const BK_APP='devengamiento-hotel-copahue', BK_VERSION=1, BK_RESTAURACION_KEY='copahue:restauracion';
+const esRestauradorFijo=e=>(e||'').toLowerCase()===RESTAURADOR_FIJO;
+function puedeRestaurar(){
+  const e=miEmail(); if(!e) return false;
+  if(modoPrueba) return e==='prueba@prueba.com';   // demostración: solo el usuario de prueba principal
+  if(esRestauradorFijo(e)) return true;
+  const u=usuarios.find(x=>(x.email||'').toLowerCase()===e);
+  return !!(u&&u.puedeRestaurar===true&&u.activo!==false);
+}
+function actualizarBtnRestaurar(){ const b=$('btn-restaurar'); if(b) b.hidden=!puedeRestaurar(); }
+let jszipPromesa=null;
+function cargarJSZip(){
+  if(window.JSZip) return Promise.resolve(window.JSZip);
+  if(jszipPromesa) return jszipPromesa;
+  jszipPromesa=new Promise((ok,ko)=>{
+    const sc=document.createElement('script');
+    sc.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    sc.onload=()=>ok(window.JSZip);
+    sc.onerror=()=>{ jszipPromesa=null; ko(new Error('No se pudo cargar la herramienta de compresión. Revisá la conexión a internet.')); };
+    document.head.appendChild(sc);
+  });
+  return jszipPromesa;
+}
+async function leerEstadoCompleto(){
+  const kv={}, ordenes={}, meta={};
+  if(modoPrueba){
+    await guardarReal();   // en modo prueba los datos de ejemplo viven en memoria: se vuelcan al almacenamiento local antes de copiar
+    pruebaKV.forEach((v,k)=>{ kv[k]=v; });
+    OrdenesDB.lista.forEach(o=>{ ordenes[o.id]=JSON.parse(JSON.stringify(o)); });
+    meta.contador={n:OrdenesDB.contadorLocal||0};
+  } else {
+    if(!db) throw new Error('Firebase no está configurado');
+    const [a,b,c]=await Promise.all([db.collection(FS_COLECCION).get(),db.collection(ORD_COL).get(),db.collection(ORD_META).get()]);
+    a.forEach(d=>{ kv[d.id]=(d.data()||{}).value; });
+    b.forEach(d=>{ ordenes[d.id]=d.data(); });
+    c.forEach(d=>{ meta[d.id]=d.data(); });
+  }
+  return {kv,ordenes,meta};
+}
+function movimientosDeKV(kv){
+  let todos=[];
+  Object.keys(kv).filter(k=>k.startsWith('copahue:movs:')).sort().forEach(k=>{ try{ const a=JSON.parse(kv[k]); if(Array.isArray(a)) todos=todos.concat(a); }catch(e){} });
+  return todos;
+}
+function resumenCopia(c){
+  const movs=movimientosDeKV(c.kv); let usu=0;
+  try{ usu=(JSON.parse(c.kv['copahue:config']||'{}').usuarios||[]).length; }catch(e){}
+  let hist=0; Object.keys(c.kv).filter(k=>k.startsWith('copahue:hist:')).forEach(k=>{ try{ hist+=JSON.parse(c.kv[k]).length; }catch(e){} });
+  return {movimientos:movs.length,historial:hist,ordenesPago:Object.keys(c.ordenes).length,usuarios:usu,documentos:Object.keys(c.kv).length};
+}
+function csvDe(movs){
+  const cols=['id','tipo','mesPago','mesCorr','rubro','item','bruto','moneda','fechaVenc','pago','fechaPago','metodoPago','detalle'];
+  const q=v=>{ v=(v===undefined||v===null)?'':String(v); return /[",\n;]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; };
+  return '﻿'+[cols.join(',')].concat(movs.map(m=>cols.map(c=>q(m[c])).join(','))).join('\r\n');
+}
+async function armarZipCopia(){
+  const JSZip=await cargarJSZip(), est=await leerEstadoCompleto(), ahora=new Date();
+  const info={app:BK_APP,version:BK_VERSION,generada:ahora.toISOString(),origen:'app',generadaPor:usuarioActual||miEmail(),resumen:resumenCopia(est)};
+  const z=new JSZip();
+  z.file('copia.json',JSON.stringify(info,null,2));
+  z.file('datos/copahue_kv.json',JSON.stringify(est.kv));
+  z.file('datos/ordenes_pago.json',JSON.stringify(est.ordenes));
+  z.file('datos/ordenes_meta.json',JSON.stringify(est.meta));
+  z.file('movimientos.csv',csvDe(movimientosDeKV(est.kv)));
+  z.file('LEEME.txt','Copia de seguridad del sistema Resultados y Devengamiento — Hotel Copahue.\r\nGenerada: '+ahora.toLocaleString('es-AR')+'\r\nMovimientos: '+info.resumen.movimientos+' · Órdenes de pago: '+info.resumen.ordenesPago+' · Usuarios: '+info.resumen.usuarios+'\r\n\r\nPara restaurar: iniciá sesión con un usuario habilitado, tocá el ícono de restaurar (junto al de cerrar sesión) y elegí este archivo .zip sin descomprimirlo.\r\nmovimientos.csv es solo para leer en Excel; no se usa al restaurar.\r\n');
+  const p2=n=>String(n).padStart(2,'0');
+  const nombre='copia-devengamiento-'+ahora.getFullYear()+'-'+p2(ahora.getMonth()+1)+'-'+p2(ahora.getDate())+'_'+p2(ahora.getHours())+p2(ahora.getMinutes())+'.zip';
+  return {blob:await z.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:9}}),nombre,info};
+}
+function descargarBlob(blob,nombre){
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=nombre; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },4000);
+}
+let bkCopia=null;   // copia leída del .zip elegido, lista para restaurar
+function bkEstado(t,error){ const el=$('bk-estado'); el.textContent=t||''; el.style.color=error?'var(--neg)':''; }
+function bkReiniciar(){
+  bkCopia=null; $('bk-archivo').value=''; $('bk-resumen').hidden=true; $('bk-confirma').hidden=true; $('bk-entiendo').checked=false; $('bk-restaurar').disabled=true; bkEstado('');
+}
+function abrirBackup(){ if(!puedeRestaurar()) return; bkReiniciar(); $('bk-modal').hidden=false; }
+function cerrarBackup(){ $('bk-modal').hidden=true; bkReiniciar(); }
+async function leerZipCopia(archivo){
+  const JSZip=await cargarJSZip(), z=await JSZip.loadAsync(archivo);
+  const leerJ=async n=>{ const f=z.file(n); if(!f) throw new Error('El archivo no es una copia de seguridad de este sistema (falta '+n+').'); return JSON.parse(await f.async('string')); };
+  const info=await leerJ('copia.json');
+  if(info.app!==BK_APP) throw new Error('Esta copia no pertenece a este sistema.');
+  if(info.version>BK_VERSION) throw new Error('La copia es de una versión más nueva del sistema.');
+  const kv=await leerJ('datos/copahue_kv.json'), ordenes=await leerJ('datos/ordenes_pago.json'), meta=await leerJ('datos/ordenes_meta.json');
+  if(!kv['copahue:indice']||!kv['copahue:config']) throw new Error('La copia está incompleta (faltan los datos principales).');
+  return {info,kv,ordenes,meta};
+}
+async function aplicarRestauracion(c){
+  if(modoPrueba){
+    pruebaKV.clear(); Object.entries(c.kv).forEach(([k,v])=>pruebaKV.set(k,v));
+    OrdenesDB.lista=Object.values(c.ordenes); OrdenesDB.contadorLocal=(c.meta.contador&&c.meta.contador.n)||0;
+    historialDeshacer.length=0; actualizarBotonDeshacer();
+    await load(); procesarCambiosOrdenes(true);
+    return false;   // sin recarga
+  }
+  const act=await leerEstadoCompleto();
+  const ops=[];   // [tipo, ref, datos]
+  const kvRef=k=>db.collection(FS_COLECCION).doc(k);
+  Object.entries(c.kv).forEach(([k,v])=>{ if(k!==BK_RESTAURACION_KEY&&k!=='copahue:tema') ops.push(['set',kvRef(k),{value:v}]); });
+  // años que hoy existen pero no están en la copia: se borran (la copia es el estado completo)
+  Object.keys(act.kv).forEach(k=>{ if(!(k in c.kv)&&(k.startsWith('copahue:movs:')||k.startsWith('copahue:hist:'))) ops.push(['delete',kvRef(k)]); });
+  Object.entries(c.ordenes).forEach(([id,o])=>ops.push(['set',db.collection(ORD_COL).doc(id),o]));
+  Object.keys(act.ordenes).forEach(id=>{ if(!(id in c.ordenes)) ops.push(['delete',db.collection(ORD_COL).doc(id)]); });
+  Object.entries(c.meta).forEach(([id,d])=>ops.push(['set',db.collection(ORD_META).doc(id),d]));
+  for(let i=0;i<ops.length;i+=400){
+    const b=db.batch();
+    ops.slice(i,i+400).forEach(([t,ref,d])=>{ if(t==='set') b.set(ref,d); else b.delete(ref); });
+    await b.commit();
+    bkEstado('Restaurando… '+Math.min(i+400,ops.length)+' de '+ops.length);
+  }
+  // aviso para el resto de las sesiones abiertas: recargan solas (si no, podrían pisar lo restaurado con datos viejos)
+  await kvRef(BK_RESTAURACION_KEY).set({value:JSON.stringify({ts:new Date().toISOString(),por:usuarioActual||miEmail()})});
+  return true;
+}
+$('btn-restaurar').addEventListener('click',abrirBackup);
+$('bk-x').addEventListener('click',cerrarBackup);
+$('bk-modal').addEventListener('click',e=>{ if(e.target===$('bk-modal')) cerrarBackup(); });
+$('bk-descargar').addEventListener('click',async()=>{
+  bkEstado('Generando la copia…');
+  try{ const r=await armarZipCopia(); descargarBlob(r.blob,r.nombre); bkEstado('Copia descargada: '+r.nombre); }
+  catch(e){ bkEstado(e.message||'No se pudo generar la copia.',true); }
+});
+$('bk-archivo').addEventListener('change',async()=>{
+  const f=$('bk-archivo').files[0]; $('bk-resumen').hidden=true; $('bk-confirma').hidden=true; $('bk-entiendo').checked=false; $('bk-restaurar').disabled=true; bkCopia=null;
+  if(!f) return;
+  bkEstado('Leyendo la copia…');
+  try{
+    const c=await leerZipCopia(f), r=resumenCopia(c);
+    bkCopia=c; bkEstado('');
+    $('bk-resumen').hidden=false;
+    $('bk-resumen').innerHTML='<b>Copia del '+esc(new Date(c.info.generada).toLocaleString('es-AR'))+'</b> ('+(c.info.origen==='app'?'descargada desde el sistema':'enviada automáticamente')+')<br>Movimientos: <b>'+r.movimientos+'</b> · Historial: <b>'+r.historial+'</b> · Órdenes de pago: <b>'+r.ordenesPago+'</b> · Usuarios en la lista: <b>'+r.usuarios+'</b>';
+    $('bk-confirma').hidden=false;
+  }catch(e){ bkEstado(e.message||'No se pudo leer el archivo.',true); }
+});
+$('bk-entiendo').addEventListener('change',()=>{ $('bk-restaurar').disabled=!($('bk-entiendo').checked&&bkCopia); });
+$('bk-restaurar').addEventListener('click',async()=>{
+  if(!bkCopia||!puedeRestaurar()) return;
+  if(!confirm('Se van a reemplazar TODOS los datos actuales por los de la copia del '+new Date(bkCopia.info.generada).toLocaleString('es-AR')+'. ¿Continuar?')) return;
+  $('bk-restaurar').disabled=true; $('bk-archivo').disabled=true;
+  try{
+    bkEstado('Guardando una copia del estado actual…');
+    try{ const prev=await armarZipCopia(); descargarBlob(prev.blob,'ANTES-DE-RESTAURAR-'+prev.nombre); }
+    catch(e){ if(!confirm('No se pudo guardar la copia previa del estado actual ('+(e.message||'error')+'). ¿Restaurar de todos modos?')){ bkEstado('Restauración cancelada.'); $('bk-archivo').disabled=false; return; } }
+    bkEstado('Restaurando…');
+    const recargar=await aplicarRestauracion(bkCopia);
+    if(recargar){ bkEstado('Restauración completa. Recargando…'); setTimeout(()=>location.reload(),1200); }
+    else { cerrarBackup(); toast('Copia restaurada (modo prueba).'); }
+  }catch(e){ bkEstado('No se pudo restaurar: '+(e.message||e),true); $('bk-archivo').disabled=false; $('bk-restaurar').disabled=false; }
+});
+// Las demás sesiones abiertas se enteran de una restauración y recargan solas.
+let restauracionUnsub=null, restauracionTs=null;
+function escucharRestauracion(){
+  if(modoPrueba||!db||restauracionUnsub) return;
+  restauracionUnsub=db.collection(FS_COLECCION).doc(BK_RESTAURACION_KEY).onSnapshot(snap=>{
+    let ts=null; try{ ts=snap.exists?JSON.parse((snap.data()||{}).value||'{}').ts:null; }catch(e){}
+    if(restauracionTs===null){ restauracionTs=ts||''; return; }
+    if(ts&&ts!==restauracionTs){
+      restauracionTs=ts;
+      if(!$('bk-modal').hidden && $('bk-estado').textContent.startsWith('Restauración completa')) return;   // la sesión que restauró se recarga sola
+      toast('Se restauró una copia de seguridad: el sistema se recarga para mostrar los datos restaurados.');
+      setTimeout(()=>location.reload(),2500);
+    }
+  },err=>console.warn('Aviso de restauración:',err));
+}
+function detenerEscuchaRestauracion(){ if(restauracionUnsub){ restauracionUnsub(); restauracionUnsub=null; } restauracionTs=null; }
+
 /* ---------- Tema claro/oscuro ---------- */
 const TEMA_KEY='copahue:tema';
 function aplicarTema(oscuro){
@@ -1691,12 +1926,13 @@ function actualizarUsuarioUI(){
   const btn=$('usuario-chip');
   if(modoPrueba){
     btn.title='Modo prueba — tocá para salir'; btn.classList.add('identificado');
-    $('usuario-nombre-header').textContent=usuarioActual; return;
+    $('usuario-nombre-header').textContent=usuarioActual; actualizarBtnRestaurar(); return;
   }
   const u = FIREBASE_LISTO ? firebase.auth().currentUser : null;
   btn.title = u ? ('Conectado como '+(usuarioActual||u.email)+' — tocá para cerrar sesión') : 'Cerrar sesión';
   btn.classList.toggle('identificado',!!u);
   $('usuario-nombre-header').textContent = u ? (usuarioActual||u.email) : '';
+  actualizarBtnRestaurar();
 }
 async function asegurarUsuario(){ return !!usuarioActual; }  // el login ya garantiza que hay alguien identificado
 $('usuario-chip').addEventListener('click',async()=>{
@@ -1907,6 +2143,7 @@ function pintarUsuariosAdmin(){
         <input type="text" class="au-nombre-input" value="${esc(u.nombre||'')}" placeholder="Nombre y apellido">
         <span class="au-email">${email}</span>
         <label class="au-activo"><input type="checkbox" class="au-activo-chk" ${u.activo!==false?'checked':''}> Activo</label>
+        <label class="au-activo" title="Permite restaurar el sistema desde una copia de seguridad"><input type="checkbox" class="au-rest-chk" ${(u.puedeRestaurar||esRestauradorFijo(u.email))?'checked':''}${esRestauradorFijo(u.email)?' disabled':''}> Puede restaurar</label>
         <div class="au-acciones">
           <button type="button" class="ghost" data-au-guardar="${email}">Guardar</button>
           <button type="button" class="ghost" data-au-cancelar="${email}">Cancelar</button>
@@ -1917,6 +2154,7 @@ function pintarUsuariosAdmin(){
       <span class="au-nombre">${esc(u.nombre||'(sin nombre)')}${esYo?' <span class="au-vos">(vos)</span>':''}</span>
       <span class="au-email">${email}</span>
       <span class="au-estado ${u.activo===false?'off':'on'}">${u.activo===false?'Inactivo':'Activo'}</span>
+      ${(u.puedeRestaurar||esRestauradorFijo(u.email))?'<span class="au-restaura on" title="Puede restaurar copias de seguridad">restaura</span>':''}
       <div class="au-acciones">
         <button type="button" class="rowbtn plain" data-au-editar="${email}" title="Editar nombre / activar o desactivar">✎</button>
         <button type="button" class="rowbtn plain" data-au-reset="${email}" title="Enviar correo para restablecer la contraseña">🔑</button>
@@ -1943,6 +2181,7 @@ $('admin-usuarios-lista').addEventListener('click', async e=>{
       guardarParaDeshacer('modificación del usuario "'+(u.nombre||u.email)+'"');
       const cambioEstado = (u.activo!==false) !== activo;
       u.nombre=nombre; u.activo=activo;
+      const chkR=fila.querySelector('.au-rest-chk'); if(chkR&&!chkR.disabled) u.puedeRestaurar=chkR.checked;
       registrarHistorial((cambioEstado?(activo?'Reactivó':'Desactivó')+' al usuario':'Modificó al usuario'),null,nombre+' ('+email+')');
       save();
     }
@@ -1994,12 +2233,12 @@ $('au-crear-btn').addEventListener('click',async()=>{
   try{
     await crearCuentaAdmin(nombre,email,pass);
     guardarParaDeshacer('creación del usuario "'+nombre+'"');
-    usuarios.push({email,nombre,activo:true,creadoTs:new Date().toISOString(),creadoPor:usuarioActual||'—'});
+    usuarios.push({email,nombre,activo:true,puedeRestaurar:!!$('au-nuevo-restaurar').checked,creadoTs:new Date().toISOString(),creadoPor:usuarioActual||'—'});
     registrarHistorial('Creó la cuenta de usuario',null,nombre+' ('+email+')');
     save();
     pintarUsuariosAdmin();
     toast('Cuenta creada para '+nombre);
-    $('au-nuevo-nombre').value=''; $('au-nuevo-email').value=''; $('au-nuevo-clave').value='';
+    $('au-nuevo-nombre').value=''; $('au-nuevo-email').value=''; $('au-nuevo-clave').value=''; $('au-nuevo-restaurar').checked=false;
   } catch(e){
     $('au-crear-error').hidden=false; $('au-crear-error').textContent=errorLegible(e);
   } finally { $('au-crear-btn').disabled=false; }
@@ -2340,6 +2579,20 @@ function itemsEnOrdenesActivas(exceptoId){
   return m;
 }
 
+// Tasas municipales sin datos para pagar: "SERVICIOS SANITARIOS MEDIDOS" y "SERVICIOS PÚBLICOS URBANOS" (todas sus
+// variantes: 7460, 8350, 9251). Mientras no tengan fecha de vencimiento, ni estén en una orden de pago, ni estén pagos,
+// se muestran en gris (letra blanca, cursiva) y al final de Registrados y de las opciones al armar una orden.
+const RE_SERV_TASA=/^\s*SERVICIOS\s+(SANITARIOS\s+MEDIDOS|P[ÚU]BLICOS\s+URBANOS)\b/i;
+const esServicioTasa=r=>!!r&&r.tipo==='gasto'&&RE_SERV_TASA.test(r.item||'');
+function mapaOrdenesServicios(){ try{ return itemsEnOrdenesActivas(); }catch(e){ return {}; } }
+function servicioBloqueado(r,mapa){
+  if(!esServicioTasa(r)||r.pago) return false;
+  if(r.fechaVenc||r.fechaDiferida||r.echeqEmitido) return false;
+  if(r.dividido&&Array.isArray(r.cuotas)&&r.cuotas.some(c=>c.fecha)) return false;
+  if((mapa||mapaOrdenesServicios())[r.id]) return false;
+  return true;
+}
+
 // ---- Notificaciones ----
 function notificacionesOrdenes(){
   const lista=[], e=miEmail();
@@ -2385,25 +2638,24 @@ function pintarPopoverNotif(){
 let firmaAutorizados='';
 function procesarCambiosOrdenes(primera){
   const e=miEmail(), mias=misOrdenes(), avisos=[];
+  const av=(id,texto)=>avisos.push({id,texto});
   const esPrimera=(!ordenesPrevias || primera);
   if(esPrimera){
-    const pend=mias.filter(o=>ordenAbierta(o)&&esAutorizador()).length;
-    const nov=mias.filter(o=>novedadesOrden(o)>0).length;
-    if(pend) avisos.push(`Tenés ${pend} orden${pend===1?'':'es'} de pago pendiente${pend===1?'':'s'} de tu autorización`);
-    if(nov) avisos.push(`${nov} orden${nov===1?'':'es'} con novedades`);
+    // Al entrar: lo que está esperando a esta persona (José: órdenes por autorizar; quien emite: respuestas y cambios sin leer)
+    notificacionesOrdenes().filter(x=>x.fuerte).forEach(x=>av(x.id,x.texto));
   } else {
     mias.forEach(o=>{
       const p=ordenesPrevias[o.id], est=estadoOrden(o);
-      if(!p){ if(esAutorizador()&&o.emisor.email!==e) avisos.push(`Nueva orden de pago ${o.id} de ${o.emisor.nombre}: pendiente de tu autorización`); return; }
+      if(!p){ if(esAutorizador()&&o.emisor.email!==e) av(o.id,`Nueva orden de pago ${o.id} de ${o.emisor.nombre}: pendiente de tu autorización`); return; }
       const nuevos=(o.mensajes||[]).slice(p.msgs).filter(m=>m.autorEmail!==e);
-      if(nuevos.length) avisos.push(`${o.id}: ${nuevos[nuevos.length-1].autorNombre} dejó un comentario`);
+      if(nuevos.length){ const m=nuevos[nuevos.length-1]; av(o.id,`${o.id}: ${m.autorNombre} ${m.rowId?'escribió en un movimiento':'dejó un comentario'}`); }
       if(o.emisor.email===e){
         const res=itemsResueltos(o);
-        if(res>p.res) avisos.push(est==='autorizada'?`${o.id} fue autorizada por completo`:est==='rechazada'?`${o.id} fue rechazada por completo`:`${o.id}: ${res} de ${(o.items||[]).length} movimientos resueltos (${itemsAutorizados(o)} autorizados, ${itemsRechazados(o)} rechazados)`);
-        if(est==='vencida'&&p.estado!=='vencida') avisos.push(`${o.id} venció sin ser aprobada por completo`);
-        if(p.estado==='programada'&&est!=='programada') avisos.push(`${o.id} se publicó y ya está disponible para autorizarse`);
+        if(res>p.res) av(o.id,est==='autorizada'?`${o.id} fue autorizada por completo`:est==='rechazada'?`${o.id} fue rechazada por completo`:`${o.id}: ${res} de ${(o.items||[]).length} movimientos resueltos (${itemsAutorizados(o)} autorizados, ${itemsRechazados(o)} rechazados)`);
+        if(est==='vencida'&&p.estado!=='vencida') av(o.id,`${o.id} venció sin ser aprobada por completo`);
+        if(p.estado==='programada'&&est!=='programada') av(o.id,`${o.id} se publicó y ya está disponible para autorizarse`);
       }
-      if(o.editadaTs&&o.editadaTs!==p.edit&&esAutorizador()) avisos.push(`${o.id} fue modificada por ${o.emisor.nombre}`);
+      if(o.editadaTs&&o.editadaTs!==p.edit&&esAutorizador()) av(o.id,`${o.id} fue modificada por ${o.emisor.nombre}`);
     });
   }
   ordenesPrevias={}; mias.forEach(o=>{ ordenesPrevias[o.id]={msgs:(o.mensajes||[]).length,estado:estadoOrden(o),edit:o.editadaTs||'',res:itemsResueltos(o)}; });
@@ -2413,14 +2665,32 @@ function procesarCambiosOrdenes(primera){
   // las tablas de movimientos marcan los autorizados con su orden: se repintan solo si eso cambió
   const firma=OrdenesDB.lista.map(o=>o.id+'='+(ordenAbierta(o)?'a':'c')+':'+(o.items||[]).map(i=>i.rowId+(i.aut?'+':(i.rech?'-':''))).join(',')).join('|');
   if(firma!==firmaAutorizados){ firmaAutorizados=firma; try{ renderSemana(); renderTabla(filteredTabla()); }catch(err){} }
-  if(avisos.length){
-    toast('⚠ '+avisos.slice(0,2).join(' · '));
-    // Al ingresar todas las solapas arrancan cerradas: el panel solo se abre solo cuando llega algo nuevo mientras se usa el sistema.
-    if(!esPrimera) abrirPanelOrdenes();
-  }
+  if(avisos.length) mostrarPopupOrdenes(avisos);
   if(!$('ord-body').hidden && ordenesVista!=='form') renderOrdenes();
 }
 setInterval(()=>{ if(ordenesPrevias) procesarCambiosOrdenes(false); },30000);
+// Ventana emergente (popup) de órdenes de pago: aparece al entrar si hay algo esperando y, mientras se usa
+// el sistema, cada vez que la otra persona autoriza/rechaza/pregunta/responde/modifica o emite una orden.
+// Queda abierta hasta que se la cierra; si llegan más avisos con el popup abierto, se suman a la lista.
+let ordPopupItems=[];
+function pintarPopupOrdenes(){
+  $('ord-popup-tit').textContent = esAutorizador() ? 'Órdenes de pago para revisar' : 'Novedades en tus órdenes de pago';
+  $('ord-popup-lista').innerHTML = ordPopupItems.map(a=>`<button type="button" class="ord-popup-it" data-popup-orden="${esc(a.id)}">${esc(a.texto)}</button>`).join('');
+}
+function mostrarPopupOrdenes(avisos){
+  avisos.forEach(a=>{ if(!ordPopupItems.some(x=>x.id===a.id&&x.texto===a.texto)) ordPopupItems.push(a); });
+  pintarPopupOrdenes();
+  $('ord-popup').hidden=false;
+}
+function cerrarPopupOrdenes(){ $('ord-popup').hidden=true; ordPopupItems=[]; }
+$('ord-popup-x').addEventListener('click',cerrarPopupOrdenes);
+$('ord-popup-cerrar').addEventListener('click',cerrarPopupOrdenes);
+$('ord-popup-ver').addEventListener('click',()=>{ cerrarPopupOrdenes(); toggleOrdenes(true); abrirPanelOrdenes(); setTimeout(()=>$('panel-ordenes').scrollIntoView({behavior:'smooth',block:'start'}),60); });
+$('ord-popup').addEventListener('click',e=>{
+  if(e.target===$('ord-popup')) return;
+  const b=e.target.closest('[data-popup-orden]'); if(!b) return;
+  const id=b.dataset.popupOrden; cerrarPopupOrdenes(); toggleOrdenes(true); abrirOrdenDetalle(id); $('panel-ordenes').scrollIntoView({behavior:'smooth',block:'start'});
+});
 // "Ventana emergente especial": al llegar una orden o un comentario, se despliega el panel de
 // Órdenes de pago (salvo que se esté en plena carga de otra orden, para no pisarla).
 function abrirPanelOrdenes(){
@@ -2514,7 +2784,11 @@ function filtrarOrdenes(){
 function estadoItemTxt(i){ return i.aut?'<span class="ord-sub-est ok">✓ autorizado</span>':i.rech?'<span class="ord-sub-est no">✕ rechazado</span>':'<span class="ord-sub-est"></span>'; }
 function subListaOrden(o){
   return agruparPorMetodo(o.items||[],'alfa').map(g=>`<div class="ord-sub-met"><div class="ord-met">${esc(etiquetaMetodo(g.metodo))}</div>${g.items.map(i=>
-    `<div class="ord-sub-it"><button type="button" class="ord-nombre" data-ord-info="${esc(i.rowId)}" data-ord-de="${esc(o.id)}">${esc(i.item)}</button><span class="ord-imp">${montoFmt(i.importe,i.moneda)}</span>${estadoItemTxt(i)}</div>`).join('')}</div>`).join('');
+    {
+      const ab=!!i.comentario&&!!ordNotasAbiertas[o.id+'|'+i.rowId];
+      return `<div class="ord-sub-it"><button type="button" class="ord-nombre" data-ord-info="${esc(i.rowId)}" data-ord-de="${esc(o.id)}">${esc(i.item)}</button><span class="ord-imp">${montoFmt(i.importe,i.moneda)}</span>${i.comentario?`<button type="button" class="ord-nota-btn${ab?' on':''}" data-ord-nota="${esc(i.rowId)}" data-ord-de="${esc(o.id)}" title="${ab?'Ocultar el comentario':'Ver el comentario de este ítem'}" aria-expanded="${ab}">📝</button>`:'<span></span>'}${estadoItemTxt(i)}</div>`
+        +(ab?`<div class="ord-com-item ord-com-sub" data-ord-nota-txt="${esc(i.rowId)}" data-ord-de="${esc(o.id)}" title="Un clic: ocultar · doble clic: preguntar sobre este ítem">💬 ${esc(i.comentario)}</div>`:'');
+    }).join('')}</div>`).join('');
 }
 function renderOrdenesLista(){
   const e=miEmail(), l=filtrarOrdenes();
@@ -2600,17 +2874,18 @@ function renderOrdenDetalle(){
   const acciones=[];
   if(puedeModificar(o)) acciones.push(`<button type="button" class="ghost" data-ord-accion="editar">Modificar</button><button type="button" class="ghost peligro" data-ord-accion="eliminar">Eliminar</button>`);
   const info=[];
-  const venceTxt=ordenAbierta(o)?`<span class="ord-sep">|</span>Vence hoy 23:59hs`:(est==='programada'?`<span class="ord-sep">|</span>Vence el ${new Date(o.emitidaTs).toLocaleDateString('es-AR')} 23:59hs`:'');
-  info.push(`${est==='programada'?'Programada por':'Emitida por'} <b>${esc(o.emisor.nombre)}</b> ${est==='programada'?'para publicarse el':'el'} ${fmtFechaHora(o.emitidaTs)}${venceTxt}`);
+  const venceTxt=ordenAbierta(o)?`<span class="ord-sep">|</span>Vence hoy 23:59hs`:(est==='programada'?`<span class="ord-sep">|</span>Vence el ${new Date(o.emitidaTs).toLocaleDateString('es-AR',{day:'numeric',month:'numeric'})} 23:59hs`:'');
+  info.push(`${est==='programada'?'Programada por':'Emitida por'} <b>${esc(o.emisor.nombre)}</b> ${est==='programada'?'para publicarse el':'el'} ${fmtFechaHoraCorta(o.emitidaTs)}${venceTxt}`);
   if(est==='programada') info.push(`Hasta que llegue esa fecha y hora solo la ves vos; quien debe autorizarla no recibe ninguna notificación.`);
   if(o.editadaTs) info.push(`Modificada el ${fmtFechaHora(o.editadaTs)}`);
   if(est==='autorizada') info.push(`<b>Autorizada por completo${o.autorizadaPor?' por '+esc(o.autorizadaPor.nombre):''} el ${fmtFechaHora(o.autorizadaTs||ultimaActividad(o))}</b> — ya no se puede modificar ni eliminar.`);
   else if(est==='resuelta') info.push(`<b>Resuelta:</b> ${itemsAutorizados(o)} movimientos autorizados y ${itemsRechazados(o)} rechazados. Los rechazados quedaron libres para otra orden.`);
   else if(est==='rechazada') info.push(`<b>Se rechazaron todos los movimientos.</b> Quedaron libres para otra orden.`);
-  else if(est==='vencida') info.push(`<b>Venció el ${fmtFechaHora(venceTsISO(o))}</b> sin resolverse por completo${itemsResueltos(o)?` (${itemsAutorizados(o)} autorizados, ${itemsRechazados(o)} rechazados)`:''}. Los movimientos sin autorizar quedaron libres para otra orden.`);
+  else if(est==='vencida') info.push(`<b>Venció el ${fmtFechaHoraCorta(venceTsISO(o))}</b> sin resolverse por completo${itemsResueltos(o)?` (${itemsAutorizados(o)} autorizados, ${itemsRechazados(o)} rechazados)`:''}. Los movimientos sin autorizar quedaron libres para otra orden.`);
   else if(soyEmi&&puedeModificar(o)) info.push(`Podés modificarla o eliminarla hasta el ${limiteModificar(o)}, mientras no autoricen ni rechacen ningún movimiento.`);
   const itemHtml=i=>`<div class="ord-item${i.aut?' autorizado':''}${i.rech?' rechazado':''}">
         <div class="ord-fila-det${notaAbierta(i)?' con-nota':''}"><div class="ord-tit"><button type="button" class="ord-nombre" data-ord-info="${esc(i.rowId)}" title="Ver toda la información del movimiento (vencimiento, mes, factura…)">${esc(i.item)}</button> <span class="ord-rubro">${esc(i.rubro)}</span>${i.comentario?`<button type="button" class="ord-nota-btn${notaAbierta(i)?' on':''}" data-ord-nota="${esc(i.rowId)}" title="${notaAbierta(i)?'Ocultar el comentario':'Ver el comentario de este ítem'}" aria-expanded="${notaAbierta(i)}">📝</button>`:''}${hallazgos[i.rowId]&&hallazgos[i.rowId][0]!=='ítem'?` <span class="ord-hit-tag" title="La búsqueda coincide en ${esc(hallazgos[i.rowId].join(' y '))}">coincide en ${esc(hallazgos[i.rowId].join(' y '))}</span>`:''}${i.dividido?' <span class="tag">pago dividido (saldo)</span>':''}${i.pospuesto?' <span class="tag pp">pospuesto</span>':''}</div>
+          <div class="ord-venc">${i.venc?'Vence '+fmtFechaCorta(i.venc):''}</div>
           ${i.comentario&&notaAbierta(i)?`<div class="ord-com-item" data-ord-nota-txt="${esc(i.rowId)}" title="Un clic: ocultar · doble clic: preguntar sobre este ítem">💬 ${esc(i.comentario)}</div>`:''}
           <div class="ord-imp">${montoFmt(i.importe,i.moneda)}</div>
           <div class="ord-acc-item">${botonesItem(o,i,soyRec,abierta)}</div></div>
@@ -2746,7 +3021,7 @@ function abrirEdicionOrden(o){
   const sel={}, meta={};
   (o.items||[]).forEach(i=>{ sel[i.rowId]={comentario:i.comentario||'',metodo:i.metodo||''}; meta[i.rowId]={...i}; });
   const prog=estadoOrden(o)==='programada';
-  ordenForm={editId:o.id,sel,meta,
+  ordenForm={editId:o.id,sel,meta,orig:Object.fromEntries((o.items||[]).map(i=>[i.rowId,true])),
     programable:prog,cuando:prog?'programar':'ahora',programar:prog?aLocalInput(o.emitidaTs):''};
   ordenesVista='form';
   abrirPanelOrdenesYMostrar();
@@ -2766,7 +3041,7 @@ function filaCandidato(c,bloq,f){
   const venc=i.venc?(i.venc<hoy?`<span class="ord-vencido">vencido ${fmtFechaCorta(i.venc)}</span>`:'vence '+fmtFechaCorta(i.venc)):'sin fecha';
   const enOtra=bloq[i.rowId];
   const metodoSel=(f.sel[i.rowId]||{}).metodo!==undefined?(f.sel[i.rowId]||{}).metodo:i.metodo;
-  return `<div class="ord-fila${sel?' sel':''}${enOtra?' bloq':''}" data-ord-fila="${esc(i.rowId)}">
+  return `<div class="ord-fila${sel?' sel':''}${enOtra?' bloq':''}${c.gris?' serv-bloq':''}" data-ord-fila="${esc(i.rowId)}">
     <label class="ord-check"><input type="checkbox" data-ord-sel="${esc(i.rowId)}"${sel?' checked':''}${enOtra?' disabled':''}></label>
     <div class="ord-main"><b>${esc(i.item)}</b> <span class="ord-rubro">${esc(i.rubro)}</span>
       ${i.dividido?'<span class="tag">pago dividido (saldo)</span>':''}${i.pospuesto?'<span class="tag pp">pospuesto</span>':''}${enOtra?`<span class="tag">ya está en ${esc(enOtra)}</span>`:''}${c.nota?`<span class="tag">${esc(c.nota)}</span>`:''}${c.grupo==='semana'?'<span class="tag pp">esta semana</span>':(c.grupo==='viejos'&&!c.nota?'<span class="tag">mes anterior</span>':'')}
@@ -2780,18 +3055,22 @@ function filaCandidato(c,bloq,f){
 function renderOrdenForm(){
   const f=ordenForm, e=miEmail();
   const bloq=itemsEnOrdenesActivas(f.editId);
+  const mapaOP=mapaOrdenesServicios();
   let cands=candidatosOrden();
   Object.keys(f.meta).forEach(id=>{ if(f.sel[id] && !cands.some(c=>c.it.rowId===id)) cands.push({it:f.meta[id],grupo:'viejos',nota:'ya no figura pendiente'}); });
   cands.forEach(c=>{ if(!c.nota) f.meta[c.it.rowId]=c.it; });
   // el método elegido en la orden manda sobre el tentativo del movimiento
   const efectivo=c=>({...c.it,metodo:(f.sel[c.it.rowId]&&f.sel[c.it.rowId].metodo!==undefined)?f.sel[c.it.rowId].metodo:c.it.metodo});
   // Siempre agrupado por método de pago y, dentro de cada uno, en orden alfabético
-  const mapa={}; cands.forEach(c=>{ const it=efectivo(c); (mapa[it.metodo||'']=mapa[it.metodo||'']||[]).push(c); });
+  // Los servicios sin vencimiento/orden/pago (grises) van aparte, al final de todo. Una orden que ya los incluía los trae normales.
+  const esGris=c=>{ const r=rows.find(x=>x.id===c.it.rowId); return !c.nota && servicioBloqueado(r,mapaOP) && !(f.editId&&f.orig&&f.orig[c.it.rowId]); };
+  const grises=cands.filter(esGris); cands.forEach(c=>{ c.gris=false; }); grises.forEach(c=>{ c.gris=true; });
+  const mapa={}; cands.filter(c=>!c.gris).forEach(c=>{ const it=efectivo(c); (mapa[it.metodo||'']=mapa[it.metodo||'']||[]).push(c); });
   const metN=Math.max(8,...Object.keys(mapa).map(k=>etiquetaMetodo(k).length));
   const cuerpo=`<div class="ord-grupos" style="--met-n:${metN}">`+Object.keys(mapa).sort((a,b)=>a===''?1:b===''?-1:a.localeCompare(b,'es')).map(k=>{
     const arr=mapa[k].slice().sort((x,y)=>x.it.item.localeCompare(y.it.item,'es'));
     return `<div class="ord-grupo"><div class="ord-grupo-tit"><span>${esc(etiquetaMetodo(k))}</span><span>${arr.length} movimiento${arr.length===1?'':'s'}</span><span>${totalesTxt(arr.map(c=>c.it))}</span></div>${arr.map(c=>filaCandidato(c,bloq,f)).join('')}</div>`;
-  }).join('')+'</div>';
+  }).join('')+(grises.length?`<div class="ord-grupo serv-aparte"><div class="ord-grupo-tit"><span>Servicios sin fecha de vencimiento</span><span>${grises.length} movimiento${grises.length===1?'':'s'}</span><span>${totalesTxt(grises.map(c=>c.it))}</span></div>${grises.sort((x,y)=>x.it.item.localeCompare(y.it.item,'es')).map(c=>filaCandidato(c,bloq,f)).join('')}</div>`:'')+'</div>';
   const destinatarios=usuarios.filter(u=>u.activo!==false&&(u.email||'').toLowerCase()!==e);
   $('ord-zona').innerHTML=`
     <div class="ord-cab">
@@ -2844,12 +3123,14 @@ async function guardarOrdenForm(){
         return {set,union:{eventos:[{ts,tipo:'editada',por:yo}]}};
       });
       ordenAbiertaId=idEd; ordenesVista='detalle'; ordenForm=null;
+      notificarOrdenMail('editada',idEd);
       toast('Orden '+idEd+' modificada.');
     } else {
       const n=await OrdenesDB.siguienteNumero(), id='OP-'+String(n).padStart(4,'0'), ts=ahoraISO();
       await OrdenesDB.crear({id,numero:n,estado:'pendiente',emisor:yo,receptor,creadaTs:ts,emitidaTs:programadaTs||ts,editadaTs:'',autorizadaTs:'',autorizadaPor:null,
         comentarioGeneral:'',items,mensajes:[],lecturas:{[k]:ts},eventos:[{ts,tipo:programadaTs?'programada':'emitida',por:yo}]});
       ordenAbiertaId=id; ordenesVista='detalle'; ordenForm=null;
+      notificarOrdenMail('creada',id);
       toast(programadaTs?'Orden '+id+' programada: se publicará el '+fmtFechaHora(programadaTs)+'.':'Orden de pago '+id+' emitida.');
     }
   }catch(err){ toast(err.message||'No se pudo guardar la orden.'); return; }
@@ -2857,6 +3138,18 @@ async function guardarOrdenForm(){
   $('panel-ordenes').scrollIntoView({behavior:'smooth',block:'start'});
 }
 // Quien autorizó o rechazó un ítem puede deshacerlo dentro de los 15 minutos posteriores.
+// Aviso por correo (lo manda la función de Netlify "notificar-op"; ver copia-de-seguridad/). Corre en segundo plano:
+// nunca demora ni rompe la acción de la pantalla, y en modo prueba no manda nada.
+async function notificarOrdenMail(tipo,ordenId,extra){
+  if(modoPrueba||!FIREBASE_LISTO) return;
+  try{
+    const u=firebase.auth().currentUser; if(!u) return;
+    const token=await u.getIdToken();
+    fetch('/.netlify/functions/notificar-op',{method:'POST',keepalive:true,headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({tipo,ordenId,...(extra||{})})})
+      .then(r=>{ if(!r.ok) r.text().then(t=>console.warn('Aviso por correo no enviado:',r.status,t)); })
+      .catch(e=>console.warn('Aviso por correo no enviado:',e));
+  }catch(e){ console.warn('Aviso por correo no enviado:',e); }
+}
 const ORD_UNDO_MS=15*60*1000;
 function puedeDeshacer(o,i){ const d=i.aut||i.rech; return !!d && d.por.email===miEmail() && Date.now()-Date.parse(d.ts)<=ORD_UNDO_MS && estadoOrden(o)!=='programada'; }
 async function deshacerItemOrden(id,rowId){
@@ -2871,6 +3164,7 @@ async function deshacerItemOrden(id,rowId){
     const items=(x.items||[]).map(i=>{ if(i.rowId!==rowId) return i; const {rech,...r}=i; return {...r,aut:null}; });
     return {set:{items,estado:'pendiente',autorizadaTs:'',autorizadaPor:null,['lecturas.'+k]:ts},union:{eventos:[{ts,tipo:'deshizo-decision',por:yo}]}};
   });
+  notificarOrdenMail('deshizo',id,{rowId});
 }
 // Decide sobre movimientos de una orden: 'aut' (autoriza) o 'rech' (rechaza). Por defecto de a uno;
 // "Autorizar todos" pasa la lista completa de los que siguen pendientes.
@@ -2887,6 +3181,7 @@ async function decidirItemsOrden(id,rowIds,tipo){
     if(todosAut){ set.estado='autorizada'; set.autorizadaTs=ts; set.autorizadaPor=yo; }
     return {set,union:{eventos:[{ts,tipo:tipo==='aut'?(todosAut?'autorizada':'autorizó-movimientos'):'rechazó-movimientos',por:yo,cant}]}};
   });
+  notificarOrdenMail('decision',id,{rowIds,accion:tipo});
 }
 const autorizarItemsOrden=(id,rowIds)=>decidirItemsOrden(id,rowIds,'aut');
 const rechazarItemsOrden=(id,rowIds)=>decidirItemsOrden(id,rowIds,'rech');
@@ -2897,6 +3192,7 @@ async function enviarMensajeOrden(ordId,rowId,texto,parent){
     if(!ordenAbierta(x)) throw new Error('La orden ya no admite mensajes.');
     return {union:{mensajes:[msg]},set:{['lecturas.'+k]:msg.ts}};
   });
+  notificarOrdenMail('mensaje',ordId,{msgId:msg.id});
 }
 async function accionOrden(accion,el){
   const o=ordenPorId(ordenAbiertaId), yo=miPersona(), k=claveUsuario(yo.email);
@@ -2916,6 +3212,7 @@ async function accionOrden(accion,el){
         if(Date.now()-Date.parse(x.emitidaTs)>ORD_VENTANA_MS) throw new Error('Pasaron más de 36 hs desde la emisión: ya no se puede eliminar.');
         return {eliminar:true};
       });
+      notificarOrdenMail('eliminada',o.id,{resumen:{id:o.id,items:(o.items||[]).filter(i=>!i.rech).map(i=>({metodo:i.metodo||'',importe:+i.importe||0,moneda:i.moneda||'ARS'}))}});
       ordenAbiertaId=null; ordenesVista='lista'; toast('Orden '+o.id+' eliminada.'); renderOrdenes(); return;
     }
     if(accion==='autorizar-item'){
@@ -2972,19 +3269,19 @@ function abrirOrdenDetalle(id){
 $('ord-zona').addEventListener('dblclick',e=>{
   const nt=e.target.closest('[data-ord-nota-txt]'); if(!nt) return;
   clearTimeout(ordNotaTimer); window.getSelection&&window.getSelection().removeAllRanges();
-  abrirModalOrden({tipo:'preg',rowId:nt.dataset.ordNotaTxt,ordId:ordenAbiertaId});
+  abrirModalOrden({tipo:'preg',rowId:nt.dataset.ordNotaTxt,ordId:nt.dataset.ordDe||ordenAbiertaId});
 });
 $('ord-zona').addEventListener('click',e=>{
   const fl=e.target.closest('[data-ord-flecha]');
   if(fl){ const id=fl.dataset.ordFlecha; ordFilasAbiertas.has(id)?ordFilasAbiertas.delete(id):ordFilasAbiertas.add(id); renderOrdenes(); return; }
   const inf=e.target.closest('[data-ord-info]'); if(inf){ abrirModalOrden({tipo:'info',rowId:inf.dataset.ordInfo,ordId:inf.dataset.ordDe||ordenAbiertaId}); return; }
   const nb=e.target.closest('[data-ord-nota]');
-  if(nb){ const k=ordenAbiertaId+'|'+nb.dataset.ordNota; if(ordNotasAbiertas[k]) delete ordNotasAbiertas[k]; else ordNotasAbiertas[k]=true; renderOrdenes(); return; }
+  if(nb){ const k=(nb.dataset.ordDe||ordenAbiertaId)+'|'+nb.dataset.ordNota; if(ordNotasAbiertas[k]) delete ordNotasAbiertas[k]; else ordNotasAbiertas[k]=true; renderOrdenes(); return; }
   // Comentario desplegado: 1 clic lo reduce, 2 clics abren el panel de preguntar (se espera un instante para distinguirlos)
   const nt=e.target.closest('[data-ord-nota-txt]');
   if(nt){
-    const rid=nt.dataset.ordNotaTxt; clearTimeout(ordNotaTimer);
-    ordNotaTimer=setTimeout(()=>{ delete ordNotasAbiertas[ordenAbiertaId+'|'+rid]; renderOrdenes(); },260);
+    const rid=nt.dataset.ordNotaTxt, oid=nt.dataset.ordDe||ordenAbiertaId; clearTimeout(ordNotaTimer);
+    ordNotaTimer=setTimeout(()=>{ delete ordNotasAbiertas[oid+'|'+rid]; renderOrdenes(); },260);
     return;
   }
   const pg=e.target.closest('[data-ord-preg]'); if(pg){ abrirModalOrden({tipo:'preg',rowId:pg.dataset.ordPreg,ordId:ordenAbiertaId}); return; }
@@ -3031,7 +3328,7 @@ document.addEventListener('keydown',e=>{
   else if(t.id==='ord-modal-texto'){ e.preventDefault(); const b=$('ord-modal').querySelector('[data-ord-modal="enviar"]'); if(b) b.click(); }
   else if(t.classList.contains('ord-resp-texto')){ e.preventDefault(); accionOrden('enviar-resp'); }
 });
-document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return; if(ordModal) cerrarModalOrden(); else cerrarPanelesOrden(); });
+document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return; if(!$('bk-modal').hidden) return cerrarBackup(); if(!$('ord-popup').hidden) return cerrarPopupOrdenes(); if(ordModal) cerrarModalOrden(); else cerrarPanelesOrden(); });
 // Las ventanas de comentarios/conversaciones se cierran al tocar afuera
 document.addEventListener('click',e=>{
   if(ordModal||(!ordSecAbiertas.G&&!ordSecAbiertas.I)) return;
@@ -3132,10 +3429,11 @@ function iniciarAuth(){
       actualizarUsuarioUI();
       $('login-overlay').hidden=true;
       load().then(registrarUsuarioActualSiHaceFalta).then(()=>iniciarOrdenes());
+      escucharRestauracion();
       iniciarPresencia(user);
     } else {
       detenerPresencia(); // no-op si ya se llamó antes (p.ej. desde el botón de cerrar sesión)
-      OrdenesDB.detener();
+      OrdenesDB.detener(); detenerEscuchaRestauracion();
       usuarioActual='';
       $('login-overlay').hidden=false;
       mostrarVistaLogin('signin');
@@ -3180,6 +3478,10 @@ function registrarHistorial(accion,r,detalleExtra){
     rubro:r?(r.rubro||''):'', tipo:r?r.tipo:'', monto:(r&&typeof r.bruto==='number')?r.bruto:null, moneda:r?r.moneda:'',
     metodo:(r&&r.tipo==='gasto')?(r.metodoPago||''):'' });
   if(historial.length>1000) historial=historial.slice(-1000);
+}
+function fmtFechaHoraCorta(iso){   // sin año: "16/10 08:45"
+  const d=new Date(iso);
+  return d.toLocaleDateString('es-AR',{day:'numeric',month:'numeric'})+' '+d.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
 }
 function fmtFechaHora(iso){
   const d=new Date(iso);
@@ -4153,7 +4455,9 @@ function filteredTabla(){
     if(!coincideTexto(r,tx)) return false;
     return true;
   });
-  return ordenar(out,sortRegistrados);
+  // Los servicios sin vencimiento/orden/pago van debajo de todo, para no mezclarse con el resto al buscar
+  const ord=ordenar(out,sortRegistrados), mapa=mapaOrdenesServicios();
+  return [...ord.filter(r=>!servicioBloqueado(r,mapa)),...ord.filter(r=>servicioBloqueado(r,mapa))];
 }
 // índice de un rubro según el orden del plan de gastos fijos
 const ORDEN_RUBRO=['RRHH','ALQUILER HOTEL','ALQUILER COCHERA 1','ALQUILER COCHERA 2','IMPUESTOS','LAVADERO','MARKETING','DESAYUNOS','SERVICIOS','TASAS MUNICIPALES','IVA','GASTOS MANTENIMIENTO','INSUMOS','INVERSIONES','OTROS'];
@@ -4834,6 +5138,7 @@ function tablaHtml(view,sortState,tablaId){
     if(r.comp===false){ tbNc+=brutoARS(r); tnNc+=netoARS(r); }
     else { tb+=brutoARS(r); tn+=netoARS(r); }
   });
+  const mapaServ=mapaOrdenesServicios();
   const montoCell=(valOriginal,valARS,usd)=> usd
     ? `<div>U$S ${money(valOriginal)}</div><span class="fx-sub">≈ $ ${money(valARS)}</span>`
     : money(valOriginal);
@@ -4907,7 +5212,7 @@ function tablaHtml(view,sortState,tablaId){
           : (r.metodoPago ? esc(r.metodoPago) : ((!r.pago && r.metodoTentativo) ? `<span class="tentativo" title="Método orientativo, según el último registro de este ítem. Todavía no está confirmado.">${esc(r.metodoTentativo)}</span>` : '<span class="tag EG">—</span>'))
         }</td>` : '';
       
-      const clasePago = (!esIng && r.pago) ? ' gasto-pago' : '';
+      const clasePago = ((!esIng && r.pago) ? ' gasto-pago' : '') + (servicioBloqueado(r,mapaServ) ? ' serv-bloq' : '');
       // Ítems de tarjeta de crédito: al tocar el nombre se abre un desglose para clasificar los
       // movimientos del resumen sin duplicar el total (ese total sigue siendo el de esta fila).
       const esTarjeta = !esIng && /tarjeta/i.test(r.item||'');
