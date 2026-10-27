@@ -1861,7 +1861,7 @@ async function enviarPruebaMail(){
     const txt=await r.text(); let j={}; try{ j=JSON.parse(txt); }catch(e){}
     if(r.ok&&j.ok) bkMailEstado('✔ Correo de prueba enviado a '+destino+' (servicio: '+(j.via||'—')+'). Revisá la bandeja y la carpeta de spam.',false,true);
     else if(r.status===404) bkMailEstado('La función de envío no está publicada en Netlify (falta subir probar-mail.mjs y volver a publicar).',true);
-    else bkMailEstado('No se pudo enviar: '+(j.error||('error '+r.status))+(j.via?' · servicio: '+j.via:''),true);
+    else bkMailEstado('No se pudo enviar: '+(j.error||('error '+r.status+(r.status>=500?' — la función falló al iniciarse; el detalle está en Netlify → Logs & metrics → Functions → probar-mail':'')))+(j.via?' · servicio: '+j.via:'')+(j.node?' · Node '+j.node:''),true);
   }catch(e){ bkMailEstado('No se pudo enviar: '+(e.message||e),true); }
   finally{ $('bk-mail-enviar').disabled=false; }
 }
