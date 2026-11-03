@@ -565,6 +565,9 @@
   tbody tr.serv-bloq td .cp-badge,tbody tr.serv-bloq td .rowbtn{background:transparent;border-color:rgba(255,255,255,.7)}
   tbody tr.serv-bloq td .tag{background:transparent;border-color:rgba(255,255,255,.7)}
   tbody tr.serv-bloq td:first-child{box-shadow:inset 3px 0 0 #444 !important}
+  /* lo orientativo (fecha/método sugeridos) trae fondo claro: en el gris se lo deja transparente con borde punteado para que la letra blanca se lea */
+  tbody tr.serv-bloq td .tentativo,tbody tr.serv-bloq td .campo-tentativo,tbody tr.serv-bloq td .tag.pp,tbody tr.serv-bloq td .var-pct{background:transparent !important;color:#fff !important;border:1px dashed rgba(255,255,255,.75) !important}
+  .ord-fila.serv-bloq .tentativo,.ord-fila.serv-bloq .campo-tentativo{background:transparent !important;color:#fff !important;border:1px dashed rgba(255,255,255,.75) !important}
   .ord-fila.serv-bloq{background:#7b7b7b;color:#fff;font-style:italic}
   .ord-fila.serv-bloq *{color:#fff}
   .ord-fila.serv-bloq .tag{background:transparent;border-color:rgba(255,255,255,.7)}
@@ -836,9 +839,31 @@
   .tarjeta-badge{cursor:pointer}
   .var-pct{display:inline-block;margin-left:6px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0;white-space:nowrap;padding:0 4px;border:1px solid currentColor;cursor:help}
   td.num .var-pct{display:block;margin:2px 0 0 auto;width:max-content}
+  /* aviso de aumento fuerte al cargar/editar un gasto */
+  #f-bruto.aumento-fuerte{color:var(--neg);font-weight:700;border-color:var(--neg)}
+  .aviso-aumento{margin-top:12px;padding:8px 12px;border:1px solid var(--neg);border-left:5px solid var(--neg);background:color-mix(in srgb, var(--neg) 8%, var(--paper));font-size:13px;line-height:1.45;color:var(--neg);font-weight:600;text-align:left}
+  .aviso-aumento[hidden]{display:none}
   .var-pct.mal{color:var(--neg)} .var-pct.bien{color:var(--ok)} .var-pct.flat{color:var(--ink-soft)}
   .var-vs{display:none}
-  #hist-modal .ord-modal-box{width:min(560px,100%)}
+
+  /* ===== Columnas redimensionables (Registrados y Pagos semanales) + texto cortado con cuadro emergente ===== */
+  .col-resizer{position:absolute;top:0;right:0;bottom:0;width:10px;cursor:col-resize;touch-action:none;z-index:6;user-select:none}
+  .col-resizer::after{content:"";position:absolute;top:22%;bottom:22%;right:4px;width:1px;background:color-mix(in srgb, var(--paper) 35%, transparent);transition:background .12s,top .12s,bottom .12s}
+  .col-resizer:hover::after,body.col-resizing .col-resizer.activo::after{background:var(--paper);top:8%;bottom:8%;width:2px;right:3px}
+  body.col-resizing,body.col-resizing *{cursor:col-resize!important;user-select:none!important}
+  @media (min-width:701px){
+    .tablewrap.col-redim table{table-layout:fixed}
+    .tablewrap.col-redim thead th{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .tablewrap.col-redim tbody tr[data-row-id] td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .tablewrap.col-redim tbody tr[data-row-id] td .tag,.tablewrap.col-redim tbody tr[data-row-id] td .cp-badge{vertical-align:middle}
+  }
+  @media (max-width:700px){ .col-resizer{display:none} }
+  #cell-tip{position:fixed;z-index:3300;pointer-events:none;background:var(--paper);color:var(--ink);border:1px solid var(--ink);box-shadow:0 6px 22px rgba(0,0,0,.28);padding:4px 8px;white-space:normal;word-break:break-word;line-height:1.35;max-width:min(560px,calc(100vw - 16px))}
+  #cell-tip[hidden]{display:none}
+  /* historial de precios: ventana flotante que se abre al pasar el cursor por el ítem y se cierra al salir */
+  .hist-pop{position:fixed;z-index:3200;width:min(560px,calc(100vw - 16px))}
+  .hist-pop[hidden]{display:none}
+  .hist-pop .ord-modal-box{width:100%;max-height:min(72vh,540px);border:2px solid var(--ink);box-shadow:0 10px 34px rgba(0,0,0,.35)}
   .hist-tabla{width:100%;border-collapse:collapse;font-size:13px}
   .hist-tabla th{background:var(--ink);color:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;text-align:left;padding:7px 9px}
   .hist-tabla th.num,.hist-tabla td.num{text-align:right}
@@ -1296,6 +1321,7 @@
           <span id="add-confirm-txt"></span>
           <button type="button" class="ghost" id="add-confirm-ver">Ver en Registrados</button>
         </div>
+        <div id="aviso-aumento" class="aviso-aumento" role="status" hidden></div>
       </div>
 
       <!-- ---- Sub-vista: Registrados ---- -->
@@ -1454,9 +1480,9 @@
     </div>
   </div>
 </div></div>
-<div id="hist-modal" class="ord-modal" hidden><div class="ord-modal-box" role="dialog" aria-modal="true" aria-labelledby="hist-tit">
+<div id="hist-modal" class="hist-pop" hidden><div class="ord-modal-box" role="dialog" aria-labelledby="hist-tit">
   <div class="om-cab"><h3 id="hist-tit">Historial de precios</h3><button type="button" class="om-x" id="hist-x" aria-label="Cerrar">✕</button></div>
-  <div class="om-cuerpo"><div id="hist-cuerpo"></div><div class="bk-acc" style="margin-top:12px"><button type="button" id="hist-cerrar">Cerrar</button></div></div>
+  <div class="om-cuerpo"><div id="hist-cuerpo"></div></div>
 </div></div>
 <div id="ord-popup" class="ord-modal ord-popup" hidden><div class="ord-modal-box" role="alertdialog" aria-modal="true" aria-labelledby="ord-popup-tit"><div class="om-cab"><h3 id="ord-popup-tit">Órdenes de pago</h3><button type="button" class="om-x" id="ord-popup-x" aria-label="Cerrar">✕</button></div><div class="om-cuerpo"><div id="ord-popup-lista"></div><div class="ord-popup-acc"><button type="button" class="primary" id="ord-popup-ver">Ver órdenes de pago</button><button type="button" id="ord-popup-cerrar">Cerrar</button></div></div></div></div>
 <div id="ord-modal" class="ord-modal" hidden><div class="ord-modal-box" id="ord-modal-box" role="dialog" aria-modal="true"></div></div>
@@ -4113,6 +4139,41 @@ function pctIvaSugerido(){
   if(t==='A | 27%') return 0.27;
   return null;
 }
+// Aumento fuerte: al cargar/editar un gasto, si el importe bruto es 25% o más caro que el último registrado del mismo ítem
+// (el más reciente de un mes anterior al que se está cargando) el importe se pone en negrita y rojo y debajo se aclara
+// cuánto aumentó y cuál fue ese último importe, con el mes en que se pagó.
+const UMBRAL_AUMENTO=25;
+function ultimoRegistradoDe(item,editId_,mesCorr){
+  const k=claveItem({item}); if(!k) return null;
+  const c=rows.filter(r=>r.tipo==='gasto'&&r.id!==editId_&&claveItem(r)===k&&(+r.bruto||0)>0&&(!mesCorr||(periodoDe(r)&&periodoDe(r)<mesCorr)));
+  if(!c.length) return null;
+  c.sort((a,b)=>periodoDe(b).localeCompare(periodoDe(a))||(b.mesPago||'').localeCompare(a.mesPago||''));
+  return c[0];
+}
+function actualizarAvisoAumento(){
+  const aviso=$('aviso-aumento'), campo=$('f-bruto'); if(!aviso||!campo) return;
+  const ocultar=()=>{ aviso.hidden=true; aviso.textContent=''; campo.classList.remove('aumento-fuerte'); };
+  if(modo!=='gasto') return ocultar();
+  const actual=brutoVal(), item=$('f-item').value.trim();
+  if(!(actual>0)||!item) return ocultar();
+  const ult=ultimoRegistradoDe(item,editId,$('f-mescorr').value);
+  if(!ult) return ocultar();
+  const monA=$('f-moneda').value, monU=ult.moneda||'ARS', cot=cotizVal();
+  let a=actual, u=+ult.bruto, sim=monA==='USD'?'U$S ':'$ ', simU=monU==='USD'?'U$S ':'$ ';
+  if(monA!==monU){   // monedas distintas: se compara en pesos, si hay cotización para convertir
+    const aArs=monA==='USD'?(cot>0?actual*cot:null):actual, uArs=brutoARS(ult);
+    if(aArs===null||!(uArs>0)) return ocultar();
+    a=aArs; u=uArs; sim='$ ';
+  }
+  const pct=(a-u)/u*100;
+  if(!(pct>=UMBRAL_AUMENTO-1e-9)) return ocultar();   // 25% o más
+  const mesPagoUlt=ult.mesPago?mesLargo(ult.mesPago):'—';
+  const pagadoTxt=ult.pago?'Pagado en ':'Mes de pago: ';
+  aviso.innerHTML='▲ Aumento de '+esc(pctTxt(pct).replace('+',''))+' (+'+esc(sim+money(a-u))+') respecto del último registro de este ítem<br>'
+    +'Último importe: '+esc(simU+money(+ult.bruto))+' · '+pagadoTxt+esc(mesPagoUlt);
+  aviso.hidden=false; campo.classList.add('aumento-fuerte');
+}
+['f-item','f-moneda','f-cotizacion','f-mescorr'].forEach(id=>{ const el=$(id); if(!el) return; el.addEventListener('input',actualizarAvisoAumento); el.addEventListener('change',actualizarAvisoAumento); });
 function previewNeto(){
   const pct = modo==='gasto' ? pctIvaSugerido() : null;
   $('wrap-iva').hidden = pct===null;
@@ -4123,6 +4184,7 @@ function previewNeto(){
   let txt=simbolo+money(n);
   if(usd) txt += cotizVal()>0 ? ` ≈ $ ${money(n*cotizVal())}` : ' (cargá la cotización)';
   $('f-neto').textContent=txt;
+  actualizarAvisoAumento();
 }
 // Sugiere el IVA (21% o 27% según el tipo) como punto de partida, sin pisar lo que el usuario
 // ya haya tipeado a mano. "ivaAuto" indica si lo que hay en el campo es todavía la sugerencia
@@ -4241,7 +4303,7 @@ $('cuotas-form').addEventListener('click',e=>{
 function resetStickyCarga(){ stickyFechaPago=hoyISO(); stickyMesCorr=mesActual(); }
 function limpiarForm(){
   if(window.cerrarSugerencias) cerrarSugerencias();
-  $('f-item').value='';$('f-bruto').value='';$('f-iva').value='';ivaAuto=true;
+  $('f-item').value='';$('f-bruto').value='';$('f-iva').value='';ivaAuto=true;actualizarAvisoAumento();
   $('f-tipo').value='No posee';$('f-rubro').value='';$('f-fact').value='Facturado';
   $('f-pago').checked=false;$('f-comp').checked=true;$('f-dividido').checked=false;$('f-dividido').disabled=false;$('f-detalle').value='';$('f-marcar-fijo').checked=false;
   $('f-fecha-real-pago').value='';$('wrap-fecha-real-pago').hidden=true;
@@ -4540,8 +4602,98 @@ function ordenar(lista,sortState){
 // clic en un título de columna: ordena por esa columna, o invierte el orden si ya estaba activa
 // (la misma tabla se reutiliza en Registrados y en el Detalle del período del dashboard;
 // data-tabla en el contenedor indica cuál de las dos hay que reordenar y volver a pintar)
+/* ---------- Anchos de columna arrastrables + texto cortado con cuadro emergente (Registrados y Pagos semanales) ---------- */
+const COLW_KEY=g=>'copahue_colw_'+g;
+const grupoColDe=id=>id==='registrados'?'registrados':((id||'').indexOf('semana')===0?'semana':null);
+function leerAnchosCol(g){ try{ const j=localStorage.getItem(COLW_KEY(g)); const o=j?JSON.parse(j):null; return (o&&typeof o==='object')?o:null; }catch(e){ return null; } }
+function guardarAnchosCol(g,o){ try{ localStorage.setItem(COLW_KEY(g),JSON.stringify(o)); }catch(e){} }
+function borrarAnchosCol(g){ try{ localStorage.removeItem(COLW_KEY(g)); }catch(e){} }
+(function(){
+  const MIN_PX=44;
+  let drag=null, raf=0, xAct=0;
+  const tablasDelGrupo=g=>[...document.querySelectorAll('.tablewrap.col-redim[data-tabla]')].filter(w=>grupoColDe(w.dataset.tabla)===g);
+  function calcular(dx){
+    const {start,idx}=drag, n=start.slice(), min=start.map(w=>Math.min(MIN_PX,w));
+    if(dx>0){
+      let rest=dx;
+      for(let j=idx+1;j<n.length&&rest>0;j++){ const t=Math.min(rest,start[j]-min[j]); if(t>0){ n[j]-=t; rest-=t; } }
+      n[idx]=start[idx]+(dx-rest);
+    } else if(dx<0){
+      const d=Math.min(-dx,start[idx]-min[idx]); n[idx]-=d; n[idx+1]+=d;
+    }
+    return n;
+  }
+  function aplicar(){
+    raf=0; if(!drag) return;
+    const n=calcular(xAct-drag.x0); drag.ultimo=n;
+    const pct={}; drag.keys.forEach((k,i)=>{ pct[k]=n[i]/drag.W*100; });
+    tablasDelGrupo(drag.grupo).forEach(w=>w.querySelectorAll('colgroup col[data-col]').forEach(c=>{ const v=pct[c.dataset.col]; if(v!==undefined) c.style.width=v.toFixed(3)+'%'; }));
+  }
+  document.addEventListener('pointerdown',e=>{
+    const h=e.target.closest&&e.target.closest('.col-resizer'); if(!h||(e.button&&e.button>0)) return;
+    const th=h.closest('th'), table=th&&th.closest('table'), wrap=th&&th.closest('[data-tabla]'); if(!table||!wrap) return;
+    const grupo=grupoColDe(wrap.dataset.tabla); if(!grupo) return;
+    const ths=[...table.tHead.rows[0].cells].filter(x=>x.dataset.col), idx=ths.indexOf(th); if(idx<0||idx>=ths.length-1) return;
+    e.preventDefault(); e.stopPropagation();
+    drag={grupo,keys:ths.map(x=>x.dataset.col),start:ths.map(x=>x.getBoundingClientRect().width),idx,x0:e.clientX,W:table.getBoundingClientRect().width,pid:e.pointerId,ultimo:null};
+    xAct=e.clientX; h.classList.add('activo'); drag.h=h;
+    try{ h.setPointerCapture(e.pointerId); }catch(_){}
+    document.body.classList.add('col-resizing'); ocultarTipCelda();
+  },true);
+  document.addEventListener('pointermove',e=>{ if(!drag||e.pointerId!==drag.pid) return; xAct=e.clientX; if(!raf) raf=requestAnimationFrame(aplicar); });
+  function fin(e){
+    if(!drag||(e&&e.pointerId!==drag.pid)) return;
+    if(raf){ cancelAnimationFrame(raf); raf=0; } aplicar();
+    if(drag.ultimo){
+      const o=Object.assign({},leerAnchosCol(drag.grupo)||{});
+      drag.keys.forEach((k,i)=>{ o[k]=+(drag.ultimo[i]/drag.W*100).toFixed(3); });
+      guardarAnchosCol(drag.grupo,o);
+    }
+    drag.h.classList.remove('activo'); try{ drag.h.releasePointerCapture(drag.pid); }catch(_){}
+    document.body.classList.remove('col-resizing'); drag=null;
+  }
+  document.addEventListener('pointerup',fin); document.addEventListener('pointercancel',fin);
+  // los clics que terminan un arrastre no deben ordenar la columna
+  document.addEventListener('click',e=>{ if(e.target.closest&&e.target.closest('.col-resizer')){ e.stopPropagation(); e.preventDefault(); } },true);
+  // doble clic en el borde: vuelve a los anchos originales
+  document.addEventListener('dblclick',e=>{
+    const h=e.target.closest&&e.target.closest('.col-resizer'); if(!h) return;
+    const wrap=h.closest('[data-tabla]'), g=wrap&&grupoColDe(wrap.dataset.tabla); if(!g) return;
+    borrarAnchosCol(g); render();
+  });
+
+  // Cuadro emergente con el texto completo de las celdas cortadas: aparece solo, al pasar el cursor (sin clic).
+  const tip=document.createElement('div'); tip.id='cell-tip'; tip.hidden=true; document.body.appendChild(tip);
+  let tipCelda=null;
+  window.ocultarTipCelda=function(){ tip.hidden=true; tipCelda=null; };
+  const escritorio=()=>window.matchMedia('(min-width:701px)').matches;
+  function mostrarTip(c,txt){
+    const cs=getComputedStyle(c), r=c.getBoundingClientRect();
+    tip.textContent=txt; tip.style.fontFamily=cs.fontFamily; tip.style.fontSize=Math.max(12,parseFloat(cs.fontSize)||12)+'px'; tip.style.fontWeight=cs.fontWeight; tip.style.fontStyle=cs.fontStyle;
+    tip.style.textTransform=cs.textTransform; tip.style.letterSpacing=cs.letterSpacing;
+    tip.style.minWidth=Math.min(r.width,innerWidth-16)+'px'; tip.hidden=false;
+    const w=tip.offsetWidth, h=tip.offsetHeight;
+    tip.style.left=Math.max(8,Math.min(r.left-1,innerWidth-w-8))+'px';
+    tip.style.top=Math.max(8,Math.min(r.top-1,innerHeight-h-8))+'px';
+    tipCelda=c;
+  }
+  document.addEventListener('mouseover',e=>{
+    if(drag||!escritorio()) return;
+    const c=e.target.closest&&e.target.closest('.tablewrap.col-redim thead th, .tablewrap.col-redim tbody tr[data-row-id] td');
+    if(!c||e.target.closest('[data-hist-item]')||e.target.closest('.col-resizer')){ if(tipCelda) ocultarTipCelda(); return; }
+    if(c===tipCelda) return;
+    if(c.scrollWidth<=c.clientWidth+1){ if(tipCelda) ocultarTipCelda(); return; }
+    const txt=(c.innerText||'').replace(/\s*\n\s*/g,' · ').replace(/\s{2,}/g,' ').trim();
+    if(!txt){ ocultarTipCelda(); return; }
+    mostrarTip(c,txt);
+  });
+  document.addEventListener('mouseout',e=>{ if(tipCelda&&(!e.relatedTarget||!tipCelda.contains(e.relatedTarget))) ocultarTipCelda(); });
+  window.addEventListener('scroll',()=>{ if(tipCelda) ocultarTipCelda(); },{passive:true,capture:true});
+})();
+
 const SORT_STATE_POR_TABLA={ periodo:()=>sortDetallePeriodo, 'semana-actual':()=>sortSemanaActual, 'semana-proxima':()=>sortSemanaProxima, 'semana-vencida-posp':()=>sortSemanaVencidaPosp };
 document.addEventListener('click',e=>{
+  if(e.target.closest('.col-resizer')) return;   // arrastrar/soltar el borde de una columna no reordena
   const th=e.target.closest('th[data-sortcol]');
   if(!th) return;
   const tablaId = (th.closest('[data-tabla]')||{}).dataset ? th.closest('[data-tabla]').dataset.tabla : 'registrados';
@@ -5445,7 +5597,7 @@ function thOrden(label,col,sortState,opts){
 }
 /* ---------- Historial de precios y variación por ítem ----------
    Los movimientos con el mismo nombre de ítem (sin importar mayúsculas, tildes ni espacios de más) se agrupan por mes al que corresponden.
-   En Registrados y Pagos semanales, cada fila con un ítem ya cargado antes muestra cuánto varió su importe neto contra el mes anterior
+   En Registrados y Pagos semanales, cada fila con un ítem ya cargado antes muestra cuánto varió su importe BRUTO contra el mes anterior
    registrado (▲ +5% / ▼ -5%), y al tocar el nombre se abre el historial mes a mes y la variación de los últimos 12 meses. */
 const claveItem=r=>normTxt(r.item).replace(/\s+/g,' ').trim();
 const periodoDe=r=>r.mesCorr||r.mesPago||'';
@@ -5453,11 +5605,11 @@ function indiceHistorial(){
   const m=new Map();
   rows.forEach(r=>{
     const k=claveItem(r), p=periodoDe(r); if(!k||!p) return;
-    const n=netoDe(r); if(!(n>0)) return;   // los importes en cero o negativos (sin cargar, notas de crédito) no sirven para comparar
+    const n=+r.bruto||0; if(!(n>0)) return;   // los importes en cero o negativos (sin cargar, notas de crédito) no sirven para comparar; se compara el BRUTO
     const clave=r.tipo+'|'+k; let h=m.get(clave); if(!h){ h=[]; h._por={}; m.set(clave,h); }
     let e=h._por[p];
     if(!e){ e={mes:p,neto:0,ars:0,moneda:r.moneda||'ARS',cant:0,ids:[]}; h._por[p]=e; h.push(e); }
-    e.neto+=n; e.ars+=netoARS(r); e.cant++; e.ids.push(r.id);
+    e.neto+=n; e.ars+=brutoARS(r); e.cant++; e.ids.push(r.id);
     if((r.moneda||'ARS')!==e.moneda) e.moneda='mixto';
   });
   m.forEach(h=>{
@@ -5473,7 +5625,7 @@ const pctVar=(prev,cur)=>prev>0?((cur-prev)/prev*100):null;
 function pctTxt(p){ if(p===null||!isFinite(p)) return '—'; const a=Math.abs(p); const t=(a>=100?a.toFixed(0):a.toFixed(1)).replace('.',','); return (p>0.049?'+':(p<-0.049?'-':''))+(a<0.05?'0':t)+'%'; }
 function claseVar(tipo,p){ if(p===null||Math.abs(p)<0.05) return 'flat'; const sube=p>0; return (tipo==='ingreso'?sube:!sube)?'bien':'mal'; }   // un gasto que baja o un ingreso que sube es buena noticia
 function variacionDe(r,mapa){
-  const h=mapa.get(r.tipo+'|'+claveItem(r)); if(!h||!(netoDe(r)>0)) return null;
+  const h=mapa.get(r.tipo+'|'+claveItem(r)); if(!h||!((+r.bruto||0)>0)) return null;
   const i=h.findIndex(e=>e.mes===periodoDe(r)); if(i<1) return null;
   const prev=h[i-1], cur=h[i];
   return {prev,cur,pct:pctVar(prev.v,cur.v),h};
@@ -5482,9 +5634,10 @@ function variacionHtml(r,mapa){
   const v=variacionDe(r,mapa); if(!v) return '';
   const sim=v.h.moneda==='USD'?'U$S ':'$ ';
   const flecha=Math.abs(v.pct)<0.05?'=':(v.pct>0?'▲':'▼');
-  return `<span class="var-pct ${claseVar(r.tipo,v.pct)}" title="${esc('Importe neto '+(v.pct>0.049?'subió':(v.pct<-0.049?'bajó':'sin cambios'))+' respecto de '+mesLabel(v.prev.mes)+': '+sim+money(v.prev.v)+' → '+sim+money(v.cur.v)+(v.cur.cant>1?' (total del mes, '+v.cur.cant+' movimientos)':'')+'. Tocá el nombre del ítem para ver el historial.')}">${flecha} ${pctTxt(v.pct)}<span class="var-vs"> vs ${esc(mesLabel(v.prev.mes))}</span></span>`;
+  return `<span class="var-pct ${claseVar(r.tipo,v.pct)}" title="${esc('Importe bruto '+(v.pct>0.049?'subió':(v.pct<-0.049?'bajó':'sin cambios'))+' respecto de '+mesLabel(v.prev.mes)+': '+sim+money(v.prev.v)+' → '+sim+money(v.cur.v)+(v.cur.cant>1?' (total del mes, '+v.cur.cant+' movimientos)':'')+'. Tocá el nombre del ítem para ver el historial.')}">${flecha} ${pctTxt(v.pct)}<span class="var-vs"> vs ${esc(mesLabel(v.prev.mes))}</span></span>`;
 }
-function abrirHistorialPrecios(id){
+let histAnclaId=null;
+function abrirHistorialPrecios(id,ancla){
   const r=rows.find(x=>x.id===id); if(!r) return;
   const h=indiceHistorial().get(r.tipo+'|'+claveItem(r))||[];
   const sim=h.moneda==='USD'?'U$S ':'$ ';
@@ -5497,8 +5650,8 @@ function abrirHistorialPrecios(id){
     const ultimo=h[h.length-1].mes, desde=sumarMes(ultimo,-11);
     const ventana=h.filter(e=>e.mes>=desde);
     const filas=h.map((e,i)=>({e,i,prev:i>0?h[i-1]:null})).filter(x=>x.e.mes>=desde).reverse();
-    html+=`<p class="note" style="margin:0 0 10px">${r.tipo==='ingreso'?'Ingreso':'Gasto'} · importe neto${h.usarARS&&h.some(e=>e.moneda!=='ARS')?' (convertido a pesos)':''} · por mes al que corresponde</p>`;
-    html+='<table class="hist-tabla"><thead><tr><th>Mes</th><th class="num">Importe neto</th><th class="num">Variación vs mes anterior</th></tr></thead><tbody>'
+    html+=`<p class="note" style="margin:0 0 10px">${r.tipo==='ingreso'?'Ingreso':'Gasto'} · importe bruto${h.usarARS&&h.some(e=>e.moneda!=='ARS')?' (convertido a pesos)':''} · por mes al que corresponde</p>`;
+    html+='<table class="hist-tabla"><thead><tr><th>Mes</th><th class="num">Importe bruto</th><th class="num">Variación vs mes anterior</th></tr></thead><tbody>'
       +filas.map(({e,prev})=>{
         const pc=prev?pctVar(prev.v,e.v):null;
         const salto=prev&&sumarMes(prev.mes,1)!==e.mes?` <span class="hist-vs">vs ${esc(mesLabel(prev.mes))}</span>`:'';
@@ -5516,13 +5669,44 @@ function abrirHistorialPrecios(id){
     }
   }
   $('hist-cuerpo').innerHTML=html;
-  modal.hidden=false;
+  modal.hidden=false; histAnclaId=id;
+  posicionarHistorial(ancla);
 }
-function cerrarHistorialPrecios(){ const m=$('hist-modal'); if(m) m.hidden=true; }
+function posicionarHistorial(ancla){
+  const pop=$('hist-modal'); if(!pop) return;
+  if(!ancla||!document.contains(ancla)){ pop.style.left=Math.max(8,(innerWidth-pop.offsetWidth)/2)+'px'; pop.style.top='12vh'; return; }
+  const r=ancla.getBoundingClientRect(), w=pop.offsetWidth, h=pop.offsetHeight;
+  const left=Math.min(Math.max(8,r.left),Math.max(8,innerWidth-w-8));
+  let top=r.bottom+2;
+  if(top+h>innerHeight-8){ const arriba=r.top-h-2; top=arriba>=8?arriba:Math.max(8,innerHeight-h-8); }
+  pop.style.left=left+'px'; pop.style.top=top+'px';
+}
+function cerrarHistorialPrecios(){ const m=$('hist-modal'); if(m) m.hidden=true; histAnclaId=null; clearTimeout(histAbrirT); clearTimeout(histCierreT); }
+// Se abre solo, al pasar el cursor por el nombre del ítem (sin clic), y se cierra al sacar el cursor de la ventana.
+let histAbrirT=null, histCierreT=null;
+document.addEventListener('mouseover',e=>{
+  const pop=$('hist-modal'); if(!pop) return;
+  const b=e.target.closest&&e.target.closest('[data-hist-item]');
+  if(b){
+    clearTimeout(histCierreT);
+    if(document.body.classList.contains('col-resizing')) return;
+    if(!pop.hidden&&histAnclaId===b.dataset.histItem) return;
+    clearTimeout(histAbrirT); histAbrirT=setTimeout(()=>abrirHistorialPrecios(b.dataset.histItem,b),120);
+    return;
+  }
+  clearTimeout(histAbrirT);
+  if(pop.hidden) return;
+  if(pop.contains(e.target)){ clearTimeout(histCierreT); return; }
+  clearTimeout(histCierreT); histCierreT=setTimeout(cerrarHistorialPrecios,200);   // un instante de gracia para pasar del nombre a la ventana
+});
+document.addEventListener('mouseout',e=>{ if(!e.relatedTarget){ clearTimeout(histAbrirT); const pop=$('hist-modal'); if(pop&&!pop.hidden){ clearTimeout(histCierreT); histCierreT=setTimeout(cerrarHistorialPrecios,200); } } });
+window.addEventListener('scroll',()=>{ const pop=$('hist-modal'); if(pop&&!pop.hidden) cerrarHistorialPrecios(); },{passive:true});
+window.addEventListener('resize',()=>{ const pop=$('hist-modal'); if(pop&&!pop.hidden) cerrarHistorialPrecios(); });
 document.addEventListener('click',e=>{
   const b=e.target.closest&&e.target.closest('[data-hist-item]');
-  if(b){ abrirHistorialPrecios(b.dataset.histItem); return; }
-  if(e.target.id==='hist-modal'||e.target.id==='hist-x'||e.target.id==='hist-cerrar') cerrarHistorialPrecios();
+  if(b){ abrirHistorialPrecios(b.dataset.histItem,b); return; }   // en pantallas táctiles, el toque
+  if(e.target.id==='hist-x') cerrarHistorialPrecios();
+  else { const pop=$('hist-modal'); if(pop&&!pop.hidden&&!pop.contains(e.target)) cerrarHistorialPrecios(); }
 });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&$('hist-modal')&&!$('hist-modal').hidden){ e.stopPropagation(); cerrarHistorialPrecios(); } },true);
 
@@ -5588,7 +5772,17 @@ function tablaHtml(view,sortState,tablaId){
     ...(mostrarFC?['factura']:[]), ...(mostrarFacturado?['facturado']:[]),
     'vencimiento','estado', ...(mostrarMetodo?['metodo']:[]), 'computable','rubro','detalle','acciones'];
   const totalCols=colOrder.length;
-  const colgroupHtml=colOrder.map(c=>`<col style="width:${c==='detalle'?ANCHOS.detalle+extra:ANCHOS[c]}%">`).join('');
+  // Anchos de columna: por defecto los de ANCHOS; en Registrados y Pagos semanales el usuario puede arrastrar el borde de cada
+  // encabezado y el resultado (en % del ancho de la tabla) se recuerda en este navegador.
+  const grupoCol=grupoColDe(tablaId||'registrados');
+  const pctBase=colOrder.map(c=>c==='detalle'?ANCHOS.detalle+extra:ANCHOS[c]);
+  let pcts=pctBase;
+  const guardados=grupoCol?leerAnchosCol(grupoCol):null;
+  if(guardados){
+    const mez=colOrder.map((c,i)=>(guardados[c]>0?guardados[c]:pctBase[i])), suma=mez.reduce((a,b)=>a+b,0)||100;
+    pcts=mez.map(v=>v/suma*100);
+  }
+  const colgroupHtml=colOrder.map((c,i)=>`<col data-col="${c}" style="width:${pcts[i].toFixed(3)}%">`).join('');
   const theadCeldas={
     tipo: thOrden('Tipo','tipo',sortState),
     mesPago: thOrden('Mes de pago','mesPago',sortState),
@@ -5606,8 +5800,13 @@ function tablaHtml(view,sortState,tablaId){
     detalle: thOrden('Detalle','detalle',sortState),
     acciones: '<th></th>'
   };
-  const theadHtml=colOrder.map(c=>theadCeldas[c]).join('');
-  return `<div class="tablewrap" data-tabla="${tablaId||'registrados'}"><table>
+  const theadHtml=colOrder.map((c,i)=>{
+    let th=theadCeldas[c];
+    if(!grupoCol) return th;
+    th=th.replace('<th','<th data-col="'+c+'"');
+    return i<colOrder.length-1 ? th.replace('</th>','<span class="col-resizer" title="Arrastrá para cambiar el ancho (doble clic: restablecer)"></span></th>') : th;
+  }).join('');
+  return `<div class="tablewrap${grupoCol?' col-redim':''}" data-tabla="${tablaId||'registrados'}"><table>
     <colgroup>${colgroupHtml}</colgroup>
     <thead><tr>${theadHtml}</tr></thead>
     <tbody>${view.map(r=>{const n=netoDe(r),esIng=r.tipo==='ingreso';const div=r.dividido&&Array.isArray(r.cuotas);
@@ -5652,16 +5851,16 @@ function tablaHtml(view,sortState,tablaId){
       const detTC=!esIng?mapaDet.get(r.id):null;
       const msgDetTC=detTC?('Ítem detallado en desglose de tarjeta de crédito de '+mesLargo(detTC.mes)):'';
       const nombreItem=`<span class="item-nombre" data-hist-item="${r.id}">${r.item?esc(r.item):'—'}</span>`;
-      const tdItem = esIng ? `<td class="item" data-c="item" title="${esc((r.item||'')+' — tocá el nombre para ver el historial de importes')}">${nombreItem}</td>`
-        : `<td class="item${esTarjeta?' tarjeta-item':''}${detTC?' en-desglose-tc':''}" data-c="item" title="${esc(detTC?msgDetTC:(r.item+' — tocá el nombre para ver el historial de importes'))}">${nombreItem}${detTC?`<span class="tc-nota">${esc(msgDetTC)}</span>`:''}${esTarjeta?`<span class="tarjeta-badge" data-tarjeta-toggle="${r.id}" title="Ver/cargar el desglose del resumen">${abiertaTarjeta?'▾':'▸'} desglose${nDesglose?' ('+nDesglose+')':''}</span>`:''}</td>`;
+      const tdItem = esIng ? `<td class="item" data-c="item">${nombreItem}</td>`
+        : `<td class="item${esTarjeta?' tarjeta-item':''}${detTC?' en-desglose-tc':''}" data-c="item"${detTC?` title="${esc(msgDetTC)}"`:''}>${nombreItem}${detTC?`<span class="tc-nota">${esc(msgDetTC)}</span>`:''}${esTarjeta?`<span class="tarjeta-badge" data-tarjeta-toggle="${r.id}" title="Ver/cargar el desglose del resumen">${abiertaTarjeta?'▾':'▸'} desglose${nDesglose?' ('+nDesglose+')':''}</span>`:''}</td>`;
       const opAut = (!esIng && !r.pago) ? opAutorizadaDe(r.id) : null;
       const filaPrincipal = `<tr data-row-id="${r.id}" class="${r.pago?'paid':'unpaid'}${parcial?' parcial':''}${r.id===editId?' editing':''}${!esComp(r)?' nocomp':''}${claseImpago}${clasePago}${opAut?(opAut.aprobado?' en-orden-aut':' en-orden-pend'):''}">
       <td data-c="tipo"><span class="tag ${esIng?'IN':'EG'}">${esIng?'INGRESO':'GASTO'}</span>${!esIng?`<span class="tag ${r.fijo?'FIJ':'VAR'}">${r.fijo?'FIJO':'VARIABLE'}</span>`:''}</td>
       <td class="mono" data-c="mesPago">${div?'<span class="cp-let" title="Se paga en varias cuotas">varias</span>':'<b>'+mesLabel(r.mesPago).toUpperCase()+'</b>'}</td>
       <td class="mono" data-c="mesCorr"><b>${mesLabel(r.mesCorr)}</b></td>
       ${tdItem}
-      <td class="num${usd?' dual':''}${r.bruto<0?' negv':''}" data-c="bruto">${montoCell(r.bruto,brutoARS(r),usd)}</td>
-      <td class="num${usd?' dual':''}${n<0?' negv':(esIng?' ing':'')}" data-c="neto">${montoCell(n,netoARS(r),usd)}${variacionHtml(r,mapaHist)}</td>
+      <td class="num${usd?' dual':''}${r.bruto<0?' negv':''}" data-c="bruto">${montoCell(r.bruto,brutoARS(r),usd)}${variacionHtml(r,mapaHist)}</td>
+      <td class="num${usd?' dual':''}${n<0?' negv':(esIng?' ing':'')}" data-c="neto">${montoCell(n,netoARS(r),usd)}</td>
       ${tdFactura}${tdFacturado}
       <td class="mono" data-c="venc">${(!esIng&&r.fechaVenc)?((!r.pago&&r.vencTentativo)?`<span class="tentativo" title="Vencimiento orientativo, según el último registro de este ítem. Todavía no está confirmado.">${fmtFechaCorta(r.fechaVenc).toUpperCase()}</span>`:fmtFechaCorta(r.fechaVenc).toUpperCase()):'—'}</td>
       ${cpCell}
@@ -6508,6 +6707,7 @@ $('btn-csv').addEventListener('click',()=>{
       if(u&&!$('f-detalle').value.trim()&&u.detalle) $('f-detalle').value=u.detalle;
     }
     cerrar();
+    if(window.actualizarAvisoAumento) actualizarAvisoAumento();
     f.focus();
     try{ f.setSelectionRange(f.value.length,f.value.length); }catch(e){}
   }
