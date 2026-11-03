@@ -6,6 +6,13 @@
 <title>Resultados y Devengamiento — Hotel Copahue</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Conexiones y scripts de Firebase se piden al arrancar, en paralelo con el resto de la página (carga más rápida en el celular) -->
+<link rel="preconnect" href="https://www.gstatic.com">
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin>
+<link rel="preload" as="script" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js">
+<link rel="preload" as="script" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js">
+<link rel="preload" as="script" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js">
 <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -541,7 +548,18 @@
   .tablacompacta tbody tr.gasto-impago.vence-pronto:nth-child(even){background:color-mix(in srgb, var(--neg) 42%, var(--paper))}
   .tablacompacta tbody tr.gasto-pago:nth-child(odd){background:color-mix(in srgb, var(--ok) 12%, var(--paper))}
   .tablacompacta tbody tr.gasto-pago:nth-child(even){background:color-mix(in srgb, var(--ok) 7%, var(--paper))}
+  /* gastos impagos todavía sin importe: naranja claro (sin vencimiento o fuera de la semana de pagos) / fuerte (vence dentro de los pagos semanales) */
+  :root{--naranja:#E8892B}
+  .tablacompacta tbody tr.sin-importe-claro:nth-child(odd){background:color-mix(in srgb, var(--naranja) 24%, var(--paper))}
+  .tablacompacta tbody tr.sin-importe-claro:nth-child(even){background:color-mix(in srgb, var(--naranja) 17%, var(--paper))}
+  .tablacompacta tbody tr.sin-importe-fuerte:nth-child(odd){background:color-mix(in srgb, var(--naranja) 70%, var(--paper))}
+  .tablacompacta tbody tr.sin-importe-fuerte:nth-child(even){background:color-mix(in srgb, var(--naranja) 62%, var(--paper))}
+  body.dark .tablacompacta tbody tr.sin-importe-fuerte:nth-child(odd){background:color-mix(in srgb, var(--naranja) 50%, var(--paper))}
+  body.dark .tablacompacta tbody tr.sin-importe-fuerte:nth-child(even){background:color-mix(in srgb, var(--naranja) 44%, var(--paper))}
+  tbody tr.sin-importe-claro td:first-child{box-shadow:inset 3px 0 0 var(--naranja)}
+  tbody tr.sin-importe-fuerte td:first-child{box-shadow:inset 4px 0 0 #B8560A}
   /* servicios (tasas) todavía sin vencimiento, orden de pago ni pago */
+  tbody tr.serv-bloq,.tablacompacta tbody tr.serv-bloq:nth-child(odd),.tablacompacta tbody tr.serv-bloq:nth-child(even){background:#7b7b7b !important}
   tbody tr.serv-bloq td{background:#7b7b7b !important;color:#fff !important;font-style:italic}
   tbody tr.serv-bloq td *{color:#fff !important;font-style:italic}
   tbody tr.serv-bloq td .cp-badge,tbody tr.serv-bloq td .rowbtn{background:transparent;border-color:rgba(255,255,255,.7)}
@@ -596,8 +614,6 @@
   .cp-stack-line{white-space:nowrap}
   .cp-stack-line.ok{color:var(--ok)}
   .cp-stack-line.pend{color:var(--warn)}
-  td.item.tarjeta-item{cursor:pointer}
-  td.item.tarjeta-item:hover{text-decoration:underline dotted}
   .desg-tarjeta{display:inline-block;margin-left:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--iva);border:1px solid var(--iva);padding:0 5px;white-space:nowrap}
   .tarjeta-badge{display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0;text-transform:none;color:var(--iva);font-weight:600;margin-top:1px}
   .cp-editor{position:absolute;z-index:30;top:50%;left:0;transform:translateY(-50%);display:flex;flex-direction:column;align-items:stretch;gap:5px;background:var(--surface);border:1px solid var(--rule-strong);box-shadow:0 3px 10px rgba(0,0,0,.25);padding:4px 5px;white-space:nowrap}
@@ -800,6 +816,144 @@
   @media print{.nueva-version{display:none!important}}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
   @media (max-width:700px){.masthead h1{font-size:23px}.split{grid-template-columns:1fr}}
+  /* Sugerencias al escribir en Cargar (Ítem / Detalle) */
+  .sug-pop{position:fixed;z-index:3200;background:var(--paper);border:2px solid var(--ink);box-shadow:0 10px 30px rgba(0,0,0,.35);overflow-y:auto;overscroll-behavior:contain}
+  .sug-pop[hidden]{display:none}
+  .sug-cab{padding:5px 10px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);background:var(--ledger);border-bottom:1px solid var(--rule)}
+  .sug-it{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:9px 10px;border-bottom:1px solid var(--rule);cursor:pointer;font-size:14px;text-transform:uppercase}
+  .sug-it:last-child{border-bottom:none}
+  .sug-it.on,.sug-it:hover{background:var(--ink);color:var(--paper)}
+  .sug-it b{font-weight:700}
+  .sug-it .sug-meta{flex:none;max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.04em;color:var(--ink-soft)}
+  .sug-it.on .sug-meta,.sug-it:hover .sug-meta{color:var(--rule)}
+  @media (max-width:700px){.sug-it{padding:12px 10px;font-size:15px}}
+  .item-nombre{cursor:pointer}
+  .item-nombre:hover{text-decoration:underline dotted;text-underline-offset:2px}
+  td.item.en-desglose-tc .item-nombre{text-decoration:line-through;font-style:italic;color:var(--ink-soft)}
+  td.item.en-desglose-tc{cursor:help}
+  .tc-nota{display:none}
+  td.tarjeta-item{cursor:default}
+  .tarjeta-badge{cursor:pointer}
+  .var-pct{display:inline-block;margin-left:6px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0;white-space:nowrap;padding:0 4px;border:1px solid currentColor;cursor:help}
+  td.num .var-pct{display:block;margin:2px 0 0 auto;width:max-content}
+  .var-pct.mal{color:var(--neg)} .var-pct.bien{color:var(--ok)} .var-pct.flat{color:var(--ink-soft)}
+  .var-vs{display:none}
+  #hist-modal .ord-modal-box{width:min(560px,100%)}
+  .hist-tabla{width:100%;border-collapse:collapse;font-size:13px}
+  .hist-tabla th{background:var(--ink);color:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;text-align:left;padding:7px 9px}
+  .hist-tabla th.num,.hist-tabla td.num{text-align:right}
+  .hist-tabla td{padding:7px 9px;border-bottom:1px solid var(--rule);vertical-align:middle}
+  .hist-tabla td.num{font-family:'IBM Plex Mono',monospace;white-space:nowrap}
+  .hist-tabla td:first-child{white-space:nowrap}
+  .hist-tabla tr.hist-actual td{background:color-mix(in srgb, var(--warn) 16%, var(--paper));font-weight:600}
+  .hist-tabla .var-pct{margin-left:0;cursor:default}
+  .hist-vs{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-soft);font-weight:400}
+  .hist-total{margin-top:14px;padding:12px 14px;border:2px solid var(--ink);background:var(--ledger)}
+  .hist-total-tit{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+  .hist-total-pct{margin:6px 0 4px}
+  .hist-total-pct .var-pct{font-size:22px;padding:2px 10px;margin:0;cursor:default}
+  .hist-total-det{font-size:12px;color:var(--ink-soft);line-height:1.5}
+  @media (max-width:700px){.var-vs{display:inline;font-weight:400;opacity:.8}.var-pct{font-size:11px}}
+  @media (max-width:700px){.tc-nota{display:block;margin-top:2px;font-size:11px;font-weight:400;font-style:italic;color:var(--ink-soft);text-decoration:none;line-height:1.3}}
+  .masthead-tools{display:flex;align-items:center;gap:10px}
+  /* ===== Celulares y pantallas chicas ===== */
+  @media (max-width:700px){
+    body{font-size:15px;-webkit-text-size-adjust:100%}
+    .wrap{width:100%;padding:0 6px 80px}
+    .masthead-inner{width:100%;padding:14px 10px 10px;gap:10px}
+    .masthead h1{font-size:22px;line-height:1.1}
+    .masthead .sub{font-size:10px;letter-spacing:.08em}
+    .masthead-tools{width:100%;flex-wrap:wrap;gap:8px}
+    .masthead-tools .stamp{margin-left:auto;font-size:10px;padding:5px 8px}
+    .icon-btn{min-width:42px;min-height:42px}
+    .usuario-nombre-header{flex:1 1 100%;order:-1;font-size:13px}
+    .banner-prueba{flex:1 1 100%;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+    .panel{padding:16px 8px;margin-bottom:20px}
+    /* Tablas: se deslizan de costado dentro de su recuadro (en el celular no entran todas las columnas) */
+    .tablewrap,.tablacompacta{overflow-x:auto;-webkit-overflow-scrolling:touch}
+    .tablewrap:not([data-tabla])>table{min-width:560px}
+    .tablacompacta thead th{position:static}
+    /* Lista de órdenes de pago: cada orden pasa a ser una tarjeta (en vez de una tabla ancha) */
+    .tablacompacta:has(.ord-tabla){overflow-x:visible}
+    .tablacompacta .ord-tabla{min-width:0!important;table-layout:auto}
+    .ord-tabla,.ord-tabla tbody{display:block;width:100%}
+    .ord-tabla thead{display:none}
+    .ord-tabla tr.ord-fila-lista{display:grid;grid-template-columns:40px 1fr auto;gap:3px 8px;padding:10px 6px;border-bottom:1px solid var(--rule-strong);align-items:center}
+    .ord-tabla tr.ord-fila-lista td{display:block;border:none;padding:0!important;min-width:0}
+    .ord-tabla tr.ord-fila-lista td:nth-child(1){grid-column:1;grid-row:1/4}
+    .ord-tabla tr.ord-fila-lista td:nth-child(2){grid-column:2;grid-row:1;font-size:15px}
+    .ord-tabla tr.ord-fila-lista td:nth-child(6){grid-column:3;grid-row:1;text-align:right;font-size:14px}
+    .ord-tabla tr.ord-fila-lista td:nth-child(3){grid-column:2/4;grid-row:2;font-size:12px;color:var(--ink-soft)}
+    .ord-tabla tr.ord-fila-lista td:nth-child(4){grid-column:2/4;grid-row:3;font-size:13px}
+    .ord-tabla tr.ord-fila-lista td:nth-child(5){grid-column:2/4;grid-row:4;font-size:12px;color:var(--ink-soft)}
+    .ord-tabla tr.ord-fila-lista td:nth-child(5)::before{content:"Ítems: "}
+    .ord-tabla tr.ord-fila-lista td:nth-child(7){grid-column:1/4;grid-row:5;padding-top:4px!important}
+    .ord-tabla tr.ord-fila-lista td:nth-child(8){grid-column:1/4;grid-row:6}
+    .ord-tabla tr.ord-fila-lista td:nth-child(8):empty{display:none}
+    .ord-tabla tr.ord-subfila{display:block}
+    .ord-tabla tr.ord-subfila td{display:none}
+    .ord-tabla tr.ord-subfila td:nth-child(2){display:block;border:none;padding:0 4px 10px 10px!important}
+    .ord-flecha{min-width:36px;min-height:36px}
+    /* Detalle de una orden: cada ítem en 3 renglones (nombre / vencimiento + importe / botones) */
+    .ord-fila-det,.ord-fila-det.con-nota{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"tit tit" "venc imp" "bot bot";gap:4px 10px;padding:9px 8px}
+    .ord-fila-det.con-nota{grid-template-areas:"tit tit" "venc imp" "bot bot" "nota nota"}
+    .ord-fila-det .ord-imp{min-width:0;font-size:15px}
+    .ord-fila-det .ord-acc-item,.ord-acc-item{justify-self:start;justify-content:flex-start;min-width:0;flex-wrap:wrap;gap:8px}
+    .ord-sq{width:40px;height:40px}
+    .ord-sec-pop{position:fixed;left:8px;right:8px;top:auto;bottom:8px;max-height:70vh;min-width:0}
+    /* ===== Movimientos (Registrados, Pagos semanales, detalle del dashboard): cada movimiento es una tarjeta ===== */
+    .tablacompacta{overflow-x:visible}
+    .tablewrap[data-tabla]{border:none;overflow:visible;background:transparent}
+    .tablewrap[data-tabla]>table{display:block;min-width:0;background:transparent}
+    .tablewrap[data-tabla] colgroup{display:none}
+    .tablewrap[data-tabla] thead{display:block;margin:0 0 10px}
+    .tablewrap[data-tabla] thead tr{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+    .tablewrap[data-tabla] thead tr::before{content:"Ordenar por:";flex:1 1 100%;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+    .tablewrap[data-tabla] thead th{display:none}
+    .tablewrap[data-tabla] thead th.th-orden{display:inline-block;padding:8px 10px;font-size:10px;cursor:pointer;text-decoration:none}
+    .tablewrap[data-tabla] tbody{display:block}
+    .tablewrap[data-tabla] tbody tr[data-row-id]{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;padding:12px 12px 14px;margin:0 0 12px;border:1px solid var(--rule-strong);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+    .tablewrap[data-tabla] tbody tr[data-row-id] td{display:block;border:none!important;padding:0!important;min-width:0;max-width:none;font-size:13px;text-align:left!important;white-space:normal;overflow:visible;text-overflow:clip}
+    .tablewrap[data-tabla] tbody tr[data-row-id] td[data-c]::before{display:block;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:3px}
+    td[data-c="mesPago"]::before{content:"Mes de pago"} td[data-c="mesCorr"]::before{content:"Corresponde a"} td[data-c="bruto"]::before{content:"Bruto"} td[data-c="neto"]::before{content:"Neto"}
+    td[data-c="factura"]::before{content:"Comprobante"} td[data-c="facturado"]::before{content:"¿Facturado?"} td[data-c="venc"]::before{content:"Vencimiento"} td[data-c="estado"]::before{content:"Estado de pago"}
+    td[data-c="metodo"]::before{content:"Método de pago"} td[data-c="comp"]::before{content:"Computable"} td[data-c="rubro"]::before{content:"Rubro"} td[data-c="detalle"]::before{content:"Detalle"}
+    td[data-c="tipo"]{grid-column:1;order:1;display:flex!important;flex-wrap:wrap;gap:4px;align-items:center}
+    td[data-c="acc"]{grid-column:2;order:2;display:flex!important;justify-content:flex-end;gap:8px}
+    td[data-c="item"]{grid-column:1/3;order:3;font-size:16px!important;font-weight:600;line-height:1.25}
+    td[data-c="bruto"]{order:4} td[data-c="neto"]{order:5} td[data-c="mesPago"]{order:6} td[data-c="mesCorr"]{order:7}
+    td[data-c="venc"]{order:8} td[data-c="estado"]{order:9} td[data-c="factura"]{order:10} td[data-c="facturado"]{order:11}
+    td[data-c="metodo"]{order:12} td[data-c="comp"]{order:13}
+    td[data-c="rubro"]{order:14} td[data-c="detalle"]{order:15;grid-column:1/3}
+    td[data-c="bruto"],td[data-c="neto"]{font-size:15px!important;font-weight:600}
+    td[data-c="estado"].cp{position:static}
+    .tablewrap[data-tabla] .rowbtn{width:40px;height:40px;font-size:16px}
+    .tablewrap[data-tabla] .cp-badge{min-height:38px;padding:6px 12px;font-size:12px}
+    .tablewrap[data-tabla] td.computable input[type=checkbox]{width:24px;height:24px}
+    .tablewrap[data-tabla] td.rubro,.tablewrap[data-tabla] td.detalle{cursor:pointer}
+    .tablewrap[data-tabla] tbody tr.desglose-fila,.tablewrap[data-tabla] tbody tr.cuotas-fila{display:block;margin:-6px 0 12px;border:1px solid var(--rule-strong);border-top:none}
+    .tablewrap[data-tabla] tbody tr.desglose-fila td,.tablewrap[data-tabla] tbody tr.cuotas-fila td{display:block}
+    .tablewrap[data-tabla] tbody tr.desglose-fila td:first-child,.tablewrap[data-tabla] tbody tr.cuotas-fila td:first-child{display:none}
+    .desg-row{grid-template-columns:1fr auto;gap:2px 10px}
+    .tablewrap[data-tabla] tfoot,.tablewrap[data-tabla] tfoot tr,.tablewrap[data-tabla] tfoot td{display:block;width:100%}
+    .tablewrap[data-tabla] tfoot td{padding:10px 12px;background:var(--paper);border:1px solid var(--rule-strong);margin-bottom:8px}
+    .tot-fila{flex-wrap:wrap}
+    .tot-fila-label{white-space:normal;flex:1 1 100%}
+    .tot-doble{width:100%;justify-content:space-between}
+    input,select,textarea{font-size:16px}   /* 16 px evita que el iPhone haga zoom solo al tocar un campo */
+    .historial-popover{max-height:78vh;overflow:auto}
+    .ord-modal-box{max-height:92vh;overflow:auto}
+    .filters .rango{width:100%}
+    .filters .rango .field{min-width:0;flex:1 1 0}
+    .filters .field,.filters .rango input{min-width:0}
+    .filters .rango input,.filters .rango select{max-width:100%}
+    input,select{max-width:100%}
+    .tabs{flex-wrap:wrap}
+    .tabs button{flex:1 1 calc(50% - 1px);padding:11px 6px;font-size:11px;letter-spacing:.05em}
+    .tabs button+button{border-left:1px solid var(--rule-strong)}
+    .tabs button.on{border-color:var(--ink)}
+    .tabs button.on.ing{border-color:var(--ing)}
+  }
 </style>
 </head>
 <body>
@@ -818,7 +972,7 @@
       <h1>Resultados y Devengamiento</h1>
       <div class="sub">Hotel Copahue · Saavedra 80, Junín</div>
     </div>
-    <div style="display:flex;align-items:center;gap:10px">
+    <div class="masthead-tools">
       <span id="banner-prueba" class="banner-prueba" hidden title="Datos de ejemplo: no se lee ni se guarda nada online">MODO PRUEBA <label for="prueba-como">ver como</label> <select id="prueba-como"></select></span>
       <span id="guardado-estado" class="guardado-estado" hidden></span>
       <div id="presencia-zone" class="presencia-zone" title="Quiénes están conectados ahora"></div>
@@ -1113,6 +1267,9 @@
           <div class="field" id="wrap-pospuesto" hidden><label for="f-pospuesto" title="El gasto sigue impago y pendiente, pero no se va a abonar en el corto plazo: no se pinta en rojo y no aparece en Pagos semanales hasta que le saques esta marca.">Pospuesto (no se abona pronto)</label><div style="padding:8px 0"><input type="checkbox" id="f-pospuesto"></div></div>
           <div class="field" id="wrap-posp-hasta" hidden><label for="f-posp-hasta" title="Desde ese día (y los siguientes, hasta que le saques la marca de pospuesto o lo pagues) aparece un aviso en Movimientos para que lo abones esa semana. Si lo dejás vacío, no hay aviso.">Pospuesto hasta el día</label><input type="date" id="f-posp-hasta"></div>
           <div class="field" id="wrap-fecha-real-pago" hidden><label for="f-fecha-real-pago" id="lbl-fecha-real-pago">Fecha en que se pagó</label><input type="date" id="f-fecha-real-pago"></div>
+          <div class="field" id="wrap-metodo-tent"><label for="f-metodo-tent" title="Solo es una recomendación: en Registrados se muestra en cursiva/anaranjado como orientativo y se puede cambiar. Se confirma al marcar el pago.">Método de pago tentativo</label>
+            <select id="f-metodo-tent"></select>
+          </div>
           <div class="field" id="wrap-metodo-pago" hidden><label for="f-metodo-pago">Método de pago</label>
             <div style="display:flex;gap:6px;align-items:center">
               <select id="f-metodo-pago" style="flex:1"></select>
@@ -1297,6 +1454,10 @@
     </div>
   </div>
 </div></div>
+<div id="hist-modal" class="ord-modal" hidden><div class="ord-modal-box" role="dialog" aria-modal="true" aria-labelledby="hist-tit">
+  <div class="om-cab"><h3 id="hist-tit">Historial de precios</h3><button type="button" class="om-x" id="hist-x" aria-label="Cerrar">✕</button></div>
+  <div class="om-cuerpo"><div id="hist-cuerpo"></div><div class="bk-acc" style="margin-top:12px"><button type="button" id="hist-cerrar">Cerrar</button></div></div>
+</div></div>
 <div id="ord-popup" class="ord-modal ord-popup" hidden><div class="ord-modal-box" role="alertdialog" aria-modal="true" aria-labelledby="ord-popup-tit"><div class="om-cab"><h3 id="ord-popup-tit">Órdenes de pago</h3><button type="button" class="om-x" id="ord-popup-x" aria-label="Cerrar">✕</button></div><div class="om-cuerpo"><div id="ord-popup-lista"></div><div class="ord-popup-acc"><button type="button" class="primary" id="ord-popup-ver">Ver órdenes de pago</button><button type="button" id="ord-popup-cerrar">Cerrar</button></div></div></div></div>
 <div id="ord-modal" class="ord-modal" hidden><div class="ord-modal-box" id="ord-modal-box" role="dialog" aria-modal="true"></div></div>
 <div id="ord-tip" class="ord-tip" hidden></div>
@@ -1377,9 +1538,17 @@ const firebaseConfig = {
   appId: "1:275258733031:web:5fb4a513208fa7c3d48d42"
 };
 const FIREBASE_LISTO = !!(firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith('TU_'));
-let db=null;
+let db=null, persistenciaLocal=false;
 if(FIREBASE_LISTO){
-  try{ firebase.initializeApp(firebaseConfig); db=firebase.firestore(); }
+  try{
+    firebase.initializeApp(firebaseConfig); db=firebase.firestore();
+    // Redes de celular / WiFi con filtros: Firestore detecta solo si la conexión "en vivo" no anda y pasa a un modo compatible
+    // (sin esto, los guardados pueden quedar colgados varios minutos en el teléfono).
+    try{ db.settings({experimentalAutoDetectLongPolling:true,merge:true}); }catch(e){ console.warn('Firestore settings:',e); }
+    // Caché local en el teléfono/PC: lo que se carga queda guardado ahí al instante (aunque se cierre la página o no haya señal)
+    // y se envía solo apenas vuelve la conexión.
+    db.enablePersistence({synchronizeTabs:true}).then(()=>{ persistenciaLocal=true; }).catch(e=>{ console.warn('Sin caché local:',e&&e.code||e); });
+  }
   catch(e){ console.error('Error al iniciar Firebase:',e); }
 }
 // Colección donde se guarda todo, con la MISMA forma que tenía window.storage
@@ -1577,6 +1746,24 @@ const netoDe=r=>neto(r.bruto,r.tipoFac,r.iva,r.tipo);
 const brutoARS=r=>(r.moneda==='USD') ? (r.bruto||0)*(r.cotizacion||0) : (r.bruto||0);
 const netoARS=r=>(r.moneda==='USD') ? netoDe(r)*(r.cotizacion||0) : netoDe(r);
 
+/* ---------- Pagos con tarjeta de crédito ----------
+   Un gasto que se paga con tarjeta de crédito NO es un egreso del mes en que se usa la tarjeta: el egreso es el pago de la tarjeta
+   (el ítem "Tarjeta de crédito" y su desglose). Por eso, un gasto pagado con alguna variante de tarjeta de crédito (T.C., TC,
+   "Tarjeta de crédito de ...") no suma al total de egresos, salvo el propio cargo de la tarjeta. Si se paga con otro método, sí suma. */
+const normTxt=t=>(t==null?'':String(t)).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const RE_METODO_TC=/tarjeta.*credito|\bcredito\b|\bt\.?\s?c\b/;
+const esMetodoTC=m=>RE_METODO_TC.test(normTxt(m));
+const esItemTarjeta=r=>!!r&&r.tipo==='gasto'&&/tarjeta/.test(normTxt(r.item));
+function pagoConTC(r){
+  if(!r||r.tipo!=='gasto') return false;
+  if(r.dividido&&Array.isArray(r.cuotas)) return r.cuotas.length>0&&r.cuotas.every(c=>c.pago&&esMetodoTC(c.metodoPago));
+  return !!r.pago&&esMetodoTC(r.metodoPago);
+}
+// Un gasto pagado con tarjeta de crédito no cuenta como gasto del mes (salvo el cargo mensual de la propia tarjeta).
+const excluidoPorTC=r=>pagoConTC(r)&&!esItemTarjeta(r);
+// ¿Computa para los totales? Ingresos siempre; gastos salvo que estén destildados a mano o se hayan pagado con tarjeta de crédito.
+const esComp=r=>r.comp!==false&&!excluidoPorTC(r);
+
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');const dur=Math.max(1800,Math.min(6000,m.length*50));clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.remove('on'),dur);}
 
 /* ---------- Persistencia ---------- */
@@ -1619,7 +1806,8 @@ function añoDeMes(m){ return (m&&/^\d{4}/.test(m)) ? m.slice(0,4) : String(new 
 function añoDeISO(ts){ return (ts&&/^\d{4}/.test(ts)) ? ts.slice(0,4) : String(new Date().getFullYear()); }
 
 async function load(){
-  const indice = await leer('copahue:indice');
+  // índice y configuración se piden juntos (antes eran pedidos uno detrás del otro)
+  const [indice,configLeida] = await Promise.all([leer('copahue:indice'), leer('copahue:config')]);
   if(!indice){
     // Primera carga con este esquema: migramos desde el formato viejo (un solo documento) si existe.
     let d=await leer(KEY);
@@ -1643,11 +1831,13 @@ async function load(){
     if(rows.length||historial.length||migrado){ await save(); toast(migrado?'Gastos anteriores importados':'Datos pasados al nuevo formato de guardado (uno por año)'); }
   }else{
     const rowYears=indice.rowYears||[], histYears=indice.histYears||[];
-    const rowsPorAño=await Promise.all(rowYears.map(a=>leer('copahue:movs:'+a)));
+    const [rowsPorAño,histPorAño]=await Promise.all([
+      Promise.all(rowYears.map(a=>leer('copahue:movs:'+a))),
+      Promise.all(histYears.map(a=>leer('copahue:hist:'+a)))
+    ]);
     rows = normalizar([].concat(...rowsPorAño.filter(Array.isArray)));
-    const histPorAño=await Promise.all(histYears.map(a=>leer('copahue:hist:'+a)));
     historial = [].concat(...histPorAño.filter(Array.isArray));
-    const config = await leer('copahue:config') || {};
+    const config = configLeida || {};
     propios = config.propios || {gasto:[],ingreso:[]};
     fijosExtra = Array.isArray(config.fijosExtra) ? config.fijosExtra : [];
     fijosMigrado = !!config.fijosMigrado; normalizarFijosLista();
@@ -1656,22 +1846,22 @@ async function load(){
     if(!propios.ingreso) propios.ingreso=[];
     if(!propios.metodos) propios.metodos=[];
     normalizarPropios();
+    if(!modoPrueba) kvUltimo=docsParaGuardar();   // punto de partida: lo que hay en la base; de acá en más se escribe solo lo que cambie
   }
   normalizarFijosLista();  // arranque sin datos previos: siembra la lista base una vez
   actualizarBtnRestaurar();
   fillRubros(); pintarFxRubros(); pintarFijosExtra(); pintarMetodosPago(); pintarFxMetodosQuitar(); render();
   avisarPospuestos(!$('movs-body').hidden);
 }
-/* Guardado en segundo plano: antes, cada acción se quedaba esperando a que Firestore
-   confirmara el guardado antes de mostrar el cambio en pantalla (de ahí la demora de varios
-   segundos al cargar un movimiento). Ahora la pantalla se actualiza al instante con el cambio
-   ya hecho en memoria y el guardado real viaja en segundo plano; el indicador chico del
-   encabezado ("Guardando…" / "Guardado" / "No se pudo guardar") es el único aviso de cómo va.
-   Los guardados se encolan uno detrás del otro (nunca en paralelo) para que, si se hacen varios
-   cambios seguidos, Firestore los reciba siempre en el mismo orden en que ocurrieron acá; sin
-   esto, dos guardados en simultáneo podrían terminar de escribirse en un orden distinto y el
-   más viejo pisar al más nuevo. */
-let colaGuardado=Promise.resolve();
+/* Guardado en segundo plano: la pantalla se actualiza al instante con el cambio ya hecho en memoria y el guardado real viaja
+   por detrás; el indicador chico del encabezado ("Guardando…" / "Guardado" / "Sin conexión" / "No se pudo guardar") es el único
+   aviso de cómo va. Para que funcione bien desde el celular:
+   - se manda solo lo que cambió (un movimiento nuevo reescribe únicamente el documento de su año, no todo el sistema);
+   - no se espera la confirmación del servidor para seguir trabajando;
+   - Firestore guarda cada cambio en la caché local del dispositivo al instante (aunque se cierre la página o no haya señal) y
+     lo envía solo cuando hay conexión, respetando el orden en que se hicieron los cambios. */
+let kvUltimo=new Map();   // clave → texto que ya está guardado en la base; así cada guardado manda solo los documentos que cambiaron
+let guardadosPend=0;       // documentos enviados que todavía no confirmó el servidor
 let erroresGuardadoPendientes=0;
 let guardadoOkTimer=null;
 function marcarEstadoGuardado(estado){
@@ -1681,41 +1871,52 @@ function marcarEstadoGuardado(estado){
   el.hidden=false;
   el.classList.remove('guardando','error');
   if(estado==='guardando'){ el.classList.add('guardando'); el.innerHTML='<span class="punto"></span>Guardando…'; }
+  else if(estado==='offline'){ el.classList.add('guardando'); el.innerHTML='<span class="punto"></span>Sin conexión · se guardará solo al reconectar'; }
   else if(estado==='error'){ el.classList.add('error'); el.innerHTML='<span class="punto"></span>No se pudo guardar'; }
   else {
     el.innerHTML='<span class="punto"></span>Guardado';
     guardadoOkTimer=setTimeout(()=>{ if(!erroresGuardadoPendientes) el.hidden=true; },1500);
   }
 }
+function refrescarEstadoGuardado(){
+  if(guardadosPend>0) marcarEstadoGuardado(navigator.onLine===false?'offline':'guardando');
+  else if(erroresGuardadoPendientes) marcarEstadoGuardado('error');
+  else if(!$('guardado-estado').hidden) marcarEstadoGuardado('ok');
+}
+window.addEventListener('online',refrescarEstadoGuardado);
+window.addEventListener('offline',refrescarEstadoGuardado);
+// Si la caché local del navegador no está disponible, avisa antes de cerrar la página con cambios sin confirmar.
+window.addEventListener('beforeunload',e=>{ if(guardadosPend>0&&!persistenciaLocal){ e.preventDefault(); e.returnValue=''; } });
+// Los documentos que forman el estado guardado: movimientos por año, historial por año, configuración e índice.
+function docsParaGuardar(){
+  const rowsPorAño={}, histPorAño={}, m=new Map();
+  rows.forEach(r=>{ const a=añoDeMes(r.mesCorr||r.mesPago); (rowsPorAño[a]=rowsPorAño[a]||[]).push(r); });
+  historial.forEach(h=>{ const a=añoDeISO(h.ts); (histPorAño[a]=histPorAño[a]||[]).push(h); });
+  const rowYears=Object.keys(rowsPorAño), histYears=Object.keys(histPorAño);
+  rowYears.forEach(a=>m.set('copahue:movs:'+a, JSON.stringify(rowsPorAño[a])));
+  histYears.forEach(a=>m.set('copahue:hist:'+a, JSON.stringify(histPorAño[a])));
+  m.set('copahue:config', JSON.stringify({propios,fijosExtra,usuarios,fijosMigrado:true}));
+  m.set('copahue:indice', JSON.stringify({rowYears,histYears}));
+  return m;
+}
+/* Guardado: manda solo lo que cambió y NO espera la confirmación del servidor para seguir (Firestore anota el cambio en la caché
+   local al instante, conserva el orden de las escrituras de cada documento y lo reenvía solo si se corta la conexión). */
 async function guardarReal(){
-  marcarEstadoGuardado('guardando');
-  try{
-    const rowsPorAño={};
-    rows.forEach(r=>{ const a=añoDeMes(r.mesCorr||r.mesPago); (rowsPorAño[a]=rowsPorAño[a]||[]).push(r); });
-    const histPorAño={};
-    historial.forEach(h=>{ const a=añoDeISO(h.ts); (histPorAño[a]=histPorAño[a]||[]).push(h); });
-    const rowYears=Object.keys(rowsPorAño), histYears=Object.keys(histPorAño);
-    const tareas=[
-      ...rowYears.map(a=>window.storage.set('copahue:movs:'+a, JSON.stringify(rowsPorAño[a]))),
-      ...histYears.map(a=>window.storage.set('copahue:hist:'+a, JSON.stringify(histPorAño[a]))),
-      window.storage.set('copahue:config', JSON.stringify({propios,fijosExtra,usuarios,fijosMigrado:true})),
-      window.storage.set('copahue:indice', JSON.stringify({rowYears,histYears}))
-    ];
-    await Promise.all(tareas);
-    erroresGuardadoPendientes=0;
-    marcarEstadoGuardado('ok');
-  }
-  catch(e){
-    erroresGuardadoPendientes++;
-    toast('No se pudo guardar. Reintentá.');
-    marcarEstadoGuardado('error');
-  }
+  const cambios=[];
+  docsParaGuardar().forEach((v,k)=>{ if(modoPrueba||kvUltimo.get(k)!==v) cambios.push([k,v]); });
+  if(!cambios.length) return;
+  guardadosPend+=cambios.length;
+  refrescarEstadoGuardado();
+  const resultados=await Promise.all(cambios.map(([k,v])=>{
+    if(!modoPrueba) kvUltimo.set(k,v);
+    return window.storage.set(k,v).then(()=>true,e=>{ console.warn('No se pudo guardar',k,e); kvUltimo.delete(k); return false; })
+      .then(ok=>{ guardadosPend--; return ok; });
+  }));
+  if(resultados.every(Boolean)){ if(!guardadosPend) erroresGuardadoPendientes=0; }
+  else { erroresGuardadoPendientes++; toast('No se pudo guardar. Reintentá.'); }
+  refrescarEstadoGuardado();
 }
-function save(){
-  const tarea=colaGuardado.then(()=>guardarReal());
-  colaGuardado=tarea;
-  return tarea;
-}
+function save(){ return guardarReal(); }
 
 /* ---------- Copias de seguridad y restauración ----------
    La copia NOCTURNA (23:59 hs, por correo a copahueadmin@gmail.com) la genera una función programada
@@ -2002,7 +2203,7 @@ function colorDe(nombre){
 }
 async function latidoPresencia(){
   if(!db||!presenciaUid) return;
-  try{ await db.collection(PRESENCIA_COL).doc(presenciaUid).set({nombre:usuarioActual||'Usuario',ts:Date.now()}); }
+  try{ await db.collection(PRESENCIA_COL).doc(presenciaUid).set({nombre:usuarioActual||'Usuario',email:miEmail(),ts:Date.now()}); }
   catch(e){ /* un latido perdido no es grave: se reintenta en el próximo intervalo */ }
 }
 async function iniciarPresencia(user){
@@ -2572,6 +2773,16 @@ function agruparPorMetodo(items,modo){
   return Object.keys(g).sort((a,b)=>a===''?1:b===''?-1:a.localeCompare(b,'es')).map(k=>({metodo:k,items:ordenarItems(g[k],modo)}));
 }
 const etiquetaMetodo=m=>m||'Sin método de pago definido';
+// Gasto impago al que todavía no se le cargó el importe: se resalta en naranja. Claro si no tiene
+// vencimiento o éste queda fuera de los pagos de la semana en curso; fuerte si cae dentro de ellos
+// (incluye lo atrasado, igual que "Esta semana" en Pagos semanales).
+function claseSinImporte(r,hastaSem){
+  if(!r||r.tipo!=='gasto'||r.pago||r.dividido||esEcheqPendiente(r)) return '';
+  if((+r.bruto||0)>0) return '';
+  const enSemana = !r.pospuesto && !!r.fechaVenc && r.fechaVenc<=hastaSem;
+  return enSemana ? ' sin-importe-fuerte' : ' sin-importe-claro';
+}
+
 
 // Movimientos que se pueden incluir en una orden: gastos impagos del mes en curso, los que se
 // pagan en la tanda de esta semana (incluye atrasados) y los de meses anteriores todavía impagos.
@@ -2589,12 +2800,19 @@ function itemDeRow(r){
   return {rowId:r.id,item:nombreDe(r),rubro:r.rubro||'',importe:r.dividido?saldoCuotas(r):(+r.bruto||0),moneda:r.moneda||'ARS',venc,metodo:r.metodoTentativo||'',detalle:r.detalle||'',mesPago:r.mesPago||'',dividido:!!r.dividido,pospuesto:!!r.pospuesto};
 }
 function candidatosOrden(){
-  const hasta=limitesSemana(0).hasta, mesAct=mesActual();
+  const {desde:desdeSem,hasta}=limitesSemana(0), mesAct=mesActual();
   const out=[];
   rows.forEach(r=>{
     if(r.tipo!=='gasto'||r.pago||esEcheqPendiente(r)) return;
     const it=itemDeRow(r);
-    const enSemana=!r.pospuesto && (r.dividido&&Array.isArray(r.cuotas) ? r.cuotas.some(c=>!c.pago&&c.fecha&&c.fecha<=hasta) : !!(r.fechaVenc&&r.fechaVenc<=hasta));
+    // Un pago pospuesto solo se ofrece si tiene fecha y esa fecha cae dentro de los pagos semanales de
+    // esta semana (del lunes al miércoles siguiente al jueves de pago); sin fecha, o con una fuera de
+    // la semana, no aparece entre las opciones.
+    if(r.pospuesto){
+      const fechas = (r.dividido&&Array.isArray(r.cuotas)) ? r.cuotas.filter(c=>!c.pago&&c.fecha).map(c=>c.fecha) : (r.fechaVenc?[r.fechaVenc]:[]);
+      if(!fechas.some(f=>f>=desdeSem&&f<=hasta)) return;
+    }
+    const enSemana = r.pospuesto ? true : (r.dividido&&Array.isArray(r.cuotas) ? r.cuotas.some(c=>!c.pago&&c.fecha&&c.fecha<=hasta) : !!(r.fechaVenc&&r.fechaVenc<=hasta));
     const mes=r.mesPago||mesAct;
     const grupo=enSemana?'semana':(mes===mesAct?'adelante':(mes<mesAct?'viejos':null));
     if(grupo) out.push({it,grupo});
@@ -2612,12 +2830,12 @@ function itemsEnOrdenesActivas(exceptoId){
 // Tasas municipales sin datos para pagar: "SERVICIOS SANITARIOS MEDIDOS" y "SERVICIOS PÚBLICOS URBANOS" (todas sus
 // variantes: 7460, 8350, 9251). Mientras no tengan fecha de vencimiento, ni estén en una orden de pago, ni estén pagos,
 // se muestran en gris (letra blanca, cursiva) y al final de Registrados y de las opciones al armar una orden.
-const RE_SERV_TASA=/^\s*SERVICIOS\s+(SANITARIOS\s+MEDIDOS|P[ÚU]BLICOS\s+URBANOS)\b/i;
-const esServicioTasa=r=>!!r&&r.tipo==='gasto'&&RE_SERV_TASA.test(r.item||'');
+const RE_SERV_TASA=/\bSERVICIOS?\s+(SANITARIOS?\s+MEDIDOS?|PUBLICOS?\s+URBANOS?)\b/;
+const esServicioTasa=r=>!!r&&r.tipo==='gasto'&&RE_SERV_TASA.test(sinTildes(String(r.item||'')).toUpperCase());
 function mapaOrdenesServicios(){ try{ return itemsEnOrdenesActivas(); }catch(e){ return {}; } }
 function servicioBloqueado(r,mapa){
   if(!esServicioTasa(r)||r.pago) return false;
-  if(r.fechaVenc||r.fechaDiferida||r.echeqEmitido) return false;
+  if((r.fechaVenc&&!r.vencTentativo)||r.fechaDiferida||r.echeqEmitido) return false;   // un vencimiento orientativo (sugerido) no cuenta como fecha cargada
   if(r.dividido&&Array.isArray(r.cuotas)&&r.cuotas.some(c=>c.fecha)) return false;
   if((mapa||mapaOrdenesServicios())[r.id]) return false;
   return true;
@@ -2995,7 +3213,7 @@ function infoMovimientoHtml(rowId,o){
       +fila('Factura (FC)',esc(fc)+((fc==='A'||fc==='A | 27%')?` · IVA ${money(r.iva)}`:''))
       +fila('Vencimiento',venc)+fila('Estado de pago',estado)
       +fila('Método de pago',esc(r.metodoPago||(r.metodoTentativo?r.metodoTentativo+' (orientativo)':'—')))
-      +fila('Computable',r.comp!==false?'Sí':'No')+fila('Rubro',esc(r.rubro||'—'))+fila('Detalle',esc(r.detalle||'—'));
+      +fila('Computable',esComp(r)?'Sí':'No')+(excluidoPorTC(r)?fila('Nota','Pagado con tarjeta de crédito: se cuenta como egreso cuando se abona la tarjeta'):'')+fila('Rubro',esc(r.rubro||'—'))+fila('Detalle',esc(r.detalle||'—'));
     if(r.dividido&&Array.isArray(r.cuotas)) h+=fila('Cuotas',r.cuotas.map((c,i)=>`Cuota ${i+1}: ${money(c.importe)} · ${c.fecha?fmtFechaCorta(c.fecha):(c.mesPago?mesLabel(c.mesPago):'sin fecha')} · ${c.pago?'✓ pago':(c.metodoPago==='E-cheq'?'se debita solo':'pendiente')}`).join('<br>'));
   } else if(oi){
     h+=`<p class="note">Este movimiento ya no figura en Registrados. Datos guardados en la orden:</p>`+fila('Ítem',`<b>${esc(oi.item)}</b>`)+fila('Importe',montoFmt(oi.importe,oi.moneda))+fila('Vencimiento',oi.venc?fmtFechaCorta(oi.venc):'—')+fila('Rubro',esc(oi.rubro||'—'))+fila('Detalle',esc(oi.detalle||'—'));
@@ -3153,7 +3371,6 @@ async function guardarOrdenForm(){
         return {set,union:{eventos:[{ts,tipo:'editada',por:yo}]}};
       });
       ordenAbiertaId=idEd; ordenesVista='detalle'; ordenForm=null;
-      notificarOrdenMail('editada',idEd);
       toast('Orden '+idEd+' modificada.');
     } else {
       const n=await OrdenesDB.siguienteNumero(), id='OP-'+String(n).padStart(4,'0'), ts=ahoraISO();
@@ -3194,7 +3411,6 @@ async function deshacerItemOrden(id,rowId){
     const items=(x.items||[]).map(i=>{ if(i.rowId!==rowId) return i; const {rech,...r}=i; return {...r,aut:null}; });
     return {set:{items,estado:'pendiente',autorizadaTs:'',autorizadaPor:null,['lecturas.'+k]:ts},union:{eventos:[{ts,tipo:'deshizo-decision',por:yo}]}};
   });
-  notificarOrdenMail('deshizo',id,{rowId});
 }
 // Decide sobre movimientos de una orden: 'aut' (autoriza) o 'rech' (rechaza). Por defecto de a uno;
 // "Autorizar todos" pasa la lista completa de los que siguen pendientes.
@@ -3569,6 +3785,7 @@ $('add-confirm-ver').addEventListener('click',()=>{
 
 /* ---------- Modo gasto / ingreso ---------- */
 function setModo(m){
+  if(window.cerrarSugerencias) cerrarSugerencias();
   modo=m;
   $('tab-gasto').className = m==='gasto'?'on':'';
   $('tab-ingreso').className = m==='ingreso'?'on ing':'';
@@ -3577,6 +3794,7 @@ function setModo(m){
   $('lbl-bruto').textContent = m==='gasto'?'Importe bruto':'Importe neto';
   $('lbl-pago').textContent = m==='gasto'?'¿Está pago?':'¿Está cobrado?';
   $('wrap-metodo-pago').hidden = !($('f-pago').checked && m==='gasto');
+  actualizarWrapTent();
   $('lbl-fecha-real-pago').textContent = m==='gasto'?'Fecha en que se pagó':'Fecha en que se cobró';
   $('f-item').placeholder = m==='gasto'?'Ej. Provisión SAC':'Ej. Reserva Booking, Facturación del mes...';
   $('lbl-item').textContent = m==='gasto' ? 'Ítem' : 'Ítem (opcional)';
@@ -3599,9 +3817,9 @@ $('tab-ingreso').addEventListener('click',()=>{ if(editId) return toast('Termin�
 /* ---------- Gastos fijos del mes ---------- */
 function pintarFijosExtra(){ if($('fijos-n')) $('fijos-n').textContent = fijosExtra.length; }
 /* ---------- Métodos de pago ---------- */
-function metodosPagoOptionsHtml(actual){
+function metodosPagoOptionsHtml(actual,vacio){
   const todos=metodosLista();
-  return '<option value="">Método de pago…</option>'
+  return '<option value="">'+(vacio||'Método de pago…')+'</option>'
     + todos.map(m=>`<option${m===actual?' selected':''}>${esc(m)}</option>`).join('')
     + '<option value="__nuevo">+ Agregar otro método…</option>';
 }
@@ -3609,7 +3827,30 @@ function pintarMetodosPago(){
   const cur=$('f-metodo-pago').value;
   $('f-metodo-pago').innerHTML=metodosPagoOptionsHtml('');
   if(cur&&cur!=='__nuevo') $('f-metodo-pago').value=cur;
+  const curT=$('f-metodo-tent').value;
+  $('f-metodo-tent').innerHTML=metodosPagoOptionsHtml('','Sin método tentativo');
+  if(curT&&curT!=='__nuevo') $('f-metodo-tent').value=curT;
+  pintarCampoTent();
 }
+// Método de pago tentativo: solo una recomendación (se ve en cursiva/anaranjado, igual que el que traen
+// los gastos fijos); desaparece al confirmar el pago, que es cuando se elige el método real.
+function pintarCampoTent(){
+  $('f-metodo-tent').classList.toggle('campo-tentativo', !!$('f-metodo-tent').value && $('f-metodo-tent').value!=='__nuevo');
+}
+function actualizarWrapTent(){ $('wrap-metodo-tent').hidden = !(modo==='gasto' && !$('f-pago').checked); }
+$('f-metodo-tent').addEventListener('change',async e=>{
+  if(e.target.value!=='__nuevo'){ pintarCampoTent(); return; }
+  const nuevo=(prompt('Nombre del método de pago nuevo:')||'').trim();
+  if(nuevo&&!metodosLista().includes(nuevo)){
+    if(!(await asegurarUsuario())){ $('f-metodo-tent').value=''; pintarCampoTent(); return; }
+    guardarParaDeshacer('agregar método de pago "'+nuevo+'"');
+    sumarALista('metodos',nuevo);
+    registrarHistorial('Agregó el método de pago',null,nuevo);
+    save();
+  }
+  pintarMetodosPago(); $('f-metodo-tent').value=nuevo||''; pintarCampoTent();
+  if(typeof pintarFxMetodosQuitar==='function') pintarFxMetodosQuitar();
+});
 function actualizarFechaDiferida(){
   const esEcheq = modo==='gasto' && $('f-metodo-pago').value==='E-cheq';
   $('wrap-fecha-diferida').hidden = !esEcheq || $('f-dividido').checked;
@@ -3848,6 +4089,13 @@ $('f-pago').addEventListener('change',()=>{
   setTimeout(actualizarWrapPospuesto,0);
   $('wrap-fecha-real-pago').hidden=!marcado;
   $('wrap-metodo-pago').hidden = !(marcado&&modo==='gasto');
+  // al marcar el pago, el método tentativo (si hay) pasa como propuesta al método real
+  if(marcado&&modo==='gasto'&&!$('f-metodo-pago').value&&$('f-metodo-tent').value&&$('f-metodo-tent').value!=='__nuevo'){
+    $('f-metodo-pago').value=$('f-metodo-tent').value;
+    $('f-metodo-pago').classList.add('campo-tentativo'); $('btn-quitar-metodo-tentativo').hidden=false;
+    actualizarFechaDiferida();
+  }
+  actualizarWrapTent();
   if(marcado&&!$('f-fecha-real-pago').value) $('f-fecha-real-pago').value=hoyISO();
 });
 $('f-moneda').addEventListener('change',()=>{
@@ -3992,11 +4240,13 @@ $('cuotas-form').addEventListener('click',e=>{
 // así guardados como el valor "pegajoso" vigente (se llama al entrar de nuevo a "Cargar nuevos").
 function resetStickyCarga(){ stickyFechaPago=hoyISO(); stickyMesCorr=mesActual(); }
 function limpiarForm(){
+  if(window.cerrarSugerencias) cerrarSugerencias();
   $('f-item').value='';$('f-bruto').value='';$('f-iva').value='';ivaAuto=true;
   $('f-tipo').value='No posee';$('f-rubro').value='';$('f-fact').value='Facturado';
   $('f-pago').checked=false;$('f-comp').checked=true;$('f-dividido').checked=false;$('f-dividido').disabled=false;$('f-detalle').value='';$('f-marcar-fijo').checked=false;
   $('f-fecha-real-pago').value='';$('wrap-fecha-real-pago').hidden=true;
   $('f-metodo-pago').value='';$('wrap-metodo-pago').hidden=true;$('f-metodo-pago').classList.remove('campo-tentativo');$('btn-quitar-metodo-tentativo').hidden=true;
+  $('f-metodo-tent').value='';pintarCampoTent();actualizarWrapTent();
   $('f-fecha-diferida').value='';$('wrap-fecha-diferida').hidden=true;
   $('f-pospuesto').checked=false;$('wrap-pospuesto').hidden=true;$('f-posp-hasta').value='';$('wrap-posp-hasta').hidden=true;
   if(stickyFechaPago===null) resetStickyCarga();  // primera carga de la página: todavía no hay nada "pegajoso"
@@ -4046,9 +4296,12 @@ async function abrirEdicion(id){
   $('wrap-metodo-pago').hidden = !(pagoForm && r.tipo==='gasto');
   pintarMetodosPago();
   const metodoEsTentativo = r.tipo==='gasto' && !r.pago && !!r.metodoTentativo;
-  $('f-metodo-pago').value = (pagoForm && r.tipo==='gasto') ? (r.metodoPago||'') : (metodoEsTentativo ? r.metodoTentativo : '');
-  $('f-metodo-pago').classList.toggle('campo-tentativo', metodoEsTentativo);
-  $('btn-quitar-metodo-tentativo').hidden = !metodoEsTentativo;
+  $('f-metodo-pago').value = (pagoForm && r.tipo==='gasto') ? (r.metodoPago||'') : '';
+  $('f-metodo-pago').classList.remove('campo-tentativo');
+  $('btn-quitar-metodo-tentativo').hidden = true;
+  if(metodoEsTentativo && ![...$('f-metodo-tent').options].some(o=>o.value===r.metodoTentativo)) sumarALista('metodos',r.metodoTentativo), pintarMetodosPago();
+  $('f-metodo-tent').value = metodoEsTentativo ? r.metodoTentativo : '';
+  pintarCampoTent(); actualizarWrapTent();
   $('wrap-fecha-diferida').hidden = !(pagoForm && r.tipo==='gasto' && r.metodoPago==='E-cheq') || !!r.dividido;
   $('f-fecha-diferida').value = r.fechaDiferida||'';
   $('f-comp').checked = r.comp!==false;
@@ -4161,6 +4414,14 @@ $('btn-add').addEventListener('click',async()=>{
   }
   else if(modo==='ingreso' && !datos.pago) datos.fechaPago = $('f-fechapago').value;
   else if(modo==='gasto' && !esDiv && !datos.pago){ datos.metodoPago = ''; datos.fechaDiferida=''; }
+  // Método de pago tentativo (recomendación): solo mientras el gasto siga impago.
+  if(modo==='gasto'){ const mt=$('f-metodo-tent').value; datos.metodoTentativo = (!datos.pago && mt && mt!=='__nuevo') ? mt : ''; }
+  // Vencimiento original de la factura: se conserva aparte para proyectar el mes siguiente.
+  if(modo==='gasto' && !esDiv && datos.metodoPago==='E-cheq'){
+    const prevV=editId?rows.find(x=>x.id===editId):null;
+    if(prevV&&prevV.vencOriginal) datos.vencOriginal=prevV.vencOriginal;
+    else if(datos.fechaVenc && datos.fechaVenc!==datos.fechaDiferida) datos.vencOriginal=datos.fechaVenc;
+  }
   // E-cheq con fecha futura: no se marca pago a mano, queda emitido y se debita solo ese día.
   if(modo==='gasto' && !esDiv && datos.pago && datos.metodoPago==='E-cheq' && datos.fechaDiferida>hoyISO()){
     const prev=editId?rows.find(x=>x.id===editId):null;
@@ -4254,7 +4515,7 @@ const COLS_ORDEN={
   facturado: r=>r.tipo==='ingreso'?(r.fact||''):'',
   estado:    r=>r.pago?('1'+(r.fechaPago||'')):'0',
   metodo:    r=>r.tipo==='gasto'?(r.metodoPago||''):'',
-  computable:r=>r.comp!==false?1:0,
+  computable:r=>esComp(r)?1:0,
   mesCorr:   r=>r.mesCorr||'',
   rubro:     r=>r.rubro||'',
   detalle:   r=>r.detalle||''
@@ -4372,7 +4633,7 @@ function filteredSemana(offsetSemanas){
       if((!sinPiso&&r.fechaVenc<desde)||r.fechaVenc>hasta) return false;
     }
     if(ru&&r.rubro!==ru) return false;
-    if(cp&&(cp==='no'?r.comp!==false:r.comp===false)) return false;
+    if(cp&&(cp==='no'?esComp(r):!esComp(r))) return false;
     if(pd&&(!r.mesPago||r.mesPago<pd)) return false;
     if(ph&&(!r.mesPago||r.mesPago>ph)) return false;
     if(cd&&(!r.mesCorr||r.mesCorr<cd)) return false;
@@ -4401,7 +4662,7 @@ function filteredVencidos(pospuestos){
       if(!r.fechaVenc || r.fechaVenc>=desde) return false;
     }
     if(ru&&r.rubro!==ru) return false;
-    if(cp&&(cp==='no'?r.comp!==false:r.comp===false)) return false;
+    if(cp&&(cp==='no'?esComp(r):!esComp(r))) return false;
     if(pd&&(!r.mesPago||r.mesPago<pd)) return false;
     if(ph&&(!r.mesPago||r.mesPago>ph)) return false;
     if(cd&&(!r.mesCorr||r.mesCorr<cd)) return false;
@@ -4468,7 +4729,7 @@ function filteredTabla(){
     if(ru&&r.rubro!==ru) return false;
     if(es==='posp'){ if(r.tipo!=='gasto'||r.pago||!r.pospuesto) return false; }
     else if(es&&(es==='pag'?!r.pago:r.pago)) return false;
-    if(cp&&(cp==='no'?r.comp!==false:r.comp===false)) return false;
+    if(cp&&(cp==='no'?esComp(r):!esComp(r))) return false;
     if(fj){ const esFijo=(r.tipo==='gasto'&&r.fijo); if(fj==='fijo'&&!esFijo) return false; if(fj==='variable'&&esFijo) return false; }
     if(fc&&r.tipoFac!==fc) return false;
     if(mt&&!filaTieneMetodo(r,mt)) return false;
@@ -4497,12 +4758,35 @@ function ordenRubro(r){ const i=ORDEN_RUBRO.indexOf(r); return i<0?999:i; }
 // mismo ítem que tenga fecha de vencimiento y/o método de pago cargados, para sugerirlos "a modo
 // orientativo" (no se guardan como dato confirmado, solo como sugerencia visual en cursiva y
 // fondo anaranjado hasta que se confirmen o se cambien).
-function sugerenciaFijo(item){
-  const candidatos = rows.filter(r=>r.tipo==='gasto'&&r.item===item&&(r.fechaVenc||r.metodoPago))
+// Vencimiento "real" de una fila para proyectar el mes siguiente: si se pagó con e-cheq, la fecha de
+// débito del cheque no sirve; vale la fecha en que vencía la factura (vencOriginal, o fechaVenc si
+// no coincide con la fecha de débito).
+function vencBaseFila(r){
+  const esEcheq = r.metodoPago==='E-cheq' || r.echeqEmitido;
+  if((esEcheq||r.dividido) && r.vencOriginal) return r.vencOriginal;
+  if(esEcheq){
+    const deb = r.fechaDiferida || r.fechaPago || '';
+    if(r.fechaVenc && r.fechaVenc!==deb) return r.fechaVenc;
+    return '';   // sólo conocemos la fecha de débito: no sirve como vencimiento
+  }
+  if(r.dividido) return r.vencOriginal||'';
+  return r.fechaVenc||'';
+}
+// mesDestino (YYYY-MM): el vencimiento sugerido conserva el número de día del último registrado,
+// ajustado al mes de pago que se está cargando (9/10 → 9/11; 31 → último día del mes).
+function sugerenciaFijo(item,mesDestino){
+  const candidatos = rows.filter(r=>r.tipo==='gasto'&&r.item===item&&(r.fechaVenc||r.metodoPago||r.vencOriginal))
     .slice().sort((a,b)=>(b.mesCorr||b.mesPago||'').localeCompare(a.mesCorr||a.mesPago||''));
   if(!candidatos.length) return null;
   const ult=candidatos[0];
-  return {venc: ult.fechaVenc||'', metodo: ult.metodoPago||''};
+  let base='';
+  for(const c of candidatos){ const b=vencBaseFila(c); if(b){ base=b; break; } }
+  let venc=base;
+  if(base && mesDestino && /^\d{4}-\d{2}$/.test(mesDestino)){
+    const dia=Math.min(+base.slice(8,10)||1, diasDelMes(mesDestino));
+    venc=mesDestino+'-'+String(dia).padStart(2,'0');
+  }
+  return {venc, metodo: ult.metodoPago||''};
 }
 function fijosTodos(){ return fijosExtra.slice().sort((a,b)=>(a.item||'').localeCompare(b.item||'','es')); }
 function syncSelect(id,field,plain,soloTipo){
@@ -4600,7 +4884,7 @@ function renderDashboard(base){
   };
   base.forEach(r=>{ if(!activoDash(r)) return; const n=netoARS(r);
     if(r.tipo==='ingreso'){ ing+=n; }
-    else if(r.comp===false){ nocomp+=n; pend+=pendGasto(r); }  // pago real pero no es gasto del resultado
+    else if(!esComp(r)){ nocomp+=n; pend+=pendGasto(r); }  // pago real pero no es gasto del resultado (o pagado con tarjeta de crédito)
     else { gas+=n; pend+=pendGasto(r); } });
   const res=ing-gas, mg=ing?res/ing*100:0;
   const cards=[
@@ -4614,8 +4898,8 @@ function renderDashboard(base){
   $('totals').innerHTML=cards.map(([l,v,c])=>`<div class="tot"><div class="lbl">${l}</div><div class="val ${c}">${v}</div></div>`).join('');
 
   // el resultado por mes y los rubros excluyen los no computables
-  renderResultados(base.filter(r=>activoDash(r) && r.comp!==false));
-  renderRubros(base.filter(r=>r.comp!==false));
+  renderResultados(base.filter(r=>activoDash(r) && esComp(r)));
+  renderRubros(base.filter(r=>esComp(r)));
 }
 
 // Gráfico de barras real de "Ingresos por rubro" / "Gastos por rubro": cada fila dibuja una
@@ -4698,11 +4982,11 @@ function datosReporte(){
   const pendGasto=r=>(r.dividido&&Array.isArray(r.cuotas))?saldoCuotas(r):(r.pago?0:netoARS(r));
   baseD.forEach(r=>{ if(!activoDash(r)) return; const n=netoARS(r);
     if(r.tipo==='ingreso'){ ing+=n; }
-    else if(r.comp===false){ nocomp+=n; pend+=pendGasto(r); }
+    else if(!esComp(r)){ nocomp+=n; pend+=pendGasto(r); }
     else { gas+=n; pend+=pendGasto(r); } });
   const res=ing-gas, mg=ing?res/ing*100:0;
 
-  const compView=baseD.filter(r=>activoDash(r)&&r.comp!==false);
+  const compView=baseD.filter(r=>activoDash(r)&&esComp(r));
   const m={};
   compView.forEach(r=>{const k=r.mesCorr||'sin';m[k]=m[k]||{i:0,g:0};const n=netoARS(r);r.tipo==='ingreso'?m[k].i+=n:m[k].g+=n;});
   const meses=Object.keys(m).sort().reverse().map(k=>{
@@ -4710,7 +4994,7 @@ function datosReporte(){
     return {mes:k==='sin'?'Sin mes':mesLabel(k), ingresos:d.i, gastos:d.g, resultado:r2, margen:d.i?r2/d.i*100:null};
   });
 
-  const rubroView=baseD.filter(r=>r.comp!==false);
+  const rubroView=baseD.filter(r=>esComp(r));
   const rubrosDe=tipo=>{
     const o={}; rubroView.filter(r=>r.tipo===tipo).forEach(r=>{const k=r.rubro||'—';o[k]=(o[k]||0)+netoARS(r);});
     const ks=Object.keys(o).sort((a,b)=>o[b]-o[a]);
@@ -4741,7 +5025,7 @@ function construirReportePdfHtml(d){
       <td class="num">${money(brutoARS(r))}</td>
       <td class="num">${money(netoARS(r))}</td>
       <td>${esc(r.rubro||'')}</td>
-      <td>${r.comp!==false?'Sí':'No'}</td>
+      <td>${esComp(r)?'Sí':'No'}</td>
       <td>${r.pago?'Sí':'No'}</td>
       <td>${esc(r.detalle||'')}</td>
     </tr>`;
@@ -4835,7 +5119,7 @@ async function exportarExcel(){
       const row=wsD.addRow([
         esIng?'Ingreso':'Gasto', mesLabel(r.mesPago), mesLabel(r.mesCorr), r.item||r.rubro||'',
         brutoARS(r), netoARS(r), r.moneda||'ARS', r.tipoFac||'', r.rubro||'',
-        r.comp!==false?'Sí':'No', r.pago?'Sí':'No', r.fechaPago?fmtFechaCorta(r.fechaPago):'', r.metodoPago||'', r.detalle||''
+        esComp(r)?'Sí':'No', r.pago?'Sí':'No', r.fechaPago?fmtFechaCorta(r.fechaPago):'', r.metodoPago||'', r.detalle||''
       ]);
       row.getCell(5).numFmt='"$"#,##0'; row.getCell(6).numFmt='"$"#,##0';
     });
@@ -5159,16 +5443,132 @@ function thOrden(label,col,sortState,opts){
   const title=opts.title?` title="${opts.title}"`:'';
   return `<th class="${cls}" data-sortcol="${col}"${title}>${label}${flecha}</th>`;
 }
+/* ---------- Historial de precios y variación por ítem ----------
+   Los movimientos con el mismo nombre de ítem (sin importar mayúsculas, tildes ni espacios de más) se agrupan por mes al que corresponden.
+   En Registrados y Pagos semanales, cada fila con un ítem ya cargado antes muestra cuánto varió su importe neto contra el mes anterior
+   registrado (▲ +5% / ▼ -5%), y al tocar el nombre se abre el historial mes a mes y la variación de los últimos 12 meses. */
+const claveItem=r=>normTxt(r.item).replace(/\s+/g,' ').trim();
+const periodoDe=r=>r.mesCorr||r.mesPago||'';
+function indiceHistorial(){
+  const m=new Map();
+  rows.forEach(r=>{
+    const k=claveItem(r), p=periodoDe(r); if(!k||!p) return;
+    const n=netoDe(r); if(!(n>0)) return;   // los importes en cero o negativos (sin cargar, notas de crédito) no sirven para comparar
+    const clave=r.tipo+'|'+k; let h=m.get(clave); if(!h){ h=[]; h._por={}; m.set(clave,h); }
+    let e=h._por[p];
+    if(!e){ e={mes:p,neto:0,ars:0,moneda:r.moneda||'ARS',cant:0,ids:[]}; h._por[p]=e; h.push(e); }
+    e.neto+=n; e.ars+=netoARS(r); e.cant++; e.ids.push(r.id);
+    if((r.moneda||'ARS')!==e.moneda) e.moneda='mixto';
+  });
+  m.forEach(h=>{
+    h.sort((a,b)=>a.mes.localeCompare(b.mes));
+    const mon=new Set(h.map(e=>e.moneda));
+    h.usarARS=mon.size>1||mon.has('mixto')||!(mon.has('ARS')||mon.has('USD'));   // si hay más de una moneda se compara todo en pesos
+    h.moneda=h.usarARS?'ARS':[...mon][0];
+    h.forEach(e=>{ e.v=h.usarARS?e.ars:e.neto; });
+  });
+  return m;
+}
+const pctVar=(prev,cur)=>prev>0?((cur-prev)/prev*100):null;
+function pctTxt(p){ if(p===null||!isFinite(p)) return '—'; const a=Math.abs(p); const t=(a>=100?a.toFixed(0):a.toFixed(1)).replace('.',','); return (p>0.049?'+':(p<-0.049?'-':''))+(a<0.05?'0':t)+'%'; }
+function claseVar(tipo,p){ if(p===null||Math.abs(p)<0.05) return 'flat'; const sube=p>0; return (tipo==='ingreso'?sube:!sube)?'bien':'mal'; }   // un gasto que baja o un ingreso que sube es buena noticia
+function variacionDe(r,mapa){
+  const h=mapa.get(r.tipo+'|'+claveItem(r)); if(!h||!(netoDe(r)>0)) return null;
+  const i=h.findIndex(e=>e.mes===periodoDe(r)); if(i<1) return null;
+  const prev=h[i-1], cur=h[i];
+  return {prev,cur,pct:pctVar(prev.v,cur.v),h};
+}
+function variacionHtml(r,mapa){
+  const v=variacionDe(r,mapa); if(!v) return '';
+  const sim=v.h.moneda==='USD'?'U$S ':'$ ';
+  const flecha=Math.abs(v.pct)<0.05?'=':(v.pct>0?'▲':'▼');
+  return `<span class="var-pct ${claseVar(r.tipo,v.pct)}" title="${esc('Importe neto '+(v.pct>0.049?'subió':(v.pct<-0.049?'bajó':'sin cambios'))+' respecto de '+mesLabel(v.prev.mes)+': '+sim+money(v.prev.v)+' → '+sim+money(v.cur.v)+(v.cur.cant>1?' (total del mes, '+v.cur.cant+' movimientos)':'')+'. Tocá el nombre del ítem para ver el historial.')}">${flecha} ${pctTxt(v.pct)}<span class="var-vs"> vs ${esc(mesLabel(v.prev.mes))}</span></span>`;
+}
+function abrirHistorialPrecios(id){
+  const r=rows.find(x=>x.id===id); if(!r) return;
+  const h=indiceHistorial().get(r.tipo+'|'+claveItem(r))||[];
+  const sim=h.moneda==='USD'?'U$S ':'$ ';
+  const modal=$('hist-modal'); if(!modal) return;
+  $('hist-tit').textContent='Historial de precios — '+(r.item||'(sin ítem)');
+  let html='';
+  if(!h.length){
+    html='<p class="note">Este ítem todavía no tiene importes para comparar.</p>';
+  } else {
+    const ultimo=h[h.length-1].mes, desde=sumarMes(ultimo,-11);
+    const ventana=h.filter(e=>e.mes>=desde);
+    const filas=h.map((e,i)=>({e,i,prev:i>0?h[i-1]:null})).filter(x=>x.e.mes>=desde).reverse();
+    html+=`<p class="note" style="margin:0 0 10px">${r.tipo==='ingreso'?'Ingreso':'Gasto'} · importe neto${h.usarARS&&h.some(e=>e.moneda!=='ARS')?' (convertido a pesos)':''} · por mes al que corresponde</p>`;
+    html+='<table class="hist-tabla"><thead><tr><th>Mes</th><th class="num">Importe neto</th><th class="num">Variación vs mes anterior</th></tr></thead><tbody>'
+      +filas.map(({e,prev})=>{
+        const pc=prev?pctVar(prev.v,e.v):null;
+        const salto=prev&&sumarMes(prev.mes,1)!==e.mes?` <span class="hist-vs">vs ${esc(mesLabel(prev.mes))}</span>`:'';
+        const fl=pc===null?'':(Math.abs(pc)<0.05?'= ':(pc>0?'▲ ':'▼ '));
+        return `<tr class="${e.ids.includes(id)?'hist-actual':''}"><td>${esc(mesLabel(e.mes))}${e.cant>1?` <span class="hist-vs">(${e.cant} mov.)</span>`:''}</td><td class="num">${sim}${money(e.v)}</td><td class="num">${pc===null?'<span class="hist-vs">primer registro</span>':`<span class="var-pct ${claseVar(r.tipo,pc)}">${fl}${pctTxt(pc)}</span>${salto}`}</td></tr>`;
+      }).join('')+'</tbody></table>';
+    if(ventana.length>=2){
+      const a=ventana[0], z=ventana[ventana.length-1], pc=pctVar(a.v,z.v);
+      const vals=ventana.map(e=>e.v), prom=vals.reduce((x,y)=>x+y,0)/vals.length;
+      html+=`<div class="hist-total"><div class="hist-total-tit">Últimos 12 meses (${esc(mesLabel(a.mes))} → ${esc(mesLabel(z.mes))})</div>
+        <div class="hist-total-pct"><span class="var-pct ${claseVar(r.tipo,pc)}">${Math.abs(pc)<0.05?'= ':(pc>0?'▲ ':'▼ ')}${pctTxt(pc)}</span></div>
+        <div class="hist-total-det">${sim}${money(a.v)} → ${sim}${money(z.v)} · promedio ${sim}${money(prom)} · mínimo ${sim}${money(Math.min(...vals))} · máximo ${sim}${money(Math.max(...vals))} · ${ventana.length} mes${ventana.length===1?'':'es'} con registro</div></div>`;
+    } else {
+      html+='<p class="note" style="margin-top:12px">Todavía no hay otro mes cargado de este ítem para calcular la variación de los últimos 12 meses.</p>';
+    }
+  }
+  $('hist-cuerpo').innerHTML=html;
+  modal.hidden=false;
+}
+function cerrarHistorialPrecios(){ const m=$('hist-modal'); if(m) m.hidden=true; }
+document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('[data-hist-item]');
+  if(b){ abrirHistorialPrecios(b.dataset.histItem); return; }
+  if(e.target.id==='hist-modal'||e.target.id==='hist-x'||e.target.id==='hist-cerrar') cerrarHistorialPrecios();
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&$('hist-modal')&&!$('hist-modal').hidden){ e.stopPropagation(); cerrarHistorialPrecios(); } },true);
+
+/* Ítems pagados con tarjeta de crédito que después se detallan en el desglose de la tarjeta: el ítem original queda tachado y en cursiva
+   (su importe ya se cuenta en el pago de la tarjeta). Se vinculan por nombre; cada línea del desglose se usa una sola vez. */
+const mesLargo=m=>{ if(!m) return ''; const [y,mm]=m.split('-').map(Number); return ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][mm-1]+' '+y; };
+const claveDesg=t=>normTxt(t).replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim();
+function mapaDetalladosEnTarjeta(){
+  const res=new Map();
+  const tarjetas=rows.filter(r=>esItemTarjeta(r)&&Array.isArray(r.desglose)&&r.desglose.length&&r.mesPago);
+  if(!tarjetas.length) return res;
+  const usadas=new Set();
+  const origenes=rows.filter(r=>r.tipo==='gasto'&&!esItemTarjeta(r)&&pagoConTC(r))
+    .map(r=>({r,mes:(r.fechaPago||'').slice(0,7)||r.mesPago||'',k:claveDesg(r.item)}))
+    .filter(o=>o.k.length>=3&&o.mes)
+    .sort((a,b)=>a.mes.localeCompare(b.mes));
+  origenes.forEach(o=>{
+    let mejor=null;
+    tarjetas.forEach(t=>{
+      if(!(t.mesPago>o.mes)) return;   // la tarjeta se abona en un mes posterior al del consumo
+      t.desglose.forEach(d=>{
+        const uid=t.id+'|'+d.id; if(usadas.has(uid)) return;
+        const kd=claveDesg(d.detalle); if(kd.length<3) return;
+        if(!(kd.includes(o.k)||(kd.length>=4&&o.k.includes(kd)))) return;
+        const score=(Math.abs((+d.bruto||0)-(+o.r.bruto||0))<1?2:0)+((d.tarjeta&&o.r.metodoPago&&claveDesg(o.r.metodoPago).includes(claveDesg(d.tarjeta)))?1:0);
+        const cand={uid,t,score};
+        if(!mejor||cand.score>mejor.score||(cand.score===mejor.score&&t.mesPago<mejor.t.mesPago)) mejor=cand;
+      });
+    });
+    if(mejor){ usadas.add(mejor.uid); res.set(o.r.id,{mes:mejor.t.mesPago}); }
+  });
+  return res;
+}
+
 function tablaHtml(view,sortState,tablaId){
   // Los importes no computables (ej. IVA o pagos ajenos hechos desde la cuenta) se acumulan
   // aparte: no deben mezclarse en el total "real" de la tabla, así que se muestran a la vista
   // pero diferenciados en el pie.
   let tb=0,tn=0,tbNc=0,tnNc=0;
   view.forEach(r=>{
-    if(r.comp===false){ tbNc+=brutoARS(r); tnNc+=netoARS(r); }
+    if(!esComp(r)){ tbNc+=brutoARS(r); tnNc+=netoARS(r); }
     else { tb+=brutoARS(r); tn+=netoARS(r); }
   });
+  const hastaSemNaranja=limitesSemana(0).hasta;
   const mapaServ=mapaOrdenesServicios();
+  const mapaHist=indiceHistorial(), mapaDet=mapaDetalladosEnTarjeta();
   const montoCell=(valOriginal,valARS,usd)=> usd
     ? `<div>U$S ${money(valOriginal)}</div><span class="fx-sub">≈ $ ${money(valARS)}</span>`
     : money(valOriginal);
@@ -5216,10 +5616,11 @@ function tablaHtml(view,sortState,tablaId){
       // Pago dividido: en vez de un único casillero, se listan todas las fechas (pagadas o
       // pendientes) apiladas dentro de la misma celda, para ver el estado de un vistazo.
       const pospuesto = !esIng && !r.pago && !!r.pospuesto;
-      const claseImpago = pospuesto ? ' gasto-pospuesto' : ((!esIng && !r.pago) ? (' gasto-impago'+(vencePronto(r) ? ' vence-pronto' : '')) : '');
+      const claseNaranja = claseSinImporte(r,hastaSemNaranja);
+      const claseImpago = claseNaranja || (pospuesto ? ' gasto-pospuesto' : ((!esIng && !r.pago) ? (' gasto-impago'+(vencePronto(r) ? ' vence-pronto' : '')) : ''));
       const tagPosp = pospuesto ? `<span class="tag pp" title="Impago pero pospuesto: no se abona en el corto plazo${r.pospuestoHasta?' — aviso desde el '+r.pospuestoHasta.split('-').reverse().join('/'):''}">pospuesto${r.pospuestoHasta?' hasta '+r.pospuestoHasta.split('-').reverse().slice(0,2).join('/'):''}</span>` : '';
       const cpCell = div
-        ? `<td class="cp cp-multi"><button class="cuotas-arrow ${parcial?'parcial':(r.pago?'ok':'')}" data-exp="${r.id}" title="Ver desglose de importes por cuota">${abierta?'▾':'▸'}</button><div class="cp-stack">${
+        ? `<td class="cp cp-multi" data-c="estado"><button class="cuotas-arrow ${parcial?'parcial':(r.pago?'ok':'')}" data-exp="${r.id}" title="Ver desglose de importes por cuota">${abierta?'▾':'▸'}</button><div class="cp-stack">${
             r.cuotas.map(c=>c.metodoPago==='E-cheq'
               ? `<span class="cp-stack-line ${c.pago?'ok':'pend'}" title="E-cheq ${c.pago?'debitado':'se debita solo'} el ${esc(fmtFechaCorta(c.fecha))}">${esc(fmtFechaCorta(c.fecha)||'—')}${c.pago?'<span class="cp-tick">✓</span>':''}</span>`
               : c.pago
@@ -5228,15 +5629,15 @@ function tablaHtml(view,sortState,tablaId){
             ).join('')
           }</div>${tagPosp}</td>`
         : (r.echeqEmitido && !r.pago)
-        ? `<td class="cp"><button type="button" class="cp-badge pendiente echeq" data-tog="${r.id}" title="E-cheq emitido: se marca como pagado solo el ${fmtFechaCorta(r.fechaDiferida)} — clic para anularlo">${fmtFechaCorta(r.fechaDiferida)}</button>${tagPosp}</td>`
-        : `<td class="cp"><button type="button" class="cp-badge ${r.pago?'pagado':'pendiente'}" data-tog="${r.id}" title="${r.pago?('Pagado el '+fmtFechaCorta(r.fechaPago)+(r.metodoPago?' · '+esc(r.metodoPago):'')+(r.fechaDiferida?' · diferido al '+fmtFechaCorta(r.fechaDiferida):'')+' — clic para desmarcar'):(esIng?'Marcar como cobrado':'Marcar como pagado')}">${r.pago?fmtFechaCorta(r.fechaPago)+((!esIng&&r.metodoPago==='E-cheq')?'<span class="cp-tick">✓</span>':''):(esIng?'Cobrar':'Pagar')}</button>${tagPosp}</td>`;
+        ? `<td class="cp" data-c="estado"><button type="button" class="cp-badge pendiente echeq" data-tog="${r.id}" title="E-cheq emitido: se marca como pagado solo el ${fmtFechaCorta(r.fechaDiferida)} — clic para anularlo">${fmtFechaCorta(r.fechaDiferida)}</button>${tagPosp}</td>`
+        : `<td class="cp" data-c="estado"><button type="button" class="cp-badge ${r.pago?'pagado':'pendiente'}" data-tog="${r.id}" title="${r.pago?('Pagado el '+fmtFechaCorta(r.fechaPago)+(r.metodoPago?' · '+esc(r.metodoPago):'')+(r.fechaDiferida?' · diferido al '+fmtFechaCorta(r.fechaDiferida):'')+' — clic para desmarcar'):(esIng?'Marcar como cobrado':'Marcar como pagado')}">${r.pago?fmtFechaCorta(r.fechaPago)+((!esIng&&r.metodoPago==='E-cheq')?'<span class="cp-tick">✓</span>':''):(esIng?'Cobrar':'Pagar')}</button>${tagPosp}</td>`;
       const btnEdit = `<button class="rowbtn plain" data-edit="${r.id}" title="Modificar">✎</button>`;
       const btnDel = `<button class="rowbtn plain" data-del="${r.id}" title="Eliminar">✕</button>`;
-      const tdFactura = mostrarFC ? `<td>${esIng?'<span class="tag">—</span>':`<span class="tag ${r.tipoFac==='A'||r.tipoFac==='A | 27%'?'A':(r.tipoFac==='Sin emitir'?'SE':'')}">${esc(r.tipoFac||'No posee')}</span>${(r.tipoFac==='A'||r.tipoFac==='A | 27%')?`<span class="ivanota">IVA ${money(r.iva)}</span>`:''}`}</td>` : '';
-      const tdFacturado = mostrarFacturado ? `<td>${esIng?`<span class="tag ${r.fact==='No Facturado'?'nf':(r.fact==='Facturado'?'fa':'')}">${r.fact==='No Facturado'?'No':(r.fact==='Facturado'?'Sí':'—')}</span>`:'<span class="tag EG">—</span>'}</td>` : '';
+      const tdFactura = mostrarFC ? `<td data-c="factura">${esIng?'<span class="tag">—</span>':`<span class="tag ${r.tipoFac==='A'||r.tipoFac==='A | 27%'?'A':(r.tipoFac==='Sin emitir'?'SE':'')}">${esc(r.tipoFac||'No posee')}</span>${(r.tipoFac==='A'||r.tipoFac==='A | 27%')?`<span class="ivanota">IVA ${money(r.iva)}</span>`:''}`}</td>` : '';
+      const tdFacturado = mostrarFacturado ? `<td data-c="facturado">${esIng?`<span class="tag ${r.fact==='No Facturado'?'nf':(r.fact==='Facturado'?'fa':'')}">${r.fact==='No Facturado'?'No':(r.fact==='Facturado'?'Sí':'—')}</span>`:'<span class="tag EG">—</span>'}</td>` : '';
       // Método de pago: si es un pago dividido, se listan los métodos de las cuotas ya pagas,
       // apilados igual que las fechas de Estado.
-      const tdMetodo = mostrarMetodo ? `<td>${
+      const tdMetodo = mostrarMetodo ? `<td data-c="metodo">${
           esIng ? '<span class="tag EG">—</span>'
           : div ? ((r.cuotas.length&&r.cuotas.every(c=>c.metodoPago==='E-cheq')) ? `<div class="cp-stack">${r.cuotas.map(c=>`<span class="cp-stack-line">E-cheq</span>`).join('')}</div>` : r.cuotas.some(c=>c.pago) ? `<div class="cp-stack">${r.cuotas.filter(c=>c.pago).map(c=>`<span class="cp-stack-line">${esc(c.metodoPago||'—')}</span>`).join('')}</div>` : '<span class="tag EG">—</span>')
           : (r.metodoPago ? esc(r.metodoPago) : ((!r.pago && r.metodoTentativo) ? `<span class="tentativo" title="Método orientativo, según el último registro de este ítem. Todavía no está confirmado.">${esc(r.metodoTentativo)}</span>` : '<span class="tag EG">—</span>'))
@@ -5248,24 +5649,27 @@ function tablaHtml(view,sortState,tablaId){
       const esTarjeta = !esIng && /tarjeta/i.test(r.item||'');
       const abiertaTarjeta = expandidasTarjeta.has(r.id);
       const nDesglose = (r.desglose||[]).length;
-      const tdItem = esIng ? `<td class="item" title="${esc(r.item||'')}">${r.item?esc(r.item):'—'}</td>`
-        : `<td class="item${esTarjeta?' tarjeta-item':''}" title="${esc(r.item)}${esTarjeta?' — tocá para ver/cargar el desglose del resumen':''}"${esTarjeta?` data-tarjeta-toggle="${r.id}"`:''}>${esc(r.item)}${esTarjeta?`<span class="tarjeta-badge">${abiertaTarjeta?'▾':'▸'} desglose${nDesglose?' ('+nDesglose+')':''}</span>`:''}</td>`;
+      const detTC=!esIng?mapaDet.get(r.id):null;
+      const msgDetTC=detTC?('Ítem detallado en desglose de tarjeta de crédito de '+mesLargo(detTC.mes)):'';
+      const nombreItem=`<span class="item-nombre" data-hist-item="${r.id}">${r.item?esc(r.item):'—'}</span>`;
+      const tdItem = esIng ? `<td class="item" data-c="item" title="${esc((r.item||'')+' — tocá el nombre para ver el historial de importes')}">${nombreItem}</td>`
+        : `<td class="item${esTarjeta?' tarjeta-item':''}${detTC?' en-desglose-tc':''}" data-c="item" title="${esc(detTC?msgDetTC:(r.item+' — tocá el nombre para ver el historial de importes'))}">${nombreItem}${detTC?`<span class="tc-nota">${esc(msgDetTC)}</span>`:''}${esTarjeta?`<span class="tarjeta-badge" data-tarjeta-toggle="${r.id}" title="Ver/cargar el desglose del resumen">${abiertaTarjeta?'▾':'▸'} desglose${nDesglose?' ('+nDesglose+')':''}</span>`:''}</td>`;
       const opAut = (!esIng && !r.pago) ? opAutorizadaDe(r.id) : null;
-      const filaPrincipal = `<tr data-row-id="${r.id}" class="${r.pago?'paid':'unpaid'}${parcial?' parcial':''}${r.id===editId?' editing':''}${r.comp===false?' nocomp':''}${claseImpago}${clasePago}${opAut?(opAut.aprobado?' en-orden-aut':' en-orden-pend'):''}">
-      <td><span class="tag ${esIng?'IN':'EG'}">${esIng?'INGRESO':'GASTO'}</span>${!esIng?`<span class="tag ${r.fijo?'FIJ':'VAR'}">${r.fijo?'FIJO':'VARIABLE'}</span>`:''}</td>
-      <td class="mono">${div?'<span class="cp-let" title="Se paga en varias cuotas">varias</span>':'<b>'+mesLabel(r.mesPago).toUpperCase()+'</b>'}</td>
-      <td class="mono"><b>${mesLabel(r.mesCorr)}</b></td>
+      const filaPrincipal = `<tr data-row-id="${r.id}" class="${r.pago?'paid':'unpaid'}${parcial?' parcial':''}${r.id===editId?' editing':''}${!esComp(r)?' nocomp':''}${claseImpago}${clasePago}${opAut?(opAut.aprobado?' en-orden-aut':' en-orden-pend'):''}">
+      <td data-c="tipo"><span class="tag ${esIng?'IN':'EG'}">${esIng?'INGRESO':'GASTO'}</span>${!esIng?`<span class="tag ${r.fijo?'FIJ':'VAR'}">${r.fijo?'FIJO':'VARIABLE'}</span>`:''}</td>
+      <td class="mono" data-c="mesPago">${div?'<span class="cp-let" title="Se paga en varias cuotas">varias</span>':'<b>'+mesLabel(r.mesPago).toUpperCase()+'</b>'}</td>
+      <td class="mono" data-c="mesCorr"><b>${mesLabel(r.mesCorr)}</b></td>
       ${tdItem}
-      <td class="num${usd?' dual':''}${r.bruto<0?' negv':''}">${montoCell(r.bruto,brutoARS(r),usd)}</td>
-      <td class="num${usd?' dual':''}${n<0?' negv':(esIng?' ing':'')}">${montoCell(n,netoARS(r),usd)}</td>
+      <td class="num${usd?' dual':''}${r.bruto<0?' negv':''}" data-c="bruto">${montoCell(r.bruto,brutoARS(r),usd)}</td>
+      <td class="num${usd?' dual':''}${n<0?' negv':(esIng?' ing':'')}" data-c="neto">${montoCell(n,netoARS(r),usd)}${variacionHtml(r,mapaHist)}</td>
       ${tdFactura}${tdFacturado}
-      <td class="mono">${(!esIng&&r.fechaVenc)?((!r.pago&&r.vencTentativo)?`<span class="tentativo" title="Vencimiento orientativo, según el último registro de este ítem. Todavía no está confirmado.">${fmtFechaCorta(r.fechaVenc).toUpperCase()}</span>`:fmtFechaCorta(r.fechaVenc).toUpperCase()):'—'}</td>
+      <td class="mono" data-c="venc">${(!esIng&&r.fechaVenc)?((!r.pago&&r.vencTentativo)?`<span class="tentativo" title="Vencimiento orientativo, según el último registro de este ítem. Todavía no está confirmado.">${fmtFechaCorta(r.fechaVenc).toUpperCase()}</span>`:fmtFechaCorta(r.fechaVenc).toUpperCase()):'—'}</td>
       ${cpCell}
       ${tdMetodo}
-      <td class="computable">${esIng?'<span class="tag EG">—</span>':`<input type="checkbox" ${r.comp!==false?'checked':''} data-comp="${r.id}" title="${r.comp!==false?'Computable: resta en el resultado. Destildá si se pagó pero no es gasto del hotel.':'No computable: se pagó pero no afecta el resultado. Tildá para contarlo como gasto.'}">`}</td>
-      <td class="rubro" data-vertexto="${esc(r.rubro||'')}" title="Tocá para ver completo">${esc(r.rubro||'—')}</td>
-      <td class="detalle" data-vertexto="${esc(r.detalle||'')}" title="Tocá para ver completo">${opAut?chipOrdenHtml(opAut):''}${esc(r.detalle||'')}</td>
-      <td class="acciones">${btnEdit}${btnDel}</td>
+      <td class="computable" data-c="comp">${esIng?'<span class="tag EG">—</span>':excluidoPorTC(r)?`<input type="checkbox" disabled data-comp="${r.id}" title="Pagado con tarjeta de crédito: no suma al total de egresos de este mes. Se cuenta cuando se abona la tarjeta (ítem Tarjeta de crédito y su desglose).">`:`<input type="checkbox" ${r.comp!==false?'checked':''} data-comp="${r.id}" title="${r.comp!==false?'Computable: resta en el resultado. Destildá si se pagó pero no es gasto del hotel.':'No computable: se pagó pero no afecta el resultado. Tildá para contarlo como gasto.'}">`}</td>
+      <td class="rubro" data-c="rubro" data-vertexto="${esc(r.rubro||'')}" title="Tocá para ver completo">${esc(r.rubro||'—')}</td>
+      <td class="detalle" data-c="detalle" data-vertexto="${esc(r.detalle||'')}" title="Tocá para ver completo">${opAut?chipOrdenHtml(opAut):''}${esc(r.detalle||'')}</td>
+      <td class="acciones" data-c="acc">${btnEdit}${btnDel}</td>
     </tr>`;
       const filaDesglose = (div&&abierta) ? filaDesgloseCuotas(r,totalCols) : '';
       const filaTarjeta = (esTarjeta&&abiertaTarjeta) ? filaDesgloseTarjeta(r,totalCols) : '';
@@ -5488,10 +5892,16 @@ function mesCorrSugerido(f,mesPago){
     .sort((a,b)=>b.mesCorr.localeCompare(a.mesCorr))[0];
   return reg ? sumarMes(reg.mesCorr,1) : '';
 }
+// Ítems de gasto que ya tienen un movimiento con ESE mes de pago. Un ítem cargado para otro mes de pago no cuenta como "ya cargado".
+function itemsYaCargadosEnMesPago(mes){
+  const set=new Set(); if(!mes) return set;
+  rows.forEach(r=>{ if(r.tipo==='gasto'&&r.mesPago===mes){ const k=claveItem(r); if(k) set.add(k); } });
+  return set;
+}
 function renderCargarMes(){
   const mes=$('fm-mes-pago').value;
   const previo={}; document.querySelectorAll('#fm-lista .fm-check').forEach(cb=>{ previo[cb.value]=cb.checked; });
-  const yaExiste=new Set(rows.filter(r=>r.tipo==='gasto'&&r.fijo&&r.mesPago===mes).map(r=>r.item));
+  const yaExiste=itemsYaCargadosEnMesPago(mes);
   const lista=fijosTodos();
   if(!lista.length){ $('fm-lista').innerHTML='<div class="empty">Todavía no hay gastos fijos en la lista.</div>'; return; }
   $('fm-lista').innerHTML=lista.map(f=>{
@@ -5499,13 +5909,20 @@ function renderCargarMes(){
     return `<div class="fm-row">
       <input type="checkbox" class="fm-check" id="fm-c-${f.id}" value="${f.id}"${marcado?' checked':''}>
       <label class="fm-nombre" for="fm-c-${f.id}"><span class="fijo-estado-item">${esc(f.item||'(sin ítem)')}</span><span class="fijo-estado-rubro">${esc(f.rubro||'sin rubro')}</span></label>
-      ${f.item&&yaExiste.has(f.item)?'<span class="fijo-lote-yacargado" title="Ya hay un gasto fijo cargado con este ítem para el mes de pago elegido">ya cargado</span>':''}
+      ${f.item&&yaExiste.has(claveItem({item:f.item}))?`<span class="fijo-lote-yacargado" title="Ya hay un gasto de este ítem con mes de pago ${esc(mesLabel(mes))}">ya cargado</span>`:''}
       <input type="month" class="fm-corr" data-fm-corr="${f.id}" value="${mesCorrSugerido(f,mes)}" title="Mes al que corresponde">
     </div>`;
   }).join('');
 }
+// Mes de pago que se propone al "Cargar mes": del 25 de un mes al 10 del siguiente se está cargando el mes que corre/entra en ese ciclo
+// (el 25/10 y el 9/11 → noviembre). Del 11 al 24 se mantiene lo de siempre: el mes siguiente.
+function mesParaCargarFijos(hoy){
+  hoy=hoy||new Date();
+  const act=hoy.getFullYear()+'-'+String(hoy.getMonth()+1).padStart(2,'0'), d=hoy.getDate();
+  return d<=10 ? act : sumarMes(act,1);
+}
 $('btn-fijo-cargar-mes').addEventListener('click',()=>{
-  $('fm-mes-pago').value=mesSiguiente();
+  $('fm-mes-pago').value=mesParaCargarFijos();
   $('fm-lista').innerHTML='';
   renderCargarMes();
   $('fijo-mes-overlay').hidden=false;
@@ -5521,10 +5938,10 @@ $('fm-registrar').addEventListener('click',async()=>{
     .map(cb=>({f:fijosExtra.find(x=>x.id===cb.value), corr:(document.querySelector('[data-fm-corr="'+cb.value+'"]')||{}).value||''}))
     .filter(x=>x.f);
   if(!seleccionados.length){ toast('No hay gastos tildados.'); return; }
-  const yaExiste=new Set(rows.filter(r=>r.tipo==='gasto'&&r.fijo&&r.mesPago===mes).map(r=>r.item));
+  const yaExiste=itemsYaCargadosEnMesPago(mes);
   const aCargar=[];
   for(const s of seleccionados){
-    if(!s.f.item||!yaExiste.has(s.f.item)){ aCargar.push(s); continue; }
+    if(!s.f.item||!yaExiste.has(claveItem({item:s.f.item}))){ aCargar.push(s); continue; }
     const decision=await preguntarDuplicadoFijo(s.f.item,mesLabel(mes));
     if(decision==='cancelar'){ toast('Se canceló la carga del mes.'); return; }
     if(decision==='duplicar') aCargar.push(s);
@@ -5532,14 +5949,15 @@ $('fm-registrar').addEventListener('click',async()=>{
   if(!aCargar.length){ toast('No quedó ningún gasto para registrar.'); return; }
   if(!(await asegurarUsuario())) return;
   const nuevos=aCargar.map(({f,corr})=>{
-    const sug=f.item?sugerenciaFijo(f.item):null;
-    const venc = f.diaVenc ? (mes+'-'+String(Math.min(+f.diaVenc,diasDelMes(mes))).padStart(2,'0')) : ((sug&&sug.venc)||'');
+    const sug=f.item?sugerenciaFijo(f.item,mes):null;
+    // Las tasas municipales (servicios sanitarios / públicos urbanos) no traen vencimiento sugerido: quedan sin fecha (en gris) hasta que se cargue la real.
+    const venc = f.diaVenc ? (mes+'-'+String(Math.min(+f.diaVenc,diasDelMes(mes))).padStart(2,'0')) : ((!esServicioTasa({tipo:'gasto',item:f.item})&&sug&&sug.venc)||'');
     return {
       id:uid(),tipo:'gasto',mesPago:mes,mesCorr:corr,rubro:f.rubro||'',item:f.item||'',bruto:f.bruto||0,
       moneda:f.moneda||'ARS',cotizacion:f.cotizacion||0,tipoFac:f.tipoFac||'No posee',iva:f.iva||0,fact:'',pago:false,
       comp:f.comp!==false,detalle:f.detalle||'',fijo:true,
       fechaVenc:venc,
-      vencTentativo:!f.diaVenc && !!(sug&&sug.venc),
+      vencTentativo:!f.diaVenc && !!venc,
       metodoTentativo:f.metodo || (sug&&sug.metodo) || '',
       loteMes:mes
     };
@@ -5852,6 +6270,7 @@ document.addEventListener('click',async e=>{
           if(Math.abs(suma-(+r.bruto||0))>0.005){ toast('La suma de los cheques ('+money(suma)+') no coincide con el importe ('+money(+r.bruto||0)+').'); return; }
           guardarParaDeshacer('marcar pago dividido (E-cheq) de "'+(nombreDe(r))+'"');
           delete r.pospuesto; delete r.pospuestoHasta;
+          if(!r.vencOriginal&&r.fechaVenc) r.vencOriginal=r.fechaVenc;
           r.dividido=true; r.fechaVenc=''; r.metodoPago=''; r.fechaDiferida='';
           r.cuotas=cu.map(c=>({importe:c.importe,mesPago:c.fecha.slice(0,7),fecha:c.fecha,pago:c.fecha<=hoyISO(),metodoPago:'E-cheq'}));
           r.mesPago=cu.map(c=>c.fecha).sort().pop().slice(0,7);   // el gasto cuenta en el mes del último cheque
@@ -5867,6 +6286,7 @@ document.addEventListener('click',async e=>{
         if(fechaDiferida>hoyISO()){
           // Cheque a futuro: queda emitido y se marca como pagado solo al llegar la fecha (débito automático).
           guardarParaDeshacer('emitir e-cheq de "'+(nombreDe(r))+'"');
+          if(!r.vencOriginal&&r.fechaVenc&&r.fechaVenc!==fechaDiferida) r.vencOriginal=r.fechaVenc;
           if(!r.echeqEmitido) r.mesPagoAntesEcheq=r.mesPago||'';
           r.echeqEmitido=true; r.pago=false; r.metodoPago='E-cheq'; r.fechaDiferida=fechaDiferida;
           r.mesPago=fechaDiferida.slice(0,7);   // para el registro de gastos cuenta la fecha del cheque
@@ -5876,6 +6296,7 @@ document.addEventListener('click',async e=>{
         }
       }
     }
+    if(r.tipo==='gasto'&&metodo==='E-cheq'&&!r.vencOriginal&&r.fechaVenc&&r.fechaVenc!==fechaDiferida) r.vencOriginal=r.fechaVenc;
     guardarParaDeshacer('marcar pago de "'+(nombreDe(r))+'"');
     r.fechaPago = (metodo==='E-cheq'&&fechaDiferida) ? fechaDiferida : fecha;
     if(metodo==='E-cheq'&&fechaDiferida) r.mesPago=fechaDiferida.slice(0,7);
@@ -5989,13 +6410,129 @@ $('btn-csv').addEventListener('click',()=>{
     redondear2(brutoARS(r)),redondear2(netoARS(r)),
     r.tipoFac||'—',r.tipo==='ingreso'?(r.fact||'Facturado'):'—',
     r.tipo==='gasto'&&r.dividido?(r.pago?'SI (en cuotas)':(r.pagoParcial?'PARCIAL':'NO')):(r.pago?'SI':'NO'),
-    r.tipo==='ingreso'?'—':(r.comp!==false?'SI':'NO'),
+    r.tipo==='ingreso'?'—':(esComp(r)?'SI':'NO'),
     mesLabel(r.mesCorr),r.rubro||'',(r.detalle||'').toUpperCase()]
     .map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';'));
   const blob=new Blob(['\uFEFF'+[head.join(';'),...lines].join('\n')],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='resultados-copahue.csv';a.click();
   toast('CSV exportado');
 });
+
+/* ---------- Sugerencias al escribir (Ítem y Detalle de "Cargar nuevos") ----------
+   A medida que se escribe aparece una lista con ítems (o detalles) parecidos que ya están cargados en el registro, del mismo tipo
+   (gasto / ingreso). Se muestra debajo del campo o, si abajo no hay lugar (por ejemplo con el teclado del celular abierto), arriba.
+   Al elegir uno se completa el campo y, en el caso del Ítem, también el rubro y el detalle si estaban vacíos. */
+(function sugerenciasCarga(){
+  const pop=document.createElement('div');
+  pop.id='sug-pop'; pop.className='sug-pop'; pop.setAttribute('role','listbox'); pop.hidden=true;
+  document.body.appendChild(pop);
+  let campo=null, lista=[], activo=-1;
+  const norm=t=>sinTildes(t).replace(/\s+/g,' ').trim();
+  const celular=()=>window.innerWidth<=700;
+  function candidatos(clave){
+    const mapa=new Map();
+    rows.forEach((r,i)=>{
+      if(r.tipo!==modo) return;
+      const v=String(r[clave]||'').trim(); if(!v) return;
+      if(clave==='item'&&modo==='ingreso'&&v===r.rubro) return;   // en ingresos sin ítem se guardó el rubro como nombre: no es un cliente
+      const k=norm(v), e=mapa.get(k);
+      if(e){ e.n++; e.texto=v; e.ultimo=r; e.pos=i; }
+      else mapa.set(k,{k,texto:v,n:1,ultimo:r,pos:i});
+    });
+    return [...mapa.values()];
+  }
+  function buscar(clave,txt){
+    const q=norm(txt); if(!q) return [];
+    const ter=q.split(' ');
+    const res=[];
+    candidatos(clave).forEach(c=>{
+      if(!ter.every(w=>c.k.includes(w))) return;
+      if(c.k===q) return;   // ya está escrito tal cual
+      const rango=c.k.startsWith(q)?0:(c.k.split(' ').some(w=>w.startsWith(ter[0]))?1:2);
+      res.push({...c,rango});
+    });
+    res.sort((a,b)=>a.rango-b.rango||b.n-a.n||b.pos-a.pos||a.texto.localeCompare(b.texto,'es'));
+    return res.slice(0,celular()?5:7);
+  }
+  function resaltar(texto,txt){
+    const ter=norm(txt).split(' ').filter(Boolean); if(!ter.length) return esc(texto);
+    const base=sinTildes(texto);   // misma longitud que el original (solo se sacan marcas combinadas, que normalize deja aparte)
+    if(base.length!==texto.length) return esc(texto);
+    const marca=new Array(texto.length).fill(false);
+    ter.forEach(w=>{ let i=base.indexOf(w); while(i>=0){ for(let j=i;j<i+w.length&&j<marca.length;j++) marca[j]=true; i=base.indexOf(w,i+w.length); } });
+    let out='',abierto=false;
+    for(let i=0;i<texto.length;i++){
+      if(marca[i]&&!abierto){ out+='<b>'; abierto=true; } else if(!marca[i]&&abierto){ out+='</b>'; abierto=false; }
+      out+=esc(texto[i]);
+    }
+    return out+(abierto?'</b>':'');
+  }
+  function cerrar(){ pop.hidden=true; pop.innerHTML=''; lista=[]; activo=-1; }
+  function ubicar(){
+    if(pop.hidden||!campo) return;
+    if(!campo.offsetParent){ cerrar(); return; }
+    const r=campo.getBoundingClientRect(), vv=window.visualViewport;
+    const vTop=vv?vv.offsetTop:0, vBot=vv?vv.offsetTop+vv.height:window.innerHeight;
+    pop.style.maxHeight='none';
+    const alto=Math.min(pop.scrollHeight,300);
+    const libreAbajo=vBot-r.bottom-8, libreArriba=r.top-vTop-8;
+    const abajo=libreAbajo>=alto||libreAbajo>=libreArriba;
+    const maxH=Math.max(90,Math.min(300,abajo?libreAbajo:libreArriba));
+    const h=Math.min(alto,maxH);
+    pop.style.maxHeight=maxH+'px';
+    if(celular()){ pop.style.width=(window.innerWidth-16)+'px'; pop.style.left='8px'; }   // en el celular el campo es angosto: la lista ocupa todo el ancho
+    else { pop.style.width=r.width+'px'; pop.style.left=Math.max(4,Math.min(r.left,window.innerWidth-r.width-4))+'px'; }
+    pop.style.top=(abajo?r.bottom+2:r.top-2-h)+'px';
+  }
+  function pintar(){
+    const clave=campo.id==='f-item'?'item':'detalle';
+    lista=buscar(clave,campo.value); activo=-1;
+    if(!lista.length){ cerrar(); return; }
+    pop.innerHTML='<div class="sug-cab">'+(clave==='item'?(modo==='ingreso'?'Ya cargados (ingresos)':'Ya cargados (gastos)'):'Detalles ya cargados')+' · tocá para usar</div>'
+      +lista.map((c,i)=>`<div class="sug-it" role="option" data-i="${i}"><span>${resaltar(c.texto,campo.value)}</span><span class="sug-meta">${clave==='item'?esc(c.ultimo.rubro||''):(c.ultimo.item?esc(c.ultimo.item):'')}${c.n>1?' · '+c.n+'×':''}</span></div>`).join('');
+    pop.hidden=false; pop.scrollTop=0; ubicar();
+  }
+  function marcar(i){
+    const its=pop.querySelectorAll('.sug-it'); if(!its.length) return;
+    activo=(i+its.length)%its.length;
+    its.forEach((el,j)=>el.classList.toggle('on',j===activo));
+    its[activo].scrollIntoView({block:'nearest'});
+  }
+  function elegir(i){
+    const c=lista[i]; if(!c||!campo) return;
+    const f=campo;
+    f.value=c.texto;
+    if(f.id==='f-item'){
+      const u=c.ultimo;
+      if(u&&!$('f-rubro').value&&u.rubro&&[...$('f-rubro').options].some(o=>o.value===u.rubro)){ $('f-rubro').value=u.rubro; $('f-rubro').dispatchEvent(new Event('change',{bubbles:true})); }
+      if(u&&!$('f-detalle').value.trim()&&u.detalle) $('f-detalle').value=u.detalle;
+    }
+    cerrar();
+    f.focus();
+    try{ f.setSelectionRange(f.value.length,f.value.length); }catch(e){}
+  }
+  ['f-item','f-detalle'].forEach(id=>{
+    const el=$(id);
+    el.setAttribute('autocomplete','off'); el.setAttribute('aria-autocomplete','list');
+    el.addEventListener('input',()=>{ campo=el; pintar(); });
+    el.addEventListener('blur',()=>setTimeout(()=>{ if(document.activeElement!==el&&campo===el) cerrar(); },120));
+    el.addEventListener('keydown',e=>{
+      if(pop.hidden||campo!==el) return;
+      if(e.key==='ArrowDown'){ e.preventDefault(); marcar(activo+1); }
+      else if(e.key==='ArrowUp'){ e.preventDefault(); marcar(activo<0?-1:activo-1); }
+      else if(e.key==='Enter'&&activo>=0){ e.preventDefault(); e.stopPropagation(); elegir(activo); }
+      else if(e.key==='Escape'){ e.stopPropagation(); cerrar(); }
+      else if(e.key==='Tab') cerrar();
+    });
+  });
+  // pointerdown (y no click) para que el campo no pierda el foco ni se cierre el teclado antes de elegir
+  pop.addEventListener('pointerdown',e=>{ const it=e.target.closest('.sug-it'); if(!it) return; e.preventDefault(); elegir(+it.dataset.i); });
+  pop.addEventListener('mousedown',e=>e.preventDefault());
+  window.addEventListener('resize',ubicar);
+  window.addEventListener('scroll',ubicar,true);
+  if(window.visualViewport){ window.visualViewport.addEventListener('resize',ubicar); window.visualViewport.addEventListener('scroll',ubicar); }
+  window.cerrarSugerencias=cerrar;
+})();
 
 /* ---------- Aviso de versión nueva ----------
    Cada pocos minutos (y al volver a la pestaña) se consulta el index.html publicado; si cambió respecto del que está

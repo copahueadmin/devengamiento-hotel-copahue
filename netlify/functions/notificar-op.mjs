@@ -1,8 +1,9 @@
-// Función HTTP: la app la llama apenas alguien emite / modifica / elimina una OP, autoriza / rechaza / deshace, o escribe un mensaje.
+// Función HTTP: la app la llama cuando alguien emite o elimina una OP, la autoriza / rechaza, o escribe un mensaje.
+// Emitir y eliminar salen al instante; autorizar/rechazar y los mensajes pasan por la cola con demora (ver procesarCola en ordenes-mail.mjs).
 // Pide el "ID token" de Firebase de quien está usando el sistema (Authorization: Bearer …), lo verifica, lee la orden de Firestore
 // y manda el correo que corresponda. Nunca confía en el contenido: arma el correo con lo que figura en la base.
 import { conectarFirestore, crearTransporte, verificarToken, FieldValue } from "../lib/comun.mjs";
-import { AUTORIZADOR, mailEmitida, mailEliminada, mailDecision, mailDeshizo, mailMensaje, enviar, reclamar, soltar, estadoOrden } from "../lib/ordenes-mail.mjs";
+import { AUTORIZADOR, mailEmitida, mailEliminada, enviar, reclamar, soltar, estadoOrden, encolarMensaje, encolarDecision, despacharDecision } from "../lib/ordenes-mail.mjs";
 
 const json = (c, o) => new Response(JSON.stringify(o), { status: c, headers: { "Content-Type": "application/json; charset=utf-8" } });
 
@@ -33,27 +34,23 @@ export async function manejar(req, deps) {
     const o = snap.data(), soyEmisor = (o.emisor.email || "").toLowerCase() === email, soyAut = email === AUTORIZADOR;
     if (!soyEmisor && !soyAut) return json(403, { error: "No participás de esta orden." });
     const est = estadoOrden(o);
-    if (tipo === "creada" || tipo === "editada") {
+    if (tipo === "editada" || tipo === "deshizo") {
+      return json(200, { ok: true, omitido: "las modificaciones y deshacer decisiones ya no generan correo" });   // un correo por cada cambio ya no se manda
+    }
+    if (tipo === "creada") {
       if (!soyEmisor) return json(403, { error: "Solo quien emitió la orden." });
       if (est === "programada") return json(200, { ok: true, omitido: "programada: se avisa al publicarse" });   // hasta su hora, José no se entera
-      if (tipo === "creada") {
-        if (!(await reclamar(db, o.id, "mailCreadaTs"))) return json(200, { ok: true, omitido: "ya avisada" });
-        try { await enviar(t, mailEmitida(o, "creada")); } catch (e) { await soltar(db, o.id, "mailCreadaTs", FV); throw e; }
-      } else {
-        await enviar(t, mailEmitida(o, "editada"));
-        if (!o.mailCreadaTs) await db.collection("ordenes_pago").doc(o.id).update({ mailCreadaTs: new Date().toISOString() });   // ya sabe de la orden
-      }
+      if (!(await reclamar(db, o.id, "mailCreadaTs"))) return json(200, { ok: true, omitido: "ya avisada" });
+      try { await enviar(t, mailEmitida(o, "creada")); } catch (e) { await soltar(db, o.id, "mailCreadaTs", FV); throw e; }
     } else if (tipo === "decision") {
       if (!soyAut) return json(403, { error: "Solo quien autoriza." });
-      const rowIds = Array.isArray(body.rowIds) ? body.rowIds.map(String) : [], accion = body.accion === "rech" ? "rech" : "aut";
-      await enviar(t, mailDecision(o, nombre, rowIds, accion));
-    } else if (tipo === "deshizo") {
-      if (!soyAut) return json(403, { error: "Solo quien autoriza." });
-      await enviar(t, mailDeshizo(o, nombre, String(body.rowId || "")));
+      // Un solo correo con el resumen: sale ya si la orden quedó resuelta; si no, lo despacha la cola 1 minuto después de la última decisión.
+      await encolarDecision(db, o);
+      await despacharDecision(db, t, db.collection("ordenes_cola").doc(String(`d__${o.id}`).replace(/[^A-Za-z0-9_-]/g, "_")));
     } else if (tipo === "mensaje") {
       const msg = (o.mensajes || []).find((m) => m.id === body.msgId);
       if (!msg || String(msg.autorEmail || "").toLowerCase() !== email) return json(404, { error: "Mensaje no encontrado." });
-      await enviar(t, mailMensaje(o, msg, email));
+      await encolarMensaje(db, o, msg);   // sale en lote, 1 minuto después y solo si la otra parte no está en línea
     } else return json(400, { error: "Tipo de aviso desconocido." });
     return json(200, { ok: true });
   } catch (e) {

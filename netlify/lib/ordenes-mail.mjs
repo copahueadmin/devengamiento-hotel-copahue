@@ -1,7 +1,8 @@
 // Avisos por correo de las órdenes de pago (OP).
 //   · Administración emite / modifica / elimina una OP  → mail a quien autoriza (José), SOLO con totales (sin nombrar ítems).
-//   · José autoriza / rechaza / deshace / pregunta / responde → mail a administración (quien emitió la OP + giuliano.zolvini).
-//   · Pregunta o comentario nuevo → mail a la otra parte.
+//   · José autoriza / rechaza → UN mail resumen a administración (quien emitió la OP + giuliano.zolvini), con lo que quedó fuera si fue parcial.
+//   · Preguntas y comentarios: se juntan en 1 minuto y sale un único mail a la otra parte, solo si no está en línea (ver cola más abajo).
+//   · Modificar una OP o deshacer una decisión ya NO mandan correo.
 //   · Una OP se vence → mail a las dos partes: si venció toda, la lista completa de ítems; si venció parcialmente, los ítems no aprobados.
 // Los avisos de "emitida/modificada/decisión/mensaje" los dispara la app al momento (función notificar-op); la publicación de las OP
 // programadas y los vencimientos los revisa la función programada avisos-op, aunque nadie tenga el sistema abierto.
@@ -113,6 +114,49 @@ export function mailMensaje(o, msg, actorEmail) {
     html: html(titulo, [p(esc(intro)), `<blockquote style="margin:6px 0 12px;padding:8px 12px;border-left:4px solid #b8791f;background:#f6f2e8">${esc(msg.texto).replace(/\n/g, "<br>")}</blockquote>`, p("Entrá al sistema (Órdenes de pago) para responder.")]),
   };
 }
+
+// Aprobación / rechazo: UN solo correo que resume cómo quedó la orden (lo autorizado y, si no se aprobó todo, qué quedó fuera).
+export function mailAprobacion(o, ahora = Date.now()) {
+  const todos = o.items || [], aut = todos.filter((i) => i.aut), rech = todos.filter((i) => i.rech), pend = pendientes(o);
+  const quien = (aut.concat(rech).map((i) => (i.aut || i.rech).por && (i.aut || i.rech).por.nombre).filter(Boolean).pop()) || "Quien autoriza";
+  const vencida = estadoOrden(o, ahora) === "vencida";
+  let titulo, intro;
+  if (aut.length && !rech.length && !pend.length) { titulo = `${o.id} fue autorizada por completo`; intro = `${quien} autorizó todos los movimientos de la orden ${o.id}.`; }
+  else if (!aut.length && !pend.length) { titulo = `${o.id} fue rechazada por completo`; intro = `${quien} rechazó todos los movimientos de la orden ${o.id}.`; }
+  else if (aut.length) { titulo = `${o.id} fue autorizada parcialmente`; intro = `${quien} autorizó ${aut.length} de ${todos.length} movimientos de la orden ${o.id}. El resto quedó fuera de esta autorización.`; }
+  else { titulo = `${o.id}: ${quien} rechazó ${rech.length} movimiento${rech.length === 1 ? "" : "s"}`; intro = `${quien} resolvió parte de la orden ${o.id}: no autorizó ningún movimiento hasta ahora.`; }
+  const bl = [p(esc(intro))], tx = [intro, ""];
+  const seccion = (nombre, lista, extra) => {
+    if (!lista.length) return;
+    bl.push(p(`<b>${esc(nombre)} (${lista.length}) — ${esc(totalTxt(totalesPorMoneda(lista)))}</b>`), tabla(listaItems(lista), ["Movimiento", "Importe"]));
+    tx.push(`${nombre} (${lista.length}) — ${totalTxt(totalesPorMoneda(lista))}:`, ...lista.map((i) => `  · ${i.item || "(sin nombre)"} — ${monto(i.importe, i.moneda)}${i.metodo ? " (" + i.metodo + ")" : ""}`), "");
+    if (extra) { bl.push(p(esc(extra))); tx.push(extra, ""); }
+  };
+  seccion("Autorizados", aut);
+  seccion("Rechazados — quedaron fuera", rech);
+  seccion("Sin resolver — quedaron fuera por ahora", pend, vencida ? "Se venció la orden: estos movimientos quedaron libres para incluirlos en otra." : "Todavía se pueden resolver hasta las 23:59 hs del día de la orden.");
+  if (aut.length) {
+    const m = totalesPorMetodo(aut);
+    bl.push(p("<b>Total autorizado por método de pago</b>"), tabla(m.map((x) => [x.metodo, x.total]), ["Método de pago", "Total"]));
+    tx.push("Total autorizado por método de pago:", ...m.map((x) => `  · ${x.metodo}: ${x.total}`));
+  }
+  return { to: destinoAdmin(o), subject: titulo, text: textoDe(titulo, tx), html: html(titulo, bl) };
+}
+
+// Comentarios/preguntas acumulados: UN correo para quien no estaba en línea. A quien autoriza no se le nombran ítems.
+export function mailMensajes(o, msgs, destino) {
+  const aAdmin = destino !== AUTORIZADOR, n = msgs.length;
+  const lista = msgs.slice().sort((a, b) => String(a.ts).localeCompare(String(b.ts)));
+  const autores = [...new Set(lista.map((m) => m.autorNombre || m.autorEmail))];
+  const titulo = n === 1 ? `${o.id}: nuevo ${lista[0].rowId ? "comentario o pregunta" : "comentario general"} de ${autores[0]}` : `${o.id}: ${n} novedades en la conversación (${autores.join(" y ")})`;
+  const sobre = (m) => (m.rowId ? (aAdmin ? `sobre "${((o.items || []).find((x) => x.rowId === m.rowId) || {}).item || "un movimiento"}"` : "sobre un movimiento") : "comentario general");
+  const intro = n === 1 ? `Tenés un mensaje nuevo en la orden ${o.id}:` : `Tenés ${n} mensajes nuevos en la orden ${o.id}:`;
+  const pie = "Entrá al sistema (Órdenes de pago) para responder.";
+  const tx = [intro, "", ...lista.flatMap((m) => [`[${fechaHoraAR(m.ts)} hs] ${m.autorNombre || m.autorEmail} — ${sobre(m)}:`, `  “${m.texto}”`, ""]), pie];
+  const bl = [p(esc(intro)), ...lista.map((m) => `<p style="margin:10px 0 2px;font-size:12px;color:#555">${esc(fechaHoraAR(m.ts))} hs · <b>${esc(m.autorNombre || m.autorEmail)}</b> · ${esc(sobre(m))}</p><blockquote style="margin:2px 0 8px;padding:8px 12px;border-left:4px solid #b8791f;background:#f6f2e8">${esc(m.texto).replace(/\n/g, "<br>")}</blockquote>`), p(esc(pie))];
+  return { to: [destino], subject: titulo, text: textoDe(titulo, tx), html: html(titulo, bl) };
+}
+
 export function mailVencida(o) {
   const total = nAut(o) + nRech(o) === 0, pend = pendientes(o), todos = o.items || [];
   const lista = total ? todos : pend;
@@ -141,6 +185,96 @@ export async function reclamar(db, id, campo) {
   });
 }
 export async function soltar(db, id, campo, FieldValue) { try { await db.collection("ordenes_pago").doc(id).update({ [campo]: FieldValue.delete() }); } catch (e) { /* */ } }
+
+
+// ───────── cola de avisos con demora (comentarios y decisiones) ─────────
+// Los avisos de comentarios y de autorización/rechazo no salen en el momento: quedan en la colección "ordenes_cola" y los despacha
+// la función programada cola-op (cada minuto), aunque nadie tenga el sistema abierto.
+//   · Comentarios: se juntan todos los de la misma orden para cada destinatario; pasado 1 minuto desde el primero sale UN solo correo,
+//     y solo si esa persona NO está en línea (colección "presencia"). Si está conectada se espera a que cierre la sesión; si ya leyó
+//     los mensajes dentro del sistema, no se manda nada.
+//   · Autorización / rechazo: un solo correo con el resumen de la orden. Sale al instante si ya no queda nada pendiente; si José dejó
+//     movimientos sin resolver, sale 1 minuto después de su última decisión (con el detalle de lo que quedó fuera). Siempre se envía.
+export const DEMORA_COLA_MS = 60 * 1000;
+const PRESENCIA_VIGENTE_MS = 70 * 1000;      // la app marca presencia cada 20 s; con >70 s sin latido se considera cerrada
+const CADUCA_COLA_MS = 48 * 3600 * 1000;
+const COLA = "ordenes_cola";
+export const claveUsuario = (e) => String(e || "").toLowerCase().replace(/[^a-z0-9]/g, "_");
+const idSeguro = (t) => String(t).replace(/[^A-Za-z0-9_-]/g, "_");
+
+export async function encolarMensaje(db, o, msg, ahora = Date.now()) {
+  const autor = String(msg.autorEmail || "").toLowerCase();
+  const destinos = (autor === AUTORIZADOR ? destinoAdmin(o) : [AUTORIZADOR]).filter((d) => d !== autor);
+  for (const to of destinos)
+    await db.collection(COLA).doc(idSeguro(`m__${o.id}__${claveUsuario(to)}__${msg.id}`)).set({ tipo: "mensaje", ordenId: o.id, msgId: msg.id, to, ts: ahora, estado: "pendiente" });
+  return destinos;
+}
+export async function encolarDecision(db, o, ahora = Date.now()) {
+  await db.collection(COLA).doc(idSeguro(`d__${o.id}`)).set({ tipo: "decision", ordenId: o.id, ts: ahora, estado: "pendiente" });
+}
+async function tomar(db, ref) {
+  return db.runTransaction(async (tx) => {
+    const s = await tx.get(ref); if (!s.exists || s.data().estado !== "pendiente") return false;
+    tx.update(ref, { estado: "enviando" }); return true;
+  });
+}
+const marcar = (ref, estado) => ref.update({ estado, tsFin: Date.now() });
+const liberar = (ref) => ref.update({ estado: "pendiente" }).catch(() => {});
+function leido(o, email, m) {
+  const k = claveUsuario(email);
+  const l = m.rowId ? ((o.leidoI || {})[k + "__" + claveUsuario(m.rowId)] || "") : ((o.leidoG || {})[k] || "");
+  return !!l && String(m.ts) <= String(l);
+}
+
+// Envía el resumen de aprobación/rechazo de una orden si corresponde. Devuelve true si salió el correo.
+export async function despacharDecision(db, transporte, ref, ahora = Date.now(), { forzarSiResuelta = false } = {}) {
+  const ev = (await ref.get()).data(); if (!ev || ev.estado !== "pendiente") return false;
+  const snap = await db.collection("ordenes_pago").doc(ev.ordenId).get();
+  if (!snap.exists) { await marcar(ref, "omitido"); return false; }
+  const o = snap.data(), resuelta = pendientes(o).length === 0;
+  if (!(resuelta || ahora - ev.ts >= DEMORA_COLA_MS)) return false;
+  if (!(await tomar(db, ref))) return false;
+  try { await enviar(transporte, mailAprobacion(o, ahora)); await marcar(ref, "enviado"); return true; }
+  catch (e) { await liberar(ref); throw e; }
+}
+
+export async function procesarCola({ db, transporte, ahora = Date.now() }) {
+  const snap = await db.collection(COLA).where("estado", "==", "pendiente").get(), hechos = [], errores = [];
+  if (snap.empty) return { hechos, errores };
+  const decisiones = [], grupos = {};
+  for (const d of snap.docs) {
+    const ev = d.data();
+    if (ahora - ev.ts > CADUCA_COLA_MS) { await marcar(d.ref, "omitido"); continue; }
+    if (ev.tipo === "decision") decisiones.push(d);
+    else if (ev.tipo === "mensaje") (grupos[ev.ordenId + "|" + ev.to] = grupos[ev.ordenId + "|" + ev.to] || []).push(d);
+  }
+  for (const d of decisiones) {
+    try { if (await despacharDecision(db, transporte, d.ref, ahora)) hechos.push("decision:" + d.data().ordenId); }
+    catch (e) { errores.push("decision:" + d.data().ordenId + ": " + (e && e.message)); }
+  }
+  const claves = Object.keys(grupos);
+  if (claves.length) {
+    const pres = await db.collection("presencia").get();
+    const enLinea = new Set(); pres.forEach((x) => { const v = x.data() || {}; if (v.email && ahora - (+v.ts || 0) <= PRESENCIA_VIGENTE_MS) enLinea.add(String(v.email).toLowerCase()); });
+    for (const k of claves) {
+      const docs = grupos[k], ev0 = docs[0].data(), to = ev0.to;
+      if (ahora - Math.min(...docs.map((x) => x.data().ts)) < DEMORA_COLA_MS) continue;   // todavía dentro del minuto de espera
+      if (enLinea.has(String(to).toLowerCase())) continue;                                   // está conectado: se espera a que cierre sesión
+      const tomados = []; for (const d of docs) if (await tomar(db, d.ref)) tomados.push(d);
+      if (!tomados.length) continue;
+      try {
+        const os = await db.collection("ordenes_pago").doc(ev0.ordenId).get();
+        const o = os.exists ? os.data() : null;
+        const msgs = o ? tomados.map((d) => (o.mensajes || []).find((m) => m.id === d.data().msgId)).filter((m) => m && String(m.autorEmail || "").toLowerCase() !== String(to).toLowerCase() && !leido(o, to, m)) : [];
+        if (!msgs.length) { for (const d of tomados) await marcar(d.ref, "omitido"); continue; }
+        await enviar(transporte, mailMensajes(o, msgs, to));
+        for (const d of tomados) await marcar(d.ref, "enviado");
+        hechos.push(`mensajes:${ev0.ordenId}->${to}(${msgs.length})`);
+      } catch (e) { for (const d of tomados) await liberar(d.ref); errores.push("mensajes:" + k + ": " + (e && e.message)); }
+    }
+  }
+  return { hechos, errores };
+}
 
 // Revisión periódica (función programada): publica avisos pendientes de OP programadas y vencimientos
 export async function revisarOrdenes({ db, transporte, FieldValue, ahora = Date.now() }) {
