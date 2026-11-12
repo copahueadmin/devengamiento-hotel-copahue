@@ -151,7 +151,7 @@
   .form-grid.ingreso{display:flex;flex-wrap:wrap}
   .form-grid.ingreso .field{flex:1 1 150px;min-width:150px}
   .form-grid.ingreso #wrap-item{order:2}
-  .form-grid.ingreso #wrap-tipo,.form-grid.ingreso #wrap-iva,.form-grid.ingreso #wrap-neto,.form-grid.ingreso #wrap-marcar-fijo,.form-grid.ingreso #wrap-fecha-diferida{display:none}
+  .form-grid.ingreso #wrap-desglose,.form-grid.ingreso #wrap-tipo,.form-grid.ingreso #wrap-iva,.form-grid.ingreso #wrap-neto,.form-grid.ingreso #wrap-marcar-fijo,.form-grid.ingreso #wrap-fecha-diferida{display:none}
   .form-grid.ingreso #wrap-rubro{order:3}
   .form-grid.ingreso #wrap-bruto{order:4}
   .form-grid.ingreso #wrap-moneda{order:5}
@@ -180,6 +180,9 @@
   input:focus,select:focus,button:focus-visible{outline:2px solid var(--ok);outline-offset:1px}
   #f-item,#f-detalle{text-transform:uppercase}
   #f-item::placeholder,#f-detalle::placeholder{text-transform:none}
+  #f-detalle{display:block;resize:vertical;line-height:normal;overflow:auto;box-sizing:border-box}
+  #texto-popover{white-space:pre-wrap}
+  .ord-det-mov{white-space:pre-line}
   #wrap-iva label{color:var(--iva)} #f-iva{border-color:var(--iva)}
   .neto-preview{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;background:var(--ledger);border:1px solid var(--rule);padding:8px 9px;text-align:right;font-size:14px}
   button{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:var(--paper);border:1px solid var(--ink);padding:10px 16px;cursor:pointer}
@@ -497,11 +500,28 @@
   .desg-edit{font-style:italic;color:var(--ink-soft)}
   .desg-row{display:grid;grid-template-columns:70px 120px 1fr 90px;gap:12px;align-items:center;padding:4px 0;border-bottom:1px dashed var(--rule);font-size:13px}
   .desg-row.pagada{color:var(--ok)}
+  .field.reserva-oculta[hidden]{display:flex!important;visibility:hidden}
+  @media (max-width:700px){.field.reserva-oculta[hidden]{display:none!important}}
+  .ord-sug{display:flex;gap:10px 16px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin:6px 0 8px;padding:10px 12px;background:var(--tint-warn2);border:1px solid var(--warn);border-left:3px solid var(--warn);font-size:13px;line-height:1.4}
+  .ord-sug-btns{display:flex;gap:8px;flex-wrap:wrap}
+  .ord-afuera-btn{display:inline-flex;align-items:center;gap:8px;margin:2px 0 8px;text-align:left}
+  .ord-afuera-btn svg{flex:none}
+  .ord-afuera{margin:0 0 12px;border:1px solid var(--rule-strong);background:var(--tint-neutral);padding:8px 10px;max-height:420px;overflow:auto}
+  .ord-af-tit{display:flex;justify-content:space-between;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);padding:6px 0;border-bottom:2px solid var(--ink)}
+  .ord-af-fila{display:grid;grid-template-columns:1fr auto auto auto;gap:4px 14px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--rule);font-size:13px}
+  .ord-af-main .tag{margin-left:6px}
+  .ord-af-fila .ord-imp{font-family:'IBM Plex Mono',monospace;text-align:right;white-space:nowrap}
+  @media (max-width:700px){.ord-af-fila{grid-template-columns:1fr auto}.ord-af-main{grid-column:1/3}}
+  .mes-aut{cursor:help;border-bottom:1px dotted var(--ink-soft)}
+  .tag.CLM{background:var(--tint-neutral);color:var(--ink);border:1px solid var(--ink-soft);margin-left:6px;font-size:9px}
+  .tag.CLI{background:#e8dcf5;color:#4b2a73;border:1px solid #7a54a8;margin-left:6px;font-size:9px}
+  body.dark .tag.CLI{background:#3a2a52;color:#e2d3f7;border-color:#9b7cc8}
+  .desg-row:has(.cuota-del){grid-template-columns:70px 120px 1fr 90px 28px}
   .desg-n{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600}
   .desg-imp{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;text-align:right}
   .desg-fecha{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft)}
   .desg-estado{font-family:'IBM Plex Mono',monospace;font-size:11px;text-align:right}
-  #cuotas-form{border:1px solid var(--warn);border-left:3px solid var(--warn);background:var(--tint-warn2);padding:12px 14px;margin:6px 0 4px}
+  #cuotas-form,#desglose-form{border:1px solid var(--warn);border-left:3px solid var(--warn);background:var(--tint-warn2);padding:12px 14px;margin:6px 0 4px}
   .cuotas-form-head{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--warn);margin-bottom:10px}
   .cuotas-form-head span{font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-soft)}
   .cuotas-form-foot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:8px}
@@ -960,6 +980,7 @@
     .tablewrap[data-tabla] tbody tr.desglose-fila td,.tablewrap[data-tabla] tbody tr.cuotas-fila td{display:block}
     .tablewrap[data-tabla] tbody tr.desglose-fila td:first-child,.tablewrap[data-tabla] tbody tr.cuotas-fila td:first-child{display:none}
     .desg-row{grid-template-columns:1fr auto;gap:2px 10px}
+    .desg-row:has(.cuota-del){grid-template-columns:1fr auto auto}
     .tablewrap[data-tabla] tfoot,.tablewrap[data-tabla] tfoot tr,.tablewrap[data-tabla] tfoot td{display:block;width:100%}
     .tablewrap[data-tabla] tfoot td{padding:10px 12px;background:var(--paper);border:1px solid var(--rule-strong);margin-bottom:8px}
     .tot-fila{flex-wrap:wrap}
@@ -1287,7 +1308,7 @@
           <div class="field" id="wrap-fact" hidden><label for="f-fact">Facturación</label>
             <select id="f-fact"><option value="Facturado">Facturado</option><option value="No Facturado">No Facturado</option></select>
           </div>
-          <div class="field" id="wrap-detalle"><label for="f-detalle" id="lbl-detalle">Detalle</label><input type="text" id="f-detalle" placeholder="Proveedor, comprobante, observaciones"></div>
+          <div class="field" id="wrap-detalle"><label for="f-detalle" id="lbl-detalle">Detalle</label><textarea id="f-detalle" rows="1" placeholder="Proveedor, comprobante, observaciones" title="Shift+Enter para pasar a otro renglón. Se puede agrandar arrastrando la esquina inferior derecha."></textarea></div>
           <div class="field" id="wrap-pago"><label for="f-pago" id="lbl-pago">¿Está pago?</label><div style="padding:8px 0"><input type="checkbox" id="f-pago"></div></div>
           <div class="field" id="wrap-pospuesto" hidden><label for="f-pospuesto" title="El gasto sigue impago y pendiente, pero no se va a abonar en el corto plazo: no se pinta en rojo y no aparece en Pagos semanales hasta que le saques esta marca.">Pospuesto (no se abona pronto)</label><div style="padding:8px 0"><input type="checkbox" id="f-pospuesto"></div></div>
           <div class="field" id="wrap-posp-hasta" hidden><label for="f-posp-hasta" title="Desde ese día (y los siguientes, hasta que le saques la marca de pospuesto o lo pagues) aparece un aviso en Movimientos para que lo abones esa semana. Si lo dejás vacío, no hay aviso.">Pospuesto hasta el día</label><input type="date" id="f-posp-hasta"></div>
@@ -1305,6 +1326,10 @@
           <div class="field" id="wrap-comp"><label for="f-comp">Computable</label><div style="padding:8px 0"><input type="checkbox" id="f-comp" checked></div></div>
           <div class="field" id="wrap-dividido"><label for="f-dividido" id="lbl-dividido" title="Dividir el pago de este gasto en varias cuotas con su propia fecha">Pago dividido</label><div style="padding:8px 0"><input type="checkbox" id="f-dividido"></div></div>
           <div class="field" id="wrap-marcar-fijo"><label for="f-marcar-fijo" title="Además de registrarse este mes, queda sumado a la lista de Fijos mensuales para reutilizar en los meses siguientes">Gasto fijo mensual</label><div style="padding:8px 0"><input type="checkbox" id="f-marcar-fijo"></div></div>
+          <div class="field" id="wrap-desglose"><label for="f-desglose" title="Detalla en varios movimientos de qué se compone este gasto (igual que el desglose del resumen de tarjeta). Es solo para clasificar: el importe que entra al resultado sigue siendo el bruto de este gasto. En un gasto fijo mensual, el desglose se repite todos los meses hasta que lo desactives.">Incluir desglose</label><div style="padding:8px 0"><input type="checkbox" id="f-desglose"></div></div>
+          <div class="field reserva-oculta" id="wrap-clase-mant" hidden><label for="f-clase-mant" title="Opcional: solo para gastos de mantenimiento. Permite distinguir lo que es mantenimiento corriente de lo que es una inversión o remodelación.">Mantenimiento / Inversión</label>
+            <select id="f-clase-mant"><option value="">— Sin clasificar —</option><option value="mantenimiento">Mantenimiento</option><option value="inversion">Inversión / remodelación</option></select>
+          </div>
           <div class="field" id="wrap-add"><button id="btn-add">Agregar</button></div>
           <div class="field" id="wrap-cancel" hidden><button class="ghost" id="btn-cancel">Cancelar</button></div>
         </div>
@@ -1315,6 +1340,12 @@
             <button class="ghost" id="btn-cuota-add-form" type="button">+ Agregar cuota</button>
             <span id="cuotas-form-aviso"></span>
           </div>
+        </div>
+        <div id="desglose-form" hidden>
+          <div class="cuotas-form-head" id="desglose-form-head">Desglose</div>
+          <div id="desglose-form-list"></div>
+          <div class="cuotas-form-foot" id="desglose-form-mini" style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--rule)"></div>
+          <p class="note" id="desglose-form-nota" style="margin:8px 0 0"></p>
         </div>
         <p class="note" id="nota-form"></p>
         <div id="add-confirm" class="add-confirm" hidden>
@@ -1334,6 +1365,7 @@
           <div class="field"><label for="q-fijo" title="Solo aplica a gastos: los ingresos se cuentan siempre como variable">Fijo / Variable</label><select id="q-fijo"><option value="">Ambos</option><option value="fijo">Fijo</option><option value="variable">Variable</option></select></div>
           <div class="field"><label for="q-factura">Tipo de factura</label><select id="q-factura"><option value="">Todas</option><option value="A">A</option><option value="A | 27%">A | 27%</option><option value="B">B</option><option value="C">C</option><option value="No posee">No posee</option><option value="Sin emitir">Sin emitir</option></select></div>
           <div class="field"><label for="q-metodo">Método de pago</label><select id="q-metodo"><option value="">Todos</option></select></div>
+          <div class="field"><label for="q-clase" title="Solo gastos del rubro de mantenimiento">Mantenimiento / Inversión</label><select id="q-clase"><option value="">Todos</option><option value="mantenimiento">Mantenimiento</option><option value="inversion">Inversión / remodelación</option><option value="sin">De mantenimiento, sin clasificar</option></select></div>
           <div class="field"><label for="q-texto">Buscar</label><input type="text" id="q-texto" placeholder="Ítem, rubro, detalle o comentarios (varias palabras)"></div>
           <div class="rango">
             <div class="field"><label for="q-monto-desde" title="Sobre el importe neto convertido a pesos">Importe neto (ARS), desde</label><input type="number" id="q-monto-desde" step="0.01" placeholder="Mínimo"></div>
@@ -1399,6 +1431,10 @@
         <div class="semana-vencida-box semana-posp-box" id="semana-posp-box" hidden>
           <h3 class="semana-heading" id="semana-posp-titulo">Pagos atrasados pospuestos</h3>
           <div id="semana-posp-zone" class="tablacompacta"></div>
+        </div>
+        <div class="semana-vencida-box semana-posp-box" id="semana-tasas-box" hidden>
+          <h3 class="semana-heading" id="semana-tasas-titulo">Tasas municipales y servicios pospuestos</h3>
+          <div id="semana-tasas-zone" class="tablacompacta"></div>
         </div>
       </div>
 
@@ -1735,6 +1771,7 @@ let ultimoAgregadoId=null, addConfirmTimers=[];
 // no se inicializaron, para distinguirlo de "el usuario los dejó en blanco a propósito").
 let stickyFechaPago=null, stickyMesCorr=null;
 let cuotasForm=[];  // cuotas en edición dentro del formulario
+let desgForm=[];    // movimientos del desglose en edición dentro del formulario
 let rubrosOff={ingreso:new Set(),gasto:new Set()};  // rubros destildados en el dashboard
 let rubroAbierto={ingreso:null,gasto:null};  // rubro con el desglose de movimientos abierto en el dashboard (uno por tipo)
 
@@ -2820,6 +2857,16 @@ function esEcheqPendiente(r){
   if(r.echeqEmitido) return true;
   return !!(r.dividido&&Array.isArray(r.cuotas)&&r.cuotas.length&&r.cuotas.every(c=>c.metodoPago==='E-cheq'));
 }
+// E-cheq: en la columna "Mes de pago" de Registrados se muestra el mes en que se AUTORIZÓ el pago (la autorización en la orden de pago o,
+// si no hubo orden, el mes en que se emitió el e-cheq), no el mes en que se debita. Para el resultado contable el gasto sigue contando en el mes del cheque.
+const mesDeTs=ts=>{ const d=new Date(ts); return isNaN(d)?'':d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); };
+function mesAutorizacionEcheq(r){
+  if(!r||r.tipo!=='gasto'||r.dividido) return '';
+  if(!(r.metodoPago==='E-cheq'||r.echeqEmitido)) return '';
+  try{ const x=opAutorizadaDe(r.id); if(x&&x.aprobado&&x.item.aut&&x.item.aut.ts){ const m=mesDeTs(x.item.aut.ts); if(m) return m; } }catch(e){}
+  return r.mesAutEcheq||'';
+}
+const mesPagoVisible=r=>mesAutorizacionEcheq(r)||r.mesPago||'';
 function itemDeRow(r){
   let venc=r.fechaVenc||'';
   if(r.dividido&&Array.isArray(r.cuotas)){ const f=r.cuotas.filter(c=>!c.pago&&c.fecha).map(c=>c.fecha).sort(); venc=f[0]||''; }
@@ -2827,6 +2874,7 @@ function itemDeRow(r){
 }
 function candidatosOrden(){
   const {desde:desdeSem,hasta}=limitesSemana(0), mesAct=mesActual();
+  const domSem=(()=>{ const d=new Date(desdeSem+'T12:00:00'); d.setDate(d.getDate()+6); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); })();
   const out=[];
   rows.forEach(r=>{
     if(r.tipo!=='gasto'||r.pago||esEcheqPendiente(r)) return;
@@ -2834,16 +2882,65 @@ function candidatosOrden(){
     // Un pago pospuesto solo se ofrece si tiene fecha y esa fecha cae dentro de los pagos semanales de
     // esta semana (del lunes al miércoles siguiente al jueves de pago); sin fecha, o con una fuera de
     // la semana, no aparece entre las opciones.
+    // También se ofrece (y se sugiere) si la fecha en que termina el pospuesto cae en la semana corriente (lunes a domingo).
+    let sugerido = (+it.importe||0)>0;
     if(r.pospuesto){
       const fechas = (r.dividido&&Array.isArray(r.cuotas)) ? r.cuotas.filter(c=>!c.pago&&c.fecha).map(c=>c.fecha) : (r.fechaVenc?[r.fechaVenc]:[]);
-      if(!fechas.some(f=>f>=desdeSem&&f<=hasta)) return;
+      const vencEnVentana = fechas.some(f=>f>=desdeSem&&f<=hasta);
+      const finEnSemana = !!r.pospuestoHasta && r.pospuestoHasta>=desdeSem && r.pospuestoHasta<=domSem;
+      if(!vencEnVentana&&!finEnSemana) return;
+      sugerido = sugerido && true;
     }
     const enSemana = r.pospuesto ? true : (r.dividido&&Array.isArray(r.cuotas) ? r.cuotas.some(c=>!c.pago&&c.fecha&&c.fecha<=hasta) : !!(r.fechaVenc&&r.fechaVenc<=hasta));
     const mes=r.mesPago||mesAct;
     const grupo=enSemana?'semana':(mes===mesAct?'adelante':(mes<mesAct?'viejos':null));
-    if(grupo) out.push({it,grupo});
+    if(grupo) out.push({it,grupo,sugerido});
   });
   return out;
+}
+// Sugerencia al generar una orden: todo pago pendiente que no esté pospuesto; de los pospuestos, los que vencen (o terminan su pospuesto)
+// en la semana corriente o vencen antes del próximo jueves (hasta el miércoles de la semana próxima inclusive). Queda tildado y se puede cambiar.
+function aplicarSugerenciaOrden(f){
+  const bloq=itemsEnOrdenesActivas(f.editId), mapaOP=mapaOrdenesServicios();
+  f.sel={};
+  candidatosOrden().forEach(c=>{
+    const id=c.it.rowId, r=rows.find(x=>x.id===id);
+    if(!c.sugerido||bloq[id]||!r||servicioBloqueado(r,mapaOP)) return;
+    f.meta[id]=c.it; f.sel[id]={comentario:'',metodo:c.it.metodo||''};
+  });
+  return Object.keys(f.sel).length;
+}
+// Pendientes y pospuestos que NO están en la orden que se está armando, con el motivo.
+function afueraOrden(f){
+  const bloq=itemsEnOrdenesActivas(f.editId), mapaOP=mapaOrdenesServicios(), mesAct=mesActual();
+  const cands=new Set(candidatosOrden().map(c=>c.it.rowId)), out=[];
+  rows.forEach(r=>{
+    if(r.tipo!=='gasto'||r.pago||esEcheqPendiente(r)||f.sel[r.id]) return;
+    const it=itemDeRow(r), motivos=[];
+    if(bloq[r.id]) motivos.push('ya está en '+bloq[r.id]);
+    if(r.pospuesto) motivos.push(r.pospuestoHasta?'pospuesto hasta el '+fmtFechaCorta(r.pospuestoHasta):'pospuesto sin fecha');
+    if(!(it.importe>0)) motivos.push('sin importe');
+    if(!it.venc) motivos.push('sin fecha de vencimiento');
+    if(!r.pospuesto&&!bloq[r.id]&&!cands.has(r.id)&&(r.mesPago||'')>mesAct) motivos.push('mes de pago futuro');
+    if(!motivos.length) motivos.push('disponible, sin tildar');
+    out.push({r,it,motivos,pospuesto:!!r.pospuesto,incluible:cands.has(r.id)&&!bloq[r.id]&&!servicioBloqueado(r,mapaOP)&&it.importe>0});
+  });
+  out.sort((a,b)=>(a.it.venc||'9999').localeCompare(b.it.venc||'9999')||a.it.item.localeCompare(b.it.item,'es'));
+  return out;
+}
+function pintarAfuera(){
+  const f=ordenForm, box=$('ord-afuera'), btn=$('ord-ojo-btn'); if(!f||!box||!btn) return;
+  const lista=afueraOrden(f);
+  btn.innerHTML=(f.verAfuera?ICO_OJO:ICO_OJO_X)+` <span>Pendientes y pospuestos fuera de esta orden (${lista.length})</span>`;
+  btn.setAttribute('aria-expanded',f.verAfuera?'true':'false');
+  box.hidden=!f.verAfuera;
+  if(!f.verAfuera) return;
+  const fila=x=>`<div class="ord-af-fila"><div class="ord-af-main"><b>${esc(x.it.item)}</b> <span class="ord-rubro">${esc(x.it.rubro)}</span>${x.motivos.map(m=>`<span class="tag${x.pospuesto&&/pospuesto/.test(m)?' pp':''}">${esc(m)}</span>`).join('')}</div>
+    <div class="ord-venc">${x.it.venc?'vence '+fmtFechaCorta(x.it.venc):'sin fecha'}</div><div class="ord-imp">${montoFmt(x.it.importe,x.it.moneda)}</div>
+    <div class="ord-af-acc">${x.incluible?`<button type="button" class="ghost" data-ord-accion="incluir" data-ord-id="${esc(x.r.id)}">Incluir</button>`:''}</div></div>`;
+  const pend=lista.filter(x=>!x.pospuesto), posp=lista.filter(x=>x.pospuesto);
+  const sec=(tit,arr)=>arr.length?`<div class="ord-af-sec"><div class="ord-af-tit"><span>${tit} (${arr.length})</span><span>${totalesTxt(arr.map(x=>x.it))}</span></div>${arr.map(fila).join('')}</div>`:'';
+  box.innerHTML=(sec('Pendientes sin incluir',pend)+sec('Pospuestos sin incluir',posp))||'<div class="empty">No queda ningún pendiente ni pospuesto afuera: todo está incluido en esta orden.</div>';
 }
 function itemsEnOrdenesActivas(exceptoId){
   const m={};
@@ -2856,9 +2953,17 @@ function itemsEnOrdenesActivas(exceptoId){
 // Tasas municipales sin datos para pagar: "SERVICIOS SANITARIOS MEDIDOS" y "SERVICIOS PÚBLICOS URBANOS" (todas sus
 // variantes: 7460, 8350, 9251). Mientras no tengan fecha de vencimiento, ni estén en una orden de pago, ni estén pagos,
 // se muestran en gris (letra blanca, cursiva) y al final de Registrados y de las opciones al armar una orden.
-const RE_SERV_TASA=/\bSERVICIOS?\s+(SANITARIOS?\s+MEDIDOS?|PUBLICOS?\s+URBANOS?)\b/;
+// Un gasto cuyo comentario (detalle) o rubro diga "tasas municipales" se carga automáticamente como POSPUESTO.
+const esTasaMunicipalTexto=d=>/\bTASAS?\s+MUNICIPALES?\b/.test(sinTildes(String((d&&d.detalle)||'')+' | '+String((d&&d.rubro)||'')).toUpperCase());
+const RE_SERV_TASA=/\b(SANITARIOS?\s+MEDIDOS?|PUBLICOS?\s+URBANOS?)\b/;   // tasas municipales: servicios sanitarios medidos / servicios públicos urbanos (con o sin la palabra "servicios", con códigos 7460/8350/9251, etc.)
 const esServicioTasa=r=>!!r&&r.tipo==='gasto'&&RE_SERV_TASA.test(sinTildes(String(r.item||'')).toUpperCase());
 function mapaOrdenesServicios(){ try{ return itemsEnOrdenesActivas(); }catch(e){ return {}; } }
+// Visualización en tablas: las tasas municipales van en gris mientras estén sin datos para pagar (ver servicioBloqueado) o
+// mientras estén POSPUESTAS (aunque ya tengan fecha). Solo recuperan el color normal (naranja / pendiente de pago) al quitarles lo de pospuesto.
+function servicioGris(r,mapa){
+  if(!esServicioTasa(r)||r.pago) return false;
+  return !!r.pospuesto || servicioBloqueado(r,mapa);
+}
 function servicioBloqueado(r,mapa){
   if(!esServicioTasa(r)||r.pago) return false;
   if((r.fechaVenc&&!r.vencTentativo)||r.fechaDiferida||r.echeqEmitido) return false;   // un vencimiento orientativo (sugerido) no cuenta como fecha cargada
@@ -3287,7 +3392,8 @@ function mostrarTipConversacion(btn){
 const aLocalInput=d=>{ d=new Date(d); const p=n=>String(n).padStart(2,'0'); return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes()); };
 function abrirNuevaOrden(){
   if(esAutorizador()){ toast('Quien autoriza las órdenes no puede crearlas.'); return; }
-  ordenForm={editId:null,sel:{},meta:{},programable:true,cuando:'ahora',programar:''};
+  ordenForm={editId:null,sel:{},meta:{},programable:true,cuando:'ahora',programar:'',verAfuera:false,sugerida:0};
+  ordenForm.sugerida=aplicarSugerenciaOrden(ordenForm);
   ordenesVista='form'; ordenAbiertaId=null;
   abrirPanelOrdenesYMostrar();
 }
@@ -3309,6 +3415,7 @@ function resumenSeleccionOrden(){
   const f=ordenForm, ids=Object.keys(f.sel);
   const items=ids.map(id=>({...f.meta[id],importe:f.meta[id].importe,moneda:f.meta[id].moneda}));
   const el=$('ord-resumen-sel'); if(el) el.innerHTML=`Seleccionados: <b>${ids.length}</b> · Total: <b>${totalesTxt(items)}</b>`;
+  pintarAfuera();
 }
 function filaCandidato(c,bloq,f){
   const i=c.it, sel=!!f.sel[i.rowId], hoy=hoyISO();
@@ -3358,6 +3465,10 @@ function renderOrdenForm(){
       </div>
       <p class="note" style="margin:0 0 8px">${f.cuando==='programar'?'Hasta ese momento la orden solo la ves vos: quien debe autorizarla no recibe ningún aviso. La fecha y hora de emisión (y el vencimiento a las 23:59 de ese día) cuentan desde la publicación.':'La orden vence a las 23:59 del día en que se emite si no se autorizan todos sus movimientos.'}</p>`:`<p class="note" style="margin:0 0 8px">La orden vence a las 23:59 del día en que se emitió si no se autorizan todos sus movimientos.</p>`}
       <p class="note" style="margin:6px 0">Tildá los movimientos que querés incluir; al tildar podés elegir el método de pago y dejar un comentario en cada uno. El método elegido acá es solo para la orden: no modifica el movimiento.</p>
+      ${!f.editId?`<div class="ord-sug"><span><b>Sugerencia armada:</b> pendientes no pospuestos, más los pospuestos que vencen o terminan su pospuesto esta semana o antes del próximo jueves (hasta el miércoles de la semana próxima). Ya viene tildada: podés destildar o sumar lo que quieras.</span>
+        <span class="ord-sug-btns"><button type="button" class="ghost" data-ord-accion="sugerir">Volver a la sugerencia</button><button type="button" class="ghost" data-ord-accion="vaciar">Destildar todo</button></span></div>`:''}
+      <button type="button" class="ghost ord-afuera-btn" id="ord-ojo-btn" data-ord-accion="afuera" title="Ver los pendientes y pospuestos que no están incluidos en esta orden"></button>
+      <div id="ord-afuera" class="ord-afuera" hidden></div>
       <div class="ord-barra"><span id="ord-resumen-sel"></span>
         <span><button type="button" data-ord-accion="${f.editId?'guardar-edicion':'emitir'}">${f.editId?'Guardar cambios':'Emitir orden de pago'}</button></span></div>
     </div>
@@ -3472,6 +3583,14 @@ async function accionOrden(accion,el){
     if(accion==='volver'){ ordenesVista='lista'; ordenAbiertaId=null; ordSecOrden=null; renderOrdenes(); return; }
     if(accion==='cancelar-form'){ ordenForm=null; ordenesVista=ordenAbiertaId?'detalle':'lista'; renderOrdenes(); return; }
     if(accion==='emitir'||accion==='guardar-edicion'){ await guardarOrdenForm(); return; }
+    if(ordenForm&&['sugerir','vaciar','afuera','incluir'].includes(accion)){
+      const f=ordenForm, y=window.scrollY;
+      if(accion==='afuera'){ f.verAfuera=!f.verAfuera; pintarAfuera(); return; }
+      if(accion==='sugerir'){ const n=aplicarSugerenciaOrden(f); toast('Sugerencia aplicada: '+n+' movimiento'+(n===1?'':'s')+' tildado'+(n===1?'':'s')+'.'); }
+      else if(accion==='vaciar'){ f.sel={}; }
+      else if(accion==='incluir'){ const id=el.dataset.ordId, c=candidatosOrden().find(x=>x.it.rowId===id); if(c){ f.meta[id]=c.it; f.sel[id]={comentario:'',metodo:c.it.metodo||''}; } }
+      renderOrdenForm(); window.scrollTo(0,y); return;
+    }
     if(!o) return;
     if(accion==='editar'){ if(!puedeModificar(o)){ toast('Esta orden ya no se puede modificar.'); renderOrdenes(); return; } abrirEdicionOrden(o); return; }
     if(accion==='eliminar'){
@@ -3829,6 +3948,10 @@ function setModo(m){
   $('wrap-fact').hidden = m==='gasto';
   $('wrap-comp').hidden = m==='ingreso';
   $('wrap-dividido').hidden = m==='ingreso';
+  if(m==='ingreso'&&$('f-desglose').checked){ $('f-desglose').checked=false; desgForm=[]; }
+  pintarDesgForm();
+  actualizarClaseMant();
+  if(!editId&&window.aplicarMesesCarga) aplicarMesesCarga();
   document.querySelector('.form-grid').classList.toggle('ingreso', m==='ingreso');
   $('lbl-detalle').textContent = m==='gasto'?'Detalle':'Observaciones';
   $('f-detalle').placeholder = m==='gasto'?'Proveedor, comprobante, observaciones':'Observaciones';
@@ -4173,6 +4296,8 @@ function actualizarAvisoAumento(){
     +'Último importe: '+esc(simU+money(+ult.bruto))+' · '+pagadoTxt+esc(mesPagoUlt);
   aviso.hidden=false; campo.classList.add('aumento-fuerte');
 }
+$('f-item').addEventListener('input',aplicarMesesCarga);
+$('f-mescorr').addEventListener('input',()=>{ if(!editId) mesCorrManual=true; });
 ['f-item','f-moneda','f-cotizacion','f-mescorr'].forEach(id=>{ const el=$(id); if(!el) return; el.addEventListener('input',actualizarAvisoAumento); el.addEventListener('change',actualizarAvisoAumento); });
 function previewNeto(){
   const pct = modo==='gasto' ? pctIvaSugerido() : null;
@@ -4300,7 +4425,101 @@ $('cuotas-form').addEventListener('click',e=>{
 /* ---------- Alta y edición ---------- */
 // Pone la fecha de vencimiento y el mes al que corresponde en la fecha/mes actual, y los deja
 // así guardados como el valor "pegajoso" vigente (se llama al entrar de nuevo a "Cargar nuevos").
+/* ---------- Mantenimiento vs. inversión/remodelación (opcional, solo para el rubro de mantenimiento) ---------- */
+const esRubroMant=rubro=>/mantenim/i.test(rubro||'');
+const CLASE_MANT_TXT={mantenimiento:'Mantenimiento',inversion:'Inversión / remodelación'};
+function actualizarClaseMant(){
+  const w=$('wrap-clase-mant'); if(!w) return;
+  const aplica = modo==='gasto' && esRubroMant($('f-rubro').value);
+  w.hidden=!aplica;
+  if(!aplica) $('f-clase-mant').value='';
+}
+$('f-rubro').addEventListener('change',actualizarClaseMant);
+/* ---------- Desglose dentro del formulario de carga/edición (mismo mecanismo que el desglose del resumen de tarjeta) ---------- */
+function pintarDesgForm(){
+  const on=$('f-desglose').checked && modo==='gasto';
+  $('desglose-form').hidden=!on;
+  if(!on) return;
+  const mini=$('desglose-form-mini');
+  if(!mini.dataset.listo){
+    mini.innerHTML=desgMiniFormHtml('form','<div class="field"><button type="button" class="ghost" id="btn-desg-form-add" data-desgf-add="1">+ Agregar movimiento</button></div>');
+    mini.dataset.listo='1'; dzIvaAuto.form=true;
+  }
+  const fmtFecha=f=>{ if(!f) return '—'; const [y,mm,dd]=f.split('-'); return `${dd}/${mm}/${y.slice(2)}`; };
+  const suma=desgForm.reduce((a,d)=>a+(+d.bruto||0),0), bruto=brutoVal();
+  $('desglose-form-head').innerHTML='Desglose — cargado '+money(suma)+(bruto>0?' de '+money(bruto)+(bruto-suma>0?', resta '+money(bruto-suma):(desgForm.length?' — desglose completo':'')):'');
+  $('desglose-form-list').innerHTML = desgForm.length ? desgForm.map(d=>`
+    <div class="desg-row">
+      <span class="desg-fecha">${fmtFecha(d.fechaPago)}</span>
+      <span>${d.tipoFac&&d.tipoFac!=='No posee'?`<span class="tag ${d.tipoFac==='A'||d.tipoFac==='A | 27%'?'A':(d.tipoFac==='Sin emitir'?'SE':'')}">${esc(d.tipoFac)}</span>${d.iva>0?`<span class="ivanota">IVA ${money(d.iva)}</span>`:''}`:'<span class="tag EG">—</span>'}</span>
+      <span class="desg-n" style="text-transform:none;font-weight:400;color:var(--ink)">${esc(d.detalle||'')}${d.tarjeta?`<span class="desg-tarjeta">${esc(d.tarjeta)}</span>`:''}</span>
+      <span class="desg-imp">${money(d.bruto)}</span>
+      <button type="button" class="cuota-del" data-desgf-del="${d.id}" title="Quitar este movimiento del desglose">✕</button>
+    </div>`).join('') : '<p class="note" style="margin:0 0 10px">Todavía no cargaste movimientos del desglose.</p>';
+  $('desglose-form-nota').textContent = $('f-marcar-fijo').checked
+    ? 'Es solo para clasificar: el importe que entra al resultado sigue siendo el bruto del gasto. Como es un gasto fijo mensual, este desglose se repite cada mes hasta que lo desactives.'
+    : 'Es solo para clasificar: el importe que entra al resultado sigue siendo el bruto del gasto, no se duplica.';
+}
+$('f-desglose').addEventListener('change',()=>{
+  if(!$('f-desglose').checked && desgForm.length && !confirm('¿Quitar el desglose? Se pierden los '+desgForm.length+' movimientos cargados acá (si es un gasto fijo, deja de repetirse los meses siguientes).')){ $('f-desglose').checked=true; return; }
+  if(!$('f-desglose').checked) desgForm=[];
+  pintarDesgForm();
+});
+$('f-marcar-fijo').addEventListener('change',pintarDesgForm);
+$('f-bruto').addEventListener('input',()=>{ if(!$('desglose-form').hidden) pintarDesgForm(); });
+$('desglose-form').addEventListener('keydown',e=>{
+  if(e.key!=='Enter'||e.target.tagName==='SELECT'||e.target.tagName==='BUTTON') return;
+  e.preventDefault(); e.stopPropagation(); const b=$('btn-desg-form-add'); if(b) b.click();
+});
+document.addEventListener('click',e=>{
+  const d=(e.target&&e.target.dataset)||{};
+  if(d.desgfDel){ desgForm=desgForm.filter(x=>x.id!==d.desgfDel); pintarDesgForm(); return; }
+  if(d.desgfAdd===undefined) return;
+  const bruto=valorSimple('dz-bruto-form');
+  if(!(bruto>0)){ toast('Cargá el importe del movimiento.'); $('dz-bruto-form').focus(); return; }
+  const tipoFac=$('dz-tipo-form').value||'No posee';
+  const conIva=(tipoFac==='A'||tipoFac==='A | 27%');
+  const iva=conIva?valorSimple('dz-iva-form'):0;
+  desgForm.push({id:uid(),bruto,iva,tipoFac,fechaPago:$('dz-fecha-form').value||hoyISO(),detalle:$('dz-detalle-form').value.trim(),tarjeta:$('dz-tarjeta-form').value||''});
+  $('dz-bruto-form').value=''; $('dz-iva-form').value=''; $('dz-detalle-form').value='';
+  $('dz-tipo-form').value='No posee'; $('dz-wrap-iva-form').hidden=true; dzIvaAuto.form=true;
+  pintarDesgForm(); $('dz-bruto-form').focus();
+});
+// Un gasto fijo mensual recuerda su desglose: la plantilla de Fijos mensuales (fijosExtra) toma el del último mes cargado o modificado,
+// y "Cargar mes" lo repite (con las fechas corridas al mes nuevo) hasta que se lo desactive.
+function sincronizarDesgloseFijo(r){
+  if(!r||!r.fijo||!r.item) return;
+  const f=fijosExtra.find(x=>x.item===r.item); if(!f) return;
+  if(r.claseMant) f.claseMant=r.claseMant; else delete f.claseMant;
+  if(Array.isArray(r.desglose)&&r.desglose.length){ f.desglose=r.desglose.map(d=>({...d})); f.desgMesBase=r.mesPago||r.mesCorr||mesActual(); }
+  else { delete f.desglose; delete f.desgMesBase; }
+}
+function desgParaMes(desglose,mesBase,mesDestino){
+  if(!Array.isArray(desglose)||!desglose.length) return null;
+  const [y0,m0]=(mesBase||mesDestino).split('-').map(Number), [y1,m1]=mesDestino.split('-').map(Number);
+  const dm=(y1-y0)*12+(m1-m0);
+  return desglose.map(d=>{
+    let fp=d.fechaPago||'';
+    if(fp&&dm){ const [y,m,dd]=fp.split('-').map(Number); const nm=sumarMes(y+'-'+String(m).padStart(2,'0'),dm); fp=nm+'-'+String(Math.min(dd,diasDelMes(nm))).padStart(2,'0'); }
+    return {...d,id:uid(),fechaPago:fp};
+  });
+}
 function resetStickyCarga(){ stickyFechaPago=hoyISO(); stickyMesCorr=mesActual(); }
+// Meses al CARGAR un movimiento nuevo (no al editar): el mes de pago es siempre el mes en curso; el mes al que
+// corresponde es el mes en curso si el ítem es nuevo, o el mes siguiente al último que se cargó de ese ítem.
+// Nunca se copia lo que tenía el último movimiento cargado o editado. Si la persona toca el mes a mano, se respeta.
+let mesCorrManual=false;
+function mesCorrAuto(item){
+  const hoy=mesActual(), k=claveItem({item});
+  if(!k) return hoy;
+  const ult=rows.filter(r=>r.tipo===modo&&claveItem(r)===k&&periodoDe(r)).map(periodoDe).sort().pop();
+  return ult?sumarMes(ult,1):hoy;
+}
+function aplicarMesesCarga(){
+  if(editId) return;
+  $('f-mespago').value=mesActual();
+  if(!mesCorrManual) $('f-mescorr').value=mesCorrAuto($('f-item').value);
+}
 function limpiarForm(){
   if(window.cerrarSugerencias) cerrarSugerencias();
   $('f-item').value='';$('f-bruto').value='';$('f-iva').value='';ivaAuto=true;actualizarAvisoAumento();
@@ -4313,7 +4532,9 @@ function limpiarForm(){
   $('f-pospuesto').checked=false;$('wrap-pospuesto').hidden=true;$('f-posp-hasta').value='';$('wrap-posp-hasta').hidden=true;
   if(stickyFechaPago===null) resetStickyCarga();  // primera carga de la página: todavía no hay nada "pegajoso"
   $('f-fechapago').value=stickyFechaPago;$('wrap-fechapago').hidden=false;
-  $('f-mescorr').value=stickyMesCorr;
+  mesCorrManual=false; $('f-mespago').value=mesActual(); $('f-mescorr').value=mesCorrAuto('');
+  desgForm=[]; $('f-desglose').checked=false; pintarDesgForm();
+  $('f-clase-mant').value=''; actualizarClaseMant();
   $('f-moneda').value='ARS';$('f-cotizacion').value='';$('wrap-cotizacion').hidden=true;
   $('lbl-fechapago').textContent = modo==='gasto'?'Fecha de vencimiento':'Fecha de cobro';
   cuotasForm=[]; $('cuotas-form').hidden=true;
@@ -4378,12 +4599,15 @@ async function abrirEdicion(id){
   actualizarWrapPospHasta();
   if(r.pospuesto && !r.pago && r.pospuestoHasta) $('f-posp-hasta').value=r.pospuestoHasta;
   $('f-marcar-fijo').checked = !!r.fijo;
+  desgForm = (r.tipo==='gasto'&&Array.isArray(r.desglose)) ? r.desglose.map(d=>({...d})) : [];
+  $('f-desglose').checked = desgForm.length>0; pintarDesgForm();
   cuotasForm = (r.dividido&&Array.isArray(r.cuotas)) ? r.cuotas.map(c=>({importe:+c.importe||0,mesPago:c.mesPago||'',fecha:c.fecha||'',pago:!!c.pago,metodoPago:c.metodoPago||''})) : [];
   $('wrap-fechapago').hidden = !!r.dividido;
   renderCuotasForm();
   $('f-detalle').value=r.detalle||'';
   if(r.rubro&&!rubrosLista(modo).includes(r.rubro)){ sumarALista(modo,r.rubro); fillRubros(); }
   $('f-rubro').value=r.rubro||'';
+  actualizarClaseMant(); $('f-clase-mant').value = (r.tipo==='gasto'&&esRubroMant(r.rubro)) ? (r.claseMant||'') : '';
   $('f-fact').value=r.fact||'Facturado';
   previewNeto();
   $('titulo-carga').textContent='Editando movimiento';
@@ -4403,6 +4627,7 @@ $('btn-cancel').addEventListener('click',salirEdicion);
 $('form-grid').addEventListener('keydown',e=>{
   if(e.key!=='Enter') return;
   if(e.target.tagName==='SELECT') return;
+  if(e.target.tagName==='TEXTAREA'&&e.shiftKey) return;   // Shift+Enter en el detalle: otro renglón
   e.preventDefault();
   $('btn-add').click();
 });
@@ -4457,15 +4682,21 @@ $('btn-add').addEventListener('click',async()=>{
     cuotasForm.forEach(c=>{ c.pago=c.fecha<=hoyISO(); c.mesPago=c.fecha.slice(0,7); });
     mesEcheqDiv=cuotasForm.map(c=>c.fecha).sort().pop().slice(0,7);   // cuenta en el mes del último cheque
   }
+  if(modo==='gasto' && $('f-desglose').checked && valorSimple('dz-bruto-form')>0){ toast('Tenés un movimiento del desglose sin agregar: tocá "+ Agregar movimiento" o vaciá el importe.'); $('dz-bruto-form').focus(); return; }
   const datos={tipo:modo,mesPago:mesEcheqDiv||$('f-mespago').value,mesCorr:$('f-mescorr').value,
     rubro:rubroSel,
     item,bruto,moneda,cotizacion,tipoFac,iva:ivaManual,fact:modo==='ingreso'?$('f-fact').value:'',
     pago:$('f-pago').checked,comp:modo==='ingreso'?true:$('f-comp').checked,
     dividido:esDiv,detalle:$('f-detalle').value.trim().toUpperCase(),
-    fijo: modo==='gasto' ? $('f-marcar-fijo').checked : false};
+    fijo: modo==='gasto' ? $('f-marcar-fijo').checked : false,
+    desglose: (modo==='gasto' && $('f-desglose').checked) ? desgForm.map(d=>({...d})) : [],
+    claseMant: (modo==='gasto' && esRubroMant(rubroSel)) ? $('f-clase-mant').value : ''};
   // Pospuesto: solo al editar, y solo mientras siga impago.
   datos.pospuesto = !!(editId && modo==='gasto' && !datos.pago && $('f-pospuesto').checked);
   datos.pospuestoHasta = datos.pospuesto ? ($('f-posp-hasta').value||'') : '';
+  // Al CARGAR (no al editar, para poder quitarlo a mano) un gasto de tasas municipales: queda pospuesto de entrada.
+  let pospAuto=false;
+  if(!editId && modo==='gasto' && !datos.pago && esTasaMunicipalTexto(datos)){ datos.pospuesto=true; pospAuto=true; }
   if(modo==='gasto') datos.fechaVenc = esDiv?'':$('f-fechapago').value;
   if(!esDiv && datos.pago){
     datos.fechaPago = $('f-fecha-real-pago').value;
@@ -4490,6 +4721,10 @@ $('btn-add').addEventListener('click',async()=>{
     datos.mesPagoAntesEcheq=(prev&&prev.mesPagoAntesEcheq!==undefined)?prev.mesPagoAntesEcheq:(datos.mesPago||'');
     datos.pago=false; datos.echeqEmitido=true;
   }
+  if(modo==='gasto' && !esDiv && datos.metodoPago==='E-cheq' && (datos.pago||datos.echeqEmitido)){
+    const prevA=editId?rows.find(x=>x.id===editId):null;
+    datos.mesAutEcheq=(prevA&&prevA.mesAutEcheq)||hoyISO().slice(0,7);
+  } else datos.mesAutEcheq='';
   // El gasto con E-cheq se registra en el mes de la fecha del cheque, no en el que se cargó o venció.
   if(modo==='gasto' && !esDiv && $('f-pago').checked && datos.metodoPago==='E-cheq' && datos.fechaDiferida){
     datos.mesPago=datos.fechaDiferida.slice(0,7);
@@ -4507,12 +4742,15 @@ $('btn-add').addEventListener('click',async()=>{
       if(datos.pago){ r.vencTentativo=false; r.metodoTentativo=''; }
       else if(r.vencTentativo && datos.fechaVenc!==r.fechaVenc){ r.vencTentativo=false; }
       Object.assign(r,datos);
+      if(!r.desglose||!r.desglose.length) delete r.desglose;
+      if(!r.claseMant) delete r.claseMant;
+      if(!r.mesAutEcheq) delete r.mesAutEcheq;
       if(esDiv){
         r.cuotas = cuotasForm.map(c=>({importe:+c.importe||0,mesPago:c.mesPago||'',fecha:c.fecha||'',pago:!!c.pago,metodoPago:c.metodoPago||''}));
         if(!r.cuotas.length) r.cuotas=[{importe:bruto,mesPago:datos.mesPago||'',fecha:'',pago:datos.pago}];
         sincronizarPagoDividido(r);
       } else { delete r.cuotas; }
-      if(r.fijo){ if(!r.loteMes) r.loteMes=r.mesCorr||''; agregarAFijosSiCorresponde(r.item,r.rubro); }
+      if(r.fijo){ if(!r.loteMes) r.loteMes=r.mesCorr||''; agregarAFijosSiCorresponde(r.item,r.rubro); sincronizarDesgloseFijo(r); }
       registrarHistorial('Modificó',r);
     }
     save(); salirEdicion(); toast('Cambios guardados');
@@ -4524,15 +4762,19 @@ $('btn-add').addEventListener('click',async()=>{
       sincronizarPagoDividido(nuevo);
     }
     if(nuevo.fijo) nuevo.loteMes = nuevo.mesCorr||'';
+    if(!nuevo.desglose||!nuevo.desglose.length) delete nuevo.desglose;
+    if(!nuevo.claseMant) delete nuevo.claseMant;
+    if(!nuevo.mesAutEcheq) delete nuevo.mesAutEcheq;
     guardarParaDeshacer('alta de "'+nombreDe(nuevo)+'"');
     rows.push(nuevo);
-    if(nuevo.fijo) agregarAFijosSiCorresponde(nuevo.item,nuevo.rubro);
+    if(nuevo.fijo){ agregarAFijosSiCorresponde(nuevo.item,nuevo.rubro); sincronizarDesgloseFijo(nuevo); }
     registrarHistorial('Agregó',nuevo);
     // La fecha de vencimiento y el mes al que corresponde quedan "pegajosos" para el próximo
     // movimiento a cargar, tal como se dejaron acá (limpiarForm() los va a volver a poner).
-    stickyFechaPago=$('f-fechapago').value; stickyMesCorr=$('f-mescorr').value;
+    stickyFechaPago=$('f-fechapago').value;
     save(); limpiarForm(); render(); toast(modo==='ingreso'?'Ingreso agregado':'Gasto agregado');
     mostrarConfirmacionAgregado(nuevo);
+    if(pospAuto) toast('Tasas municipales: quedó cargado como pospuesto. Se lo podés quitar desde Editar.');
   }
 });
 // Si un gasto se marca como fijo, además de registrarse queda disponible como plantilla
@@ -4564,11 +4806,11 @@ function pagadoCuotas(r){
 /* ---------- Orden por columna (Registrados, Fijos mensuales y Detalle del período) ---------- */
 let sortRegistrados={col:'item',dir:'asc'}; // orden por defecto de Registrados: alfabético por ítem
 let sortDetallePeriodo={col:'mesCorr',dir:'desc'};
-let sortSemanaActual={col:'vencimiento',dir:'asc'}, sortSemanaProxima={col:'vencimiento',dir:'asc'}, sortSemanaVencidaPosp={col:'vencimiento',dir:'asc'};
+let sortSemanaActual={col:'vencimiento',dir:'asc'}, sortSemanaProxima={col:'vencimiento',dir:'asc'}, sortSemanaVencidaPosp={col:'vencimiento',dir:'asc'}, sortSemanaTasasPosp={col:'vencimiento',dir:'asc'};
 // valor a comparar por columna
 const COLS_ORDEN={
   tipo:      r=>r.tipo==='ingreso'?'variable':(r.fijo?'fijo':'variable'),
-  mesPago:   r=>r.mesPago||'',
+  mesPago:   r=>mesPagoVisible(r),
   vencimiento: r=>r.tipo==='gasto'?(r.fechaVenc||''):'',
   item:      r=>(r.item||r.rubro||''),
   bruto:     r=>brutoARS(r),
@@ -4592,6 +4834,13 @@ function comparar(a,b,col){
   // desempate estable por nombre
   const na=r=>(r.item||r.rubro||'');
   return na(a).localeCompare(na(b));
+}
+// Pagos semanales: las tasas municipales, servicios públicos urbanos y servicios sanitarios medidos que están POSPUESTOS van siempre al final
+// de la tabla, sea cual sea el orden o el filtro; recién se mezclan con el resto cuando dejan de estar pospuestos.
+const esTasaPospuesta=r=>!!r&&r.tipo==='gasto'&&!r.pago&&!!r.pospuesto&&(esServicioTasa(r)||esTasaMunicipalTexto(r));
+function ordenarSemana(lista,sortState){
+  const o=ordenar(lista,sortState);
+  return o.filter(r=>!esTasaPospuesta(r)).concat(o.filter(esTasaPospuesta));
 }
 function ordenar(lista,sortState){
   return lista.slice().sort((a,b)=>{
@@ -4662,7 +4911,7 @@ function borrarAnchosCol(g){ try{ localStorage.removeItem(COLW_KEY(g)); }catch(e
     borrarAnchosCol(g); render();
   });
 
-  // Cuadro emergente con el texto completo de las celdas cortadas: aparece solo, al pasar el cursor (sin clic).
+  // Cuadro emergente con el texto completo SOLO de las celdas cortadas de Ítem y Detalle (nunca en Pagar, fechas, importes ni botones): aparece solo, al pasar el cursor (sin clic).
   const tip=document.createElement('div'); tip.id='cell-tip'; tip.hidden=true; document.body.appendChild(tip);
   let tipCelda=null;
   window.ocultarTipCelda=function(){ tip.hidden=true; tipCelda=null; };
@@ -4679,7 +4928,7 @@ function borrarAnchosCol(g){ try{ localStorage.removeItem(COLW_KEY(g)); }catch(e
   }
   document.addEventListener('mouseover',e=>{
     if(drag||!escritorio()) return;
-    const c=e.target.closest&&e.target.closest('.tablewrap.col-redim thead th, .tablewrap.col-redim tbody tr[data-row-id] td');
+    const c=e.target.closest&&e.target.closest('.tablewrap.col-redim tbody tr[data-row-id] td[data-c="item"], .tablewrap.col-redim tbody tr[data-row-id] td[data-c="detalle"]');
     if(!c||e.target.closest('[data-hist-item]')||e.target.closest('.col-resizer')){ if(tipCelda) ocultarTipCelda(); return; }
     if(c===tipCelda) return;
     if(c.scrollWidth<=c.clientWidth+1){ if(tipCelda) ocultarTipCelda(); return; }
@@ -4691,7 +4940,7 @@ function borrarAnchosCol(g){ try{ localStorage.removeItem(COLW_KEY(g)); }catch(e
   window.addEventListener('scroll',()=>{ if(tipCelda) ocultarTipCelda(); },{passive:true,capture:true});
 })();
 
-const SORT_STATE_POR_TABLA={ periodo:()=>sortDetallePeriodo, 'semana-actual':()=>sortSemanaActual, 'semana-proxima':()=>sortSemanaProxima, 'semana-vencida-posp':()=>sortSemanaVencidaPosp };
+const SORT_STATE_POR_TABLA={ periodo:()=>sortDetallePeriodo, 'semana-actual':()=>sortSemanaActual, 'semana-proxima':()=>sortSemanaProxima, 'semana-vencida-posp':()=>sortSemanaVencidaPosp, 'semana-tasas-posp':()=>sortSemanaTasasPosp };
 document.addEventListener('click',e=>{
   if(e.target.closest('.col-resizer')) return;   // arrastrar/soltar el borde de una columna no reordena
   const th=e.target.closest('th[data-sortcol]');
@@ -4702,7 +4951,7 @@ document.addEventListener('click',e=>{
   if(sortState.col===col){ sortState.dir = sortState.dir==='asc'?'desc':'asc'; }
   else { sortState.col=col; sortState.dir = ['bruto','neto','mesPago','mesCorr','estado'].includes(col)?'desc':'asc'; }
   if(tablaId==='periodo') renderDetallePeriodo(filteredPeriodo());
-  else if(tablaId==='semana-actual'||tablaId==='semana-proxima'||tablaId==='semana-vencida'||tablaId==='semana-vencida-posp') renderSemana();
+  else if(tablaId==='semana-actual'||tablaId==='semana-proxima'||tablaId==='semana-vencida'||tablaId==='semana-vencida-posp'||tablaId==='semana-tasas-posp') renderSemana();
   else renderTabla(filteredTabla());
 });
 
@@ -4714,7 +4963,7 @@ document.addEventListener('click',e=>{
 function marcarFiltrosActivos(ids){
   ids.forEach(id=>{ const el=$(id); if(el) el.classList.toggle('filtro-activo', el.value!==''); });
 }
-const FILTROS_TABLA=['q-tipo','q-rubro','q-estado','q-comp','q-fijo','q-factura','q-metodo','q-texto',
+const FILTROS_TABLA=['q-tipo','q-rubro','q-estado','q-comp','q-fijo','q-factura','q-metodo','q-clase','q-texto',
   'qt-pago-desde','qt-pago-hasta','qt-corr-desde','qt-corr-hasta','qt-fecha-desde','qt-fecha-hasta',
   'qt-venc-desde','qt-venc-hasta','q-monto-desde','q-monto-hasta'];
 FILTROS_TABLA.forEach(id=>$(id).addEventListener('input',()=>renderTabla(filteredTabla())));
@@ -4865,7 +5114,7 @@ function filaTieneMetodo(r,mt){
 }
 function filteredTabla(){
   const tp=$('q-tipo').value,ru=$('q-rubro').value,es=$('q-estado').value,cp=$('q-comp').value,tx=$('q-texto').value;
-  const fj=$('q-fijo').value, fc=$('q-factura').value, mt=$('q-metodo').value;
+  const fj=$('q-fijo').value, fc=$('q-factura').value, mt=$('q-metodo').value, cl=$('q-clase').value;
   const pd=$('qt-pago-desde').value, ph=$('qt-pago-hasta').value;
   const cd=$('qt-corr-desde').value, ch=$('qt-corr-hasta').value;
   const fd=$('qt-fecha-desde').value, fh=$('qt-fecha-hasta').value;
@@ -4879,14 +5128,15 @@ function filteredTabla(){
     if(r.fijo && !(r.bruto!==0 || r.pago || r.mesPago || r.mesCorr)) return false;
     if(tp&&r.tipo!==tp) return false;
     if(ru&&r.rubro!==ru) return false;
+    if(cl){ if(r.tipo!=='gasto'||!esRubroMant(r.rubro)) return false; if(cl==='sin'?!!r.claseMant:r.claseMant!==cl) return false; }
     if(es==='posp'){ if(r.tipo!=='gasto'||r.pago||!r.pospuesto) return false; }
     else if(es&&(es==='pag'?!r.pago:r.pago)) return false;
     if(cp&&(cp==='no'?esComp(r):!esComp(r))) return false;
     if(fj){ const esFijo=(r.tipo==='gasto'&&r.fijo); if(fj==='fijo'&&!esFijo) return false; if(fj==='variable'&&esFijo) return false; }
     if(fc&&r.tipoFac!==fc) return false;
     if(mt&&!filaTieneMetodo(r,mt)) return false;
-    if(pd&&(!r.mesPago||r.mesPago<pd)) return false;
-    if(ph&&(!r.mesPago||r.mesPago>ph)) return false;
+    if(pd&&(!mesPagoVisible(r)||mesPagoVisible(r)<pd)) return false;
+    if(ph&&(!mesPagoVisible(r)||mesPagoVisible(r)>ph)) return false;
     if(cd&&(!r.mesCorr||r.mesCorr<cd)) return false;
     if(ch&&(!r.mesCorr||r.mesCorr>ch)) return false;
     if(fd&&(!r.fechaPago||r.fechaPago<fd)) return false;
@@ -5456,7 +5706,7 @@ function setVistaMov(v){
   if(entrandoDeNuevoACargar){
     resetStickyCarga();
     $('f-fechapago').value=stickyFechaPago;
-    $('f-mescorr').value=stickyMesCorr;
+    mesCorrManual=false; $('f-mespago').value=mesActual(); $('f-mescorr').value=mesCorrAuto($('f-item').value);
   }
   if(v==='registrados') renderTabla(filteredTabla());
   if(v==='semana') renderSemana();
@@ -5842,21 +6092,23 @@ function tablaHtml(view,sortState,tablaId){
           : (r.metodoPago ? esc(r.metodoPago) : ((!r.pago && r.metodoTentativo) ? `<span class="tentativo" title="Método orientativo, según el último registro de este ítem. Todavía no está confirmado.">${esc(r.metodoTentativo)}</span>` : '<span class="tag EG">—</span>'))
         }</td>` : '';
       
-      const clasePago = ((!esIng && r.pago) ? ' gasto-pago' : '') + (servicioBloqueado(r,mapaServ) ? ' serv-bloq' : '');
+      const clasePago = ((!esIng && r.pago) ? ' gasto-pago' : '') + (servicioGris(r,mapaServ) ? ' serv-bloq' : '');
       // Ítems de tarjeta de crédito: al tocar el nombre se abre un desglose para clasificar los
       // movimientos del resumen sin duplicar el total (ese total sigue siendo el de esta fila).
       const esTarjeta = !esIng && /tarjeta/i.test(r.item||'');
       const abiertaTarjeta = expandidasTarjeta.has(r.id);
       const nDesglose = (r.desglose||[]).length;
+      const conDesglose = esTarjeta || (!esIng && nDesglose>0);   // un gasto cualquiera que tenga desglose se comporta como el resumen de tarjeta
       const detTC=!esIng?mapaDet.get(r.id):null;
       const msgDetTC=detTC?('Ítem detallado en desglose de tarjeta de crédito de '+mesLargo(detTC.mes)):'';
-      const nombreItem=`<span class="item-nombre" data-hist-item="${r.id}">${r.item?esc(r.item):'—'}</span>`;
+      const tagMant=(!esIng&&r.claseMant&&CLASE_MANT_TXT[r.claseMant])?`<span class="tag ${r.claseMant==='inversion'?'CLI':'CLM'}" title="${esc(CLASE_MANT_TXT[r.claseMant])}">${r.claseMant==='inversion'?'INVERSIÓN':'MANTENIM.'}</span>`:'';
+      const nombreItem=`<span class="item-nombre" data-hist-item="${r.id}">${r.item?esc(r.item):'—'}</span>${tagMant}`;
       const tdItem = esIng ? `<td class="item" data-c="item">${nombreItem}</td>`
-        : `<td class="item${esTarjeta?' tarjeta-item':''}${detTC?' en-desglose-tc':''}" data-c="item"${detTC?` title="${esc(msgDetTC)}"`:''}>${nombreItem}${detTC?`<span class="tc-nota">${esc(msgDetTC)}</span>`:''}${esTarjeta?`<span class="tarjeta-badge" data-tarjeta-toggle="${r.id}" title="Ver/cargar el desglose del resumen">${abiertaTarjeta?'▾':'▸'} desglose${nDesglose?' ('+nDesglose+')':''}</span>`:''}</td>`;
+        : `<td class="item${conDesglose?' tarjeta-item':''}${detTC?' en-desglose-tc':''}" data-c="item"${detTC?` title="${esc(msgDetTC)}"`:''}>${nombreItem}${detTC?`<span class="tc-nota">${esc(msgDetTC)}</span>`:''}${conDesglose?`<span class="tarjeta-badge" data-tarjeta-toggle="${r.id}" title="Ver/cargar el desglose">${abiertaTarjeta?'▾':'▸'} desglose${nDesglose?' ('+nDesglose+')':''}</span>`:''}</td>`;
       const opAut = (!esIng && !r.pago) ? opAutorizadaDe(r.id) : null;
       const filaPrincipal = `<tr data-row-id="${r.id}" class="${r.pago?'paid':'unpaid'}${parcial?' parcial':''}${r.id===editId?' editing':''}${!esComp(r)?' nocomp':''}${claseImpago}${clasePago}${opAut?(opAut.aprobado?' en-orden-aut':' en-orden-pend'):''}">
       <td data-c="tipo"><span class="tag ${esIng?'IN':'EG'}">${esIng?'INGRESO':'GASTO'}</span>${!esIng?`<span class="tag ${r.fijo?'FIJ':'VAR'}">${r.fijo?'FIJO':'VARIABLE'}</span>`:''}</td>
-      <td class="mono" data-c="mesPago">${div?'<span class="cp-let" title="Se paga en varias cuotas">varias</span>':'<b>'+mesLabel(r.mesPago).toUpperCase()+'</b>'}</td>
+      <td class="mono" data-c="mesPago">${div?'<span class="cp-let" title="Se paga en varias cuotas">varias</span>':(()=>{ const ma=mesAutorizacionEcheq(r); return ma?`<b class="mes-aut" title="Mes en que se autorizó el pago del e-cheq${r.mesPago&&r.mesPago!==ma?' — se debita en '+esc(mesLargo(r.mesPago))+(r.fechaDiferida?' (fecha diferida '+esc(fmtFechaCorta(r.fechaDiferida))+')':''):''}">${mesLabel(ma).toUpperCase()}</b>`:'<b>'+mesLabel(r.mesPago).toUpperCase()+'</b>'; })()}</td>
       <td class="mono" data-c="mesCorr"><b>${mesLabel(r.mesCorr)}</b></td>
       ${tdItem}
       <td class="num${usd?' dual':''}${r.bruto<0?' negv':''}" data-c="bruto">${montoCell(r.bruto,brutoARS(r),usd)}${variacionHtml(r,mapaHist)}</td>
@@ -5871,7 +6123,7 @@ function tablaHtml(view,sortState,tablaId){
       <td class="acciones" data-c="acc">${btnEdit}${btnDel}</td>
     </tr>`;
       const filaDesglose = (div&&abierta) ? filaDesgloseCuotas(r,totalCols) : '';
-      const filaTarjeta = (esTarjeta&&abiertaTarjeta) ? filaDesgloseTarjeta(r,totalCols) : '';
+      const filaTarjeta = (conDesglose&&abiertaTarjeta) ? filaDesgloseTarjeta(r,totalCols) : '';
       return filaPrincipal+filaDesglose+filaTarjeta;
     }).join('')}</tbody>
     <tfoot>
@@ -5885,7 +6137,7 @@ function tablaHtml(view,sortState,tablaId){
 function refrescarTrasAccion(e){
   const tablaId = (e.target.closest('[data-tabla]')||{}).dataset ? e.target.closest('[data-tabla]').dataset.tabla : 'registrados';
   if(tablaId==='periodo') renderDetallePeriodo(filteredPeriodo());
-  else if(tablaId==='semana-actual'||tablaId==='semana-proxima'||tablaId==='semana-vencida'||tablaId==='semana-vencida-posp') renderSemana();
+  else if(tablaId==='semana-actual'||tablaId==='semana-proxima'||tablaId==='semana-vencida'||tablaId==='semana-vencida-posp'||tablaId==='semana-tasas-posp') renderSemana();
   else renderTabla(filteredTabla());
 }
 function renderTabla(view){
@@ -5908,19 +6160,31 @@ function renderSemana(){
   const actual=filteredSemana(0), proxima=filteredSemana(1);
   $('semana-actual-titulo').textContent=`Esta semana — pago el jueves ${fmtFechaCorta(actual.jueves)} (vencimientos hasta el ${fmtFechaCorta(actual.hasta)}, incluye atrasados) — ${actual.lista.length} pago${actual.lista.length===1?'':'s'} pendiente${actual.lista.length===1?'':'s'}`;
   $('semana-actual-zone').innerHTML = actual.lista.length
-    ? tablaHtml(ordenar(actual.lista,sortSemanaActual),sortSemanaActual,'semana-actual')
+    ? tablaHtml(ordenarSemana(actual.lista,sortSemanaActual),sortSemanaActual,'semana-actual')
     : '<div class="empty">No hay pagos pendientes para pagar esta semana.</div>';
   $('semana-proxima-titulo').textContent=`Semana próxima — pago el jueves ${fmtFechaCorta(proxima.jueves)} (vencimientos del ${fmtFechaCorta(proxima.desde)} al ${fmtFechaCorta(proxima.hasta)}) — ${proxima.lista.length} pago${proxima.lista.length===1?'':'s'} pendiente${proxima.lista.length===1?'':'s'}`;
   $('semana-proxima-zone').innerHTML = proxima.lista.length
-    ? tablaHtml(ordenar(proxima.lista,sortSemanaProxima),sortSemanaProxima,'semana-proxima')
+    ? tablaHtml(ordenarSemana(proxima.lista,sortSemanaProxima),sortSemanaProxima,'semana-proxima')
     : '<div class="empty">No hay pagos pendientes para pagar la semana próxima.</div>';
   // Atrasados pospuestos: los mismos pagos vencidos, pero marcados como "pospuesto"; se separan
   // para que no mezclen con los atrasados que hay que pagar.
   const posp=filteredVencidos(true);
+  posp.lista=posp.lista.filter(r=>!esTasaPospuesta(r));   // las tasas pospuestas van aparte, al final de todo
   $('semana-posp-box').hidden = !posp.lista.length;
   if(posp.lista.length){
     $('semana-posp-titulo').textContent=`Pagos atrasados pospuestos (hasta ${fmtFechaCorta(posp.desde)}) — ${posp.lista.length} pago${posp.lista.length===1?'':'s'}`;
-    $('semana-posp-zone').innerHTML = tablaHtml(ordenar(posp.lista,sortSemanaVencidaPosp),sortSemanaVencidaPosp,'semana-vencida-posp');
+    $('semana-posp-zone').innerHTML = tablaHtml(ordenarSemana(posp.lista,sortSemanaVencidaPosp),sortSemanaVencidaPosp,'semana-vencida-posp');
+  }
+  // Tasas municipales / servicios públicos urbanos / servicios sanitarios medidos POSPUESTOS: siempre al final de todo, con cualquier fecha de
+  // vencimiento y sin importar el mes de pago o a qué mes corresponde (solo respetan rubro, computable y la búsqueda de texto). Al sacarles lo
+  // pospuesto vuelven a mezclarse con el resto de los pagos de la semana.
+  { const ru=$('qs-rubro').value, cp=$('qs-comp').value, tx=$('qs-texto').value;
+    const tasas=rows.filter(r=>esTasaPospuesta(r)&&!esEcheqPendiente(r)&&(!ru||r.rubro===ru)&&(!cp||!(cp==='no'?esComp(r):!esComp(r)))&&coincideTexto(r,tx));
+    $('semana-tasas-box').hidden=!tasas.length;
+    if(tasas.length){
+      $('semana-tasas-titulo').textContent=`Tasas municipales y servicios pospuestos — ${tasas.length} pago${tasas.length===1?'':'s'} (quedan acá abajo hasta que se les quite lo de pospuesto)`;
+      $('semana-tasas-zone').innerHTML=tablaHtml(ordenar(tasas,sortSemanaTasasPosp),sortSemanaTasasPosp,'semana-tasas-posp');
+    }
   }
 }
 // Lista de plantillas de gastos fijos: siempre en blanco, reutilizable cada mes. Muestra si ya
@@ -6158,7 +6422,10 @@ $('fm-registrar').addEventListener('click',async()=>{
       fechaVenc:venc,
       vencTentativo:!f.diaVenc && !!venc,
       metodoTentativo:f.metodo || (sug&&sug.metodo) || '',
-      loteMes:mes
+      loteMes:mes,
+      ...(f.claseMant&&esRubroMant(f.rubro)?{claseMant:f.claseMant}:{}),
+      ...(()=>{ const dg=desgParaMes(f.desglose,f.desgMesBase,mes); return dg?{desglose:dg}:{}; })(),
+      pospuesto:esTasaMunicipalTexto({detalle:f.detalle,rubro:f.rubro}), pospuestoHasta:''
     };
   });
   guardarParaDeshacer('cargar mes de '+nuevos.length+' gastos fijos ('+mesLabel(mes)+')');
@@ -6167,7 +6434,7 @@ $('fm-registrar').addEventListener('click',async()=>{
   save();
   $('fijo-mes-overlay').hidden=true;
   render();
-  toast(nuevos.length+' gastos fijos cargados para '+mesLabel(mes)+' — ya están en Registrados.');
+  { const nP=nuevos.filter(x=>x.pospuesto).length; toast(nuevos.length+' gastos fijos cargados para '+mesLabel(mes)+' — ya están en Registrados.'+(nP?' ('+nP+' de tasas municipales quedaron pospuestos.)':'')); }
 });
 
 // Gastos fijos duplicados: mismo mes al que corresponden + mismo ítem. Se conserva el que
@@ -6227,6 +6494,25 @@ function filaDesgloseCuotas(r,totalCols){
 // al resultado sigue siendo el bruto de la fila principal, así que estos sub-movimientos no se
 // suman a ningún total — cargar el resumen entero (como corresponde) y después desglosarlo acá
 // evita el doble conteo que pasaba al cargar cada consumo como un gasto aparte.
+// Campos para sumar un movimiento al desglose (los mismos en el desglose de un resumen de tarjeta, en Registrados y en el formulario de carga).
+function desgMiniFormHtml(key,botonHtml){
+  return `
+        <div class="field" style="min-width:130px"><label>Fecha de pago</label><input type="date" id="dz-fecha-${key}" value="${hoyISO()}"></div>
+        <div class="field" style="min-width:120px"><label>Tipo de factura</label>
+          <select id="dz-tipo-${key}" data-dz-tipo="${key}">
+            <option value="A">A</option><option value="A | 27%">A | 27%</option>
+            <option value="B">B</option><option value="C">C</option><option value="No posee" selected>No posee</option>
+            <option value="Sin emitir">Sin emitir</option>
+          </select>
+        </div>
+        <div class="field" style="min-width:110px" id="dz-wrap-iva-${key}" hidden><label>IVA a descontar</label><input type="text" id="dz-iva-${key}" inputmode="decimal" placeholder="0"></div>
+        <div class="field" style="min-width:100px"><label>Importe</label><input type="text" id="dz-bruto-${key}" inputmode="decimal" placeholder="0"></div>
+        <div class="field" style="min-width:170px"><label>Tarjeta con la que se abonó</label>
+          <select id="dz-tarjeta-${key}"><option value="">— Sin aclarar —</option>${tarjetasLista().map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('')}</select>
+        </div>
+        <div class="field" style="flex:1 1 170px"><label>Detalle</label><input type="text" id="dz-detalle-${key}" placeholder="Comercio, cuota, etc."></div>
+        ${botonHtml}`;
+}
 function filaDesgloseTarjeta(r,totalCols){
   const items=r.desglose||[];
   const suma=items.reduce((a,d)=>a+(+d.bruto||0),0);
@@ -6242,25 +6528,11 @@ function filaDesgloseTarjeta(r,totalCols){
     </div>`).join('');
   return `<tr class="cuotas-fila"><td></td><td colspan="${totalCols-1}">
     <div class="cuotas-box">
-      <div class="cuotas-head">Desglose del resumen de <b>${esc(r.item)}</b> — cargado ${money(suma)} de ${money(r.bruto)}${resta>0?`, resta ${money(resta)}`:(items.length?' — desglose completo':'')}
+      <div class="cuotas-head">Desglose ${/tarjeta/i.test(r.item||'')?'del resumen ':''}de <b>${esc(r.item)}</b> — cargado ${money(suma)} de ${money(r.bruto)}${resta>0?`, resta ${money(resta)}`:(items.length?' — desglose completo':'')}
         <span class="desg-edit">(es solo para clasificar; el importe que entra al resultado sigue siendo el de esta fila, no se duplica)</span></div>
       ${filas || '<p class="note" style="margin:0 0 10px">Todavía no cargaste movimientos de este resumen.</p>'}
       <div class="cuotas-form-foot" style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--rule)">
-        <div class="field" style="min-width:130px"><label>Fecha de pago</label><input type="date" id="dz-fecha-${r.id}" value="${hoyISO()}"></div>
-        <div class="field" style="min-width:120px"><label>Tipo de factura</label>
-          <select id="dz-tipo-${r.id}" data-dz-tipo="${r.id}">
-            <option value="A">A</option><option value="A | 27%">A | 27%</option>
-            <option value="B">B</option><option value="C">C</option><option value="No posee" selected>No posee</option>
-            <option value="Sin emitir">Sin emitir</option>
-          </select>
-        </div>
-        <div class="field" style="min-width:110px" id="dz-wrap-iva-${r.id}" hidden><label>IVA a descontar</label><input type="text" id="dz-iva-${r.id}" inputmode="decimal" placeholder="0"></div>
-        <div class="field" style="min-width:100px"><label>Importe</label><input type="text" id="dz-bruto-${r.id}" inputmode="decimal" placeholder="0"></div>
-        <div class="field" style="min-width:170px"><label>Tarjeta con la que se abonó</label>
-          <select id="dz-tarjeta-${r.id}"><option value="">— Sin aclarar —</option>${tarjetasLista().map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('')}</select>
-        </div>
-        <div class="field" style="flex:1 1 170px"><label>Detalle</label><input type="text" id="dz-detalle-${r.id}" placeholder="Comercio, cuota, etc."></div>
-        <div class="field"><button type="button" class="ghost" data-desg-add="${r.id}">+ Agregar movimiento</button></div>
+        ${desgMiniFormHtml(r.id,`<div class="field"><button type="button" class="ghost" data-desg-add="${r.id}">+ Agregar movimiento</button></div>`)}
       </div>
     </div>
   </td></tr>`;
@@ -6390,6 +6662,7 @@ document.addEventListener('click',async e=>{
     r.desglose.push({id:uid(),bruto,iva,tipoFac,fechaPago,detalle,tarjeta});
     registrarHistorial('Agregó un movimiento al desglose de tarjeta',r,detalle||('$ '+money(bruto)));
     dzIvaAuto[r.id]=true;
+    sincronizarDesgloseFijo(r);
     save();
     refrescarTrasAccion(e);
     return;
@@ -6402,6 +6675,7 @@ document.addEventListener('click',async e=>{
     guardarParaDeshacer('eliminar movimiento del desglose de "'+(r.item||'')+'"');
     r.desglose=r.desglose.filter(x=>x.id!==desgId);
     registrarHistorial('Eliminó un movimiento del desglose de tarjeta',r);
+    sincronizarDesgloseFijo(r);
     save();
     refrescarTrasAccion(e);
     return;
@@ -6412,12 +6686,12 @@ document.addEventListener('click',async e=>{
     if(!(await asegurarUsuario())) return;
     if(r.echeqEmitido && !r.pago){
       guardarParaDeshacer('anular e-cheq de "'+(nombreDe(r))+'"');
-      if(r.mesPagoAntesEcheq!==undefined) r.mesPago=r.mesPagoAntesEcheq||r.mesPago; r.metodoPago=''; r.fechaDiferida=''; delete r.echeqEmitido; delete r.mesPagoAntesEcheq;
+      if(r.mesPagoAntesEcheq!==undefined) r.mesPago=r.mesPagoAntesEcheq||r.mesPago; r.metodoPago=''; r.fechaDiferida=''; delete r.echeqEmitido; delete r.mesPagoAntesEcheq; delete r.mesAutEcheq;
       registrarHistorial('Anuló el e-cheq emitido',r); save(); render(); toast('E-cheq anulado'); return;
     }
     if(r.pago){
       guardarParaDeshacer('desmarcar pago de "'+(nombreDe(r))+'"');
-      r.pago=false; if(r.tipo==='gasto') r.metodoPago=''; delete r.echeqEmitido; delete r.mesPagoAntesEcheq; registrarHistorial('Desmarcó el pago/cobro',r); save(); render(); return;
+      r.pago=false; if(r.tipo==='gasto') r.metodoPago=''; delete r.echeqEmitido; delete r.mesPagoAntesEcheq; delete r.mesAutEcheq; registrarHistorial('Desmarcó el pago/cobro',r); save(); render(); return;
     }
     const td=e.target.closest('td.cp'); if(!td) return;
     const esGasto=r.tipo==='gasto';
@@ -6487,6 +6761,7 @@ document.addEventListener('click',async e=>{
           guardarParaDeshacer('emitir e-cheq de "'+(nombreDe(r))+'"');
           if(!r.vencOriginal&&r.fechaVenc&&r.fechaVenc!==fechaDiferida) r.vencOriginal=r.fechaVenc;
           if(!r.echeqEmitido) r.mesPagoAntesEcheq=r.mesPago||'';
+          if(!r.mesAutEcheq) r.mesAutEcheq=hoyISO().slice(0,7);
           r.echeqEmitido=true; r.pago=false; r.metodoPago='E-cheq'; r.fechaDiferida=fechaDiferida;
           r.mesPago=fechaDiferida.slice(0,7);   // para el registro de gastos cuenta la fecha del cheque
           delete r.pospuesto; delete r.pospuestoHasta; r.vencTentativo=false; r.metodoTentativo='';
@@ -6498,8 +6773,9 @@ document.addEventListener('click',async e=>{
     if(r.tipo==='gasto'&&metodo==='E-cheq'&&!r.vencOriginal&&r.fechaVenc&&r.fechaVenc!==fechaDiferida) r.vencOriginal=r.fechaVenc;
     guardarParaDeshacer('marcar pago de "'+(nombreDe(r))+'"');
     r.fechaPago = (metodo==='E-cheq'&&fechaDiferida) ? fechaDiferida : fecha;
-    if(metodo==='E-cheq'&&fechaDiferida) r.mesPago=fechaDiferida.slice(0,7);
+    if(metodo==='E-cheq'&&fechaDiferida){ r.mesPago=fechaDiferida.slice(0,7); if(!r.mesAutEcheq) r.mesAutEcheq=hoyISO().slice(0,7); }
     else if(!r.mesPago) r.mesPago=fecha.slice(0,7);
+    if(metodo!=='E-cheq') delete r.mesAutEcheq;
     r.pago=true; delete r.pospuesto; delete r.pospuestoHasta;
     if(r.tipo==='gasto'){ r.metodoPago=metodo; r.fechaDiferida = metodo==='E-cheq' ? fechaDiferida : ''; }
     // El pago ya quedó confirmado: lo orientativo (ver sugerenciaFijo) deja de tener sentido.
@@ -6594,7 +6870,7 @@ document.addEventListener('input',e=>{
 
 /* ---------- Export ---------- */
 $('btn-csv').addEventListener('click',()=>{
-  const head=['Tipo','Fijo o Variable','Mes de Pago o Cobro','Fecha de Vencimiento','Fecha real de Pago o Cobro','Método de Pago','Fecha Diferida (E-cheq)','Item','Moneda','Cotización','Importe Bruto','IVA Descontado','Importe Neto','Importe Bruto (ARS)','Importe Neto (ARS)','Tipo de Factura','Facturacion','Cobrado o Pago','Computable','Mes al que corresponde','Rubro','Observaciones/Detalle'];
+  const head=['Tipo','Fijo o Variable','Mes de Pago o Cobro','Fecha de Vencimiento','Fecha real de Pago o Cobro','Método de Pago','Fecha Diferida (E-cheq)','Item','Moneda','Cotización','Importe Bruto','IVA Descontado','Importe Neto','Importe Bruto (ARS)','Importe Neto (ARS)','Tipo de Factura','Facturacion','Cobrado o Pago','Computable','Mes al que corresponde','Rubro','Mantenimiento/Inversión','Observaciones/Detalle'];
   const fmtF=f=>{ if(!f) return ''; const [y,mm,dd]=f.split('-'); return `${dd}/${mm}/${y}`; };
   const lines=filteredTabla().map(r=>[r.tipo==='ingreso'?'INGRESO':'GASTO',
     r.tipo==='gasto'?(r.fijo?'FIJO':'VARIABLE'):'',
@@ -6610,7 +6886,7 @@ $('btn-csv').addEventListener('click',()=>{
     r.tipoFac||'—',r.tipo==='ingreso'?(r.fact||'Facturado'):'—',
     r.tipo==='gasto'&&r.dividido?(r.pago?'SI (en cuotas)':(r.pagoParcial?'PARCIAL':'NO')):(r.pago?'SI':'NO'),
     r.tipo==='ingreso'?'—':(esComp(r)?'SI':'NO'),
-    mesLabel(r.mesCorr),r.rubro||'',(r.detalle||'').toUpperCase()]
+    mesLabel(r.mesCorr),r.rubro||'',(r.tipo==='gasto'&&esRubroMant(r.rubro)?(CLASE_MANT_TXT[r.claseMant]||''):''),(r.detalle||'').toUpperCase()]
     .map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';'));
   const blob=new Blob(['\uFEFF'+[head.join(';'),...lines].join('\n')],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='resultados-copahue.csv';a.click();
@@ -6704,14 +6980,22 @@ $('btn-csv').addEventListener('click',()=>{
     if(f.id==='f-item'){
       const u=c.ultimo;
       if(u&&!$('f-rubro').value&&u.rubro&&[...$('f-rubro').options].some(o=>o.value===u.rubro)){ $('f-rubro').value=u.rubro; $('f-rubro').dispatchEvent(new Event('change',{bubbles:true})); }
-      if(u&&!$('f-detalle').value.trim()&&u.detalle) $('f-detalle').value=u.detalle;
+      // Del movimiento anterior solo se traen el nombre, el rubro, el vencimiento y el método de pago: nunca el comentario/detalle.
+      if(!editId){
+        const sug=sugerenciaFijo(c.texto,$('f-mespago').value||mesActual());
+        if(sug&&modo==='gasto'){
+          if(sug.venc&&!$('wrap-fechapago').hidden) $('f-fechapago').value=sug.venc;
+          if(sug.metodo){ if([...$('f-metodo-tent').options].some(o=>o.value===sug.metodo)) $('f-metodo-tent').value=sug.metodo; pintarCampoTent(); }
+        }
+      }
     }
     cerrar();
+    if(f.id==='f-item'&&window.aplicarMesesCarga) aplicarMesesCarga();
     if(window.actualizarAvisoAumento) actualizarAvisoAumento();
     f.focus();
     try{ f.setSelectionRange(f.value.length,f.value.length); }catch(e){}
   }
-  ['f-item','f-detalle'].forEach(id=>{
+  ['f-item'].forEach(id=>{
     const el=$(id);
     el.setAttribute('autocomplete','off'); el.setAttribute('aria-autocomplete','list');
     el.addEventListener('input',()=>{ campo=el; pintar(); });
@@ -6770,7 +7054,7 @@ $('btn-csv').addEventListener('click',()=>{
   $('firebase-warning').hidden = FIREBASE_LISTO;
   $('stamp').textContent='Actualizado '+new Date().toLocaleDateString('es-AR');
   $('f-mespago').value=mesActual();
-  resetStickyCarga(); $('f-mescorr').value=stickyMesCorr; $('f-fechapago').value=stickyFechaPago;
+  resetStickyCarga(); mesCorrManual=false; $('f-mescorr').value=mesCorrAuto($('f-item').value); $('f-fechapago').value=stickyFechaPago;
   $('q-tipo').value='gasto'; $('q-estado').value='pend'; $('qt-pago-desde').value=mesActual(); $('qt-pago-hasta').value=mesActual();
   cargarTema();
   actualizarBotonDeshacer();

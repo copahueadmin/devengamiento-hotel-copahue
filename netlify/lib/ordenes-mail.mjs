@@ -22,6 +22,17 @@ export function totalesPorMetodo(items) {
   const g = {}; (items || []).forEach((i) => { const k = i.metodo || ""; (g[k] = g[k] || []).push(i); });
   return Object.keys(g).sort((a, b) => (a === "" ? 1 : b === "" ? -1 : a.localeCompare(b, "es"))).map((k) => ({ metodo: k || "Sin método de pago definido", total: totalTxt(totalesPorMoneda(g[k])) }));
 }
+// Lo que sale de la cuenta bancaria: transferencias, tarjeta de débito, débito automático y pago de servicios (efectivo, e-cheq, tarjetas de crédito, etc. no).
+const sinTild = (t) => String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+const METODOS_BANCO = ["transferencia", "tarjeta de debito", "debito automatico", "pago de servicios"].map(sinTild);
+export const sale = (i) => METODOS_BANCO.includes(sinTild(i.metodo));
+export function totalBanco(items) { const l = (items || []).filter(sale); return { lista: l, txt: totalTxt(totalesPorMoneda(l)), sinMetodo: (items || []).filter((i) => !i.metodo).length }; }
+const notaSinMetodo = (b) => (b.sinMetodo ? `No incluye ${b.sinMetodo} movimiento${b.sinMetodo === 1 ? "" : "s"} sin método de pago definido.` : "");
+const lineaBanco = (items) => { const b = totalBanco(items); return [`>>> TOTAL NECESARIO EN LA CUENTA BANCARIA: ${b.txt}`, "    (transferencias, tarjeta de débito, débito automático y pago de servicios)", ...(notaSinMetodo(b) ? ["    " + notaSinMetodo(b)] : [])]; };
+function bancoBloque(items, titulo = "Total necesario en la cuenta bancaria") {
+  const b = totalBanco(items);
+  return `<div style="margin:4px 0 14px;padding:12px 14px;background:#fff4d6;border:2px solid #16231f"><div style="font-size:12px;color:#555;text-transform:uppercase;letter-spacing:.04em">${esc(titulo)}</div><div style="font-size:24px;font-weight:bold;color:#16231f;margin:2px 0">${esc(b.txt)}</div><div style="font-size:12px;color:#555">Transferencias, tarjeta de débito, débito automático y pago de servicios.${notaSinMetodo(b) ? "<br>" + esc(notaSinMetodo(b)) : ""}</div></div>`;
+}
 const activos = (o) => (o.items || []).filter((i) => !i.rech);
 const nAut = (o) => (o.items || []).filter((i) => i.aut).length;
 const nRech = (o) => (o.items || []).filter((i) => i.rech).length;
@@ -54,7 +65,7 @@ function tabla(filas, cab) {
 }
 function totalesBloque(items) {
   const metodos = totalesPorMetodo(items);
-  return p(`<b>Total de la orden: ${esc(totalTxt(totalesPorMoneda(items)))}</b>`) + tabla(metodos.map((m) => [m.metodo, m.total]), ["Método de pago", "Total"]);
+  return p(`<b>Total de la orden: ${esc(totalTxt(totalesPorMoneda(items)))}</b>`) + bancoBloque(items) + tabla(metodos.map((m) => [m.metodo, m.total]), ["Método de pago", "Total"]);
 }
 function textoDe(titulo, partes) { return [titulo, "", ...partes, "", "—", "CORREO AUTOMÁTICO — NO RESPONDER.", AVISO_AUTO].join("\n"); }
 const lineasMetodos = (items) => totalesPorMetodo(items).map((m) => `  · ${m.metodo}: ${m.total}`);
@@ -69,14 +80,14 @@ export function mailEmitida(o, tipo) {   // tipo: 'creada' | 'editada'
   return {
     to: [AUTORIZADOR],
     subject: `${tipo === "editada" ? "OP modificada" : "Nueva OP"} ${o.id} — pendiente de tu autorización — Total ${tot}`,
-    text: textoDe(titulo, [quien, vence, "", `Total de la orden: ${tot}`, "Total por método de pago:", ...lineasMetodos(it)]),
+    text: textoDe(titulo, [quien, vence, "", `Total de la orden: ${tot}`, ...lineaBanco(it), "", "Total por método de pago:", ...lineasMetodos(it)]),
     html: html(titulo, [p(esc(quien)), p(esc(vence)), totalesBloque(it)]),
   };
 }
 export function mailEliminada(r) {   // r: {id, emisorNombre, items:[{metodo,importe,moneda}]}
   const tot = totalTxt(totalesPorMoneda(r.items));
   const titulo = `${r.id} fue eliminada`, quien = `${r.emisorNombre || "Administración"} eliminó la orden ${r.id}. Ya no hay nada para autorizar en ella.`;
-  return { to: [AUTORIZADOR], subject: `OP eliminada ${r.id}`, text: textoDe(titulo, [quien, "", `Total que tenía: ${tot}`, "Total por método de pago:", ...lineasMetodos(r.items)]), html: html(titulo, [p(esc(quien)), totalesBloque(r.items)]) };
+  return { to: [AUTORIZADOR], subject: `OP eliminada ${r.id}`, text: textoDe(titulo, [quien, "", `Total que tenía: ${tot}`, ...lineaBanco(r.items), "", "Total por método de pago:", ...lineasMetodos(r.items)]), html: html(titulo, [p(esc(quien)), totalesBloque(r.items)]) };
 }
 function estadoResumen(o) {
   const est = estadoOrden(o), n = (o.items || []).length;
@@ -137,8 +148,8 @@ export function mailAprobacion(o, ahora = Date.now()) {
   seccion("Sin resolver — quedaron fuera por ahora", pend, vencida ? "Se venció la orden: estos movimientos quedaron libres para incluirlos en otra." : "Todavía se pueden resolver hasta las 23:59 hs del día de la orden.");
   if (aut.length) {
     const m = totalesPorMetodo(aut);
-    bl.push(p("<b>Total autorizado por método de pago</b>"), tabla(m.map((x) => [x.metodo, x.total]), ["Método de pago", "Total"]));
-    tx.push("Total autorizado por método de pago:", ...m.map((x) => `  · ${x.metodo}: ${x.total}`));
+    bl.push(p("<b>Total autorizado por método de pago</b>"), tabla(m.map((x) => [x.metodo, x.total]), ["Método de pago", "Total"]), bancoBloque(aut, "Total autorizado necesario en la cuenta bancaria"));
+    tx.push("Total autorizado por método de pago:", ...m.map((x) => `  · ${x.metodo}: ${x.total}`), "", ...lineaBanco(aut).map((l) => l.replace("NECESARIO", "NECESARIO (autorizado)")));
   }
   return { to: destinoAdmin(o), subject: titulo, text: textoDe(titulo, tx), html: html(titulo, bl) };
 }
