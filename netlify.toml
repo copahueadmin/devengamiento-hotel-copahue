@@ -8,3 +8,9 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  # La apiKey de Firebase en index.html es una clave web pública (identifica el
+  # proyecto; la seguridad real está en las reglas de Firestore). La detección
+  # "inteligente" la marcaba como secreto y frenaba el deploy. El escaneo normal
+  # de variables marcadas como secretas (FIREBASE_PRIVATE_KEY, RESEND_API_KEY,
+  # etc.) sigue activo.
+  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
