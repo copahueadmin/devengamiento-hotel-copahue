@@ -34,7 +34,7 @@ export async function manejar(req, deps) {
       from, to: destino, headers: CABECERAS_AUTO,
       subject: "PRUEBA de envío – Devengamiento Hotel Copahue",
       text: `Este es un correo de PRUEBA.\n\nSi lo estás leyendo, el envío de correos del sistema funciona.\nEnviado el ${cuando} (hora de Argentina) por ${actor.email}.\nServicio de envío: ${via}.\nRemitente: ${from}\n\n${AVISO_AUTO}`,
-      html: `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#222"><p style="font-size:16px"><b>Correo de PRUEBA</b></p><p>Si lo estás leyendo, el envío de correos del sistema funciona.</p><p style="color:#555">Enviado el ${cuando} (hora de Argentina) por ${actor.email}.<br>Servicio de envío: ${via}.</p><hr style="border:none;border-top:1px solid #ccc"><p style="font-size:12px;color:#777">${AVISO_AUTO}</p></div>`,
+      html: (await import("../lib/ordenes-mail.mjs")).html("Correo de PRUEBA", [`<p style="margin:0 0 12px">Si lo estás leyendo, el envío de correos del sistema funciona.</p>`, `<p style="margin:0;color:#4a5a54;font-size:13px">Enviado el ${cuando} (hora de Argentina) por ${actor.email}.<br>Servicio de envío: ${via}.</p>`]),
     });
     return json(200, { ok: true, via, from, node: process.version, id: (r && r.messageId) || "" });
   } catch (e) {

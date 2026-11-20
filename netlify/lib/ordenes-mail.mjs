@@ -31,14 +31,16 @@ const notaSinMetodo = (b) => (b.sinMetodo ? `No incluye ${b.sinMetodo} movimient
 const lineaBanco = (items) => { const b = totalBanco(items); return [`>>> TOTAL NECESARIO EN LA CUENTA BANCARIA: ${b.txt}`, "    (transferencias, tarjeta de débito, débito automático y pago de servicios)", ...(notaSinMetodo(b) ? ["    " + notaSinMetodo(b)] : [])]; };
 function bancoBloque(items, titulo = "Total necesario en la cuenta bancaria") {
   const b = totalBanco(items);
-  return `<div style="margin:4px 0 14px;padding:12px 14px;background:#fff4d6;border:2px solid #16231f"><div style="font-size:12px;color:#555;text-transform:uppercase;letter-spacing:.04em">${esc(titulo)}</div><div style="font-size:24px;font-weight:bold;color:#16231f;margin:2px 0">${esc(b.txt)}</div><div style="font-size:12px;color:#555">Transferencias, tarjeta de débito, débito automático y pago de servicios.${notaSinMetodo(b) ? "<br>" + esc(notaSinMetodo(b)) : ""}</div></div>`;
+  return `<div style="margin:6px 0 16px;padding:14px 16px;background:#fff6e0;border:1px solid #b0791c;border-left:5px solid #b0791c;border-radius:14px"><div style="font-size:11px;font-weight:700;color:#4a5a54;text-transform:uppercase;letter-spacing:.08em">${esc(titulo)}</div><div style="font-family:${FUENTE_TIT};font-size:27px;font-weight:700;color:#16211e;margin:3px 0 4px">${esc(b.txt)}</div><div style="font-size:12px;color:#4a5a54">Transferencias, tarjeta de débito, débito automático y pago de servicios.${notaSinMetodo(b) ? "<br>" + esc(notaSinMetodo(b)) : ""}</div></div>`;
 }
 const activos = (o) => (o.items || []).filter((i) => !i.rech);
 const nAut = (o) => (o.items || []).filter((i) => i.aut).length;
 const nRech = (o) => (o.items || []).filter((i) => i.rech).length;
 const pendientes = (o) => (o.items || []).filter((i) => !i.aut && !i.rech);
 export const unicos = (a) => [...new Set(a.filter(Boolean).map((x) => String(x).toLowerCase()))];
-export const destinoAdmin = (o) => unicos([o.emisor && o.emisor.email, ADMIN_FIJO]);
+// Todos los correos del sistema salen SIEMPRE a las dos mismas personas, por igual: quien autoriza y administración.
+export const DESTINATARIOS = () => unicos([ADMIN_FIJO, AUTORIZADOR]);
+export const destinoAdmin = () => DESTINATARIOS();
 
 // Fin del día (23:59:59.999 hora de Argentina) del día en que se emitió/publicó la orden
 export function finDelDiaAR(iso) { const f = partesAR(new Date(iso)); return Date.parse(`${f.year}-${f.month}-${f.day}T23:59:59.999-03:00`); }
@@ -53,23 +55,55 @@ export function estadoOrden(o, ahora = Date.now()) {
 }
 
 // ───────── plantilla ─────────
-function html(titulo, bloques) {
-  return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1b1b1b;max-width:620px">
-<div style="background:#16231f;color:#fff;padding:12px 16px;font-size:15px;font-weight:bold">${esc(titulo)}</div>
-<div style="border:1px solid #d8d2c4;border-top:none;padding:14px 16px">${bloques.join("")}
-<p style="color:#555;font-size:12px;margin:18px 0 0;padding-top:10px;border-top:1px solid #e4dfd2"><b>Correo automático — no responder.</b> ${esc(AVISO_AUTO)}<br>Sistema Resultados y Devengamiento — Hotel Copahue.</p></div></div>`;
+// Estética del sitio: verde oscuro del encabezado, título en un flotante redondeado, tarjeta clara con bordes suaves y los mismos tonos de acento.
+const FUENTE = "'Figtree','Segoe UI',Helvetica,Arial,sans-serif";
+const FUENTE_TIT = "'Outfit','Figtree','Segoe UI',Helvetica,Arial,sans-serif";
+export function html(titulo, bloques) {
+  return `<div style="background:#dfe6df;padding:22px 12px;font-family:${FUENTE};font-size:15px;line-height:1.5;color:#16211e">
+<div style="max-width:620px;margin:0 auto">
+<div style="background:#16211e;background-image:linear-gradient(160deg,#25372f,#16211e);border-radius:22px 22px 0 0;padding:20px 22px 22px">
+<div style="margin:0 0 14px"><span style="display:inline-block;background:#0f1815;border:1px solid #34493f;border-radius:999px;padding:5px 14px;font-family:${FUENTE_TIT};font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#f4f1ea">Resultados y Devengamiento</span></div>
+<div style="font-family:${FUENTE_TIT};font-size:21px;line-height:1.25;font-weight:600;color:#f4f1ea">${esc(titulo)}</div>
+</div>
+<div style="background:#fbfaf7;border:1px solid #c7cfc8;border-top:none;border-radius:0 0 22px 22px;padding:20px 22px 18px">${bloques.join("")}
+<div style="margin:20px 0 0;padding-top:12px;border-top:1px solid #c7cfc8;font-size:12px;line-height:1.5;color:#4a5a54"><b style="color:#16211e">Correo automático — no responder.</b> ${esc(AVISO_AUTO)}<br>Sistema Resultados y Devengamiento — Hotel Copahue.</div></div>
+</div></div>`;
 }
-const p = (t) => `<p style="margin:0 0 10px">${t}</p>`;
+const p = (t) => `<p style="margin:0 0 12px;color:#16211e">${t}</p>`;
+const cita = (t) => `<blockquote style="margin:4px 0 12px;padding:10px 14px;border-left:4px solid #b0791c;border-radius:0 12px 12px 0;background:#fff6e0;color:#16211e">${t}</blockquote>`;
 function tabla(filas, cab) {
-  return `<table style="border-collapse:collapse;width:100%;margin:6px 0 12px">${cab ? `<tr>${cab.map((c, i) => `<th style="text-align:${i ? "right" : "left"};font-size:12px;color:#666;padding:4px 8px;border-bottom:2px solid #16231f">${esc(c)}</th>`).join("")}</tr>` : ""}${filas.map((f) => `<tr>${f.map((c, i) => `<td style="padding:5px 8px;border-bottom:1px solid #e4dfd2;text-align:${i ? "right" : "left"}">${esc(c)}</td>`).join("")}</tr>`).join("")}</table>`;
+  const th = (c, k) => `<th style="text-align:${k ? "right" : "left"};font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#4a5a54;padding:6px 10px;border-bottom:2px solid #16211e">${esc(c)}</th>`;
+  const td = (c, k) => `<td style="padding:9px 10px;border-bottom:1px solid #c7cfc8;text-align:${k ? "right" : "left"};${k ? "font-weight:600;white-space:nowrap;" : ""}color:#16211e">${esc(c)}</td>`;
+  return `<table style="border-collapse:collapse;width:100%;margin:6px 0 14px;background:#ffffff;border:1px solid #c7cfc8;border-radius:14px">${cab ? `<tr>${cab.map(th).join("")}</tr>` : ""}${filas.map((f) => `<tr>${f.map(td).join("")}</tr>`).join("")}</table>`;
 }
 function totalesBloque(items) {
   const metodos = totalesPorMetodo(items);
-  return p(`<b>Total de la orden: ${esc(totalTxt(totalesPorMoneda(items)))}</b>`) + bancoBloque(items) + tabla(metodos.map((m) => [m.metodo, m.total]), ["Método de pago", "Total"]);
+  return p(`<b style="font-size:16px">Total de la orden: ${esc(totalTxt(totalesPorMoneda(items)))}</b>`) + bancoBloque(items) + tabla(metodos.map((m) => [m.metodo, m.total]), ["Método de pago", "Total"]);
 }
+// ───────── enlaces al sistema ─────────
+// Dirección del sistema: la de siempre (www.devengamiento.hotelcopahue.site); se puede cambiar con la variable SITE_URL en Netlify.
+const SITIO = "https://www.devengamiento.hotelcopahue.site";
+const BASE = () => String(process.env.SITE_URL || SITIO).replace(/\/+$/, "");
+// Abre el sistema directo en Órdenes de pago: sin id → la lista; con id → el detalle de esa orden; extra: {sec:'G'|'I', fila:rowId}
+export function enlaceOp(id, extra) {
+  const b = BASE(); if (!b) return "";
+  const q = new URLSearchParams(id ? { op: id, ...(extra || {}) } : { area: "ordenes" });
+  return `${b}/?${q.toString()}`;
+}
+const enlaceBloque = (url, etiqueta) => (url
+  ? `<div style="margin:16px 0 6px"><a href="${esc(url)}" style="display:inline-block;background:#2f6b4f;color:#ffffff;font-family:${FUENTE};font-size:14px;font-weight:700;letter-spacing:.04em;text-decoration:none;padding:12px 24px;border-radius:999px">${esc(etiqueta)} →</a></div><div style="font-size:12px;color:#4a5a54;margin:8px 0 0;word-break:break-all">Si el botón no se abre, copiá este enlace: <a href="${esc(url)}" style="color:#3b5f86">${esc(url)}</a></div>`
+  : "");
+const enlaceTxt = (url, etiqueta) => (url ? ["", `${etiqueta}: ${url}`] : []);
 function textoDe(titulo, partes) { return [titulo, "", ...partes, "", "—", "CORREO AUTOMÁTICO — NO RESPONDER.", AVISO_AUTO].join("\n"); }
 const lineasMetodos = (items) => totalesPorMetodo(items).map((m) => `  · ${m.metodo}: ${m.total}`);
 const listaItems = (items) => (items || []).map((i) => [i.item || "(sin nombre)", monto(i.importe, i.moneda) + (i.metodo ? " · " + i.metodo : "")]);
+
+// Enlace a una conversación: si todos los mensajes son sobre un mismo movimiento abre esa conversación; si no, la sección de comentarios generales o de conversaciones.
+function enlaceMsg(id, msgs) {
+  const filas = [...new Set(msgs.map((m) => m.rowId || ""))];
+  if (filas.length === 1 && filas[0]) return enlaceOp(id, { fila: filas[0] });
+  return enlaceOp(id, { sec: msgs.some((m) => m.rowId) ? "I" : "G" });
+}
 
 // ───────── armado de cada mail: devuelven {to, subject, text, html} ─────────
 export function mailEmitida(o, tipo) {   // tipo: 'creada' | 'editada'
@@ -78,16 +112,16 @@ export function mailEmitida(o, tipo) {   // tipo: 'creada' | 'editada'
   const quien = tipo === "editada" ? `${nom} modificó la orden ${o.id}.` : `${nom} emitió la orden ${o.id} (${fechaHoraAR(o.emitidaTs)} hs).`;
   const vence = "Vence hoy a las 23:59 hs si no se autoriza por completo.";
   return {
-    to: [AUTORIZADOR],
+    to: DESTINATARIOS(),
     subject: `${tipo === "editada" ? "OP modificada" : "Nueva OP"} ${o.id} — pendiente de tu autorización — Total ${tot}`,
-    text: textoDe(titulo, [quien, vence, "", `Total de la orden: ${tot}`, ...lineaBanco(it), "", "Total por método de pago:", ...lineasMetodos(it)]),
-    html: html(titulo, [p(esc(quien)), p(esc(vence)), totalesBloque(it)]),
+    text: textoDe(titulo, [quien, vence, "", `Total de la orden: ${tot}`, ...lineaBanco(it), "", "Total por método de pago:", ...lineasMetodos(it), ...enlaceTxt(enlaceOp(o.id), `Abrir la orden ${o.id} en el sistema`)]),
+    html: html(titulo, [p(esc(quien)), p(esc(vence)), totalesBloque(it), enlaceBloque(enlaceOp(o.id), `Abrir la orden ${o.id}`)]),
   };
 }
 export function mailEliminada(r) {   // r: {id, emisorNombre, items:[{metodo,importe,moneda}]}
   const tot = totalTxt(totalesPorMoneda(r.items));
   const titulo = `${r.id} fue eliminada`, quien = `${r.emisorNombre || "Administración"} eliminó la orden ${r.id}. Ya no hay nada para autorizar en ella.`;
-  return { to: [AUTORIZADOR], subject: `OP eliminada ${r.id}`, text: textoDe(titulo, [quien, "", `Total que tenía: ${tot}`, ...lineaBanco(r.items), "", "Total por método de pago:", ...lineasMetodos(r.items)]), html: html(titulo, [p(esc(quien)), totalesBloque(r.items)]) };
+  return { to: DESTINATARIOS(), subject: `OP eliminada ${r.id}`, text: textoDe(titulo, [quien, "", `Total que tenía: ${tot}`, ...lineaBanco(r.items), "", "Total por método de pago:", ...lineasMetodos(r.items), ...enlaceTxt(enlaceOp(), "Ir a Órdenes de pago")]), html: html(titulo, [p(esc(quien)), totalesBloque(r.items), enlaceBloque(enlaceOp(), "Ir a Órdenes de pago")]) };
 }
 function estadoResumen(o) {
   const est = estadoOrden(o), n = (o.items || []).length;
@@ -103,26 +137,26 @@ export function mailDecision(o, actorNombre, rowIds, accion) {   // accion: 'aut
   const resumen = estadoResumen(o);
   return {
     to: destinoAdmin(o), subject: titulo,
-    text: textoDe(titulo, [`${actorNombre} ${verbo} en la orden ${o.id}:`, ...its.map((i) => `  · ${i.item} — ${monto(i.importe, i.moneda)}${i.metodo ? " (" + i.metodo + ")" : ""}`), "", resumen]),
-    html: html(titulo, [p(`${esc(actorNombre)} <b>${verbo}</b> en la orden ${esc(o.id)}:`), tabla(listaItems(its), ["Movimiento", "Importe"]), p(esc(resumen))]),
+    text: textoDe(titulo, [`${actorNombre} ${verbo} en la orden ${o.id}:`, ...its.map((i) => `  · ${i.item} — ${monto(i.importe, i.moneda)}${i.metodo ? " (" + i.metodo + ")" : ""}`), "", resumen, ...enlaceTxt(enlaceOp(o.id), `Abrir la orden ${o.id}`)]),
+    html: html(titulo, [p(`${esc(actorNombre)} <b>${verbo}</b> en la orden ${esc(o.id)}:`), tabla(listaItems(its), ["Movimiento", "Importe"]), p(esc(resumen)), enlaceBloque(enlaceOp(o.id), `Abrir la orden ${o.id}`)]),
   };
 }
 export function mailDeshizo(o, actorNombre, rowId) {
   const i = (o.items || []).find((x) => x.rowId === rowId), nombre = i ? i.item : "un movimiento";
   const titulo = `${o.id}: ${actorNombre} deshizo una decisión`, linea = `${actorNombre} deshizo su decisión sobre "${nombre}" en la orden ${o.id}: vuelve a estar pendiente.`;
-  return { to: destinoAdmin(o), subject: titulo, text: textoDe(titulo, [linea, "", estadoResumen(o)]), html: html(titulo, [p(esc(linea)), p(esc(estadoResumen(o)))]) };
+  return { to: destinoAdmin(o), subject: titulo, text: textoDe(titulo, [linea, "", estadoResumen(o), ...enlaceTxt(enlaceOp(o.id), `Abrir la orden ${o.id}`)]), html: html(titulo, [p(esc(linea)), p(esc(estadoResumen(o))), enlaceBloque(enlaceOp(o.id), `Abrir la orden ${o.id}`)]) };
 }
 export function mailMensaje(o, msg, actorEmail) {
   const deAutorizador = actorEmail === AUTORIZADOR, aAdmin = deAutorizador;
-  const to = aAdmin ? destinoAdmin(o) : [AUTORIZADOR];
+  const to = DESTINATARIOS();
   const it = msg.rowId ? (o.items || []).find((x) => x.rowId === msg.rowId) : null;
   // a quien autoriza no se le nombran ítems: se indica solo que es sobre un movimiento
   const sobre = msg.rowId ? (aAdmin ? ` sobre "${it ? it.item : "un movimiento"}"` : " sobre un movimiento") : "";
   const titulo = msg.rowId ? `${o.id}: nueva pregunta o comentario de ${msg.autorNombre}` : `${o.id}: nuevo comentario general de ${msg.autorNombre}`;
   const intro = `${msg.autorNombre} escribió${sobre} en la orden ${o.id} (${fechaHoraAR(msg.ts)} hs):`;
   return {
-    to, subject: titulo, text: textoDe(titulo, [intro, "", `“${msg.texto}”`, "", "Entrá al sistema (Órdenes de pago) para responder."]),
-    html: html(titulo, [p(esc(intro)), `<blockquote style="margin:6px 0 12px;padding:8px 12px;border-left:4px solid #b8791f;background:#f6f2e8">${esc(msg.texto).replace(/\n/g, "<br>")}</blockquote>`, p("Entrá al sistema (Órdenes de pago) para responder.")]),
+    to, subject: titulo, text: textoDe(titulo, [intro, "", `“${msg.texto}”`, "", "Entrá al sistema (Órdenes de pago) para responder.", ...enlaceTxt(enlaceMsg(o.id, [msg]), "Responder desde el sistema")]),
+    html: html(titulo, [p(esc(intro)), cita(esc(msg.texto).replace(/\n/g, "<br>")), p("Entrá al sistema (Órdenes de pago) para responder."), enlaceBloque(enlaceMsg(o.id, [msg]), "Responder en el sistema")]),
   };
 }
 
@@ -151,6 +185,7 @@ export function mailAprobacion(o, ahora = Date.now()) {
     bl.push(p("<b>Total autorizado por método de pago</b>"), tabla(m.map((x) => [x.metodo, x.total]), ["Método de pago", "Total"]), bancoBloque(aut, "Total autorizado necesario en la cuenta bancaria"));
     tx.push("Total autorizado por método de pago:", ...m.map((x) => `  · ${x.metodo}: ${x.total}`), "", ...lineaBanco(aut).map((l) => l.replace("NECESARIO", "NECESARIO (autorizado)")));
   }
+  bl.push(enlaceBloque(enlaceOp(o.id), `Abrir la orden ${o.id}`)); tx.push(...enlaceTxt(enlaceOp(o.id), `Abrir la orden ${o.id}`));
   return { to: destinoAdmin(o), subject: titulo, text: textoDe(titulo, tx), html: html(titulo, bl) };
 }
 
@@ -164,8 +199,9 @@ export function mailMensajes(o, msgs, destino) {
   const intro = n === 1 ? `Tenés un mensaje nuevo en la orden ${o.id}:` : `Tenés ${n} mensajes nuevos en la orden ${o.id}:`;
   const pie = "Entrá al sistema (Órdenes de pago) para responder.";
   const tx = [intro, "", ...lista.flatMap((m) => [`[${fechaHoraAR(m.ts)} hs] ${m.autorNombre || m.autorEmail} — ${sobre(m)}:`, `  “${m.texto}”`, ""]), pie];
-  const bl = [p(esc(intro)), ...lista.map((m) => `<p style="margin:10px 0 2px;font-size:12px;color:#555">${esc(fechaHoraAR(m.ts))} hs · <b>${esc(m.autorNombre || m.autorEmail)}</b> · ${esc(sobre(m))}</p><blockquote style="margin:2px 0 8px;padding:8px 12px;border-left:4px solid #b8791f;background:#f6f2e8">${esc(m.texto).replace(/\n/g, "<br>")}</blockquote>`), p(esc(pie))];
-  return { to: [destino], subject: titulo, text: textoDe(titulo, tx), html: html(titulo, bl) };
+  const url = enlaceMsg(o.id, lista); tx.push(...enlaceTxt(url, "Responder desde el sistema"));
+  const bl = [p(esc(intro)), ...lista.map((m) => `<p style="margin:12px 0 2px;font-size:12px;color:#4a5a54">${esc(fechaHoraAR(m.ts))} hs · <b style="color:#16211e">${esc(m.autorNombre || m.autorEmail)}</b> · ${esc(sobre(m))}</p>${cita(esc(m.texto).replace(/\n/g, "<br>"))}`), p(esc(pie)), enlaceBloque(url, "Responder en el sistema")];
+  return { to: DESTINATARIOS(), subject: titulo, text: textoDe(titulo, tx), html: html(titulo, bl) };
 }
 
 export function mailVencida(o) {
@@ -177,15 +213,15 @@ export function mailVencida(o) {
     : `La orden de pago ${o.id} (emitida el ${fechaHoraAR(o.emitidaTs)} hs) se venció parcialmente: ${nAut(o)} movimientos autorizados${nRech(o) ? `, ${nRech(o)} rechazados` : ""} y ${pend.length} sin aprobar antes del vencimiento. Ítems NO aprobados:`;
   const pie = "Los movimientos sin autorizar quedaron libres para incluirlos en otra orden.";
   return {
-    to: unicos([AUTORIZADOR, ...destinoAdmin(o)]), subject: titulo,
-    text: textoDe(titulo, [intro, ...lista.map((i) => `  · ${i.item} — ${monto(i.importe, i.moneda)}${i.metodo ? " (" + i.metodo + ")" : ""}`), "", `Total no aprobado: ${totalTxt(totalesPorMoneda(lista))}`, pie]),
-    html: html(titulo, [p(esc(intro)), tabla(listaItems(lista), ["Movimiento", "Importe"]), p(`<b>Total no aprobado: ${esc(totalTxt(totalesPorMoneda(lista)))}</b>`), p(esc(pie))]),
+    to: DESTINATARIOS(), subject: titulo,
+    text: textoDe(titulo, [intro, ...lista.map((i) => `  · ${i.item} — ${monto(i.importe, i.moneda)}${i.metodo ? " (" + i.metodo + ")" : ""}`), "", `Total no aprobado: ${totalTxt(totalesPorMoneda(lista))}`, pie, ...enlaceTxt(enlaceOp(o.id), `Abrir la orden ${o.id}`)]),
+    html: html(titulo, [p(esc(intro)), tabla(listaItems(lista), ["Movimiento", "Importe"]), p(`<b>Total no aprobado: ${esc(totalTxt(totalesPorMoneda(lista)))}</b>`), p(esc(pie)), enlaceBloque(enlaceOp(o.id), `Abrir la orden ${o.id}`)]),
   };
 }
 
 // ───────── envío con "reclamo" para no duplicar ─────────
 export async function enviar(transporte, m) {
-  return transporte.sendMail({ from: REMITENTE(), to: m.to.join(", "), subject: m.subject, text: m.text, html: m.html, headers: CABECERAS_AUTO });
+  return transporte.sendMail({ from: REMITENTE(), to: DESTINATARIOS().join(", "), subject: m.subject, text: m.text, html: m.html, headers: CABECERAS_AUTO });
 }
 // Marca un campo en la orden solo si todavía no estaba (transacción): quien lo logra es el único que manda el aviso.
 export async function reclamar(db, id, campo) {
