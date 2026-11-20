@@ -44,13 +44,15 @@ export const destinoAdmin = () => DESTINATARIOS();
 
 // Fin del día (23:59:59.999 hora de Argentina) del día en que se emitió/publicó la orden
 export function finDelDiaAR(iso) { const f = partesAR(new Date(iso)); return Date.parse(`${f.year}-${f.month}-${f.day}T23:59:59.999-03:00`); }
+// Vencimiento: fin del día de emisión o, si quien autoriza la pospuso, la fecha a la que la pasó (o.vencePosp)
+export const venceAR = (o) => (o.vencePosp ? Date.parse(o.vencePosp) : finDelDiaAR(o.emitidaTs));
 // Estado según las mismas reglas que la app
 export function estadoOrden(o, ahora = Date.now()) {
   const items = o.items || [], n = items.length, a = nAut(o), r = nRech(o);
   if ((n && a === n) || (o.estado === "autorizada" && !r)) return "autorizada";
   if (n && a + r === n) return r === n ? "rechazada" : "resuelta";
   if (Date.parse(o.emitidaTs) > ahora) return "programada";
-  if (ahora > finDelDiaAR(o.emitidaTs)) return "vencida";
+  if (ahora > venceAR(o)) return "vencida";
   return a + r ? "parcial" : "pendiente";
 }
 
@@ -140,6 +142,11 @@ export function mailDecision(o, actorNombre, rowIds, accion) {   // accion: 'aut
     text: textoDe(titulo, [`${actorNombre} ${verbo} en la orden ${o.id}:`, ...its.map((i) => `  · ${i.item} — ${monto(i.importe, i.moneda)}${i.metodo ? " (" + i.metodo + ")" : ""}`), "", resumen, ...enlaceTxt(enlaceOp(o.id), `Abrir la orden ${o.id}`)]),
     html: html(titulo, [p(`${esc(actorNombre)} <b>${verbo}</b> en la orden ${esc(o.id)}:`), tabla(listaItems(its), ["Movimiento", "Importe"]), p(esc(resumen)), enlaceBloque(enlaceOp(o.id), `Abrir la orden ${o.id}`)]),
   };
+}
+export function mailPospuesta(o, actorNombre) {
+  const hasta = new Date(o.vencePosp || Date.now()), f = partesAR(hasta);
+  const titulo = `${o.id} fue pospuesta`, linea = `${actorNombre} pospuso la orden ${o.id}: ahora vence el ${f.day}/${f.month} a las 23:59 hs.`;
+  return { to: destinoAdmin(o), subject: `OP pospuesta ${o.id} — vence el ${f.day}/${f.month}`, text: textoDe(titulo, [linea, "", estadoResumen(o), ...enlaceTxt(enlaceOp(o.id), `Abrir la orden ${o.id}`)]), html: html(titulo, [p(esc(linea)), p(esc(estadoResumen(o))), enlaceBloque(enlaceOp(o.id), `Abrir la orden ${o.id}`)]) };
 }
 export function mailDeshizo(o, actorNombre, rowId) {
   const i = (o.items || []).find((x) => x.rowId === rowId), nombre = i ? i.item : "un movimiento";
@@ -337,7 +344,7 @@ export async function revisarOrdenes({ db, transporte, FieldValue, ahora = Date.
       }
     }
     // 2) vencimiento (total o parcial), hasta 48 hs después
-    if (est === "vencida" && !o.mailVencidaTs && ahora - finDelDiaAR(o.emitidaTs) < RE_ULTIMAS_HORAS) {
+    if (est === "vencida" && !o.mailVencidaTs && ahora - venceAR(o) < RE_ULTIMAS_HORAS) {
       if (await reclamar(db, o.id, "mailVencidaTs")) {
         try { await enviar(transporte, mailVencida(o)); hechos.push(o.id + ":vencida"); }
         catch (e) { await soltar(db, o.id, "mailVencidaTs", FieldValue); throw e; }

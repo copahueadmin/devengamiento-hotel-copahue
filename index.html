@@ -597,14 +597,6 @@
   .tablacompacta tbody tr.gasto-pago:nth-child(even){background:color-mix(in srgb, var(--ok) 7%, var(--paper))}
   /* gastos impagos todavía sin importe: naranja claro (sin vencimiento o fuera de la semana de pagos) / fuerte (vence dentro de los pagos semanales) */
   :root{--naranja:#E8892B}
-  .tablacompacta tbody tr.sin-importe-claro:nth-child(odd){background:color-mix(in srgb, var(--naranja) 24%, var(--paper))}
-  .tablacompacta tbody tr.sin-importe-claro:nth-child(even){background:color-mix(in srgb, var(--naranja) 17%, var(--paper))}
-  .tablacompacta tbody tr.sin-importe-fuerte:nth-child(odd){background:color-mix(in srgb, var(--naranja) 70%, var(--paper))}
-  .tablacompacta tbody tr.sin-importe-fuerte:nth-child(even){background:color-mix(in srgb, var(--naranja) 62%, var(--paper))}
-  body.dark .tablacompacta tbody tr.sin-importe-fuerte:nth-child(odd){background:color-mix(in srgb, var(--naranja) 50%, var(--paper))}
-  body.dark .tablacompacta tbody tr.sin-importe-fuerte:nth-child(even){background:color-mix(in srgb, var(--naranja) 44%, var(--paper))}
-  tbody tr.sin-importe-claro td:first-child{box-shadow:inset 3px 0 0 var(--naranja)}
-  tbody tr.sin-importe-fuerte td:first-child{box-shadow:inset 4px 0 0 #B8560A}
   /* servicios (tasas) todavía sin vencimiento, orden de pago ni pago */
   tbody tr.serv-bloq,.tablacompacta tbody tr.serv-bloq:nth-child(odd),.tablacompacta tbody tr.serv-bloq:nth-child(even){background:#7b7b7b !important}
   tbody tr.serv-bloq td{background:#7b7b7b !important;color:#0d0d0d !important;font-style:italic}
@@ -1169,10 +1161,6 @@
   .tablacompacta tbody tr.gasto-impago:nth-child(even){background:color-mix(in srgb,var(--neg) 6%,var(--paper))}
   .tablacompacta tbody tr.gasto-pago:nth-child(odd){background:color-mix(in srgb,var(--ok) 11%,var(--paper))}
   .tablacompacta tbody tr.gasto-pago:nth-child(even){background:color-mix(in srgb,var(--ok) 7%,var(--paper))}
-  .tablacompacta tbody tr.sin-importe-fuerte:nth-child(odd){background:color-mix(in srgb,var(--naranja) 42%,var(--paper))}
-  .tablacompacta tbody tr.sin-importe-fuerte:nth-child(even){background:color-mix(in srgb,var(--naranja) 36%,var(--paper))}
-  body.dark .tablacompacta tbody tr.sin-importe-fuerte:nth-child(odd){background:color-mix(in srgb,var(--naranja) 34%,var(--paper))}
-  body.dark .tablacompacta tbody tr.sin-importe-fuerte:nth-child(even){background:color-mix(in srgb,var(--naranja) 29%,var(--paper))}
   tbody tr.serv-bloq,.tablacompacta tbody tr.serv-bloq:nth-child(odd),.tablacompacta tbody tr.serv-bloq:nth-child(even){background:#AAB1B6 !important}
   tbody tr.serv-bloq td{background:#AAB1B6 !important}
   .ord-fila.serv-bloq{background:#AAB1B6}
@@ -2078,11 +2066,11 @@
   /* ===== Solapas de Movimientos: píldora deslizante ===== */
   #movs-tabs{position:relative}
   #movs-tabs .tabs-pill{position:absolute;top:0;left:0;width:0;height:0;border-radius:999px;background:var(--ink);box-shadow:var(--sh-1);z-index:0;pointer-events:none;opacity:0;
-    transition:transform .45s cubic-bezier(.65,.05,.2,1),width .45s cubic-bezier(.65,.05,.2,1),height .45s cubic-bezier(.65,.05,.2,1)}
-  #movs-tabs button{position:relative;z-index:1;transition:color .3s ease,background-color .2s}
+    transition:transform .18s cubic-bezier(.3,.7,.3,1),width .18s cubic-bezier(.3,.7,.3,1),height .18s cubic-bezier(.3,.7,.3,1)}
+  #movs-tabs button{position:relative;z-index:1;transition:color .15s ease,background-color .12s}
   #movs-tabs button.on,#movs-tabs button.on:hover{background:transparent!important;box-shadow:none!important;color:var(--paper)}
-  .vista-in{animation:vista-in .38s cubic-bezier(.2,.7,.2,1)}
-  @keyframes vista-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .vista-in{animation:vista-in .14s ease-out}
+  @keyframes vista-in{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
   @media (prefers-reduced-motion:reduce){ #movs-tabs .tabs-pill{transition:none} .vista-in{animation:none} }
   /* ===== Desvanecido / desenfoque del texto que pasa por debajo del título fijo o del borde inferior ===== */
   .fade-strip,.fade-strip-b{display:none}
@@ -2456,6 +2444,178 @@
   @media (min-width:901px){
     .ord-tabla tr.ord-fila-lista>td:not(:first-child):not(:last-child){border-left:none!important;border-right:none!important}
   }
+
+  /* Dentro de otro sitio (iframe), en computadora, la esquina superior derecha suele quedar tapada por el botón de cerrar de ese sitio:
+     los botones del encabezado se corren hacia la izquierda. Se puede ajustar con ?margen=NN (en píxeles) en la dirección. */
+  html.embebido{--margen-der:64px}
+  @media (min-width:701px){ html.embebido header.masthead{padding-right:var(--margen-der)!important;box-sizing:border-box} }
+
+  /* Mes de pago y mes al que corresponde en la barra: dos flotantes de color (verde = Pagado, azul = Corresponde), con el nombre del grupo arriba */
+  .rango-grupo{display:none}
+  @media (min-width:701px){
+    .movs-head .filtros-barra>.rango-bar{position:relative;isolation:isolate;margin:0 10px 0 6px;--tono:var(--ok)}
+    .movs-head .filtros-barra>.rango-bar.rango-corr{--tono:var(--iva)}
+    .movs-head .filtros-barra>.rango-bar::before{content:"";position:absolute;z-index:-1;left:-8px;right:-8px;top:-30px;bottom:-5px;border-radius:16px;
+      background:color-mix(in srgb,var(--tono) 13%,transparent);border:1px solid color-mix(in srgb,var(--tono) 38%,transparent);box-shadow:0 4px 12px color-mix(in srgb,var(--tono) 14%,transparent)}
+    .movs-head .filtros-barra>.rango-bar .rango-grupo{display:block;position:absolute;left:0;right:0;bottom:calc(100% + 15px);text-align:center;font-family:var(--f-ui);font-size:10.5px;line-height:1;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:color-mix(in srgb,var(--tono) 82%,var(--ink));pointer-events:none}
+    .movs-head .filtros-barra>.rango-bar .field{width:calc(5.2ch + 28px)}
+    .movs-head .filtros-barra>.rango-bar .field>label{left:6px;color:color-mix(in srgb,var(--tono) 60%,var(--ink-soft))}
+    .movs-head .filtros-barra>.rango-bar input{text-align:center;padding:0 6px}
+    .movs-head .filtros-barra>.rango-bar .rango-sep{color:color-mix(in srgb,var(--tono) 70%,var(--ink-soft));font-weight:700}
+    .movs-head .filtros-barra>.rango-bar input.filtro-activo{background:#fff;box-shadow:0 0 0 2px color-mix(in srgb,var(--tono) 55%,transparent)}
+  }
+
+  @media (min-width:701px){
+    .movs-head .filtros-barra>.rango-bar .field{width:calc(5ch + 24px)}
+    body.dark .movs-head .filtros-barra>.rango-bar input.filtro-activo{background:color-mix(in srgb,var(--tono) 22%,#1a2421);color:#f4f1ea;box-shadow:0 0 0 2px color-mix(in srgb,var(--tono) 70%,transparent)}
+  }
+
+  /* Etiquetas de variación %: pastilla suave, tono según sea buena o mala noticia, flecha en trazo */
+  .var-pct{--vt:var(--ink-soft);display:inline-flex;align-items:center;gap:3px;padding:2px 8px 2px 5px;border:0;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.01em;line-height:1.25;
+    color:color-mix(in srgb,var(--vt) 78%,var(--ink));background:color-mix(in srgb,var(--vt) 14%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--vt) 26%,transparent)}
+  .var-pct.mal{--vt:var(--neg);color:color-mix(in srgb,var(--neg) 78%,var(--ink))} .var-pct.bien{--vt:var(--ok);color:color-mix(in srgb,var(--ok) 78%,var(--ink))} .var-pct.flat{--vt:var(--ink-soft)}
+  .var-pct .vp-ico{width:12px;height:12px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;padding:1px;border-radius:50%;background:color-mix(in srgb,var(--vt) 22%,transparent)}
+  .var-pct .vp-num{font-weight:700;font-variant-numeric:tabular-nums}
+  .var-pct .var-vs{font-weight:500;opacity:.75}
+  td.num .var-pct{display:flex;width:max-content;margin:3px 0 0 auto}
+  .hist-tabla .var-pct{margin-left:auto;margin-right:0}
+  .hist-total-pct .var-pct{font-size:20px;padding:4px 14px 4px 8px;gap:6px;display:inline-flex}
+  .hist-total-pct .var-pct .vp-ico{width:22px;height:22px;padding:3px}
+  body.dark .var-pct.mal{color:color-mix(in srgb,var(--neg) 70%,#fff)} body.dark .var-pct.bien{color:color-mix(in srgb,var(--ok) 70%,#fff)} body.dark .var-pct.flat{color:rgba(244,241,234,.75)}
+
+  /* Flotantes de rango de meses más bajos */
+  @media (min-width:701px){
+    .movs-head .filtros-barra>.rango-bar::before{top:-24px;bottom:-3px;border-radius:13px}
+    .movs-head .filtros-barra>.rango-bar .rango-grupo{bottom:calc(100% + 12px);font-size:9.5px;letter-spacing:.12em}
+    .movs-head .filtros-barra>.rango-bar .field>label{bottom:calc(100% + 1px);font-size:8.5px;letter-spacing:.08em}
+    .movs-head .filtros-barra>.rango-bar input{height:30px;font-size:12.5px}
+  }
+
+  @media (min-width:701px){ .movs-head .filtros-barra>.rango-bar::before{top:-29px} }
+
+  /* Los flotantes de Pago/Corresponde se extienden un poco hacia abajo (sin mover el contenido) */
+  @media (min-width:701px){ .movs-head .filtros-barra>.rango-bar::before{bottom:-9px} }
+
+  /* Pago dividido: símbolo de cuotas con borde fino que pasa de rojo a verde (de izquierda a derecha) según las cuotas pagas */
+  .cuotas-btn{--p:0%;position:relative;display:inline-flex;align-items:center;gap:5px;height:24px;min-height:0;padding:0 10px 0 8px;margin:0;border:0;border-radius:999px;background:transparent!important;box-shadow:none!important;color:var(--ink);font:700 11px/1 var(--f-ui);letter-spacing:0;text-transform:none;cursor:pointer;vertical-align:middle;font-variant-numeric:tabular-nums;-webkit-tap-highlight-color:transparent}
+  .cuotas-btn::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;pointer-events:none;
+    background:linear-gradient(90deg,var(--ok) 0,var(--ok) var(--p),var(--neg) var(--p),var(--neg) 100%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);mask-composite:exclude}
+  .cuotas-btn .ico{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+  .cuotas-btn b{font-weight:700}
+  .cuotas-btn:hover,.cuotas-btn[aria-expanded="true"]{background:color-mix(in srgb,var(--ink) 7%,transparent)!important}
+  #cuotas-pop{position:fixed;z-index:3600;min-width:250px;max-width:calc(100vw - 16px);padding:10px 12px 8px;border-radius:14px;background:var(--paper);color:var(--ink);border:1px solid var(--rule-strong);box-shadow:0 14px 34px rgba(0,0,0,.28);font-family:var(--f-ui);font-size:12px;pointer-events:none}
+  #cuotas-pop[hidden]{display:none}
+  #cuotas-pop .cpop-head{font-size:10.5px;font-weight:600;letter-spacing:.04em;color:var(--ink-soft);margin:0 0 6px;padding-bottom:6px;border-bottom:1px solid var(--rule)}
+  #cuotas-pop .cpop-head b{color:var(--ink)}
+  #cuotas-pop .cpop-row{display:grid;grid-template-columns:8px auto auto auto 1fr;align-items:center;gap:8px;padding:3px 0;white-space:nowrap}
+  #cuotas-pop .cpop-row i{width:8px;height:8px;border-radius:50%;background:var(--neg)}
+  #cuotas-pop .cpop-row.ok i{background:var(--ok)}
+  #cuotas-pop .cpop-n{font-weight:700}
+  #cuotas-pop .cpop-imp{font-variant-numeric:tabular-nums;text-align:right}
+  #cuotas-pop .cpop-f{font-variant-numeric:tabular-nums;color:var(--ink-soft)}
+  #cuotas-pop .cpop-e{font-size:11px;font-weight:600;color:var(--neg)}
+  #cuotas-pop .cpop-row.ok .cpop-e{color:var(--ok)}
+
+  /* Pagos semanales: Limpiar es una X redonda (como en Registrados) y Generar orden se distingue con su propio diseño (documento con tilde, azul de las órdenes) */
+  .semana-toolbar #btn-semana-limpiar{width:36px;height:36px;min-height:0;padding:0;justify-content:center;flex:none;gap:0}
+  .semana-toolbar #btn-semana-limpiar .ico{width:16px;height:16px}
+  .semana-toolbar #btn-generar-orden{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(160deg,color-mix(in srgb,var(--iva) 92%,#fff),color-mix(in srgb,var(--iva) 70%,#000))!important;color:#fff!important;border:0!important;box-shadow:0 4px 12px color-mix(in srgb,var(--iva) 38%,transparent),inset 0 1px 0 rgba(255,255,255,.28)!important;font-weight:700;letter-spacing:.06em}
+  .semana-toolbar #btn-generar-orden .ico{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .semana-toolbar #btn-generar-orden:hover{filter:brightness(1.08);transform:translateY(-1px)}
+
+  /* Fijos mensuales: la ventana termina justo en "Administrar rubros…" (sin espacio sobrante); al desplegarlo, el alto se adapta al contenido */
+  #vista-fijos{padding-bottom:0}
+
+  /* Órdenes de pago: píldora deslizante en las solapas y entrada suave de la lista (igual que en Movimientos) */
+  #ord-tabs button{position:relative;z-index:1;transition:color .15s ease,background-color .12s}
+  #ord-tabs button.on,#ord-tabs button.on:hover{background:transparent!important;box-shadow:none!important;color:var(--paper)}
+  #ord-tabs .ord-nueva{z-index:1}
+  @media (prefers-reduced-motion:reduce){ #ord-tabs-grupo .tabs-pill{transition:none} }
+  /* Lista de órdenes: "modificable hasta…" a la derecha del estado, con la tipografía del sitio */
+  .ord-tabla td.ord-estado-col{white-space:nowrap}
+  .ord-tabla td.ord-estado-col>.ord-estado,.ord-tabla td.ord-estado-col>.ord-sub{display:inline-block;vertical-align:middle}
+  .ord-tabla .ord-sub{display:inline-block;margin:0 0 0 8px;font-family:var(--f-ui);font-stretch:normal;font-size:11px;letter-spacing:0;color:var(--ink-soft)}
+
+  /* Órdenes de pago: solapas en su propio flotante y "Nueva orden" suelto, flotando a la derecha */
+  #ord-tabs{display:flex;align-items:center;gap:10px;width:100%;padding:0;background:none;border-radius:0;box-shadow:none;flex-wrap:nowrap}
+  #ord-tabs-grupo{position:relative;flex:0 1 auto;min-width:0;margin:0}
+  #ord-tabs-grupo .tabs-pill{position:absolute;top:0;left:0;width:0;height:0;border-radius:999px;background:var(--ink);box-shadow:var(--sh-1);z-index:0;pointer-events:none;opacity:0;
+    transition:transform .18s cubic-bezier(.3,.7,.3,1),width .18s cubic-bezier(.3,.7,.3,1),height .18s cubic-bezier(.3,.7,.3,1)}
+  #ord-tabs-grupo button{position:relative;z-index:1}
+  #ord-tabs .ord-nueva{margin-left:auto!important;border:0!important;border-radius:999px!important;height:42px;flex:none;box-shadow:0 8px 20px color-mix(in srgb,var(--ing) 42%,transparent),0 2px 6px rgba(0,0,0,.18)!important}
+  @media (max-width:700px){
+    #ord-tabs{gap:8px;padding:0}
+    #ord-tabs-grupo{display:flex;flex:1 1 auto;flex-wrap:nowrap;gap:2px;padding:3px;border-radius:999px;align-items:center}
+    #ord-tabs-grupo button{flex:1 1 0;min-width:0}
+    #ord-tabs .ord-nueva{flex:0 0 44px!important;height:44px;border-radius:15px!important;margin-left:0!important}
+  }
+  /* Necesario en banco: chip aparte (con ícono y punteado) para no confundirlo con el total */
+  .ord-tot-fila{display:flex;align-items:center;justify-content:flex-end;gap:12px;white-space:nowrap}
+  .ord-banco-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:999px;font-family:var(--f-ui);font-size:11.5px;font-weight:500;line-height:1.3;cursor:help;
+    color:color-mix(in srgb,var(--iva) 80%,var(--ink));background:color-mix(in srgb,var(--iva) 11%,transparent);border:1px dashed color-mix(in srgb,var(--iva) 55%,transparent)}
+  .ord-banco-chip .ico{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .ord-banco-chip small{font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+  .ord-banco-chip b{font-weight:600;font-variant-numeric:tabular-nums}
+  @media (max-width:700px){ .ord-tot-fila{flex-direction:column;align-items:flex-end;gap:4px} }
+
+  /* Necesario en Cta.: columna propia; el chip lleva el nombre solo en celular (en escritorio lo dice el encabezado) */
+  .ord-cta-col .ord-banco-chip small{display:none}
+  @media (max-width:700px){
+    .ord-cta-col .ord-banco-chip small{display:inline}
+    .ord-tabla.ord-con-cta tr.ord-fila-lista td:nth-child(7){grid-column:1/4;grid-row:4;justify-self:start;padding-top:4px!important}
+    .ord-tabla.ord-con-cta tr.ord-fila-lista td:nth-child(8){grid-column:1/4;grid-row:5;padding-top:4px!important}
+    .ord-tabla.ord-con-cta tr.ord-fila-lista td:nth-child(9){grid-column:1/4;grid-row:6}
+    .ord-tabla.ord-con-cta tr.ord-fila-lista td:nth-child(9):empty{display:none}
+  }
+
+  .ord-info .ord-posp-txt{cursor:default;text-decoration:none!important;pointer-events:none}
+
+  /* Gastos impagos sin importe: rojo suave (igual que un impago fuera de los 7 días) y, dentro de los pagos que se vienen (desde el viernes previo al jueves de pagos), rojo fuerte: más intenso que el de un impago con importe */
+  .tablacompacta tbody tr.sin-importe-claro:nth-child(odd){background:color-mix(in srgb,var(--neg) 9%,var(--paper))}
+  .tablacompacta tbody tr.sin-importe-claro:nth-child(even){background:color-mix(in srgb,var(--neg) 6%,var(--paper))}
+  .tablacompacta tbody tr.sin-importe-fuerte:nth-child(odd){background:color-mix(in srgb,var(--neg) 50%,var(--paper))}
+  .tablacompacta tbody tr.sin-importe-fuerte:nth-child(even){background:color-mix(in srgb,var(--neg) 44%,var(--paper))}
+  body.dark .tablacompacta tbody tr.sin-importe-fuerte:nth-child(odd){background:color-mix(in srgb,var(--neg) 46%,var(--paper))}
+  body.dark .tablacompacta tbody tr.sin-importe-fuerte:nth-child(even){background:color-mix(in srgb,var(--neg) 40%,var(--paper))}
+  tbody tr.sin-importe-fuerte td:first-child{box-shadow:inset 4px 0 0 var(--neg)}
+
+  /* Los nombres de los ítems van SIEMPRE en negrita (también no computables, pospuestos, tasas municipales, servicios, etc.) */
+  td.item,td[data-c="item"],td.item .item-nombre,td[data-c="item"] .item-nombre,.fijo-estado-item,.ord-nombre{font-weight:700!important}
+  /* Sin importe dentro de los 7 días previos al jueves de pagos: rojo todavía más fuerte */
+  .tablacompacta tbody tr.sin-importe-fuerte:nth-child(odd){background:color-mix(in srgb,var(--neg) 66%,var(--paper))}
+  .tablacompacta tbody tr.sin-importe-fuerte:nth-child(even){background:color-mix(in srgb,var(--neg) 59%,var(--paper))}
+  body.dark .tablacompacta tbody tr.sin-importe-fuerte:nth-child(odd){background:color-mix(in srgb,var(--neg) 58%,var(--paper))}
+  body.dark .tablacompacta tbody tr.sin-importe-fuerte:nth-child(even){background:color-mix(in srgb,var(--neg) 51%,var(--paper))}
+  /* Símbolo de cuotas: borde más grueso y parejo también en las curvas (radio exacto = mitad del alto) */
+  .cuotas-btn{height:26px;border-radius:13px}
+  .cuotas-btn::before{border-radius:13px;padding:2.5px}
+
+  /* texto bien legible sobre el rojo fuerte de los ítems sin importe */
+  body:not(.dark) tbody tr.sin-importe-fuerte td{color:#1c0f0d}
+
+  /* Relleno del símbolo de cuotas: sigue el avance del borde (verde = pagas, rojo = pendientes) en un tono más suave */
+  .cuotas-btn{background:linear-gradient(90deg,color-mix(in srgb,var(--ok) 24%,transparent) 0,color-mix(in srgb,var(--ok) 24%,transparent) var(--p),color-mix(in srgb,var(--neg) 17%,transparent) var(--p),color-mix(in srgb,var(--neg) 17%,transparent) 100%),linear-gradient(color-mix(in srgb,var(--paper) 72%,transparent),color-mix(in srgb,var(--paper) 72%,transparent))!important;color:var(--ink)}
+  .cuotas-btn:hover,.cuotas-btn[aria-expanded="true"]{filter:brightness(.96)}
+  body.dark .cuotas-btn{background:linear-gradient(90deg,color-mix(in srgb,var(--ok) 30%,transparent) 0,color-mix(in srgb,var(--ok) 30%,transparent) var(--p),color-mix(in srgb,var(--neg) 24%,transparent) var(--p),color-mix(in srgb,var(--neg) 24%,transparent) 100%),linear-gradient(color-mix(in srgb,var(--paper) 40%,transparent),color-mix(in srgb,var(--paper) 40%,transparent))!important}
+
+  /* Símbolo de cuotas v2: anillo exterior (rojo/verde) + relleno interior con radio propio, para que el interior sea del mismo "molde" que el exterior */
+  .cuotas-btn,body.dark .cuotas-btn{height:26px;border-radius:13px;background:linear-gradient(90deg,var(--ok) 0,var(--ok) var(--p),var(--neg) var(--p),var(--neg) 100%)!important;color:var(--ink);filter:none}
+  .cuotas-btn::before{content:"";position:absolute;inset:2.5px;padding:0;border-radius:10.5px;-webkit-mask:none;mask:none;pointer-events:none;z-index:0;
+    background:linear-gradient(90deg,color-mix(in srgb,var(--ok) 24%,var(--paper)) 0,color-mix(in srgb,var(--ok) 24%,var(--paper)) var(--p),color-mix(in srgb,var(--neg) 17%,var(--paper)) var(--p),color-mix(in srgb,var(--neg) 17%,var(--paper)) 100%)}
+  body.dark .cuotas-btn::before{background:linear-gradient(90deg,color-mix(in srgb,var(--ok) 30%,var(--paper)) 0,color-mix(in srgb,var(--ok) 30%,var(--paper)) var(--p),color-mix(in srgb,var(--neg) 24%,var(--paper)) var(--p),color-mix(in srgb,var(--neg) 24%,var(--paper)) 100%)}
+  .cuotas-btn>*{position:relative;z-index:1}
+  .cuotas-btn:hover,.cuotas-btn[aria-expanded="true"]{filter:brightness(.95)}
+
+  /* Símbolo de cuotas v3: el anillo es un borde real (los bordes se ajustan al píxel, por eso arriba y abajo quedan iguales) y el relleno va dentro del mismo molde */
+  .cuotas-btn,body.dark .cuotas-btn{box-sizing:border-box;height:28px;padding:0 9px 0 6px;border:3px solid transparent!important;border-radius:14px;
+    background:
+      linear-gradient(90deg,color-mix(in srgb,var(--ok) 24%,var(--paper)) 0,color-mix(in srgb,var(--ok) 24%,var(--paper)) var(--p),color-mix(in srgb,var(--neg) 17%,var(--paper)) var(--p),color-mix(in srgb,var(--neg) 17%,var(--paper)) 100%) padding-box,
+      linear-gradient(90deg,var(--ok) 0,var(--ok) var(--p),var(--neg) var(--p),var(--neg) 100%) border-box!important}
+  body.dark .cuotas-btn{background:
+      linear-gradient(90deg,color-mix(in srgb,var(--ok) 30%,var(--paper)) 0,color-mix(in srgb,var(--ok) 30%,var(--paper)) var(--p),color-mix(in srgb,var(--neg) 24%,var(--paper)) var(--p),color-mix(in srgb,var(--neg) 24%,var(--paper)) 100%) padding-box,
+      linear-gradient(90deg,var(--ok) 0,var(--ok) var(--p),var(--neg) var(--p),var(--neg) 100%) border-box!important}
+  .cuotas-btn::before{display:none!important}
 </style>
 </head>
 <body>
@@ -2865,13 +3025,15 @@
 
               </div></div>
               <div class="fb-sec"><div class="fb-sec-tit">Meses</div><div class="fb-grid">
-          <div class="rango">
-            <div class="field"><label data-short="Pago, desde" for="qt-pago-desde">Pago, desde</label><input type="month" id="qt-pago-desde"></div>
+          <div class="rango rango-pago">
+            <span class="rango-grupo">Pago</span>
+            <div class="field"><label for="qt-pago-desde">Pago, desde</label><input type="month" id="qt-pago-desde"></div>
             <span class="rango-sep">–</span>
             <div class="field"><label for="qt-pago-hasta">hasta</label><input type="month" id="qt-pago-hasta"></div>
           </div>
-          <div class="rango">
-            <div class="field"><label data-short="Corresp., desde" for="qt-corr-desde">Corresponde, desde</label><input type="month" id="qt-corr-desde"></div>
+          <div class="rango rango-corr">
+            <span class="rango-grupo">Corresponde</span>
+            <div class="field"><label for="qt-corr-desde">Corresp., desde</label><input type="month" id="qt-corr-desde"></div>
             <span class="rango-sep">–</span>
             <div class="field"><label for="qt-corr-hasta">hasta</label><input type="month" id="qt-corr-hasta"></div>
           </div>
@@ -2920,9 +3082,9 @@
             <span class="rango-sep">–</span>
             <div class="field"><label for="qs-corr-hasta">hasta</label><input type="month" id="qs-corr-hasta"></div>
           </div>
-          <div class="field"><button class="ghost" id="btn-semana-limpiar">Limpiar</button></div>
+          <div class="field"><button type="button" class="ghost fb-btn" id="btn-semana-limpiar" title="Limpiar filtros" aria-label="Limpiar filtros"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
         </div>
-          <button type="button" class="ghost" id="btn-generar-orden" style="order:99;margin-left:auto" title="Armar una orden de pago con movimientos pendientes y enviarla a otro usuario para que la autorice">Generar orden</button>
+          <button type="button" class="ghost" id="btn-generar-orden" style="order:99;margin-left:auto" title="Armar una orden de pago con movimientos pendientes y enviarla a otro usuario para que la autorice"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/><path d="m9 15 2 2 4-4"/></svg><span>Generar orden</span></button>
         </div>
         <h3 class="semana-heading" id="semana-actual-titulo">Esta semana</h3>
         <div id="semana-actual-zone" class="tablacompacta"></div>
@@ -2977,11 +3139,13 @@
       <span class="dash-hint" id="ord-hint">(toca para ver las órdenes de pago)</span><span class="aviso-posp-badge" id="ord-badge" hidden>0</span>
     </h2>
     <div id="ord-body" hidden>
-      <div class="tabs" id="ord-tabs">
+      <div id="ord-tabs">
+        <div class="tabs" id="ord-tabs-grupo">
         <button type="button" data-ord-filtro="recibidas" class="on" title="Pendientes" aria-label="Pendientes"><svg class="ico tic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="tl">Pendientes</span></button>
         <button type="button" data-ord-filtro="emitidas" id="ord-tab-emitidas" hidden title="Emitidas por mí" aria-label="Emitidas por mí"><svg class="ico tic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 3 10 14"/><path d="M21 3l-7 18-4-7-7-4Z"/></svg><span class="tl">Emitidas por mí</span></button>
         <button type="button" data-ord-filtro="autorizadas" title="Autorizadas" aria-label="Autorizadas"><svg class="ico tic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16 9.5"/></svg><span class="tl">Autorizadas</span></button>
         <button type="button" data-ord-filtro="todas" title="Todas" aria-label="Todas"><svg class="ico tic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg><span class="tl">Todas</span></button>
+        </div>
         <button type="button" id="ord-nueva" class="ord-nueva" title="Nueva orden" aria-label="Nueva orden"><svg class="ico tic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span class="tl">Nueva orden</span></button>
       </div>
       <div id="ord-zona"></div>
@@ -3288,9 +3452,9 @@ function mesNumInput(el){
   if(!el||el._mesNum) return; el._mesNum=true;
   const desc=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');
   const ini=desc.get.call(el);
-  el.type='text'; el.placeholder=/^q[ts]-(pago|corr)-hasta$/.test(el.id)?'MM/AA':'MM/AAAA'; el.setAttribute('inputmode','numeric'); el.maxLength=7; el.autocomplete='off'; el.classList.add('mes-num');
+  el.type='text'; el.placeholder=/^(q[ts]-(pago|corr)-hasta|qt-(pago|corr)-desde)$/.test(el.id)?'MM/AA':'MM/AAAA'; el.setAttribute('inputmode','numeric'); el.maxLength=7; el.autocomplete='off'; el.classList.add('mes-num');
   let iso=/^\d{4}-(0[1-9]|1[0-2])$/.test(ini)?ini:'';
-  const corto=/^q[ts]-(pago|corr)-hasta$/.test(el.id);   // "Mes de pago / correspondiente, hasta": solo los 2 últimos dígitos del año
+  const corto=/^(q[ts]-(pago|corr)-hasta|qt-(pago|corr)-desde)$/.test(el.id);   // "Mes de pago / correspondiente, hasta": solo los 2 últimos dígitos del año
   const disp=v=>v?v.slice(5,7)+'/'+(corto?v.slice(2,4):v.slice(0,4)):'';
   Object.defineProperty(el,'value',{configurable:true,get(){ return iso; },set(v){ iso=/^\d{4}-(0[1-9]|1[0-2])$/.test(v||'')?v:''; desc.set.call(el,disp(iso)); }});
   desc.set.call(el,disp(iso));
@@ -3300,7 +3464,7 @@ function mesNumInput(el){
     const f=dig.length>2?dig.slice(0,2)+'/'+dig.slice(2):dig;
     if(desc.get.call(el)!==f) desc.set.call(el,f);
     if(!dig.length) iso='';
-    else if(dig.length===6){ const v=parse(f); if(v) iso=v; }
+    else if(dig.length===6||(corto&&dig.length===4)){ const v=parse(f); if(v) iso=v; }
   });
   el.addEventListener('change',()=>{
     const t=desc.get.call(el);
@@ -4336,6 +4500,8 @@ let ordenesPrevias=null;       // id -> {msgs,estado,edit}: último estado visto
 
 // ---- Utilidades de datos ----
 const finDelDiaTs=iso=>{ const d=new Date(iso); d.setHours(23,59,59,999); return d.getTime(); };
+// Vencimiento de una orden: las 23:59 del día de emisión, o de la fecha a la que la pospuso quien autoriza (o.vencePosp)
+const venceMs=o=>o.vencePosp?Date.parse(o.vencePosp):finDelDiaTs(o.emitidaTs);
 // Estado efectivo (se calcula con la hora actual, no se guarda):
 // 'programada' | 'pendiente' | 'parcial' | 'vencida' | 'autorizada' | 'resuelta' (mezcla de autorizados y rechazados) | 'rechazada'
 function estadoOrden(o){
@@ -4344,7 +4510,7 @@ function estadoOrden(o){
   if(n&&nA+nR===n) return nR===n?'rechazada':'resuelta';
   const ahora=Date.now();
   if(Date.parse(o.emitidaTs)>ahora) return 'programada';
-  if(ahora>finDelDiaTs(o.emitidaTs)) return 'vencida';
+  if(ahora>venceMs(o)) return 'vencida';
   return (nA+nR)?'parcial':'pendiente';
 }
 const ordenVigente=o=>['programada','pendiente','parcial'].includes(estadoOrden(o));
@@ -4353,7 +4519,12 @@ const itemsAutorizados=o=>(o.items||[]).filter(i=>i.aut).length;
 const itemsRechazados=o=>(o.items||[]).filter(i=>i.rech).length;
 const itemsResueltos=o=>itemsAutorizados(o)+itemsRechazados(o);
 const itemPendiente=i=>!i.aut&&!i.rech;
-const venceTsISO=o=>new Date(finDelDiaTs(o.emitidaTs)).toISOString();
+const venceTsISO=o=>new Date(venceMs(o)).toISOString();
+const puedePosponer=o=>esAutorizador()&&ordenAbierta(o)&&venceMs(o)<=finDelDiaTs(new Date().toISOString());
+// Posponer: a las 23:59 del día siguiente; si el vencimiento actual cae en viernes, hasta el lunes
+const diasPosponer=o=>new Date(venceMs(o)).getDay()===5?3:1;
+const destinoPosponerTxt=o=>diasPosponer(o)===3?'el lunes':'mañana';
+function venceDiaTxt(o){ const hoy=new Date(); hoy.setHours(0,0,0,0); const v=new Date(venceMs(o)); v.setHours(0,0,0,0); const d=Math.round((v-hoy)/864e5); return d<=0?'hoy':(d===1?'mañana':(v.getDay()===1&&d<=3?'el lunes':'el '+v.toLocaleDateString('es-AR',{day:'numeric',month:'numeric'}))); }
 // El receptor no ve una orden programada hasta que llega su hora de publicación.
 function misOrdenes(){ const e=miEmail(); return OrdenesDB.lista.filter(o=>o.emisor.email===e||(esAutorizador()&&estadoOrden(o)!=='programada')); }
 function ordenPorId(id){ return OrdenesDB.lista.find(o=>o.id===id); }
@@ -4361,7 +4532,7 @@ function ultimaActividad(o){
   const ms=(o.mensajes||[]).map(m=>m.ts);
   const aut=(o.items||[]).map(i=>i.aut?i.aut.ts:(i.rech?i.rech.ts:''));
   const ven=estadoOrden(o)==='vencida'?[venceTsISO(o)]:[];
-  return [o.emitidaTs,o.editadaTs,o.autorizadaTs,...ms,...aut,...ven].filter(Boolean).sort().pop()||'';
+  return [o.emitidaTs,o.editadaTs,o.pospuestaTs,o.autorizadaTs,...ms,...aut,...ven].filter(Boolean).sort().pop()||'';
 }
 function lecturaMia(o){ return (o.lecturas||{})[claveUsuario(miEmail())]||''; }
 // Lectura de mensajes: "G" = comentarios generales (uno solo por orden); "I" = conversaciones de cada ítem (una marca por ítem)
@@ -4397,6 +4568,8 @@ function novedadesOrden(o){
 function msRestantes(o){ return ORD_VENTANA_MS-(Date.now()-Date.parse(o.emitidaTs)); }
 // Se puede modificar/eliminar mientras siga vigente sin ningún movimiento autorizado y dentro de las 36 hs.
 function puedeModificar(o){ return ['programada','pendiente'].includes(estadoOrden(o)) && o.emisor.email===miEmail() && msRestantes(o)>0; }
+const ICO_BANCO_MINI='<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10 12 4l9 6"/><path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8"/><path d="M3 20h18"/></svg>';
+function limiteModificarHora(o){ return fmtHora24(new Date(Math.min(Date.parse(o.emitidaTs)+ORD_VENTANA_MS,finDelDiaTs(o.emitidaTs))).toISOString()); }
 function limiteModificar(o){ return fmtFechaHora(new Date(Math.min(Date.parse(o.emitidaTs)+ORD_VENTANA_MS,finDelDiaTs(o.emitidaTs))).toISOString()); }
 function marcarLeida(o){
   const k=claveUsuario(miEmail()), act=ultimaActividad(o);
@@ -4418,9 +4591,10 @@ function agruparPorMetodo(items,modo){
   return Object.keys(g).sort((a,b)=>a===''?1:b===''?-1:a.localeCompare(b,'es')).map(k=>({metodo:k,items:ordenarItems(g[k],modo)}));
 }
 const etiquetaMetodo=m=>m||'Sin método de pago definido';
-// Gasto impago al que todavía no se le cargó el importe: se resalta en naranja. Claro si no tiene
-// vencimiento o éste queda fuera de los pagos de la semana en curso; fuerte si cae dentro de ellos
-// (incluye lo atrasado, igual que "Esta semana" en Pagos semanales).
+// Gasto impago al que todavía no se le cargó el importe: rojo suave (igual que un impago fuera de los 7 días de pago) si no tiene
+// vencimiento o éste queda fuera de los pagos que se vienen; rojo fuerte (más que el de un impago con importe) si cae dentro de ellos
+// (incluye lo atrasado, igual que "Esta semana" en Pagos semanales). El ciclo cambia el VIERNES: desde ese día ya cuenta el próximo jueves de pagos.
+function hastaSinImporteFuerte(){ const d=new Date().getDay(); return limitesSemana(d===5||d===6||d===0?1:0).hasta; }
 function claseSinImporte(r,hastaSem){
   if(!r||r.tipo!=='gasto'||r.pago||r.dividido||esEcheqPendiente(r)) return '';
   if((+r.bruto||0)>0) return '';
@@ -4443,8 +4617,11 @@ function esEcheqPendiente(r){
 // si no hubo orden, el mes en que se emitió el e-cheq), no el mes en que se debita. Para el resultado contable el gasto sigue contando en el mes del cheque.
 const mesDeTs=ts=>{ const d=new Date(ts); return isNaN(d)?'':d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); };
 function mesAutorizacionEcheq(r){
-  if(!r||r.tipo!=='gasto'||r.dividido) return '';
-  if(!(r.metodoPago==='E-cheq'||r.echeqEmitido)) return '';
+  if(!r||r.tipo!=='gasto') return '';
+  // Pago dividido: solo tiene "mes de autorización" si todas sus cuotas son e-cheq; en los demás casos vale el mes de pago con el que se marcó.
+  const divEch=!!(r.dividido&&Array.isArray(r.cuotas)&&r.cuotas.length&&r.cuotas.every(c=>c.metodoPago==='E-cheq'));
+  if(r.dividido&&!divEch) return '';
+  if(!divEch&&!(r.metodoPago==='E-cheq'||r.echeqEmitido)) return '';
   try{ const x=opAutorizadaDe(r.id); if(x&&x.aprobado&&x.item.aut&&x.item.aut.ts){ const m=mesDeTs(x.item.aut.ts); if(m) return m; } }catch(e){}
   return r.mesAutEcheq||'';
 }
@@ -4575,6 +4752,7 @@ function notificacionesOrdenes(){
       }
     }
     if(vencimientoSinLeer(o)) lista.push({id:o.id,texto:`${o.id} venció sin resolverse por completo (${itemsResueltos(o)} de ${n} resueltos)`,ts:venceTsISO(o),fuerte:true,k:'venc',titulo:'Venció sin resolverse',detalle:`${itemsResueltos(o)} de ${n} movimientos resueltos`});
+    if(o.pospuestaTs&&soyEmi&&ordenAbierta(o)&&o.pospuestaTs>lecturaMia(o)) lista.push({id:o.id,texto:`${o.id} fue pospuesta: vence ${venceDiaTxt(o)} a las 23:59hs`,ts:o.pospuestaTs,fuerte:false,k:'mod',titulo:'Orden pospuesta',detalle:`Vence ${venceDiaTxt(o)} a las 23:59hs`});
     if(o.editadaTs&&soyRec&&ordenAbierta(o)&&o.editadaTs>lecturaMia(o)) lista.push({id:o.id,texto:`${o.id} fue modificada por ${o.emisor.nombre}`,ts:o.editadaTs,fuerte:true,k:'mod',titulo:'Orden modificada',detalle:`Por ${o.emisor.nombre}`});
   });
   return lista;
@@ -4702,7 +4880,7 @@ function chipOrdenHtml(x){
     const t=`Aprobado en la orden ${x.orden.id} por ${x.item.aut.por.nombre} el ${fmtFechaHora(x.item.aut.ts)} — tocá para abrirla`;
     return `<span class="chip-op" role="button" tabindex="0" data-ver-orden="${esc(x.orden.id)}" title="${esc(t)}">✓ ${esc(x.orden.id)}</span>`;
   }
-  const t=`En la orden ${x.orden.id} (emitida por ${x.orden.emisor.nombre}), pendiente de autorización. Vence hoy a las 23:59 — tocá para abrirla`;
+  const t=`En la orden ${x.orden.id} (emitida por ${x.orden.emisor.nombre}), pendiente de autorización. Vence ${venceDiaTxt(x.orden)} a las 23:59 — tocá para abrirla`;
   return `<span class="chip-op pend" role="button" tabindex="0" data-ver-orden="${esc(x.orden.id)}" title="${esc(t)}">⏳ ${esc(x.orden.id)} pendiente</span>`;
 }
 document.addEventListener('click',e=>{
@@ -4732,6 +4910,7 @@ function alEntrarOrdenes(yaEstaba){
 
 // ---- Pantallas ----
 const hayEmitidas=()=>{ const e=miEmail(); return OrdenesDB.lista.some(o=>o.emisor.email===e); };
+let ordClavePrev=null, ordAnimarEntrada=false;
 function renderOrdenes(){
   if(typeof ocultarNotaPop==='function') ocultarNotaPop();
   if(typeof ocultarFlot==='function') ocultarFlot();
@@ -4742,10 +4921,12 @@ function renderOrdenes(){
   $('ord-tab-emitidas').hidden=!hayEm;
   if(!hayEm&&ordenesFiltro==='emitidas') ordenesFiltro='recibidas';
   document.querySelectorAll('#ord-tabs [data-ord-filtro]').forEach(b=>{ b.classList.toggle('on', ordenesVista!=='form' && b.dataset.ordFiltro===ordenesFiltro); });
+  { const clave=ordenesVista+'|'+(ordenesVista==='lista'?ordenesFiltro:''), cambio=ordClavePrev!==null&&ordClavePrev!==clave&&ordenesVista==='lista'&&ordClavePrev.startsWith('lista|'); ordClavePrev=clave; ordAnimarEntrada=cambio; posicionarPildoraTabs(true,'ord-tabs-grupo'); }
   if(ordenesVista!=='detalle') $('ord-zona').style.minHeight='';
   if(ordenesVista==='form' && ordenForm) renderOrdenForm();
   else if(ordenesVista==='detalle' && ordenPorId(ordenAbiertaId)) renderOrdenDetalle();
   else { ordenesVista='lista'; renderOrdenesLista(); }
+  if(ordAnimarEntrada){ const z=$('ord-zona'); z.classList.remove('vista-in'); void z.offsetWidth; z.classList.add('vista-in'); ordAnimarEntrada=false; }
   if(ordModal) pintarModalOrden();
   if(typeof ajustarAnchoPaneles==='function') ajustarAnchoPaneles();
 }
@@ -4787,20 +4968,20 @@ function subListaOrden(o){
     }).join('')}</div>`).join('');
 }
 function renderOrdenesLista(){
-  const e=miEmail(), l=filtrarOrdenes();
+  const e=miEmail(), l=filtrarOrdenes(), conCta=ordenesFiltro==='recibidas';
   if(!l.length){ $('ord-zona').innerHTML=`<div class="empty">${ORD_VACIO[ordenesFiltro]}</div>`; return; }
-  $('ord-zona').innerHTML=`<div class="tablacompacta"><table class="ord-tabla"><thead><tr><th class="ord-flecha-col"></th><th class="fit">N°</th><th class="fit">Emitida</th><th class="fit">De</th><th class="fit">Ítems</th><th class="num fit">Total</th><th>Estado</th><th class="fit"></th></tr></thead><tbody>`+
+  $('ord-zona').innerHTML=`<div class="tablacompacta"><table class="ord-tabla${conCta?' ord-con-cta':''}"><thead><tr><th class="ord-flecha-col"></th><th class="fit">N°</th><th class="fit">Emitida</th><th class="fit">De</th><th class="fit">Ítems</th><th class="num fit">Total</th>${conCta?'<th class="num fit">Necesario en Cta.</th>':''}<th>Estado</th><th class="fit"></th></tr></thead><tbody>`+
     l.map((o,ix)=>{
       const nov=novedadesOrden(o), abierta=ordFilasAbiertas.has(o.id), est0=estadoOrden(o);
-      const editable=puedeModificar(o)?`<div class="ord-sub">modificable hasta ${limiteModificar(o)}</div>`:'';
+      const editable=puedeModificar(o)?`<div class="ord-sub">modificable hasta las ${limiteModificarHora(o)}</div>`:'';
       return `<tr class="ord-fila-lista e-${est0}${ix%2?' alt':''}${nov?' con-novedad':''}${abierta?' desplegada':''}" data-ord-abrir="${esc(o.id)}" tabindex="0">
         <td class="ord-flecha-col"><button type="button" class="ord-flecha" data-ord-flecha="${esc(o.id)}" aria-expanded="${abierta}" title="${abierta?'Ocultar':'Ver'} los ítems de la orden">${abierta?'▾':'▸'}</button></td>
         <td class="fit"><b>${esc(o.id)}</b></td><td class="fit">${fmtFechaHora(o.emitidaTs)}</td>
         <td class="fit" title="${esc(o.emisor.nombre)}"><span class="de-c">${esc(nombreAbrev(o.emisor.nombre))}</span><span class="de-l">${esc(o.emisor.nombre)}</span>${o.emisor.email===e?' <span class="tag">vos</span>':''}</td>
-        <td class="fit">${itemsActivos(o).length}</td><td class="num fit">${totalesTxt(itemsActivos(o))}</td>
+        <td class="fit">${itemsActivos(o).length}</td><td class="num fit">${totalesTxt(itemsActivos(o))}</td>${conCta?`<td class="num fit ord-cta-col"><span class="ord-banco-chip" data-ord-banco="${esc(o.id)}" tabindex="0" aria-label="Necesario en la cuenta bancaria">${ICO_BANCO_MINI}<small>Necesario en Cta.</small><b>${totalesTxt(itemsActivos(o).filter(i=>categoriaBanco(i.metodo)))}</b></span></td>`:''}
         <td class="ord-estado-col">${(est0==='pendiente'&&ordenesFiltro==='recibidas')?'':estadoOrdenTxt(o)}${editable}</td>
         <td class="fit">${nov?`<span class="aviso-posp-badge">${nov} novedad${nov===1?'':'es'}</span>`:''}</td></tr>`
-        +(abierta?`<tr class="ord-subfila"><td></td><td colspan="7"><div class="ord-sublista">${subListaOrden(o)}</div></td></tr>`:'');
+        +(abierta?`<tr class="ord-subfila"><td></td><td colspan="${conCta?8:7}"><div class="ord-sublista">${subListaOrden(o)}</div></td></tr>`:'');
     }).join('')+`</tbody></table></div>`;
 }
 
@@ -4847,6 +5028,7 @@ function botonesItem(o,i,soyRec,abierta){
 }
 const convOculta=(o,rowId)=>!!((o.ocultoI||{})[claveItemLect(rowId)]);   // preferencia de cada usuario, guardada en la orden
 const _ic=d=>'<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">'+d+'</svg>';
+const ICO_CUOTAS='<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>';
 const ICO_EDIT=_ic('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>');
 const ICO_DEL=_ic('<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/>');
 const ICO_X=_ic('<path d="M18 6 6 18M6 6l12 12"/>');
@@ -4941,13 +5123,15 @@ function renderOrdenDetalle(){
   const abierta=ordenAbierta(o);
   const pendientes=items.filter(itemPendiente);
   const acciones=[];
+  const btnPosponer=puedePosponer(o)?`<button type="button" class="ghost ord-mod-accion" data-ord-accion="posponer" title="La orden sigue vigente hasta ${destinoPosponerTxt(o)} a las 23:59hs">${diasPosponer(o)===3?'Posponer al lunes':'Posponer a mañana'}</button>`:'';
   const btnModificar=puedeModificar(o)?`<button type="button" class="ghost ord-mod-accion" data-ord-accion="editar">Modificar</button>`:'';
   const info=[];
-  const venceTxt=ordenAbierta(o)?`<span class="ord-sep">|</span>Vence hoy 23:59hs`:(est==='programada'?`<span class="ord-sep">|</span>Vence el ${new Date(o.emitidaTs).toLocaleDateString('es-AR',{day:'numeric',month:'numeric'})} 23:59hs`:'');
+  const venceTxt=ordenAbierta(o)?`<span class="ord-sep">|</span>Vence ${venceDiaTxt(o)} 23:59hs`:(est==='programada'?`<span class="ord-sep">|</span>Vence el ${new Date(o.emitidaTs).toLocaleDateString('es-AR',{day:'numeric',month:'numeric'})} 23:59hs`:'');
   info.push(`${est==='programada'?'Programada por':'Emitida por'} <b>${esc(o.emisor.nombre)}</b> ${est==='programada'?'para publicarse el':'el'} ${fmtFechaHoraCorta(o.emitidaTs)}${venceTxt}`);
   if(est==='programada') info.push(`Hasta que llegue esa fecha y hora solo la ves vos; quien debe autorizarla no recibe ninguna notificación.`);
   const txtModificada=o.editadaTs?`<button type="button" class="ord-mod-btn" data-ord-cambios="${esc(o.id)}" title="Ver los cambios realizados">Modificada a las ${fmtHora24(o.editadaTs)}</button>`:'';
-  if(btnModificar||txtModificada) info[0]=`<div class="ord-info-l1"><span>${info[0]}</span><span class="ord-info-acc">${btnModificar}${txtModificada}</span></div>`;
+  const txtPosp=o.pospuestaTs?`<span class="ord-mod-btn ord-posp-txt" title="Quien autoriza pospuso el vencimiento de esta orden">Pospuesta a las ${fmtHora24(o.pospuestaTs)}</span>`:'';
+  if(btnModificar||btnPosponer||txtModificada||txtPosp) info[0]=`<div class="ord-info-l1"><span>${info[0]}</span><span class="ord-info-acc">${btnPosponer}${btnModificar}${txtModificada}${txtPosp}</span></div>`;
   if(est==='autorizada') info.push(`<b>Autorizada por completo${o.autorizadaPor?' por '+esc(o.autorizadaPor.nombre):''} el ${fmtFechaHora(o.autorizadaTs||ultimaActividad(o))}</b> — ya no se puede modificar ni eliminar.`);
   else if(est==='resuelta') info.push(`<b>Resuelta:</b> ${itemsAutorizados(o)} movimientos autorizados y ${itemsRechazados(o)} rechazados. Los rechazados quedaron libres para otra orden.`);
   else if(est==='rechazada') info.push(`<b>Se rechazaron todos los movimientos.</b> Quedaron libres para otra orden.`);
@@ -5028,7 +5212,7 @@ function infoMovimientoHtml(rowId,o){
     const venc=r.fechaVenc?fmtFechaCorta(r.fechaVenc)+(!r.pago&&r.vencTentativo?' (orientativo)':''):'—';
     const estado=r.pago?`Pagado el ${fmtFechaCorta(r.fechaPago)}${r.metodoPago?' · '+esc(r.metodoPago):''}`:(r.pospuesto?`Pendiente — pospuesto${r.pospuestoHasta?' hasta el '+fmtFechaCorta(r.pospuestoHasta):''}`:'Pendiente de pago');
     h+=fila('Ítem',`<b>${esc(nombreDe(r))}</b>`)+fila('Tipo',`GASTO · ${r.fijo?'FIJO':'VARIABLE'}`)
-      +fila('Mes de pago',r.dividido?'Varias cuotas':esc(mesNum(r.mesPago)))
+      +fila('Mes de pago',esc(mesNum(mesPagoVisible(r))))
       +fila('Mes al que corresponde',esc(mesNum(r.mesCorr)))
       +fila('Importe bruto',montoFmt(r.bruto,r.moneda)+(usd?` <small>(≈ $ ${money(brutoARS(r))})</small>`:''))
       +fila('Importe neto',montoFmt(netoDe(r),r.moneda)+(usd?` <small>(≈ $ ${money(netoARS(r))})</small>`:''))
@@ -5241,6 +5425,21 @@ async function notificarOrdenMail(tipo,ordenId,extra){
       .catch(e=>console.warn('Aviso por correo no enviado:',e));
   }catch(e){ console.warn('Aviso por correo no enviado:',e); }
 }
+// Quien autoriza puede pasar el vencimiento de una orden abierta a las 23:59 del día siguiente
+async function posponerOrden(id){
+  const yo=miPersona(), k=claveUsuario(yo.email);
+  let hasta='', destino='mañana';
+  await OrdenesDB.mutar(id,x=>{
+    if(yo.email!==autorizadorEmail()) throw new Error('Solo '+personaAutorizador().nombre+' puede posponer las órdenes.');
+    if(!ordenAbierta(x)) throw new Error(estadoOrden(x)==='vencida'?'La orden venció: ya no se puede posponer.':'La orden ya no admite cambios de vencimiento.');
+    const base=venceMs(x); if(base>finDelDiaTs(new Date().toISOString())) throw new Error('La orden ya está pospuesta.');
+    const d=new Date(base); d.setDate(d.getDate()+diasPosponer(x)); d.setHours(23,59,59,999); hasta=d.toISOString(); destino=destinoPosponerTxt(x);
+    const ts=ahoraISO();
+    return {set:{vencePosp:hasta,pospuestaTs:ts,['lecturas.'+k]:ts},union:{eventos:[{ts,tipo:'pospuesta',por:yo,hasta}]}};
+  });
+  notificarOrdenMail('pospuesta',id);
+  toast('Orden '+id+' pospuesta: sigue vigente hasta '+destino+' a las 23:59hs.');
+}
 const ORD_UNDO_MS=15*60*1000;
 function puedeDeshacer(o,i){ const d=i.aut||i.rech; return !!d && d.por.email===miEmail() && Date.now()-Date.parse(d.ts)<=ORD_UNDO_MS && estadoOrden(o)!=='programada'; }
 async function deshacerItemOrden(id,rowId){
@@ -5299,6 +5498,7 @@ async function accionOrden(accion,el){
       renderOrdenForm(); window.scrollTo(0,y); return;
     }
     if(!o) return;
+    if(accion==='posponer'){ posponerOrden(o.id).catch(err=>toast(err.message||'No se pudo posponer la orden.')); return; }
     if(accion==='editar'){ if(!puedeModificar(o)){ toast('Esta orden ya no se puede modificar.'); renderOrdenes(); return; } abrirEdicionOrden(o); return; }
     if(accion==='eliminar'){
       if(!puedeModificar(o)){ toast('Esta orden ya no se puede eliminar.'); renderOrdenes(); return; }
@@ -5400,6 +5600,7 @@ const normMetodo=m=>String(m||'').toLowerCase().normalize('NFD').replace(/[\u030
 function categoriaBanco(m){
   const n=normMetodo(m);
   if(n.includes('tarjeta')&&n.includes('debito')) return 'tdb';
+  if(n.includes('debito')&&n.includes('automatic')) return 'dau';
   if(n.includes('tarjeta')||n.includes('cheq')) return null;
   if(n.includes('servicios')) return 'pse';
   if(n.includes('transfer')) return 'tra';
@@ -5407,7 +5608,7 @@ function categoriaBanco(m){
   return null;
 }
 function bancoHtml(o){
-  const act=itemsActivos(o), cats=[['pse','Pago de servicios'],['tra','Transferencia'],['tdb','Tarjeta de débito'],['mph','Mercado Pago hotel']];
+  const act=itemsActivos(o), cats=[['pse','Pago de servicios'],['tra','Transferencia'],['tdb','Tarjeta de débito'],['dau','Débito automático'],['mph','Mercado Pago hotel']];
   const filas=cats.map(([k,lbl])=>({k,lbl,its:act.filter(i=>categoriaBanco(i.metodo)===k)}));
   const dentro=filas.flatMap(f=>f.its), fuera=act.filter(i=>!categoriaBanco(i.metodo));
   return `<div class="ofl-h">${ICO_M.tra}<span>Necesario en la cuenta bancaria</span></div>`
@@ -5546,6 +5747,15 @@ $('ord-zona').addEventListener('input',e=>{
 // Enlaces de los correos: abren el sistema directo en la orden (o la conversación) de la que se habla.
 //   ?op=OP-0007            → detalle de esa orden      ?op=OP-0007&sec=G|I → con comentarios generales / conversaciones abiertos
 //   ?op=OP-0007&fila=ID    → conversación de ese movimiento      ?area=ordenes → lista de órdenes de pago
+// ¿Se está usando dentro de otro sitio? Entonces se deja libre la esquina superior derecha (ver .embebido en los estilos)
+(function(){
+  try{
+    const m=new URLSearchParams(location.search).get('margen');
+    const embebido=window.self!==window.top;
+    if(embebido||m!==null){ document.documentElement.classList.add('embebido'); }
+    if(m!==null&&/^\d{1,3}$/.test(m)) document.documentElement.style.setProperty('--margen-der',m+'px');
+  }catch(e){ document.documentElement.classList.add('embebido'); }
+})();
 const ENLACE_PROFUNDO=(()=>{
   try{
     const q=new URLSearchParams(location.search), op=q.get('op')||'', area=q.get('area')||'';
@@ -6575,6 +6785,9 @@ $('btn-add').addEventListener('click',async()=>{
   if(modo==='gasto' && !esDiv && datos.metodoPago==='E-cheq' && (datos.pago||datos.echeqEmitido)){
     const prevA=editId?rows.find(x=>x.id===editId):null;
     datos.mesAutEcheq=(prevA&&prevA.mesAutEcheq)||hoyISO().slice(0,7);
+  } else if(esDiv && mesEcheqDiv){
+    const prevA=editId?rows.find(x=>x.id===editId):null;
+    datos.mesAutEcheq=(prevA&&prevA.mesAutEcheq)||hoyISO().slice(0,7);   // pago dividido en e-cheqs: el mes de pago es el de la autorización, no el del débito
   } else datos.mesAutEcheq='';
   // El gasto con E-cheq se registra en el mes de la fecha del cheque, no en el que se cargó o venció.
   if(modo==='gasto' && !esDiv && $('f-pago').checked && datos.metodoPago==='E-cheq' && datos.fechaDiferida){
@@ -6837,7 +7050,7 @@ const FILTROS_MAS=['q-comp','q-fijo','q-factura','q-metodo','q-clase','q-monto-d
 const mqCel=window.matchMedia('(max-width:700px)');
 function contarFiltrosMas(){
   // En el celular, Tipo / Estado / Rubro también viven dentro de la ventana de filtros: se cuentan juntos.
-  const ids=mqCel.matches?[...FILTROS_MAS,'q-tipo','q-estado','q-rubro']:[...FILTROS_MAS.filter(i=>!/^qt-pago-/.test(i)),'q-tipo','q-rubro'];
+  const ids=mqCel.matches?[...FILTROS_MAS,'q-tipo','q-estado','q-rubro']:[...FILTROS_MAS.filter(i=>!/^qt-(pago|corr)-/.test(i)),'q-tipo','q-rubro'];
   const n=ids.filter(id=>$(id)&&$(id).value).length, b=$('fb-n');
   if(b){ b.hidden=!n; b.textContent=n; }
   const btn=$('btn-filtros-mas'); if(btn) btn.classList.toggle('filtro-activo',n>0);
@@ -6863,10 +7076,17 @@ function ajustarFiltrosCel(){
     if(enPop&&c.parentNode!==main) main.appendChild(c);
     if(!enPop&&c.parentNode===main) ref.parentNode.insertBefore(c,ref);
   });
-  const rg=$('qt-pago-desde').closest('.rango');
-  if(!window._rangoPagoCasa) window._rangoPagoCasa={padre:rg.parentNode,sig:rg.nextSibling};
-  if(!cel&&rg.parentNode!==ref.parentNode){ rg.classList.add('rango-bar'); ref.parentNode.insertBefore(rg,ref); }
-  if(cel&&rg.parentNode===ref.parentNode){ rg.classList.remove('rango-bar'); const c=window._rangoPagoCasa; c.padre.insertBefore(rg,c.sig&&c.sig.parentNode===c.padre?c.sig:c.padre.firstChild); }
+  // Escritorio: los dos rangos de meses (Pagado y Corresponde) van en la barra, uno al lado del otro; celular: de vuelta en "Más filtros".
+  const rgP=$('qt-pago-desde').closest('.rango'), rgC=$('qt-corr-desde').closest('.rango');
+  if(!window._rangoMesesCasa) window._rangoMesesCasa=rgP.parentNode;
+  if(!cel){
+    [rgP,rgC].forEach(rg=>{ if(rg.parentNode!==ref.parentNode){ rg.classList.add('rango-bar'); ref.parentNode.insertBefore(rg,ref); } });
+  } else {
+    const casa=window._rangoMesesCasa;
+    [rgC,rgP].forEach(rg=>{ if(rg.parentNode!==casa){ rg.classList.remove('rango-bar'); casa.prepend(rg); } });
+  }
+  // Textos de las etiquetas: en la barra solo "Desde" / "Hasta" (el grupo va arriba); en el celular, completos
+  [['qt-pago-desde',cel?'Pago, desde':'Desde'],['qt-pago-hasta',cel?'hasta':'Hasta'],['qt-corr-desde',cel?'Corresp., desde':'Desde'],['qt-corr-hasta',cel?'hasta':'Hasta']].forEach(([id,t])=>{ const l=document.querySelector('label[for="'+id+'"]'); if(l) l.textContent=t; });
   $('fb-sec-main').hidden=false;
   document.querySelectorAll('#filtros-mas label[data-short]').forEach(l=>{ if(!l.dataset.full) l.dataset.full=l.textContent; l.textContent=cel?l.dataset.short:l.dataset.full; });
   document.querySelectorAll('.fb-chip option[data-short],#filtros-mas option[data-short]').forEach(o=>{ if(!o.dataset.full) o.dataset.full=o.textContent; o.textContent=cel?o.dataset.short:o.dataset.full; });
@@ -7704,8 +7924,8 @@ window.addEventListener('resize',ajustarAnchoPaneles);
 })();
 
 // Solapas de Movimientos: la "píldora" oscura se desliza de una a otra
-function posicionarPildoraTabs(animar){
-  const tabs=$('movs-tabs'); if(!tabs) return;
+function posicionarPildoraTabs(animar,idTabs){
+  const tabs=$(idTabs||'movs-tabs'); if(!tabs) return;
   let pil=tabs.querySelector('.tabs-pill');
   if(!pil){ pil=document.createElement('span'); pil.className='tabs-pill'; tabs.insertBefore(pil,tabs.firstChild); }
   const on=tabs.querySelector('button.on'); if(!on||!on.offsetWidth){ return; }
@@ -7720,6 +7940,8 @@ function posicionarPildoraTabs(animar){
   if(window.ResizeObserver) new ResizeObserver(()=>posicionarPildoraTabs(false)).observe(tabs);
   window.addEventListener('resize',()=>posicionarPildoraTabs(false));
   posicionarPildoraTabs(false);
+  const ot=$('ord-tabs-grupo');
+  if(ot){ if(window.ResizeObserver) new ResizeObserver(()=>posicionarPildoraTabs(false,'ord-tabs-grupo')).observe(ot); window.addEventListener('resize',()=>posicionarPildoraTabs(false,'ord-tabs-grupo')); }
 })();
 // Texto que se desliza por debajo del título fijo (o del borde inferior): se desvanece y se desenfoca
 (function(){
@@ -7956,6 +8178,37 @@ document.querySelectorAll('.inicio-btn').forEach(b=>b.addEventListener('click',(
 (function(){ const h=document.querySelector('.masthead h1'); if(!h) return; h.setAttribute('role','link'); h.setAttribute('tabindex','0'); h.title='Ir al inicio';
   h.addEventListener('click',()=>irArea(null)); h.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); irArea(null); } }); })();
 document.querySelectorAll('.rail-btn').forEach(b=>b.addEventListener('click',()=>irAreaCarga(b.dataset.area===areaActual?null:b.dataset.area)));
+/* Botones de áreas (derecha): al pasar el cursor se mueven hacia él como una gelatina (máx. ~1,5 mm = 5,5 px) y vuelven con un rebote suave */
+(function(){
+  if(!window.matchMedia||!matchMedia('(hover:hover) and (pointer:fine)').matches||matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  const MAX=5.5, K=0.16, AMORT=0.80;
+  document.querySelectorAll('.rail-btn').forEach(b=>{
+    const st={x:0,y:0,vx:0,vy:0,tx:0,ty:0,raf:0,r:18};
+    const pintar=()=>{
+      st.vx=(st.vx+(st.tx-st.x)*K)*AMORT; st.vy=(st.vy+(st.ty-st.y)*K)*AMORT;
+      st.x+=st.vx; st.y+=st.vy;
+      const m=Math.hypot(st.x,st.y); if(m>MAX){ st.x*=MAX/m; st.y*=MAX/m; }   // nunca se aleja más de ~1,5 mm de su lugar
+      const sx=1+Math.max(-.06,Math.min(.06,st.vx*.018))-Math.max(-.03,Math.min(.03,st.vy*.009)), sy=1+Math.max(-.06,Math.min(.06,st.vy*.018))-Math.max(-.03,Math.min(.03,st.vx*.009));
+      b.style.translate=st.x.toFixed(2)+'px '+st.y.toFixed(2)+'px';
+      b.style.scale=sx.toFixed(3)+' '+sy.toFixed(3);
+      // "derretido": las esquinas del lado del cursor se abomban un poco
+      const q=(sgx,sgy)=>Math.max(12,st.r+(sgx*st.x+sgy*st.y)*.9).toFixed(1)+'px';
+      b.style.borderRadius=q(-1,-1)+' '+q(1,-1)+' '+q(1,1)+' '+q(-1,1);
+      const quieto=Math.abs(st.x-st.tx)<.02&&Math.abs(st.y-st.ty)<.02&&Math.abs(st.vx)<.02&&Math.abs(st.vy)<.02;
+      if(quieto&&!st.tx&&!st.ty){ b.style.translate=''; b.style.scale=''; b.style.borderRadius=''; st.raf=0; return; }
+      st.raf=requestAnimationFrame(pintar);
+    };
+    const mover=e=>{
+      const r=b.getBoundingClientRect(), dx=(e.clientX-(r.left+r.width/2))/(r.width/2), dy=(e.clientY-(r.top+r.height/2))/(r.height/2);
+      const m=Math.hypot(dx,dy)||1, k=Math.min(1,m)/m;
+      st.tx=dx*k*MAX; st.ty=dy*k*MAX;
+      if(!st.raf){ st.r=parseFloat(getComputedStyle(b).borderTopLeftRadius)||18; st.raf=requestAnimationFrame(pintar); }
+    };
+    b.addEventListener('pointerenter',mover);
+    b.addEventListener('pointermove',mover);
+    b.addEventListener('pointerleave',()=>{ st.tx=0; st.ty=0; if(!st.raf) st.raf=requestAnimationFrame(pintar); });
+  });
+})();
 
 // Sub-vistas dentro de Movimientos: Registrados / Pagos semanales / Fijos mensuales.
 // Cargar (o editar) un ítem es una ventana emergente ("cargar") que se abre con el botón + y se
@@ -8030,6 +8283,36 @@ $('btn-semana-nuevo').addEventListener('click',()=>{
   abrirCarga();
   $('f-item').focus();
 });
+
+/* ---------- Pago dividido: desglose de fechas al pasar el cursor por el símbolo de cuotas ---------- */
+(function(){
+  let pop=null, actual=null;
+  const fmt=f=>{ if(!f) return '—'; const [y,m,d]=f.split('-'); return d+'/'+m+'/'+y.slice(2); };
+  const html=r=>{
+    const cu=r.cuotas||[], nP=cu.filter(c=>c.pago).length;
+    return `<div class="cpop-head">Pago dividido · <b>${nP} de ${cu.length}</b> cuotas pagas${nP<cu.length?` · resta <b>${money(saldoCuotas(r))}</b>`:''}</div>`+
+      cu.map((c,i)=>`<div class="cpop-row ${c.pago?'ok':'pend'}"><i></i><span class="cpop-n">Cuota ${i+1}</span><span class="cpop-imp">${money(c.importe)}</span><span class="cpop-f">${esc(c.fecha?fmt(c.fecha):(c.mesPago?mesNum(c.mesPago):'sin fecha'))}</span><span class="cpop-e">${c.pago?'pagada':(c.metodoPago==='E-cheq'?'se debita solo':'pendiente')}${c.metodoPago?' · '+esc(c.metodoPago):''}</span></div>`).join('');
+  };
+  const ocultar=()=>{ if(pop) pop.hidden=true; actual=null; };
+  const mostrar=btn=>{
+    if(actual===btn) return;
+    const r=rows.find(x=>String(x.id)===btn.dataset.exp); if(!r||!Array.isArray(r.cuotas)||expandidas.has(r.id)) return;
+    if(!pop){ pop=document.createElement('div'); pop.id='cuotas-pop'; pop.hidden=true; document.body.appendChild(pop); }
+    pop.innerHTML=html(r); pop.hidden=false; actual=btn;
+    const b=btn.getBoundingClientRect(), w=pop.offsetWidth, h=pop.offsetHeight;
+    let left=Math.min(Math.max(8,b.left+b.width/2-w/2),window.innerWidth-w-8), top=b.bottom+6;
+    if(top+h>window.innerHeight-8) top=Math.max(8,b.top-h-6);
+    pop.style.left=left+'px'; pop.style.top=top+'px';
+  };
+  document.addEventListener('mouseover',e=>{
+    const b=e.target.closest&&e.target.closest('.cuotas-btn');
+    if(b) mostrar(b); else if(actual&&!(e.target.closest&&e.target.closest('#cuotas-pop'))) ocultar();
+  });
+  document.addEventListener('focusin',e=>{ const b=e.target.closest&&e.target.closest('.cuotas-btn'); if(b) mostrar(b); });
+  document.addEventListener('focusout',e=>{ if(e.target.closest&&e.target.closest('.cuotas-btn')) ocultar(); });
+  document.addEventListener('click',ocultar,true);
+  document.addEventListener('scroll',ocultar,true);
+})();
 
 /* ---------- Tooltip de los gráficos del dashboard (hover/foco sobre barras y puntos) ---------- */
 (function(){
@@ -8203,6 +8486,7 @@ function indiceHistorial(){
   return m;
 }
 const pctVar=(prev,cur)=>prev>0?((cur-prev)/prev*100):null;
+function flechaVar(p){ const d=Math.abs(p)<0.05?'<path d="M5 9h14M5 15h14"/>':(p>0?'<path d="M7 17 17 7M9 7h8v8"/>':'<path d="M7 7l10 10M17 9v8H9"/>'); return '<svg class="vp-ico" viewBox="0 0 24 24" aria-hidden="true">'+d+'</svg>'; }
 function pctTxt(p){ if(p===null||!isFinite(p)) return '—'; const a=Math.abs(p); const t=(a>=100?a.toFixed(0):a.toFixed(1)).replace('.',','); return (p>0.049?'+':(p<-0.049?'-':''))+(a<0.05?'0':t)+'%'; }
 function claseVar(tipo,p){ if(p===null||Math.abs(p)<0.05) return 'flat'; const sube=p>0; return (tipo==='ingreso'?sube:!sube)?'bien':'mal'; }   // un gasto que baja o un ingreso que sube es buena noticia
 function variacionDe(r,mapa){
@@ -8214,8 +8498,8 @@ function variacionDe(r,mapa){
 function variacionHtml(r,mapa){
   const v=variacionDe(r,mapa); if(!v) return '';
   const sim=v.h.moneda==='USD'?'U$S ':'$ ';
-  const flecha=Math.abs(v.pct)<0.05?'=':(v.pct>0?'▲':'▼');
-  return `<span class="var-pct ${claseVar(r.tipo,v.pct)}" title="${esc('Importe bruto '+(v.pct>0.049?'subió':(v.pct<-0.049?'bajó':'sin cambios'))+' respecto de '+mesLabel(v.prev.mes)+': '+sim+money(v.prev.v)+' → '+sim+money(v.cur.v)+(v.cur.cant>1?' (total del mes, '+v.cur.cant+' movimientos)':'')+'. Tocá el nombre del ítem para ver el historial.')}">${flecha} ${pctTxt(v.pct)}<span class="var-vs"> vs ${esc(mesLabel(v.prev.mes))}</span></span>`;
+  const flecha=flechaVar(v.pct);
+  return `<span class="var-pct ${claseVar(r.tipo,v.pct)}" title="${esc('Importe bruto '+(v.pct>0.049?'subió':(v.pct<-0.049?'bajó':'sin cambios'))+' respecto de '+mesLabel(v.prev.mes)+': '+sim+money(v.prev.v)+' → '+sim+money(v.cur.v)+(v.cur.cant>1?' (total del mes, '+v.cur.cant+' movimientos)':'')+'. Tocá el nombre del ítem para ver el historial.')}">${flecha}<b class="vp-num">${pctTxt(v.pct)}</b><span class="var-vs"> vs ${esc(mesLabel(v.prev.mes))}</span></span>`;
 }
 let histAnclaId=null;
 function abrirHistorialPrecios(id,ancla){
@@ -8236,14 +8520,14 @@ function abrirHistorialPrecios(id,ancla){
       +filas.map(({e,prev})=>{
         const pc=prev?pctVar(prev.v,e.v):null;
         const salto=prev&&sumarMes(prev.mes,1)!==e.mes?` <span class="hist-vs">vs ${esc(mesLabel(prev.mes))}</span>`:'';
-        const fl=pc===null?'':(Math.abs(pc)<0.05?'= ':(pc>0?'▲ ':'▼ '));
+        const fl=pc===null?'':flechaVar(pc);
         return `<tr class="${e.ids.includes(id)?'hist-actual':''}"><td>${esc(mesLabel(e.mes))}${e.cant>1?` <span class="hist-vs">(${e.cant} mov.)</span>`:''}</td><td class="num">${sim}${money(e.v)}</td><td class="num">${pc===null?'<span class="hist-vs">primer registro</span>':`<span class="var-pct ${claseVar(r.tipo,pc)}">${fl}${pctTxt(pc)}</span>${salto}`}</td></tr>`;
       }).join('')+'</tbody></table>';
     if(ventana.length>=2){
       const a=ventana[0], z=ventana[ventana.length-1], pc=pctVar(a.v,z.v);
       const vals=ventana.map(e=>e.v), prom=vals.reduce((x,y)=>x+y,0)/vals.length;
       html+=`<div class="hist-total"><div class="hist-total-tit">Últimos 12 meses (${esc(mesLabel(a.mes))} → ${esc(mesLabel(z.mes))})</div>
-        <div class="hist-total-pct"><span class="var-pct ${claseVar(r.tipo,pc)}">${Math.abs(pc)<0.05?'= ':(pc>0?'▲ ':'▼ ')}${pctTxt(pc)}</span></div>
+        <div class="hist-total-pct"><span class="var-pct ${claseVar(r.tipo,pc)}">${flechaVar(pc)}<b class="vp-num">${pctTxt(pc)}</b></span></div>
         <div class="hist-total-det">${sim}${money(a.v)} → ${sim}${money(z.v)} · promedio ${sim}${money(prom)} · mínimo ${sim}${money(Math.min(...vals))} · máximo ${sim}${money(Math.max(...vals))} · ${ventana.length} mes${ventana.length===1?'':'es'} con registro</div></div>`;
     } else {
       html+='<p class="note" style="margin-top:12px">Todavía no hay otro mes cargado de este ítem para calcular la variación de los últimos 12 meses.</p>';
@@ -8427,7 +8711,7 @@ function tablaHtml(view,sortState,tablaId){
     if(!esComp(r)){ tbNc+=brutoARS(r); tnNc+=netoARS(r); }
     else { tb+=brutoARS(r); tn+=netoARS(r); }
   });
-  const hastaSemNaranja=limitesSemana(0).hasta;
+  const hastaSemNaranja=hastaSinImporteFuerte();
   const mapaServ=mapaOrdenesServicios();
   const mapaHist=indiceHistorial(), mapaDet=mapaDetalladosEnTarjeta();
   const montoCell=(valOriginal,valARS,usd)=> usd
@@ -8502,14 +8786,8 @@ function tablaHtml(view,sortState,tablaId){
       const claseImpago = claseNaranja || (pospuesto ? ' gasto-pospuesto' : ((!esIng && !r.pago) ? (' gasto-impago'+(vencePronto(r) ? ' vence-pronto' : '')) : ''));
       const tagPosp = pospuesto ? `<span class="tag pp" title="Impago pero pospuesto: no se abona en el corto plazo${r.pospuestoHasta?' — aviso desde el '+r.pospuestoHasta.split('-').reverse().join('/'):''}">pospuesto${r.pospuestoHasta?' hasta '+r.pospuestoHasta.split('-').reverse().slice(0,2).join('/'):''}</span>` : '';
       const cpCell = div
-        ? `<td class="cp cp-multi" data-c="estado"><button class="cuotas-arrow ${parcial?'parcial':(r.pago?'ok':'')}" data-exp="${r.id}" title="Ver desglose de importes por cuota">${abierta?'▾':'▸'}</button><div class="cp-stack">${
-            r.cuotas.map(c=>c.metodoPago==='E-cheq'
-              ? `<span class="cp-stack-line ${c.pago?'ok':'pend'}" title="E-cheq ${c.pago?'debitado':'se debita solo'} el ${esc(fmtFechaCorta(c.fecha))}">${esc(fmtFechaCorta(c.fecha)||'—')}${c.pago?'<span class="cp-tick">✓</span>':''}</span>`
-              : c.pago
-              ? `<span class="cp-stack-line ok">${esc(fmtFechaCorta(c.fecha)||(c.mesPago?mesNum(c.mesPago):'—'))}</span>`
-              : `<span class="cp-stack-line pend">${c.metodoPago==='E-cheq'&&c.fecha?'E-cheq '+esc(fmtFechaCorta(c.fecha)):'pendiente'}</span>`
-            ).join('')
-          }</div>${tagPosp}</td>`
+        ? (()=>{ const nT=r.cuotas.length, nP=r.cuotas.filter(c=>c.pago).length, pc=nT?Math.round(nP/nT*1000)/10:0;
+            return `<td class="cp cp-multi" data-c="estado"><button type="button" class="cuotas-btn${nP===nT&&nT?' ok':''}" data-exp="${r.id}" style="--p:${pc}%" aria-expanded="${abierta}" aria-label="Pago dividido: ${nP} de ${nT} cuotas pagas. Tocá para ver el desglose">${ICO_CUOTAS}<b>${nP}/${nT}</b></button>${tagPosp}</td>`; })()
         : (r.echeqEmitido && !r.pago)
         ? `<td class="cp" data-c="estado"><button type="button" class="cp-badge pendiente echeq" data-tog="${r.id}" title="E-cheq emitido: se marca como pagado solo el ${fmtFechaCorta(r.fechaDiferida)} — clic para anularlo">${fmtFechaCorta(r.fechaDiferida)}</button>${tagPosp}</td>`
         : `<td class="cp" data-c="estado"><button type="button" class="cp-badge ${r.pago?'pagado':'pendiente'}" data-tog="${r.id}" title="${r.pago?('Pagado el '+fmtFechaCorta(r.fechaPago)+(r.metodoPago?' · '+esc(r.metodoPago):'')+(r.fechaDiferida?' · diferido al '+fmtFechaCorta(r.fechaDiferida):'')+' — clic para desmarcar'):(esIng?'Marcar como cobrado':'Marcar como pagado')}">${r.pago?fmtFechaCorta(r.fechaPago)+((!esIng&&r.metodoPago==='E-cheq')?'<span class="cp-tick">✓</span>':''):(esIng?'Cobrar':'Pagar')}</button>${tagPosp}</td>`;
@@ -8521,7 +8799,7 @@ function tablaHtml(view,sortState,tablaId){
       // apilados igual que las fechas de Estado.
       const tdMetodo = mostrarMetodo ? `<td data-c="metodo">${
           esIng ? '<span class="tag EG">—</span>'
-          : div ? ((r.cuotas.length&&r.cuotas.every(c=>c.metodoPago==='E-cheq')) ? `<div class="cp-stack">${r.cuotas.map(c=>`<span class="cp-stack-line">${metodoChip('E-cheq')}</span>`).join('')}</div>` : r.cuotas.some(c=>c.pago) ? `<div class="cp-stack">${r.cuotas.filter(c=>c.pago).map(c=>`<span class="cp-stack-line">${c.metodoPago?metodoChip(c.metodoPago):'—'}</span>`).join('')}</div>` : '<span class="tag EG">—</span>')
+          : div ? (()=>{ const ms=[...new Set(r.cuotas.filter(c=>c.metodoPago&&(c.pago||c.metodoPago==='E-cheq')).map(c=>c.metodoPago))]; return !ms.length?'<span class="tag EG">—</span>':(ms.length===1?metodoChip(ms[0]):`<div class="cp-stack">${ms.map(m=>`<span class="cp-stack-line">${metodoChip(m)}</span>`).join('')}</div>`); })()
           : (r.metodoPago ? metodoChip(r.metodoPago) : ((!r.pago && r.metodoTentativo) ? metodoChip(r.metodoTentativo,true) : '<span class="tag EG">—</span>'))
         }</td>` : '';
       
@@ -8541,7 +8819,7 @@ function tablaHtml(view,sortState,tablaId){
       const opAut = (!esIng && !r.pago) ? opAutorizadaDe(r.id) : null;
       const filaPrincipal = `<tr data-row-id="${r.id}" class="${r.pago?'paid':'unpaid'}${parcial?' parcial':''}${r.id===editId?' editing':''}${!esComp(r)?' nocomp':''}${claseImpago}${clasePago}${opAut?(opAut.aprobado?' en-orden-aut':' en-orden-pend'):''}">
       <td data-c="tipo"><span class="tipo-ic ${esIng?'ing':'gas'}" title="${esIng?'Ingreso':'Gasto'}">${esIng?ICO_T_ING:ICO_T_GAS}</span>${!esIng?`<span class="tipo-ic ${r.fijo?'fijo':'var'}" title="${r.fijo?'Gasto fijo':'Gasto variable'}">${r.fijo?ICO_T_FIJO:ICO_T_VAR}</span>`:''}</td>
-      <td class="mono" data-c="mesPago">${div?'<span class="cp-let" title="Se paga en varias cuotas">varias</span>':(()=>{ const ma=mesAutorizacionEcheq(r); return ma?`<b class="mes-aut" title="Mes en que se autorizó el pago del e-cheq${r.mesPago&&r.mesPago!==ma?' — se debita en '+esc(mesLargo(r.mesPago))+(r.fechaDiferida?' (fecha diferida '+esc(fmtFechaCorta(r.fechaDiferida))+')':''):''}">${mesNum(ma)}</b>`:'<b>'+mesNum(r.mesPago)+'</b>'; })()}</td>
+      <td class="mono" data-c="mesPago">${(()=>{ const ma=mesAutorizacionEcheq(r); return ma?`<b class="mes-aut" title="Mes en que se autorizó el pago del e-cheq${r.mesPago&&r.mesPago!==ma?' — se debita en '+esc(mesLargo(r.mesPago))+(r.fechaDiferida?' (fecha diferida '+esc(fmtFechaCorta(r.fechaDiferida))+')':''):''}">${mesNum(ma)}</b>`:'<b>'+mesNum(r.mesPago)+'</b>'; })()}</td>
       <td class="mono" data-c="mesCorr"><b>${mesNum(r.mesCorr)}</b></td>
       ${tdItem}
       <td class="num${usd?' dual':''}${r.bruto<0?' negv':''}" data-c="bruto">${montoCell(r.bruto,brutoARS(r),usd)}${variacionHtml(r,mapaHist)}</td>
@@ -9187,6 +9465,7 @@ document.addEventListener('click',async e=>{
           r.dividido=true; r.fechaVenc=''; r.metodoPago=''; r.fechaDiferida='';
           r.cuotas=cu.map(c=>({importe:c.importe,mesPago:c.fecha.slice(0,7),fecha:c.fecha,pago:c.fecha<=hoyISO(),metodoPago:'E-cheq'}));
           r.mesPago=cu.map(c=>c.fecha).sort().pop().slice(0,7);   // el gasto cuenta en el mes del último cheque
+          if(!r.mesAutEcheq) r.mesAutEcheq=hoyISO().slice(0,7);   // pero en "Mes de pago" se ve el mes en que se marcó el pago
           delete r.echeqEmitido; delete r.vencAntesEcheq;
           sincronizarPagoDividido(r);
           r.vencTentativo=false; r.metodoTentativo='';
