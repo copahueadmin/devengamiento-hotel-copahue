@@ -57,6 +57,20 @@ export async function manejar(req, deps) {
       return json(200, { ok: true });
     }
 
+    if (accion === "eliminar") {
+      const correo = String(body.email || "").trim().toLowerCase();
+      if (!correo) return json(400, { error: "Falta el correo." });
+      if (correo === email) return json(403, { error: "No podés eliminar tu propia cuenta." });
+      if (admins.includes(correo)) return json(403, { error: "No se puede eliminar a un administrador desde acá." });
+      const auth = deps.auth();
+      let u;
+      try { u = await auth.getUserByEmail(correo); }
+      catch (e) { if (e && e.code === "auth/user-not-found") return json(404, { error: "La cuenta no existe en Firebase Authentication." }); throw e; }
+      await auth.deleteUser(u.uid);   // borra la cuenta y cierra sus sesiones; no toca los datos que cargó
+      console.log("admin-usuarios: " + email + " eliminó la cuenta " + correo);
+      return json(200, { ok: true });
+    }
+
     return json(400, { error: "Acción desconocida." });
   } catch (e) {
     console.error("admin-usuarios:", e);

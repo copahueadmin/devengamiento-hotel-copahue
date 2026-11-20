@@ -2652,6 +2652,37 @@
     #fijos-estado-lista table{border-spacing:0 calc(4px + 1.5mm)}
     #fijos-estado-lista tbody td{padding-top:calc(10px - .75mm);padding-bottom:calc(10px - .75mm)}
   }
+
+  /* Débito automático sin importe: color neutro (sin el rojo de "sin importe") */
+  .tablacompacta tbody tr.dau-sin-importe{background:color-mix(in srgb,var(--ink) 7%,transparent)}
+
+  /* Rojo fuerte (sin importe y vence pronto): mismo tono de fila, pero símbolos, etiquetas y textos con base propia para que se lean bien */
+  .tablacompacta tbody tr.sin-importe-fuerte td .tipo-ic,
+  .tablacompacta tbody tr.sin-importe-fuerte td .met-chip,
+  .tablacompacta tbody tr.sin-importe-fuerte td .cp-badge,
+  .tablacompacta tbody tr.sin-importe-fuerte td .tag,
+  .tablacompacta tbody tr.sin-importe-fuerte td .rowbtn{background:color-mix(in srgb,var(--paper) 92%,transparent)!important;box-shadow:0 0 0 1px color-mix(in srgb,var(--ink) 18%,transparent)}
+  .tablacompacta tbody tr.sin-importe-fuerte td .cp-badge.pendiente{color:color-mix(in srgb,var(--warn) 75%,var(--ink))}
+  .tablacompacta tbody tr.sin-importe-fuerte td .cuotas-btn{box-shadow:0 0 0 2px color-mix(in srgb,var(--paper) 85%,transparent)}
+  .tablacompacta tbody tr.sin-importe-fuerte td,
+  .tablacompacta tbody tr.sin-importe-fuerte td .ivanota,
+  .tablacompacta tbody tr.sin-importe-fuerte td .desglose-link,
+  .tablacompacta tbody tr.sin-importe-fuerte td.rubro,
+  .tablacompacta tbody tr.sin-importe-fuerte td.detalle{color:var(--ink)}
+  .tablacompacta tbody tr.sin-importe-fuerte td .ivanota,.tablacompacta tbody tr.sin-importe-fuerte td .item small{opacity:1;font-weight:600}
+  .tablacompacta tbody tr.sin-importe-fuerte td .tarjeta-badge,.tablacompacta tbody tr.sin-importe-fuerte td .tc-nota{color:var(--ink);opacity:1;font-weight:700}
+
+  /* Desplazamiento fluido: sin hover ni transiciones mientras se hace scroll */
+  body.scrolleando .tablacompacta tbody tr,body.scrolleando .tablacompacta tbody tr *{pointer-events:none}
+  body.scrolleando .tablacompacta tbody tr:hover{filter:none}
+  .tablacompacta tbody tr{transition:none}
+
+  /* Rendimiento: el encabezado y su placa de título no desenfocan lo que tienen detrás (costo alto en cada repintado) */
+  header.masthead,.masthead h1{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+  header.masthead{background:color-mix(in srgb,var(--fondo-encabezado) 97%,transparent)}
+
+  /* Rendimiento: las franjas de desvanecido arriba/abajo conservan el degradé pero ya no desenfocan lo que tienen detrás (repintaba el contenido en cada cuadro del scroll) */
+  .fade-strip::after,.fade-strip-b{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 </style>
 </head>
 <body>
@@ -2751,7 +2782,7 @@
       <!-- ---- Panel: ver, modificar y crear usuarios ---- -->
       <div id="au-vista-panel">
         <h3>Gestión de usuarios</h3>
-        <p class="note">Se listan las cuentas que iniciaron sesión alguna vez en esta app, o que creaste desde acá. Tocá ✎ para cambiar el nombre o activar/desactivar el acceso, o 🔑 para mandarle un correo de restablecimiento de contraseña.</p>
+        <p class="note">Se listan las cuentas que iniciaron sesión alguna vez en esta app, o que creaste desde acá. Tocá ✎ para cambiar el nombre o activar/desactivar el acceso, o 🔑 para mandarle un correo de restablecimiento de contraseña, o el tacho para eliminar la cuenta.</p>
         <div id="admin-usuarios-lista"></div>
         <div class="admin-usuarios-nueva">
           <span class="fijos-add-tit">Crear cuenta nueva</span>
@@ -4192,6 +4223,7 @@ $('login-password').addEventListener('keydown',e=>{ if(e.key==='Enter') $('login
    Ahí se puede ver el directorio, editar nombre/estado, mandar un correo de restablecimiento de
    contraseña y crear cuentas nuevas. Crear una cuenta y activar/desactivar el acceso se hacen en el
    servidor (Firebase Admin): "Desactivar" bloquea la cuenta en Firebase Authentication y corta sus sesiones.
+   También se puede eliminar una cuenta (la borra el servidor; no a vos mismo ni a otro administrador).
    El directorio (variable "usuarios") se guarda junto con "propios"/"fijosExtra" en el mismo documento
    de configuración, así que no hace falta ninguna regla de Firestore nueva. No se puede cambiar el correo ni
    ver/cambiar la contraseña de otra cuenta: se manda un correo para que la persona la restablezca sola. */
@@ -4226,6 +4258,7 @@ function pintarUsuariosAdmin(){
       <div class="au-acciones">
         <button type="button" class="rowbtn plain" data-au-editar="${email}" title="Editar nombre / activar o desactivar">${ICO_EDIT}</button>
         <button type="button" class="rowbtn plain" data-au-reset="${email}" title="Enviar correo para restablecer la contraseña">🔑</button>
+        ${(esYo||esRestauradorFijo(u.email))?'':`<button type="button" class="rowbtn plain" data-au-eliminar="${email}" title="Eliminar esta cuenta">${ICO_DEL}</button>`}
       </div>
     </div>`;
   }).join('');
@@ -4261,6 +4294,20 @@ $('admin-usuarios-lista').addEventListener('click', async e=>{
     usuarioEnEdicion=null;
     pintarUsuariosAdmin();
     toast('Usuario actualizado.');
+    return;
+  }
+  const el=e.target.closest('[data-au-eliminar]');
+  if(el){
+    const email=el.dataset.auEliminar, u=usuarios.find(x=>x.email===email); if(!u) return;
+    if(!confirm('¿Eliminar la cuenta de '+(u.nombre||email)+' ('+email+')?\n\nVa a dejar de poder ingresar y se borra su cuenta. Lo que cargó (movimientos, historial) no se borra. Esto no se puede deshacer.')) return;
+    try{ await llamarAdmin('eliminar',{email}); }
+    catch(err){ if(err.status!==404){ toast(err.message||'No se pudo eliminar la cuenta.'); return; } }   // 404: solo estaba en el directorio
+    guardarParaDeshacer('eliminación de la cuenta "'+(u.nombre||email)+'"');
+    usuarios=usuarios.filter(x=>x.email!==email);
+    registrarHistorial('Eliminó la cuenta de usuario',null,(u.nombre||email)+' ('+email+')');
+    save(); if(usuarioEnEdicion===email) usuarioEnEdicion=null;
+    pintarUsuariosAdmin();
+    toast('Cuenta eliminada: '+(u.nombre||email));
     return;
   }
   const rs=e.target.closest('[data-au-reset]');
@@ -4618,9 +4665,17 @@ const etiquetaMetodo=m=>m||'Sin método de pago definido';
 // vencimiento o éste queda fuera de los pagos que se vienen; rojo fuerte (más que el de un impago con importe) si cae dentro de ellos
 // (incluye lo atrasado, igual que "Esta semana" en Pagos semanales). El ciclo cambia el VIERNES: desde ese día ya cuenta el próximo jueves de pagos.
 function hastaSinImporteFuerte(){ const d=new Date().getDay(); return limitesSemana(d===5||d===6||d===0?1:0).hasta; }
+// Gasto impago cuyo método (orientativo) es Débito automático: se debita solo, así que no pasa por las órdenes de pago
+// ni se destaca en rojo por no tener importe. Pago dividido: solo si todas las cuotas pendientes son por débito automático.
+function esDebitoAuto(r){
+  if(!r||r.tipo!=='gasto'||r.pago) return false;
+  if(r.dividido&&Array.isArray(r.cuotas)){ const pend=r.cuotas.filter(c=>!c.pago); return pend.length>0&&pend.every(c=>categoriaBanco(c.metodoPago)==='dau'); }
+  return categoriaBanco(r.metodoTentativo)==='dau';
+}
 function claseSinImporte(r,hastaSem){
   if(!r||r.tipo!=='gasto'||r.pago||r.dividido||esEcheqPendiente(r)) return '';
   if((+r.bruto||0)>0) return '';
+  if(esDebitoAuto(r)) return ' dau-sin-importe';   // neutro: sin el rojo de "sin importe"
   const enSemana = !r.pospuesto && !!r.fechaVenc && r.fechaVenc<=hastaSem;
   return enSemana ? ' sin-importe-fuerte' : ' sin-importe-claro';
 }
@@ -4659,7 +4714,7 @@ function candidatosOrden(){
   const domSem=(()=>{ const d=new Date(desdeSem+'T12:00:00'); d.setDate(d.getDate()+6); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); })();
   const out=[];
   rows.forEach(r=>{
-    if(r.tipo!=='gasto'||r.pago||esEcheqPendiente(r)) return;
+    if(r.tipo!=='gasto'||r.pago||esEcheqPendiente(r)||esDebitoAuto(r)) return;   // el débito automático no se carga a una orden de pago
     const it=itemDeRow(r);
     // Un pago pospuesto solo se ofrece si tiene fecha y esa fecha cae dentro de los pagos semanales de
     // esta semana (del lunes al miércoles siguiente al jueves de pago); sin fecha, o con una fuera de
@@ -5061,9 +5116,16 @@ const ICO_NOTA=_ic('<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 1
 const ICO_CHAT=_ic('<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/>');
 
 const MP_LOGO_SRC='data:image/png;base64,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';
-const ICO_MP_IMG='<img class="mp-logo" src="'+MP_LOGO_SRC+'" alt="" aria-hidden="true" draggable="false">';
+// Los logos (15-18 KB en base64) se repetían dentro del HTML de CADA fila; ahora se convierten una sola vez en una URL corta (blob:) y las filas solo la referencian.
+function urlCortaDeDataUri(d){
+  try{ const b=atob(d.split(',')[1]), u=new Uint8Array(b.length); for(let i=0;i<b.length;i++) u[i]=b.charCodeAt(i); return URL.createObjectURL(new Blob([u],{type:'image/png'})); }
+  catch(e){ return d; }
+}
+const MP_LOGO_URL=urlCortaDeDataUri(MP_LOGO_SRC);
+const ICO_MP_IMG='<img class="mp-logo" src="'+MP_LOGO_URL+'" alt="" aria-hidden="true" draggable="false">';
 const TR_LOGO_SRC='data:image/png;base64,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';
-const ICO_TR_IMG='<img class="tr-logo" src="'+TR_LOGO_SRC+'" alt="" aria-hidden="true" draggable="false">';
+const TR_LOGO_URL=urlCortaDeDataUri(TR_LOGO_SRC);
+const ICO_TR_IMG='<img class="tr-logo" src="'+TR_LOGO_URL+'" alt="" aria-hidden="true" draggable="false">';
 const ICO_M={
   // Efectivo: billete con signo $
   efe:_ic('<rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M12 8.2v7.6"/><path d="M14.4 10.2c-.3-.8-1.2-1.2-2.4-1.2-1.3 0-2.3.6-2.3 1.6 0 2.2 4.8 1 4.8 3.2 0 1-1 1.7-2.5 1.7-1.2 0-2.2-.5-2.5-1.4"/>'),
@@ -5971,6 +6033,7 @@ function mostrarConfirmacionAgregado(r){
 // (Registrados o alguna de las de Pagos semanales). Con limpiarFiltros=true, si el movimiento no
 // se ve porque lo esconde algún filtro (de la tabla o del período), los limpia para mostrarlo.
 function resaltarFila(id,limpiarFiltros,ms){
+  completarVolcados();
   const buscar=()=>[...document.querySelectorAll(`.tablacompacta tr[data-row-id="${id}"]`)].find(t=>t.offsetParent!==null);
   let tr=buscar();
   if(!tr && limpiarFiltros){
@@ -5996,6 +6059,7 @@ function resaltarFila(id,limpiarFiltros,ms){
 let brilloId=null, brilloFin=0;
 function reaplicarBrillo(){
   if(!brilloId||Date.now()>=brilloFin) return;
+  completarVolcados();
   const tr=[...document.querySelectorAll(`.tablacompacta tr[data-row-id="${brilloId}"]`)].find(t=>t.offsetParent!==null);
   if(!tr||tr.classList.contains('brillo')) return;
   tr.classList.add('brillo'); clearTimeout(tr._brilloT); tr._brilloT=setTimeout(()=>tr.classList.remove('brillo'),Math.max(0,brilloFin-Date.now()));
@@ -7915,28 +7979,24 @@ window.addEventListener('scroll',ajustarAtajos,{passive:true});
 // contenido conserva su ancho de siempre (la mitad del espacio, mínimo 680 px) y queda centrado.
 // En celular el panel vuelve a su tamaño normal.
 const RAIL_W=80;
-function ajustarAnchoPanel(panelId,bodyId,mitad){
+function ajustarAnchoPanel(panelId,bodyId,mitad,cw){
   const panel=$(panelId), body=$(bodyId);
   if(!panel || !body) return;
   const abierto = !body.hidden && !panel.hidden;
-  panel.style.marginLeft=''; panel.style.marginRight='';
-  body.style.maxWidth=''; body.style.marginLeft=''; body.style.marginRight='';
-  [...body.children].forEach(c=>{ c.style.maxWidth=''; c.style.marginLeft=''; c.style.marginRight=''; });
-  if(!abierto || window.innerWidth<=900) return;
-  const cw=document.documentElement.clientWidth;
-  // (en escritorio el panel es fijo: ocupa todo el alto y el ancho hasta el riel por CSS)
-  if(mitad){
-    const disp=cw-RAIL_W, enLista=(typeof ordenesVista==='undefined'||ordenesVista==='lista');
-    // la lista de órdenes aprovecha todo el ancho; el detalle y el formulario quedan algo más acotados para leerse bien
-    const w=disp;   // la lista, el detalle y el formulario ocupan el mismo ancho (hasta los bordes)
-    // el contenedor que se desplaza ocupa todo el ancho (su barra queda al borde); lo de adentro se acota y centra
-    [...body.children].forEach(c=>{ c.style.maxWidth=Math.max(0,w-28)+'px'; c.style.marginLeft='auto'; c.style.marginRight='auto'; });
-  }
+  // Se escribe solo lo que cambia y no se lee el layout después de escribir (antes se reseteaba todo y se volvía a leer: dos layouts por cambio de ventana)
+  const set=(el,prop,v)=>{ if(el.style[prop]!==v) el.style[prop]=v; };
+  set(panel,'marginLeft',''); set(panel,'marginRight','');
+  set(body,'maxWidth',''); set(body,'marginLeft',''); set(body,'marginRight','');
+  // la lista, el detalle y el formulario de órdenes ocupan todo el ancho (hasta los bordes); lo de adentro se acota y centra
+  const aplicar = abierto && window.innerWidth>900 && !!mitad;
+  const mw = aplicar ? Math.max(0,(cw-RAIL_W)-28)+'px' : '';
+  [...body.children].forEach(c=>{ set(c,'maxWidth',mw); set(c,'marginLeft',aplicar?'auto':''); set(c,'marginRight',aplicar?'auto':''); });
 }
 function ajustarAnchoPaneles(){
-  ajustarAnchoPanel('resultados','dash-body');
-  ajustarAnchoPanel('panel-movs','movs-body');
-  ajustarAnchoPanel('panel-ordenes','ord-body',true);
+  const cw=document.documentElement.clientWidth;
+  ajustarAnchoPanel('resultados','dash-body',false,cw);
+  ajustarAnchoPanel('panel-movs','movs-body',false,cw);
+  ajustarAnchoPanel('panel-ordenes','ord-body',true,cw);
 }
 window.addEventListener('resize',ajustarAnchoPaneles);
 // Movimientos: título, solapas y filtros viven en una fila fija arriba; lo demás se desplaza debajo
@@ -8155,7 +8215,7 @@ function irArea(id,o={}){
   // ----- ventana -> inicio -----
   if(!id && prev){
     const pv=$(prev), bv=$(AREAS[prev].body); pv.hidden=false; bv.hidden=false;   // sigue visible mientras se achica hacia su botón
-    ajustarAnchoPanel(prev,AREAS[prev].body,prev==='panel-ordenes');
+    ajustarAnchoPanel(prev,AREAS[prev].body,prev==='panel-ordenes',document.documentElement.clientWidth);
     document.body.classList.add('anim-nav');
     const p=pv.getBoundingClientRect();
     pv.style.transformOrigin=(rRielPrev.left+rRielPrev.width/2-p.left)+'px '+(rRielPrev.top+rRielPrev.height/2-p.top)+'px';
@@ -8267,7 +8327,7 @@ function setVistaMov(v){
     $('subtab-'+k).className = k===v ? 'on' : '';
     $('vista-'+k).hidden = k!==v;
   });
-  posicionarPildoraTabs(true);
+  requestAnimationFrame(()=>posicionarPildoraTabs(true));   // después de armar la vista: un solo cálculo de layout
   if(antes && antes!==v){ const el=$('vista-'+v); el.classList.remove('vista-in'); void el.offsetWidth; el.classList.add('vista-in'); }
   const fbar=document.querySelector('.movs-head>.filtros-barra'); if(fbar) fbar.hidden = v!=='registrados';
   $('xl-movs-wrap').hidden = v!=='registrados';   // el Excel baja lo filtrado en Registrados
@@ -8901,10 +8961,36 @@ function refrescarTrasAccion(e){
   else if(tablaId==='semana-actual'||tablaId==='semana-proxima'||tablaId==='semana-vencida'||tablaId==='semana-vencida-posp'||tablaId==='semana-tasas-posp') renderSemana();
   else renderTabla(filteredTabla());
 }
+// Tablas largas: se pintan primero las primeras filas (el cambio de ventana es inmediato) y el resto se completa en segundo plano
+// por tandas. Los totales siempre son los de la lista completa. completarVolcados() termina todo al instante (p. ej. para resaltar una fila).
+const VOLCADO_PRIMERAS=45, VOLCADO_TANDA=70, _volcadosPend=new Map();
+function volcarTabla(el,html){
+  if(!el) return;
+  const prev=_volcadosPend.get(el); if(prev){ prev.cancel=true; _volcadosPend.delete(el); }
+  const i0=html.indexOf('<tbody>'), i1=html.indexOf('</tbody>');
+  if(i0<0||i1<0){ el.innerHTML=html; return; }
+  const filas=html.slice(i0+7,i1).split(/(?=<tr[\s>])/);
+  if(filas.length<=VOLCADO_PRIMERAS+20){ el.innerHTML=html; return; }
+  el.innerHTML=html.slice(0,i0+7)+filas.slice(0,VOLCADO_PRIMERAS).join('')+html.slice(i1);
+  const wrap=el.querySelector('.tablewrap'); if(wrap){ wrap.dataset.fitkey=filas.length+'|'+html.length; if(window.preajustarTabla) window.preajustarTabla(wrap); }   // la medida de columnas no cambia mientras se completa
+  const tb=el.querySelector('tbody'); if(!tb) return;
+  const est={cancel:false,pos:VOLCADO_PRIMERAS};
+  const tanda=()=>{
+    if(est.cancel||!tb.isConnected){ _volcadosPend.delete(el); return; }
+    const fin=Math.min(filas.length,est.pos+VOLCADO_TANDA);
+    tb.insertAdjacentHTML('beforeend',filas.slice(est.pos,fin).join('')); est.pos=fin;
+    if(est.pos<filas.length) est.timer=requestAnimationFrame(()=>{ est.timer=setTimeout(tanda,0); });
+    else _volcadosPend.delete(el);
+  };
+  est.flush=()=>{ if(est.cancel) return; est.cancel=true; clearTimeout(est.timer); cancelAnimationFrame(est.timer); if(tb.isConnected&&est.pos<filas.length){ tb.insertAdjacentHTML('beforeend',filas.slice(est.pos).join('')); est.pos=filas.length; } _volcadosPend.delete(el); };
+  _volcadosPend.set(el,est);
+  est.timer=requestAnimationFrame(()=>{ est.timer=setTimeout(tanda,0); });
+}
+function completarVolcados(){ [..._volcadosPend.values()].forEach(e=>e.flush&&e.flush()); }
 function renderTabla(view){
   marcarFiltrosActivos(FILTROS_TABLA); contarFiltrosMas();
   if(!view.length){ $('tablezone').innerHTML='<div class="empty">No hay movimientos que coincidan con el filtro.</div>'; return; }
-  $('tablezone').innerHTML=tablaHtml(view,sortRegistrados,'registrados');
+  volcarTabla($('tablezone'),tablaHtml(view,sortRegistrados,'registrados'));
 }
 // Detalle de movimientos del período elegido en el dashboard (mes de cobro/pago o al que
 // corresponde). No depende de los filtros de Registrados ni de los tildes de rubro: muestra
@@ -8912,7 +8998,7 @@ function renderTabla(view){
 function renderDetallePeriodo(base){
   const n=$('detper-n'); if(n) n.textContent=base.length?'('+base.length+')':'';
   if(!base.length){ $('detalle-periodo-zone').innerHTML='<div class="empty">No hay movimientos cargados para este período.</div>'; return; }
-  $('detalle-periodo-zone').innerHTML=tablaHtml(ordenar(base,sortDetallePeriodo),sortDetallePeriodo,'periodo');
+  volcarTabla($('detalle-periodo-zone'),tablaHtml(ordenar(base,sortDetallePeriodo),sortDetallePeriodo,'periodo'));
 }
 // Pagos semanales: gastos pendientes que vencen esta semana (énfasis normal) y, debajo con
 // menos énfasis, los que vencen la semana próxima. Mismo motor de filtros/tabla que Registrados.
@@ -8921,13 +9007,11 @@ function renderSemana(){
   syncSelect('qs-rubro','rubro',true,'gasto');
   const actual=filteredSemana(0), proxima=filteredSemana(1);
   $('semana-actual-titulo').textContent=`Esta semana — pago el jueves ${fmtFechaCorta(actual.jueves)} (vencimientos hasta el ${fmtFechaCorta(actual.hasta)}, incluye atrasados) — ${actual.lista.length} pago${actual.lista.length===1?'':'s'} pendiente${actual.lista.length===1?'':'s'}`;
-  $('semana-actual-zone').innerHTML = actual.lista.length
-    ? tablaHtml(ordenarSemana(actual.lista,sortSemanaActual),sortSemanaActual,'semana-actual')
-    : '<div class="empty">No hay pagos pendientes para pagar esta semana.</div>';
+  if(actual.lista.length) volcarTabla($('semana-actual-zone'),tablaHtml(ordenarSemana(actual.lista,sortSemanaActual),sortSemanaActual,'semana-actual'));
+  else $('semana-actual-zone').innerHTML='<div class="empty">No hay pagos pendientes para pagar esta semana.</div>';
   $('semana-proxima-titulo').textContent=`Semana próxima — pago el jueves ${fmtFechaCorta(proxima.jueves)} (vencimientos del ${fmtFechaCorta(proxima.desde)} al ${fmtFechaCorta(proxima.hasta)}) — ${proxima.lista.length} pago${proxima.lista.length===1?'':'s'} pendiente${proxima.lista.length===1?'':'s'}`;
-  $('semana-proxima-zone').innerHTML = proxima.lista.length
-    ? tablaHtml(ordenarSemana(proxima.lista,sortSemanaProxima),sortSemanaProxima,'semana-proxima')
-    : '<div class="empty">No hay pagos pendientes para pagar la semana próxima.</div>';
+  if(proxima.lista.length) volcarTabla($('semana-proxima-zone'),tablaHtml(ordenarSemana(proxima.lista,sortSemanaProxima),sortSemanaProxima,'semana-proxima'));
+  else $('semana-proxima-zone').innerHTML='<div class="empty">No hay pagos pendientes para pagar la semana próxima.</div>';
   // Atrasados pospuestos: los mismos pagos vencidos, pero marcados como "pospuesto"; se separan
   // para que no mezclen con los atrasados que hay que pagar.
   const posp=filteredVencidos(true);
@@ -8935,7 +9019,7 @@ function renderSemana(){
   $('semana-posp-box').hidden = !posp.lista.length;
   if(posp.lista.length){
     $('semana-posp-titulo').textContent=`Pagos atrasados pospuestos (hasta ${fmtFechaCorta(posp.desde)}) — ${posp.lista.length} pago${posp.lista.length===1?'':'s'}`;
-    $('semana-posp-zone').innerHTML = tablaHtml(ordenarSemana(posp.lista,sortSemanaVencidaPosp),sortSemanaVencidaPosp,'semana-vencida-posp');
+    volcarTabla($('semana-posp-zone'),tablaHtml(ordenarSemana(posp.lista,sortSemanaVencidaPosp),sortSemanaVencidaPosp,'semana-vencida-posp'));
   }
   // Tasas municipales / servicios públicos urbanos / servicios sanitarios medidos POSPUESTOS: siempre al final de todo, con cualquier fecha de
   // vencimiento y sin importar el mes de pago o a qué mes corresponde (solo respetan rubro, computable y la búsqueda de texto). Al sacarles lo
@@ -8945,7 +9029,7 @@ function renderSemana(){
     $('semana-tasas-box').hidden=!tasas.length;
     if(tasas.length){
       $('semana-tasas-titulo').textContent=`Tasas municipales y servicios pospuestos — ${tasas.length} pago${tasas.length===1?'':'s'} (quedan acá abajo hasta que se les quite lo de pospuesto)`;
-      $('semana-tasas-zone').innerHTML=tablaHtml(ordenar(tasas,sortSemanaTasasPosp),sortSemanaTasasPosp,'semana-tasas-posp');
+      volcarTabla($('semana-tasas-zone'),tablaHtml(ordenar(tasas,sortSemanaTasasPosp),sortSemanaTasasPosp,'semana-tasas-posp'));
     }
   }
 }
@@ -9859,25 +9943,40 @@ $('btn-export-movs').addEventListener('click',exportarMovsExcel);
    Cada columna toma el ancho de lo que muestra (con tope en Ítem y Rubro) y Detalle absorbe lo que sobra, así
    no quedan espacios vacíos al costado de los datos. Si el usuario arrastra un borde a mano, se respeta su ancho. */
 (function(){
-  const CAP={item:250,rubro:150};
+  const CAP={item:250,rubro:150}, MUESTRA_FILAS=140, _fitCache=new Map(), _ultimoW=new Map();
   const escritorio=()=>window.matchMedia('(min-width:701px)').matches;
   function ajustar(wrap){
     if(!wrap||!wrap.isConnected||!escritorio()) return;
     const table=wrap.querySelector(':scope>table'); if(!table||!table.tHead||!table.tBodies[0]) return;
     const W=Math.floor(wrap.clientWidth); if(W<240) return;
+    _ultimoW.set(wrap.dataset.tabla||'',W);
     const g=grupoColDe(wrap.dataset.tabla);
     if(g&&leerAnchosCol(g)) return;   // anchos fijados a mano por el usuario
     const cols=[...table.querySelectorAll(':scope>colgroup>col')], ths=[...table.tHead.rows[0].cells];
     if(!cols.length||cols.length!==ths.length) return;
-    const sig=W+'|'+cols.length+'|'+table.tBodies[0].rows.length;
+    const tb=table.tBodies[0];
+    const sig=W+'|'+cols.length+'|'+(wrap.dataset.tabla||'')+'|'+(wrap.dataset.fitkey||(tb.rows.length+'|'+tb.textContent.length));
     if(wrap._fit===sig) return;
-    const extra=[...table.tBodies[0].rows].filter(r=>!r.hasAttribute('data-row-id')), tf=table.tFoot;
-    extra.forEach(r=>{ r.style.display='none'; }); if(tf) tf.style.display='none';
-    cols.forEach(c=>{ c.style.width=''; });
-    table.style.tableLayout='auto'; table.style.width='max-content';
-    const nat=ths.map(th=>Math.ceil(th.getBoundingClientRect().width));
-    table.style.tableLayout=''; table.style.width='';
-    extra.forEach(r=>{ r.style.display=''; }); if(tf) tf.style.display='';
+    // Cache: si la tabla se vuelve a armar con los mismos datos y el mismo ancho, se reutilizan las medidas (cambiar de solapa deja de re-medir todo)
+    let nat=_fitCache.get(sig);
+    if(!nat){
+      // Se mide sobre una COPIA fuera de pantalla con una muestra de las primeras filas (no se toca la tabla real ni se le fuerza un layout completo)
+      const box=document.createElement('div'); box.className='tablacompacta';
+      box.style.cssText='position:absolute;left:-99999px;top:0;visibility:hidden;pointer-events:none;width:max-content;max-width:none;overflow:visible;height:auto';
+      const t2=table.cloneNode(false); t2.style.cssText='table-layout:auto;width:max-content;min-width:0';
+      t2.appendChild(table.tHead.cloneNode(true));
+      const cg=table.querySelector(':scope>colgroup'); if(cg){ const c2=cg.cloneNode(true); [...c2.children].forEach(c=>{ c.style.width=''; }); t2.insertBefore(c2,t2.firstChild); }
+      const tb2=document.createElement('tbody'); t2.appendChild(tb2);
+      let n=0; for(const r of tb.rows){ if(!r.hasAttribute('data-row-id')) continue; tb2.appendChild(r.cloneNode(true)); if(++n>=MUESTRA_FILAS) break; }
+      box.appendChild(t2); wrap.parentNode.insertBefore(box,wrap);
+      nat=[...t2.tHead.rows[0].cells].map(th=>Math.ceil(th.getBoundingClientRect().width));
+      box.remove();
+      if(_fitCache.size>40) _fitCache.clear();
+      _fitCache.set(sig,nat);
+    }
+    aplicarAnchos(wrap,cols,nat,W,sig);
+  }
+  function aplicarAnchos(wrap,cols,nat,W,sig){
     const keys=cols.map(c=>c.dataset.col);
     let w=nat.map((n,i)=>n+2);
     keys.forEach((k,i)=>{ if(CAP[k]) w[i]=Math.min(w[i],CAP[k]); });
@@ -9897,11 +9996,34 @@ $('btn-export-movs').addEventListener('click',exportarMovsExcel);
     cols.forEach((c,i)=>{ c.style.width=w[i]+'px'; });
     wrap._fit=sig;
   }
+  // Con una tabla grande que se arma por tandas: si ya se midió esta misma tabla con el mismo ancho, las columnas se fijan
+  // al instante (antes del primer dibujado), así no hay un segundo cálculo de layout al cambiar de solapa.
+  window.preajustarTabla=function(wrap){
+    try{
+      if(!wrap||!wrap.dataset.fitkey||!escritorio()) return;
+      const W=_ultimoW.get(wrap.dataset.tabla||''); if(!W) return;
+      const g=grupoColDe(wrap.dataset.tabla); if(g&&leerAnchosCol(g)) return;
+      const table=wrap.querySelector(':scope>table'); if(!table) return;
+      const cols=[...table.querySelectorAll(':scope>colgroup>col')];
+      const sig=W+'|'+cols.length+'|'+(wrap.dataset.tabla||'')+'|'+wrap.dataset.fitkey;
+      const nat=_fitCache.get(sig); if(!nat||nat.length!==cols.length) return;
+      aplicarAnchos(wrap,cols,nat,W,sig);
+    }catch(e){}
+  };
+
   const ro=new ResizeObserver(es=>es.forEach(e=>ajustar(e.target)));
   function barrer(){ document.querySelectorAll('.tablewrap.autofit').forEach(w=>{ if(!w._ro){ w._ro=true; ro.observe(w); } ajustar(w); }); }
   new MutationObserver(barrer).observe($('paneles-zone'),{childList:true,subtree:true});
   window.addEventListener('resize',()=>document.querySelectorAll('.tablewrap.autofit').forEach(w=>{ w._fit=''; }));
   barrer();
+})();
+
+/* ---------- Desplazamiento fluido: mientras se hace scroll se suspenden los efectos de hover (cada fila que pasa bajo el cursor
+   repintaba su brillo) y los cálculos de puntero; vuelven 120 ms después de dejar de desplazar. ---------- */
+(function(){
+  let t=0, on=false;
+  const fin=()=>{ on=false; document.body.classList.remove('scrolleando'); };
+  window.addEventListener('scroll',()=>{ if(!on){ on=true; document.body.classList.add('scrolleando'); } clearTimeout(t); t=setTimeout(fin,120); },{capture:true,passive:true});
 })();
 /* ---------- Inicio ---------- */
 (function init(){
