@@ -1843,7 +1843,7 @@
     .masthead-tools{display:contents}
     .masthead-inner>div:first-child{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:1;pointer-events:none}
     .masthead h1{pointer-events:auto;white-space:nowrap;display:inline-block}
-    #banner-prueba{order:1} #guardado-estado{order:2} #presencia-zone{order:3} #usuario-nombre-header{order:4} #usuario-chip{order:5} #btn-restaurar{order:6}
+    #banner-prueba{order:1} #guardado-estado{order:2} #presencia-zone{order:3} #usuario-nombre-header{order:4} #usuario-chip{order:5} #btn-restaurar{order:6} #btn-admin-usuarios{order:7}
     #btn-tema{order:20;margin-left:auto} #btn-historial{order:21} #btn-notif{order:22} #btn-deshacer{order:23}
     .masthead-tools .stamp{order:30}
     .masthead #btn-deshacer:disabled{display:none}
@@ -2616,6 +2616,42 @@
       linear-gradient(90deg,color-mix(in srgb,var(--ok) 30%,var(--paper)) 0,color-mix(in srgb,var(--ok) 30%,var(--paper)) var(--p),color-mix(in srgb,var(--neg) 24%,var(--paper)) var(--p),color-mix(in srgb,var(--neg) 24%,var(--paper)) 100%) padding-box,
       linear-gradient(90deg,var(--ok) 0,var(--ok) var(--p),var(--neg) var(--p),var(--neg) 100%) border-box!important}
   .cuotas-btn::before{display:none!important}
+
+  /* Filtros en escritorio: "Meses" quedó vacío (sus rangos están en la barra), así que Fechas ocupa todo el ancho y sus dos rangos van en un solo renglón */
+  @media (min-width:701px){ #panel-movs .fb-pop>:nth-child(5){display:none} }
+  @media (min-width:901px){
+    #panel-movs .fb-pop>:nth-child(6){grid-column:1/-1;grid-row:3}
+    #panel-movs .fb-pop>:nth-child(6) .fb-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 28px}
+    #panel-movs .fb-pop>:nth-child(6) .fb-grid .rango{grid-column:auto}
+  }
+
+  /* Encabezados de Dashboard / Movimientos / Órdenes de pago: solo la flecha y el nombre minimizan; el resto del renglón no responde al toque */
+  .dash-head{cursor:default;pointer-events:none}
+  .dash-head .chev,.dash-head .dash-nombre{pointer-events:auto;cursor:pointer}
+  .dash-head .dash-nombre{margin-left:2px}
+  .dash-head .dash-hint,.dash-head .aviso-posp-badge{cursor:default}
+  .dash-head:focus-visible{pointer-events:auto}
+
+  /* ===== Filas de ítems: un solo tono por estado (sin alternar entre renglones) ===== */
+  .tablacompacta tbody tr.gasto-impago:nth-child(even){background:color-mix(in srgb,var(--neg) 9%,var(--paper))}
+  .tablacompacta tbody tr.gasto-pospuesto:nth-child(even){background:color-mix(in srgb,var(--ink-soft) 16%,var(--paper))}
+  .tablacompacta tbody tr.gasto-impago.vence-pronto:nth-child(even){background:color-mix(in srgb,var(--neg) 26%,var(--paper))}
+  .tablacompacta tbody tr.gasto-pago:nth-child(even){background:color-mix(in srgb,var(--ok) 11%,var(--paper))}
+  .tablacompacta tbody tr.sin-importe-claro:nth-child(even){background:color-mix(in srgb,var(--neg) 9%,var(--paper))}
+  .tablacompacta tbody tr.sin-importe-fuerte:nth-child(even){background:color-mix(in srgb,var(--neg) 66%,var(--paper))}
+  body.dark .tablacompacta tbody tr.sin-importe-fuerte:nth-child(even){background:color-mix(in srgb,var(--neg) 58%,var(--paper))}
+  .tablacompacta .tabla-fijos tbody tr:nth-child(even):not(.gasto-pago):not(.gasto-impago){background:color-mix(in srgb,var(--ink) 7%,transparent)}
+  .fijo-estado-row:nth-child(even),.fijo-lote-row:nth-child(even),.fm-row:nth-child(even){background:color-mix(in srgb,var(--ink) 7%,transparent)}
+  /* El tono de los renglones sin estado también es único */
+  .tablacompacta tbody tr.serv-bloq:nth-child(even){background:#AAB1B6 !important}
+
+  /* Filas 1,5 mm menos altas (contenido, símbolos y tipografía intactos): esos 1,5 mm pasan a ser separación entre ítems */
+  @media (min-width:701px){
+    .tablacompacta>.tablewrap:not([data-tabla="fijos"])>table{border-collapse:separate;border-spacing:0 1.5mm}
+    .tablacompacta>.tablewrap:not([data-tabla="fijos"])>table tbody td{padding-top:calc(4px - .75mm);padding-bottom:calc(4px - .75mm)}
+    #fijos-estado-lista table{border-spacing:0 calc(4px + 1.5mm)}
+    #fijos-estado-lista tbody td{padding-top:calc(10px - .75mm);padding-bottom:calc(10px - .75mm)}
+  }
 </style>
 </head>
 <body>
@@ -2650,6 +2686,9 @@
       <button type="button" id="usuario-chip" class="icon-btn" title="Cerrar sesión">
         <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
       <span class="mh-lbl">Cerrar sesión</span></button>
+      <button type="button" id="btn-admin-usuarios" class="icon-btn" title="Administrar usuarios" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="17" height="17"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>
+      <span class="mh-lbl">Administrar usuarios</span></button>
       <button type="button" id="btn-restaurar" class="icon-btn" title="Copias de seguridad y restauración" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="17" height="17"><rect x="2" y="3" width="20" height="5" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h2M20 8v11a2 2 0 0 1-2 2h-2"/><path d="m9 15 3-3 3 3"/><path d="M12 12v9"/></svg>
       <span class="mh-lbl">Copias de seguridad</span></button>
@@ -2699,66 +2738,18 @@
         <div style="display:flex;gap:8px;margin-top:12px">
           <button type="button" id="login-signin-btn">Ingresar</button>
         </div>
-        <div style="display:flex;gap:8px;margin-top:14px">
-          <button type="button" class="ghost" id="link-admin-gate">Acceso de administrador</button>
-        </div>
-      </div>
-      <!-- ---- Verificación de administrador ---- -->
-      <div id="login-vista-admin-gate" hidden>
-        <h3>Acceso de administrador</h3>
-        <p class="note">Ingresá el usuario y la clave de administrador para poder crear cuentas nuevas.</p>
-        <label for="admin-cuit" style="font-size:12px;color:var(--ink-soft)">Usuario</label>
-        <input type="text" id="admin-cuit" placeholder="Usuario" autocomplete="off">
-        <label for="admin-clave" style="font-size:12px;color:var(--ink-soft);margin-top:8px;display:block">Clave de administrador</label>
-        <input type="password" id="admin-clave" placeholder="Clave" autocomplete="off">
-        <div id="admin-gate-error" class="login-error" hidden></div>
-        <div style="display:flex;gap:8px;margin-top:12px">
-          <button type="button" id="admin-gate-btn">Continuar</button>
-          <button type="button" class="ghost" id="admin-gate-volver">Volver</button>
-        </div>
-      </div>
-      <!-- ---- Crear cuenta (admin) ---- -->
-      <div id="login-vista-admin-crear" hidden>
-        <h3>Crear cuenta nueva</h3>
-        <p class="note">Se crea con Firebase Authentication. La persona va a poder ingresar con este correo y clave.</p>
-        <label for="admin-nuevo-nombre" style="font-size:12px;color:var(--ink-soft)">Nombre y apellido</label>
-        <input type="text" id="admin-nuevo-nombre" placeholder="Nombre y apellido" autocomplete="off">
-        <label for="admin-nuevo-email" style="font-size:12px;color:var(--ink-soft);margin-top:8px;display:block">Correo</label>
-        <input type="email" id="admin-nuevo-email" placeholder="usuario@hotelcopahue.com" autocomplete="off">
-        <label for="admin-nuevo-clave" style="font-size:12px;color:var(--ink-soft);margin-top:8px;display:block">Clave (mínimo 6 caracteres)</label>
-        <input type="password" id="admin-nuevo-clave" placeholder="Clave" autocomplete="off">
-        <div id="admin-crear-error" class="login-error" hidden></div>
-        <div style="display:flex;gap:8px;margin-top:12px">
-          <button type="button" id="admin-crear-btn">Crear cuenta</button>
-          <button type="button" class="ghost" id="admin-crear-otra">Crear otra</button>
-          <button type="button" class="ghost" id="admin-crear-volver">Volver a ingresar</button>
-        </div>
       </div>
     </div>
   </div>
 
   <!-- ============ GESTIÓN DE USUARIOS ============
-       Panel de administrador: se abre desde el link "Acceso de administrador" en la
-       pantalla inicial (antes de iniciar sesión), no hace falta estar logueado. Pide el
-       mismo usuario/clave de administrador antes de mostrar la lista. -->
+       Panel de administrador: se abre desde el botón de la barra superior, que solo aparece si
+       el servidor confirma que la cuenta con la que iniciaste sesión es administradora
+       (correo en ADMIN_EMAILS de Netlify). No hay usuario ni clave de administrador en el código. -->
   <div id="admin-usuarios-overlay" class="usuario-overlay" hidden>
     <div class="usuario-box admin-usuarios-box">
-      <!-- ---- Verificación de administrador ---- -->
-      <div id="au-vista-gate">
-        <h3>Acceso de administrador</h3>
-        <p class="note">Ingresá el usuario y la clave de administrador para gestionar usuarios.</p>
-        <label for="au-gate-cuit" style="font-size:12px;color:var(--ink-soft)">Usuario</label>
-        <input type="text" id="au-gate-cuit" placeholder="Usuario" autocomplete="off">
-        <label for="au-gate-clave" style="font-size:12px;color:var(--ink-soft);margin-top:8px;display:block">Clave de administrador</label>
-        <input type="password" id="au-gate-clave" placeholder="Clave" autocomplete="off">
-        <div id="au-gate-error" class="login-error" hidden></div>
-        <div style="display:flex;gap:8px;margin-top:12px">
-          <button type="button" id="au-gate-btn">Continuar</button>
-          <button type="button" class="ghost" id="au-gate-cancelar">Cancelar</button>
-        </div>
-      </div>
       <!-- ---- Panel: ver, modificar y crear usuarios ---- -->
-      <div id="au-vista-panel" hidden>
+      <div id="au-vista-panel">
         <h3>Gestión de usuarios</h3>
         <p class="note">Se listan las cuentas que iniciaron sesión alguna vez en esta app, o que creaste desde acá. Tocá ✎ para cambiar el nombre o activar/desactivar el acceso, o 🔑 para mandarle un correo de restablecimiento de contraseña.</p>
         <div id="admin-usuarios-lista"></div>
@@ -2778,6 +2769,36 @@
         </div>
         <div style="display:flex;gap:8px;margin-top:16px;border-top:1px solid var(--rule);padding-top:14px">
           <button type="button" class="ghost" id="au-panel-cerrar">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TU CUENTA (al tocar "Cerrar sesión"): cerrar sesión o cambiar la clave ============ -->
+  <div id="sesion-overlay" class="usuario-overlay" hidden>
+    <div class="usuario-box">
+      <div id="ses-vista-menu">
+        <h3>Tu cuenta</h3>
+        <p class="note" id="ses-quien" style="margin-top:0"></p>
+        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+          <button type="button" id="ses-cerrar-btn">Cerrar sesión</button>
+          <button type="button" class="ghost" id="ses-clave-btn">Cambiar mi clave</button>
+          <button type="button" class="ghost" id="ses-cancelar-btn">Cancelar</button>
+        </div>
+      </div>
+      <div id="ses-vista-clave" hidden>
+        <h3>Cambiar mi clave</h3>
+        <p class="note" style="margin-top:0">Ingresá tu clave actual y la nueva. Seguís con la sesión iniciada.</p>
+        <label for="ses-actual" style="font-size:12px;color:var(--ink-soft)">Clave actual</label>
+        <input type="password" id="ses-actual" autocomplete="current-password" placeholder="Clave actual">
+        <label for="ses-nueva" style="font-size:12px;color:var(--ink-soft);margin-top:8px;display:block">Clave nueva (mínimo 6 caracteres)</label>
+        <input type="password" id="ses-nueva" autocomplete="new-password" placeholder="Clave nueva">
+        <label for="ses-repetir" style="font-size:12px;color:var(--ink-soft);margin-top:8px;display:block">Repetir clave nueva</label>
+        <input type="password" id="ses-repetir" autocomplete="new-password" placeholder="Repetir clave nueva">
+        <div id="ses-error" class="login-error" hidden></div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button type="button" id="ses-guardar-btn">Guardar clave</button>
+          <button type="button" class="ghost" id="ses-volver-btn">Volver</button>
         </div>
       </div>
     </div>
@@ -2858,7 +2879,7 @@
   <!-- ============ DASHBOARD (colapsable) ============ -->
   <section class="panel grafs-on" id="resultados" hidden>
     <h2 class="sec dash-head" id="dash-toggle" role="button" tabindex="0" aria-expanded="true">
-      <span class="chev" id="dash-chev">▾</span> Dashboard de resultados
+      <span class="chev" id="dash-chev">▾</span><span class="dash-nombre">Dashboard de resultados</span>
       <span class="dash-hint" id="dash-hint"></span>
     </h2>
     <div id="dash-body">
@@ -2895,7 +2916,7 @@
   <!-- ============ MOVIMIENTOS (colapsable, con sub-vistas) ============ -->
   <section class="panel" id="panel-movs" hidden>
     <h2 class="sec dash-head" id="movs-toggle" role="button" tabindex="0" aria-expanded="true">
-      <span class="chev" id="movs-chev">▾</span> Movimientos
+      <span class="chev" id="movs-chev">▾</span><span class="dash-nombre">Movimientos</span>
       <span class="dash-hint" id="movs-hint"></span><span class="aviso-posp-badge" id="movs-aviso-badge" hidden></span>
     </h2>
     <div id="movs-body">
@@ -3135,7 +3156,7 @@
   <!-- ============ ÓRDENES DE PAGO (colapsable, como Dashboard y Movimientos) ============ -->
   <section class="panel" id="panel-ordenes" hidden>
     <h2 class="sec dash-head" id="ord-toggle" role="button" tabindex="0" aria-expanded="false">
-      <span class="chev" id="ord-chev">▸</span> Órdenes de pago
+      <span class="chev" id="ord-chev">▸</span><span class="dash-nombre">Órdenes de pago</span>
       <span class="dash-hint" id="ord-hint">(toca para ver las órdenes de pago)</span><span class="aviso-posp-badge" id="ord-badge" hidden>0</span>
     </h2>
     <div id="ord-body" hidden>
@@ -3228,11 +3249,12 @@ dentro del bloque de JavaScript, en la sección "CONFIGURACIÓN DE FIREBASE".
    4. Andá a "Compilación" → "Authentication" → "Comenzar" (Get started) →
       en la pestaña "Sign-in method" habilitá el proveedor "Correo
       electrónico/contraseña" (Email/Password). No hace falta crear ningún
-      usuario ahí a mano: la app misma tiene un panel para crear cuentas
-      (botón "¿Sos administrador? Crear una cuenta nueva" en la pantalla de
-      login), protegido con el CUIT de la empresa y una clave fijados en el
-      código (buscá "ADMIN_CUIT" y "ADMIN_CLAVE" más abajo). Cambiá esos
-      valores si querés otra clave de administrador.
+      usuario ahí a mano: la app tiene un panel para crear cuentas (botón
+      "Administrar usuarios" en la barra superior, solo para administradores).
+      Quién es administrador se define en Netlify, no en el código: variable
+      de entorno ADMIN_EMAILS (correos separados por coma). Conviene además
+      desactivar el registro libre: Authentication → Configuración →
+      Acciones del usuario → destildar "Habilitar la creación (registro)".
    5. Andá a "Configuración del proyecto" (el engranaje) → pestaña "General" →
       bajá hasta "Tus apps" → ícono </> ("Agregar app" → Web) → registrá la
       app (no hace falta Firebase Hosting). Te va a mostrar un objeto
@@ -3251,13 +3273,12 @@ dentro del bloque de JavaScript, en la sección "CONFIGURACIÓN DE FIREBASE".
    así que ningún documento crece sin límite y esto funciona para siempre sin
    necesidad de tocar nada.
 
-   SEGURIDAD DEL PANEL DE ADMINISTRADOR: el CUIT y la clave de más abajo se
-   verifican en el navegador (no hay servidor propio), así que alguien con
-   conocimientos técnicos que revise el código fuente podría encontrarlos.
-   No reemplazan la seguridad real (que es la regla de Firestore de arriba,
-   "if request.auth != null"): solo evitan que cualquiera vea el botón de
-   crear cuentas a simple vista. Para más seguridad, cambiá estos valores por
-   los que quieras y no los compartas.
+   SEGURIDAD DEL PANEL DE ADMINISTRADOR: no hay ninguna clave de administrador
+   en el código. El panel lo habilita el servidor (función de Netlify
+   "admin-usuarios"): verifica la sesión de Firebase de quien lo abre y solo
+   deja pasar a los correos de la variable ADMIN_EMAILS (Netlify). La creación
+   y el bloqueo de cuentas también los hace el servidor, con la clave de
+   servicio de Firebase que vive solo en Netlify.
    ====================================================================== */
 const firebaseConfig = {
   apiKey: "AIzaSyDtSk1UWI6Ebx4o7GZwUv5T9q7vOpV533E",
@@ -3951,14 +3972,35 @@ async function toggleTema(){
 $('btn-tema').addEventListener('click',toggleTema);
 
 /* ======================================================================
-   ADMINISTRADOR — clave para poder crear cuentas nuevas desde el login.
-   Se valida en el navegador (como todo en esta app, sin servidor propio),
-   así que no reemplaza la seguridad real: la seguridad real la da Firebase
-   Authentication + las reglas de Firestore ("if request.auth != null").
-   Esta clave solo evita que cualquiera vea el botón de crear cuentas.
+   ADMINISTRADOR — ya NO hay usuario ni clave de administrador en el código.
+   Quién es administrador lo decide el servidor (función de Netlify "admin-usuarios"): verifica la
+   sesión de Firebase de quien llama y revisa que su correo esté en la variable ADMIN_EMAILS de Netlify.
+   Las cuentas se crean y se desactivan desde esa función (Firebase Admin), no desde el navegador.
    ====================================================================== */
-const ADMIN_CUIT='33717567639';
-const ADMIN_CLAVE='Copahue';
+let adminConfirmado=false;
+async function llamarAdmin(accion,datos){
+  const u=FIREBASE_LISTO?firebase.auth().currentUser:null;
+  if(!u) throw new Error('Iniciá sesión para continuar.');
+  const token=await u.getIdToken();
+  let r;
+  try{ r=await fetch('/.netlify/functions/admin-usuarios',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({accion,...(datos||{})})}); }
+  catch(e){ throw new Error('No se pudo comunicar con el servidor. Reintentá.'); }
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok){ const err=new Error(j.error||('Error '+r.status)); err.status=r.status; throw err; }
+  return j;
+}
+function actualizarBtnAdmin(){ const b=$('btn-admin-usuarios'); if(b) b.hidden=!adminConfirmado; }
+let adminVerificadoPara=null;
+async function verificarAdmin(){
+  if(modoPrueba||!FIREBASE_LISTO){ adminConfirmado=false; actualizarBtnAdmin(); return; }
+  const u=firebase.auth().currentUser;
+  if(!u){ adminConfirmado=false; adminVerificadoPara=null; actualizarBtnAdmin(); return; }
+  if(adminVerificadoPara===u.uid) return;
+  adminVerificadoPara=u.uid;
+  try{ await llamarAdmin('verificar'); adminConfirmado=true; }
+  catch(e){ adminConfirmado=false; if(e.status===undefined) adminVerificadoPara=null; /* error de red: se reintenta la próxima vez */ }
+  actualizarBtnAdmin();
+}
 
 function actualizarUsuarioUI(){
   const btn=$('usuario-chip');
@@ -3967,19 +4009,62 @@ function actualizarUsuarioUI(){
     $('usuario-nombre-header').textContent=nombreAbrev(usuarioActual); $('usuario-nombre-header').title=usuarioActual||''; actualizarBtnRestaurar(); return;
   }
   const u = FIREBASE_LISTO ? firebase.auth().currentUser : null;
-  btn.title = u ? ('Conectado como '+(usuarioActual||u.email)+' — tocá para cerrar sesión') : 'Cerrar sesión';
+  btn.title = u ? ('Conectado como '+(usuarioActual||u.email)+' — tocá para cerrar sesión o cambiar tu clave') : 'Cerrar sesión';
   btn.classList.toggle('identificado',!!u);
   $('usuario-nombre-header').textContent = u ? (usuarioActual||u.email) : '';
   actualizarBtnRestaurar();
+  verificarAdmin();
 }
 async function asegurarUsuario(){ return !!usuarioActual; }  // el login ya garantiza que hay alguien identificado
 $('usuario-chip').addEventListener('click',async()=>{
   if(modoPrueba){ if(confirm('¿Salir del modo prueba? Los datos de ejemplo se descartan.')) location.reload(); return; }
   if(!FIREBASE_LISTO) return;
-  if(!confirm('¿Cerrar sesión de '+(usuarioActual||'')+'?')) return;
+  abrirSesion();
+});
+// Al tocar "Cerrar sesión" se abre esta ventana: cerrar sesión o cambiar la clave de la cuenta.
+function abrirSesion(){
+  const u=firebase.auth().currentUser; if(!u) return;
+  $('ses-quien').textContent=(usuarioActual||u.email)+' · '+u.email;
+  ['ses-actual','ses-nueva','ses-repetir'].forEach(i=>$(i).value='');
+  $('ses-error').hidden=true;
+  $('ses-vista-menu').hidden=false; $('ses-vista-clave').hidden=true;
+  $('sesion-overlay').hidden=false;
+}
+$('ses-cancelar-btn').addEventListener('click',()=>{ $('sesion-overlay').hidden=true; });
+$('sesion-overlay').addEventListener('mousedown',e=>{ if(e.target===$('sesion-overlay')) $('sesion-overlay').hidden=true; });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!$('sesion-overlay').hidden) $('sesion-overlay').hidden=true; });
+$('ses-cerrar-btn').addEventListener('click',async()=>{
+  $('sesion-overlay').hidden=true;
   OrdenesDB.detener();
   await detenerPresencia(); // borra el latido ANTES de cerrar sesión (con la sesión ya cerrada no tendría permiso para escribir)
   firebase.auth().signOut();
+});
+$('ses-clave-btn').addEventListener('click',()=>{ $('ses-vista-menu').hidden=true; $('ses-vista-clave').hidden=false; $('ses-error').hidden=true; $('ses-actual').focus(); });
+$('ses-volver-btn').addEventListener('click',()=>{ $('ses-vista-clave').hidden=true; $('ses-vista-menu').hidden=false; });
+['ses-actual','ses-nueva','ses-repetir'].forEach(i=>$(i).addEventListener('keydown',e=>{ if(e.key==='Enter') $('ses-guardar-btn').click(); }));
+$('ses-guardar-btn').addEventListener('click',async()=>{
+  const err=m=>{ $('ses-error').hidden=false; $('ses-error').textContent=m; };
+  const u=FIREBASE_LISTO?firebase.auth().currentUser:null; if(!u||!u.email) return err('No hay una sesión iniciada.');
+  const actual=$('ses-actual').value, nueva=$('ses-nueva').value, rep=$('ses-repetir').value;
+  if(!actual) return err('Ingresá tu clave actual.');
+  if(nueva.length<6) return err('La clave nueva tiene que tener al menos 6 caracteres.');
+  if(nueva!==rep) return err('Las claves nuevas no coinciden.');
+  if(nueva===actual) return err('La clave nueva tiene que ser distinta de la actual.');
+  $('ses-error').hidden=true; $('ses-guardar-btn').disabled=true;
+  try{
+    // se vuelve a verificar la clave actual antes de cambiarla (Firebase lo exige para operaciones sensibles)
+    await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email,actual));
+    await u.updatePassword(nueva);
+    ['ses-actual','ses-nueva','ses-repetir'].forEach(i=>$(i).value='');
+    $('sesion-overlay').hidden=true;
+    toast('Clave actualizada.');
+  }catch(e){
+    const c=(e&&e.code)||'';
+    if(c==='auth/wrong-password'||c==='auth/invalid-credential'||c==='auth/invalid-login-credentials') err('La clave actual es incorrecta.');
+    else if(c==='auth/weak-password') err('La clave nueva es muy débil: tiene que tener al menos 6 caracteres.');
+    else if(c==='auth/too-many-requests') err('Demasiados intentos. Probá de nuevo en un rato.');
+    else err(errorLegible(e));
+  } finally { $('ses-guardar-btn').disabled=false; }
 });
 
 /* ---------- Presencia en vivo ----------
@@ -4076,14 +4161,11 @@ async function detenerPresencia(){
 }
 
 /* ---------- Login ---------- */
-function mostrarVistaLogin(v){
-  ['signin','admin-gate','admin-crear'].forEach(k=>{ $('login-vista-'+k).hidden = (k!==v); });
-  $('login-signin-error').hidden=true; $('admin-gate-error').hidden=true; $('admin-crear-error').hidden=true;
-}
 function errorLegible(e){
   const c=(e&&e.code)||'';
   if(c==='auth/invalid-email') return 'El correo no es válido.';
   if(c==='auth/user-not-found'||c==='auth/wrong-password'||c==='auth/invalid-credential') return 'Correo o clave incorrectos.';
+  if(c==='auth/user-disabled') return 'Esta cuenta fue desactivada por un administrador.';
   if(c==='auth/too-many-requests') return 'Demasiados intentos. Probá de nuevo en un rato.';
   if(c==='auth/email-already-in-use') return 'Ya existe una cuenta con ese correo.';
   if(c==='auth/weak-password') return 'La clave tiene que tener al menos 6 caracteres.';
@@ -4104,67 +4186,15 @@ $('login-signin-btn').addEventListener('click',async()=>{
 });
 $('login-password').addEventListener('keydown',e=>{ if(e.key==='Enter') $('login-signin-btn').click(); });
 
-$('link-admin-gate').addEventListener('click',e=>{ e.preventDefault(); abrirGestionUsuarios(); });
-$('admin-gate-volver').addEventListener('click',()=>mostrarVistaLogin('signin'));
-$('admin-gate-btn').addEventListener('click',()=>{
-  const cuit=$('admin-cuit').value.trim();
-  const clave=$('admin-clave').value;
-  if(cuit===ADMIN_CUIT && clave===ADMIN_CLAVE){
-    $('admin-cuit').value=''; $('admin-clave').value='';
-    mostrarVistaLogin('admin-crear');
-  } else {
-    $('admin-gate-error').hidden=false; $('admin-gate-error').textContent='Usuario o clave incorrectos.';
-  }
-});
-
-// Crea la cuenta con una instancia SECUNDARIA de Firebase, así no se cierra la
-// sesión de quien está creándola (createUser normalmente firma como el nuevo usuario).
-async function crearCuentaAdmin(nombre,email,pass){
-  const app2=firebase.initializeApp(firebaseConfig,'admin-crear-'+Date.now());
-  try{
-    const cred=await app2.auth().createUserWithEmailAndPassword(email,pass);
-    await cred.user.updateProfile({displayName:nombre});
-    await app2.auth().signOut();
-  } finally { await app2.delete(); }
-}
-$('admin-crear-btn').addEventListener('click',async()=>{
-  if(!FIREBASE_LISTO){ $('admin-crear-error').hidden=false; $('admin-crear-error').textContent='Firebase todavía no está configurado.'; return; }
-  const nombre=$('admin-nuevo-nombre').value.trim();
-  const email=$('admin-nuevo-email').value.trim();
-  const pass=$('admin-nuevo-clave').value;
-  if(!nombre){ $('admin-crear-error').hidden=false; $('admin-crear-error').textContent='Falta el nombre y apellido.'; return; }
-  if(!email){ $('admin-crear-error').hidden=false; $('admin-crear-error').textContent='Falta el correo.'; return; }
-  if(!pass||pass.length<6){ $('admin-crear-error').hidden=false; $('admin-crear-error').textContent='La clave tiene que tener al menos 6 caracteres.'; return; }
-  $('admin-crear-btn').disabled=true;
-  try{
-    await crearCuentaAdmin(nombre,email,pass);
-    toast('Cuenta creada para '+nombre);
-    $('admin-nuevo-nombre').value=''; $('admin-nuevo-email').value=''; $('admin-nuevo-clave').value='';
-    mostrarVistaLogin('signin');
-    $('login-email').value=email;
-  } catch(e){
-    $('admin-crear-error').hidden=false; $('admin-crear-error').textContent=errorLegible(e);
-  } finally { $('admin-crear-btn').disabled=false; }
-});
-$('admin-crear-otra').addEventListener('click',()=>{
-  $('admin-nuevo-nombre').value=''; $('admin-nuevo-email').value=''; $('admin-nuevo-clave').value='';
-  $('admin-crear-error').hidden=true; $('admin-nuevo-nombre').focus();
-});
-$('admin-crear-volver').addEventListener('click',()=>mostrarVistaLogin('signin'));
-
 /* ---------- Gestión de usuarios ----------
-   Panel de administrador accesible desde la pantalla inicial (link "Acceso de administrador",
-   antes de iniciar sesión), pide el mismo usuario/clave de administrador (misma constante que la
-   creación de cuentas) y ahí se puede ver el directorio, editar nombre/estado, mandar un correo
-   de restablecimiento de contraseña, y crear cuentas nuevas — todo en un mismo lugar. El
-   directorio (variable "usuarios") se guarda junto con "propios"/"fijosExtra" en el mismo
-   documento de configuración, así que no hace falta ninguna regla de Firestore nueva.
-   LÍMITES (por ser todo del lado del navegador, sin servidor propio — igual que el CUIT/clave
-   de más abajo): no se puede cambiar el correo ni ver/cambiar la contraseña de otra cuenta
-   directamente (Firebase no lo permite desde acá); en su lugar se manda un correo para que la
-   persona la restablezca sola. "Desactivar" a alguien le impide seguir usando la app normalmente
-   (se lo saca apenas inicia sesión), pero no borra ni bloquea su cuenta de Firebase a nivel
-   servidor: para eso hace falta el panel de Firebase Authentication. */
+   Panel de administrador: se abre con el botón de la barra superior, que solo aparece si el servidor
+   (función "admin-usuarios") confirma que la cuenta con la sesión iniciada está en ADMIN_EMAILS de Netlify.
+   Ahí se puede ver el directorio, editar nombre/estado, mandar un correo de restablecimiento de
+   contraseña y crear cuentas nuevas. Crear una cuenta y activar/desactivar el acceso se hacen en el
+   servidor (Firebase Admin): "Desactivar" bloquea la cuenta en Firebase Authentication y corta sus sesiones.
+   El directorio (variable "usuarios") se guarda junto con "propios"/"fijosExtra" en el mismo documento
+   de configuración, así que no hace falta ninguna regla de Firestore nueva. No se puede cambiar el correo ni
+   ver/cambiar la contraseña de otra cuenta: se manda un correo para que la persona la restablezca sola. */
 function pintarUsuariosAdmin(){
   const cont=$('admin-usuarios-lista');
   if(!usuarios.length){
@@ -4216,8 +4246,13 @@ $('admin-usuarios-lista').addEventListener('click', async e=>{
     if(u){
       const miEmail=(FIREBASE_LISTO && firebase.auth().currentUser && firebase.auth().currentUser.email || '').toLowerCase();
       if(!activo && email.toLowerCase()===miEmail && !confirm('¿Seguro que querés desactivar tu propia cuenta? Vas a perder el acceso de inmediato.')) return;
-      guardarParaDeshacer('modificación del usuario "'+(u.nombre||u.email)+'"');
       const cambioEstado = (u.activo!==false) !== activo;
+      if(cambioEstado){
+        // bloquea / habilita la cuenta en Firebase Authentication (el servidor decide); 404 = la cuenta solo estaba en el directorio
+        try{ await llamarAdmin('estado',{email,activo}); }
+        catch(err){ if(err.status!==404){ toast(err.message||'No se pudo cambiar el estado de la cuenta.'); return; } }
+      }
+      guardarParaDeshacer('modificación del usuario "'+(u.nombre||u.email)+'"');
       u.nombre=nombre; u.activo=activo;
       const chkR=fila.querySelector('.au-rest-chk'); if(chkR&&!chkR.disabled) u.puedeRestaurar=chkR.checked;
       registrarHistorial((cambioEstado?(activo?'Reactivó':'Desactivó')+' al usuario':'Modificó al usuario'),null,nombre+' ('+email+')');
@@ -4237,26 +4272,14 @@ $('admin-usuarios-lista').addEventListener('click', async e=>{
     catch(err){ toast(errorLegible(err)); }
   }
 });
-function abrirGestionUsuarios(){
-  $('au-gate-cuit').value=''; $('au-gate-clave').value=''; $('au-gate-error').hidden=true;
-  $('au-vista-gate').hidden=false; $('au-vista-panel').hidden=true;
+async function abrirGestionUsuarios(){
+  try{ await llamarAdmin('verificar'); }
+  catch(e){ adminConfirmado=false; actualizarBtnAdmin(); toast(e.message||'No tenés permiso de administrador.'); return; }
+  usuarioEnEdicion=null;
+  pintarUsuariosAdmin();
   $('admin-usuarios-overlay').hidden=false;
-  $('au-gate-cuit').focus();
 }
-$('au-gate-cancelar').addEventListener('click',()=>{ $('admin-usuarios-overlay').hidden=true; });
-$('au-gate-clave').addEventListener('keydown',e=>{ if(e.key==='Enter') $('au-gate-btn').click(); });
-$('au-gate-btn').addEventListener('click',()=>{
-  const cuit=$('au-gate-cuit').value.trim();
-  const clave=$('au-gate-clave').value;
-  if(cuit===ADMIN_CUIT && clave===ADMIN_CLAVE){
-    $('au-gate-cuit').value=''; $('au-gate-clave').value='';
-    $('au-vista-gate').hidden=true; $('au-vista-panel').hidden=false;
-    usuarioEnEdicion=null;
-    pintarUsuariosAdmin();
-  } else {
-    $('au-gate-error').hidden=false; $('au-gate-error').textContent='Usuario o clave incorrectos.';
-  }
-});
+$('btn-admin-usuarios').addEventListener('click',()=>abrirGestionUsuarios());
 $('au-panel-cerrar').addEventListener('click',()=>{ $('admin-usuarios-overlay').hidden=true; });
 $('au-crear-btn').addEventListener('click',async()=>{
   if(!FIREBASE_LISTO){ $('au-crear-error').hidden=false; $('au-crear-error').textContent='Firebase todavía no está configurado.'; return; }
@@ -4269,7 +4292,7 @@ $('au-crear-btn').addEventListener('click',async()=>{
   $('au-crear-error').hidden=true;
   $('au-crear-btn').disabled=true;
   try{
-    await crearCuentaAdmin(nombre,email,pass);
+    await llamarAdmin('crear',{nombre,email,clave:pass});   // la cuenta la crea el servidor (Firebase Admin)
     guardarParaDeshacer('creación del usuario "'+nombre+'"');
     usuarios.push({email,nombre,activo:true,puedeRestaurar:!!$('au-nuevo-restaurar').checked,creadoTs:new Date().toISOString(),creadoPor:usuarioActual||'—'});
     registrarHistorial('Creó la cuenta de usuario',null,nombre+' ('+email+')');
@@ -5850,7 +5873,8 @@ function iniciarAuth(){
       OrdenesDB.detener(); detenerEscuchaRestauracion();
       usuarioActual='';
       $('login-overlay').hidden=false;
-      mostrarVistaLogin('signin');
+      adminConfirmado=false; adminVerificadoPara=null; actualizarBtnAdmin(); $('admin-usuarios-overlay').hidden=true;
+      $('login-signin-error').hidden=true;
     }
   });
 }
@@ -8286,23 +8310,25 @@ $('btn-semana-nuevo').addEventListener('click',()=>{
 
 /* ---------- Pago dividido: desglose de fechas al pasar el cursor por el símbolo de cuotas ---------- */
 (function(){
-  let pop=null, actual=null;
+  let pop=null, actual=null, fijo=null;  // fijo = id del gasto cuyo flotante quedó fijado con un clic
   const fmt=f=>{ if(!f) return '—'; const [y,m,d]=f.split('-'); return d+'/'+m+'/'+y.slice(2); };
   const html=r=>{
     const cu=r.cuotas||[], nP=cu.filter(c=>c.pago).length;
     return `<div class="cpop-head">Pago dividido · <b>${nP} de ${cu.length}</b> cuotas pagas${nP<cu.length?` · resta <b>${money(saldoCuotas(r))}</b>`:''}</div>`+
       cu.map((c,i)=>`<div class="cpop-row ${c.pago?'ok':'pend'}"><i></i><span class="cpop-n">Cuota ${i+1}</span><span class="cpop-imp">${money(c.importe)}</span><span class="cpop-f">${esc(c.fecha?fmt(c.fecha):(c.mesPago?mesNum(c.mesPago):'sin fecha'))}</span><span class="cpop-e">${c.pago?'pagada':(c.metodoPago==='E-cheq'?'se debita solo':'pendiente')}${c.metodoPago?' · '+esc(c.metodoPago):''}</span></div>`).join('');
   };
-  const ocultar=()=>{ if(pop) pop.hidden=true; actual=null; };
-  const mostrar=btn=>{
-    if(actual===btn) return;
-    const r=rows.find(x=>String(x.id)===btn.dataset.exp); if(!r||!Array.isArray(r.cuotas)||expandidas.has(r.id)) return;
-    if(!pop){ pop=document.createElement('div'); pop.id='cuotas-pop'; pop.hidden=true; document.body.appendChild(pop); }
-    pop.innerHTML=html(r); pop.hidden=false; actual=btn;
-    const b=btn.getBoundingClientRect(), w=pop.offsetWidth, h=pop.offsetHeight;
+  const ocultar=()=>{ if(fijo!==null) return; if(pop) pop.hidden=true; actual=null; };
+  const soltar=()=>{ fijo=null; if(pop) pop.hidden=true; actual=null; };
+  const colocar=btn=>{ if(!pop||!btn) return; const b=btn.getBoundingClientRect(), w=pop.offsetWidth, h=pop.offsetHeight;
     let left=Math.min(Math.max(8,b.left+b.width/2-w/2),window.innerWidth-w-8), top=b.bottom+6;
     if(top+h>window.innerHeight-8) top=Math.max(8,b.top-h-6);
-    pop.style.left=left+'px'; pop.style.top=top+'px';
+    pop.style.left=left+'px'; pop.style.top=top+'px'; };
+  const mostrar=btn=>{
+    if(actual===btn||fijo!==null) return;
+    const r=rows.find(x=>String(x.id)===btn.dataset.exp); if(!r||!Array.isArray(r.cuotas)) return;
+    if(!pop){ pop=document.createElement('div'); pop.id='cuotas-pop'; pop.hidden=true; document.body.appendChild(pop); }
+    pop.innerHTML=html(r); pop.hidden=false; actual=btn;
+    colocar(btn);
   };
   document.addEventListener('mouseover',e=>{
     const b=e.target.closest&&e.target.closest('.cuotas-btn');
@@ -8310,8 +8336,32 @@ $('btn-semana-nuevo').addEventListener('click',()=>{
   });
   document.addEventListener('focusin',e=>{ const b=e.target.closest&&e.target.closest('.cuotas-btn'); if(b) mostrar(b); });
   document.addEventListener('focusout',e=>{ if(e.target.closest&&e.target.closest('.cuotas-btn')) ocultar(); });
-  document.addEventListener('click',ocultar,true);
-  document.addEventListener('scroll',ocultar,true);
+  // Clic en el símbolo: deja fijo el flotante (sin desplegar renglones). Otro clic en el mismo símbolo, clic afuera o Escape lo sueltan.
+  document.addEventListener('click',e=>{
+    const b=e.target.closest&&e.target.closest('.cuotas-btn');
+    if(b){
+      const id=b.dataset.exp;
+      if(fijo!==null&&String(fijo)===String(id)){ soltar(); return; }
+      fijo=null; actual=null; mostrar(b); fijo=id; return;
+    }
+    if(e.target.closest&&e.target.closest('#cuotas-pop')) return;
+    soltar();
+  },true);
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&fijo!==null) soltar(); });
+  // Con el flotante fijo, acompaña al símbolo si se desplaza la página o se vuelve a dibujar la tabla
+  const seguir=()=>{
+    if(fijo===null) return;
+    let b=actual&&document.contains(actual)?actual:document.querySelector('.cuotas-btn[data-exp="'+String(fijo).replace(/"/g,'')+'"]');
+    if(!b){ soltar(); return; }
+    const r=rows.find(x=>String(x.id)===String(fijo));
+    if(!r||!Array.isArray(r.cuotas)){ soltar(); return; }
+    if(b!==actual){ actual=b; pop.innerHTML=html(r); }
+    colocar(b);
+  };
+  let rafSeguir=0; const pedir=()=>{ if(fijo===null||rafSeguir) return; rafSeguir=requestAnimationFrame(()=>{ rafSeguir=0; seguir(); }); };
+  document.addEventListener('scroll',e=>{ if(fijo!==null) pedir(); else ocultar(); },true);
+  window.addEventListener('resize',pedir);
+  new MutationObserver(pedir).observe(document.body,{childList:true,subtree:true});
 })();
 
 /* ---------- Tooltip de los gráficos del dashboard (hover/foco sobre barras y puntos) ---------- */
@@ -9341,8 +9391,7 @@ document.addEventListener('click',async e=>{
   }
   // desplegar / plegar el desglose de pagos de un gasto dividido (puede estar en Registrados o en el Detalle del período)
   if(d.exp){
-    if(expandidas.has(d.exp)) expandidas.delete(d.exp); else expandidas.add(d.exp);
-    refrescarTrasAccion(e);
+    // el desglose ya no despliega renglones: lo muestra el flotante del símbolo (se fija con un clic)
     return;
   }
   // ítems de tarjeta de crédito: abrir/cerrar el desglose del resumen

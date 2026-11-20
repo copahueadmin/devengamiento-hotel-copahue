@@ -16,6 +16,7 @@ function iniciarApp() {
 }
 export function conectarFirestore() { iniciarApp(); return getFirestore(); }
 export function verificarToken(token) { iniciarApp(); return getAuth().verifyIdToken(token); }
+export function authAdmin() { iniciarApp(); return getAuth(); }
 export { FieldValue };
 
 // Envío de correo. Si está RESEND_API_KEY se usa Resend (recomendado: permite enviar desde una dirección "no-responder" del dominio);
