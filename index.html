@@ -2,7 +2,12 @@
 <html lang="es-AR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#25372f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Copahue">
 <title>Resultados y Devengamiento — Hotel Copahue</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1809,7 +1814,7 @@
     .masthead .icon-btn:disabled{opacity:.4;cursor:default}
     .masthead .icon-btn svg{width:19px;height:19px}
     .masthead .icon-btn .notif-badge{top:-5px;right:-5px;box-shadow:0 0 0 2px #1d2b27}
-    .historial-popover{top:76px!important}
+    .historial-popover{top:calc(76px + var(--esquina-alto,0px))!important}
   }
 
   body.dark header.masthead{box-shadow:0 8px 24px rgba(0,0,0,.5),inset 0 -1px 0 rgba(255,255,255,.12)!important}
@@ -2447,7 +2452,7 @@
 
   /* Dentro de otro sitio (iframe), en computadora, la esquina superior derecha suele quedar tapada por el botón de cerrar de ese sitio:
      los botones del encabezado se corren hacia la izquierda. Se puede ajustar con ?margen=NN (en píxeles) en la dirección. */
-  html.embebido{--margen-der:64px}
+  html.embebido{--margen-der:0px}
   @media (min-width:701px){ html.embebido header.masthead{padding-right:var(--margen-der)!important;box-sizing:border-box} }
 
   /* Mes de pago y mes al que corresponde en la barra: dos flotantes de color (verde = Pagado, azul = Corresponde), con el nombre del grupo arriba */
@@ -2456,7 +2461,7 @@
     .movs-head .filtros-barra>.rango-bar{position:relative;isolation:isolate;margin:0 10px 0 6px;--tono:var(--ok)}
     .movs-head .filtros-barra>.rango-bar.rango-corr{--tono:var(--iva)}
     .movs-head .filtros-barra>.rango-bar::before{content:"";position:absolute;z-index:-1;left:-8px;right:-8px;top:-30px;bottom:-5px;border-radius:16px;
-      background:color-mix(in srgb,var(--tono) 13%,transparent);border:1px solid color-mix(in srgb,var(--tono) 38%,transparent);box-shadow:0 4px 12px color-mix(in srgb,var(--tono) 14%,transparent)}
+      background:color-mix(in srgb,var(--tono) 6%,transparent);border:1px solid color-mix(in srgb,var(--tono) 22%,transparent);box-shadow:0 3px 10px color-mix(in srgb,var(--tono) 7%,transparent)}
     .movs-head .filtros-barra>.rango-bar .rango-grupo{display:block;position:absolute;left:0;right:0;bottom:calc(100% + 15px);text-align:center;font-family:var(--f-ui);font-size:10.5px;line-height:1;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:color-mix(in srgb,var(--tono) 82%,var(--ink));pointer-events:none}
     .movs-head .filtros-barra>.rango-bar .field{width:calc(5.2ch + 28px)}
     .movs-head .filtros-barra>.rango-bar .field>label{left:6px;color:color-mix(in srgb,var(--tono) 60%,var(--ink-soft))}
@@ -2683,6 +2688,88 @@
 
   /* Rendimiento: las franjas de desvanecido arriba/abajo conservan el degradé pero ya no desenfocan lo que tienen detrás (repintaba el contenido en cada cuadro del scroll) */
   .fade-strip::after,.fade-strip-b{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+
+  /* Esquina superior derecha libre: en computadora, los botones de la ventana (minimizar, cerrar, menú del navegador o del sitio que contiene la página)
+     se dibujan ENCIMA del encabezado y tapan los botones. Todo el renglón del encabezado se baja para que los botones queden por debajo de esa franja. */
+  :root{--esquina-alto:24px}
+  @media (min-width:701px){
+    .masthead-inner{padding-top:calc(12px + var(--esquina-alto))!important}
+    .masthead-inner>div:first-child{top:calc(50% + var(--esquina-alto) / 2)!important}
+  }
+  @media (min-width:701px){ .posp-notifs{top:calc(84px + var(--esquina-alto))} }
+
+  /* iPhone: la zona de la hora/batería (barra del sistema) toma el verde oscuro del encabezado, que se extiende por detrás de ella */
+  @supports(padding:max(0px)){
+    body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+    @media (max-width:700px){ .masthead-inner{padding-top:calc(10px + env(safe-area-inset-top))!important} }
+  }
+
+  /* Celular: la ventana de Órdenes de pago ocupa toda la pantalla disponible, de borde a borde, entre el encabezado y la barra de botones de abajo */
+  @media (max-width:900px){ #rail{padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))} }
+  @media (max-width:700px){
+    #panel-ordenes:not([hidden]){position:fixed;top:var(--atajos-top,90px);left:0;right:0;bottom:var(--rail-h,76px);margin:0!important;width:auto;max-width:none;
+      border-radius:0!important;border-left:none;border-right:none;border-bottom:none;box-shadow:none;padding:12px 8px 0!important;
+      display:flex;flex-direction:column;overflow:hidden;z-index:20}
+    #panel-ordenes:not([hidden])>h2.sec{flex:0 0 auto;margin-bottom:8px}
+    #panel-ordenes:not([hidden]) #ord-body{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;margin:0 -2px;padding:0 2px 16px;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  }
+
+  /* Celular, pantalla de inicio: tarjetas elegantes; ícono en un círculo de cristal, nombre en tipografía de título con una línea descriptiva y flecha a la derecha */
+  @media (max-width:700px){
+    #inicio{min-height:calc(100vh - var(--atajos-top,90px));min-height:calc(100dvh - var(--atajos-top,90px));padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));align-items:center}
+    .inicio-fila{flex:0 0 auto;max-width:420px;margin:0 auto;gap:14px;justify-content:center}
+    .inicio-btn{flex:none;height:clamp(104px,16vh,128px);min-height:0;max-height:none;flex-direction:row;justify-content:flex-start;align-items:center;gap:18px;padding:0 44px 0 22px;text-align:left;
+      border-radius:26px;text-transform:none;letter-spacing:.005em;font-size:19px;font-weight:600;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 2px 6px rgba(10,20,16,.16),0 14px 30px rgba(10,20,16,.22)}
+    .inicio-btn svg{flex:none;width:56px;height:56px;padding:15px;box-sizing:border-box;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+    .inicio-btn .ib-txt{display:block;line-height:1.15;text-align:left}
+    .inicio-btn .ib-txt::after{display:block;margin-top:5px;font-family:var(--f-ui);font-size:12px;font-weight:500;letter-spacing:.02em;opacity:.68}
+    .inicio-btn[data-area="resultados"] .ib-txt::after{content:"Resumen y gráficos"}
+    .inicio-btn[data-area="panel-movs"] .ib-txt::after{content:"Ingresos y egresos"}
+    .inicio-btn[data-area="panel-ordenes"] .ib-txt::after{content:"Pagos y aprobaciones"}
+    .inicio-btn::before{content:"";position:absolute;right:22px;top:50%;width:9px;height:9px;border-top:2px solid currentColor;border-right:2px solid currentColor;transform:translateY(-50%) rotate(45deg);opacity:.5;pointer-events:none}
+    .inicio-btn .atajo-badge{top:12px;right:14px}
+  }
+
+  /* Celular, tarjetas de movimientos: bajo el importe (bruto / neto) van, en una segunda línea, el % de cambio de precio y el IVA, sin pisarse con el importe */
+  @media (max-width:700px){
+    .tablewrap[data-tabla] tbody tr[data-row-id] td[data-c="bruto"],.tablewrap[data-tabla] tbody tr[data-row-id] td[data-c="neto"]{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:0;row-gap:2px;align-items:center;align-content:center}
+    .tablewrap[data-tabla] tbody tr[data-row-id] td[data-c="bruto"]::before,.tablewrap[data-tabla] tbody tr[data-row-id] td[data-c="neto"]::before{grid-column:1;grid-row:1}
+    .tablewrap[data-tabla] tbody tr[data-row-id] td[data-c="bruto"]>.var-pct,.tablewrap[data-tabla] tbody tr[data-row-id] td[data-c="neto"]>.ivanota,.tablewrap[data-tabla] tbody tr[data-row-id] td[data-c="bruto"]>.ivanota{grid-column:2;grid-row:auto;justify-self:start;margin:0!important;text-align:left;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+    .tablewrap[data-tabla] tbody tr[data-row-id] td[data-c="bruto"]>.var-pct{display:inline-flex;width:max-content;white-space:nowrap}
+  }
+  @media (max-width:360px){ .tablewrap[data-tabla] tbody tr[data-row-id] td[data-c="bruto"]>.var-pct .var-vs{display:none} }
+
+  /* Desde / Hasta: centrados sobre su casilla */
+  @media (min-width:701px){
+    .movs-head .filtros-barra>.rango-bar .field>label{left:0!important;right:0!important;text-align:center}
+  }
+  /* Botón de filtros: lleno, de color y un poco más grande para que se note */
+  #panel-movs .movs-head .fb-btn#btn-filtros-mas{height:40px;min-width:40px;width:40px;padding:0;justify-content:center;border:none!important;color:#f4f1ea;
+    background:linear-gradient(155deg,#3b8a68,#1f5a43)!important;box-shadow:0 3px 10px rgba(31,90,67,.45),inset 0 1px 0 rgba(255,255,255,.28);transition:transform .2s var(--ease-out),box-shadow .2s,filter .2s}
+  #panel-movs .movs-head .fb-btn#btn-filtros-mas .ico{width:19px;height:19px;stroke:currentColor;stroke-width:2.2;fill:rgba(244,241,234,.2)}
+  #panel-movs .movs-head .fb-btn#btn-filtros-mas:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 6px 16px rgba(31,90,67,.5),inset 0 1px 0 rgba(255,255,255,.3)}
+  #panel-movs .movs-head .fb-btn#btn-filtros-mas[aria-expanded="true"],#panel-movs .movs-head .fb-btn#btn-filtros-mas.filtro-activo{background:linear-gradient(155deg,#4aa57c,#27704f)!important;box-shadow:0 0 0 3px rgba(74,165,124,.35),0 4px 12px rgba(31,90,67,.5),inset 0 1px 0 rgba(255,255,255,.3)}
+  #panel-movs .movs-head .fb-btn#btn-filtros-mas .fb-n{top:-6px;right:-6px;box-shadow:0 0 0 2px var(--surface-panel,#fff)}
+  .ord-info-acc .ord-rest-btn{background:#f4f1ea!important;color:#16211e!important;border:none!important;font-weight:800;box-shadow:0 2px 10px rgba(0,0,0,.35)}
+  .ord-info-acc .ord-rest-btn:hover{filter:brightness(.94)}
+
+  /* Ítems ya pagados en una orden + ventana "Marcar abonado" */
+  .tag.pagado{background:color-mix(in srgb,var(--ok) 16%,var(--paper));color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,transparent)}
+  body.dark .tag.pagado{color:#8fd6a5}
+  .ord-grupo.pagado-aparte,.ord-grupo.pagado-grupo{margin-top:14px;border-top:3px solid var(--ok)}
+  .ord-pag-nota{font-size:11.5px;color:var(--ink-soft);padding:6px 10px 2px}
+  .ord-fila.ya-pagado .ord-main b,.ord-item.pagado .ord-nombre{opacity:.85}
+  .ord-sq.pg{--c:var(--ok);font-weight:700;font-size:15px;font-family:var(--f-ui)}
+  #abonar-modal{z-index:3600}
+  .abonar-box{width:min(460px,100%)}
+  .abonar-res{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;margin-bottom:6px}
+  .abonar-imp{flex-basis:100%;font-weight:700;font-size:15px}
+  .abonar-tabla{width:100%;border-collapse:collapse}
+  .abonar-tabla td.cp{display:block;position:static;padding:0;white-space:normal}
+  .abonar-box .cp-editor,.abonar-box .cp-editor.dividido{position:static!important;transform:none!important;box-shadow:none;border:1px solid var(--rule-strong);width:auto;top:auto!important;left:auto!important}
+  .abonar-box .cp-row{flex-wrap:wrap;gap:6px}
+  .abonar-box .cp-metodo-input{max-width:none;flex:1 1 150px;font-size:13px;padding:5px 7px}
 </style>
 </head>
 <body>
@@ -4591,6 +4678,12 @@ const itemsResueltos=o=>itemsAutorizados(o)+itemsRechazados(o);
 const itemPendiente=i=>!i.aut&&!i.rech;
 const venceTsISO=o=>new Date(venceMs(o)).toISOString();
 const puedePosponer=o=>esAutorizador()&&ordenAbierta(o)&&venceMs(o)<=finDelDiaTs(new Date().toISOString());
+// Restablecer: una orden vencida sigue pudiendo reactivarse durante los 3 días siguientes a su vencimiento (hasta las 23:59 del tercer día),
+// por CUALQUIER usuario, mientras le queden movimientos sin resolver. Queda vigente hasta las 23:59 del día en que se restablece.
+const RESTABLECER_DIAS=3;
+const limiteRestablecerMs=o=>venceMs(o)+RESTABLECER_DIAS*864e5;
+const puedeRestablecer=o=>!!o&&estadoOrden(o)==='vencida'&&Date.now()<=limiteRestablecerMs(o)&&(o.items||[]).some(itemPendiente);
+const limiteRestablecerTxt=o=>{ const d=new Date(limiteRestablecerMs(o)); return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0'); };
 // Posponer: a las 23:59 del día siguiente; si el vencimiento actual cae en viernes, hasta el lunes
 const diasPosponer=o=>new Date(venceMs(o)).getDay()===5?3:1;
 const destinoPosponerTxt=o=>diasPosponer(o)===3?'el lunes':'mañana';
@@ -4602,7 +4695,7 @@ function ultimaActividad(o){
   const ms=(o.mensajes||[]).map(m=>m.ts);
   const aut=(o.items||[]).map(i=>i.aut?i.aut.ts:(i.rech?i.rech.ts:''));
   const ven=estadoOrden(o)==='vencida'?[venceTsISO(o)]:[];
-  return [o.emitidaTs,o.editadaTs,o.pospuestaTs,o.autorizadaTs,...ms,...aut,...ven].filter(Boolean).sort().pop()||'';
+  return [o.emitidaTs,o.editadaTs,o.pospuestaTs,o.restablecidaTs,o.autorizadaTs,...ms,...aut,...ven].filter(Boolean).sort().pop()||'';
 }
 function lecturaMia(o){ return (o.lecturas||{})[claveUsuario(miEmail())]||''; }
 // Lectura de mensajes: "G" = comentarios generales (uno solo por orden); "I" = conversaciones de cada ítem (una marca por ítem)
@@ -4735,6 +4828,34 @@ function candidatosOrden(){
   });
   return out;
 }
+// Movimientos ya pagados que todavía se pueden sumar a una orden: los marcados como pago dentro de los últimos 3 días.
+const PAGADO_DIAS=3;
+function limitePagadoISO(){ const d=new Date(); d.setDate(d.getDate()-PAGADO_DIAS); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+const filaAbonada=r=>!!r&&(!!r.pago||esEcheqPendiente(r));
+function esPagoReciente(r){ return !!r&&r.tipo==='gasto'&&!!r.pago&&!!r.fechaPago&&r.fechaPago>=limitePagadoISO()&&r.fechaPago<=hoyISO(); }
+function itemPagadoDeRow(r){
+  const it=itemDeRow(r);
+  return {...it,importe:+r.bruto||0,venc:r.fechaVenc||it.venc||'',metodo:r.metodoPago||it.metodo||'',pagoPrevio:true,pagoFecha:r.fechaPago||'',pagoMetodo:r.metodoPago||''};
+}
+function candidatosPagados(){
+  const out=[]; rows.forEach(r=>{ if(esPagoReciente(r)) out.push({it:itemPagadoDeRow(r),grupo:'pagado',pagado:true}); });
+  return out;
+}
+// "Pagado" dentro de una orden: se sumó ya pagado, o se marcó como abonado desde la orden (y el movimiento sigue pago).
+const esItemPagado=i=>!!i&&(!!i.pagoPrevio||(!!i.abonadoTs&&filaAbonada(rows.find(x=>x.id===i.rowId))));
+function textoPagoItem(i){
+  const r=rows.find(x=>x.id===i.rowId);
+  const f=(r&&r.pago?r.fechaPago:'')||i.pagoFecha||(i.abonadoTs||'').slice(0,10);
+  const m=(r&&filaAbonada(r)?(r.metodoPago||''):'')||i.pagoMetodo||i.metodo||'';
+  const ech=r&&r.echeqEmitido&&!r.pago?` · se debita el ${fmtFechaCorta(r.fechaDiferida)}`:'';
+  return (r&&r.echeqEmitido&&!r.pago?'E-cheq emitido':'Pagado'+(f?' el '+fmtFechaCorta(f):''))+(m&&!(r&&r.echeqEmitido&&!r.pago)?' · '+m:'')+ech;
+}
+const EMAIL_ABONA='giuliano.zolvini@hotelcopahue.com';
+function puedeAbonar(o,i){
+  if(!(modoPrueba||miEmail()===EMAIL_ABONA)) return false;
+  if(!o||estadoOrden(o)==='programada'||!i||i.rech||i.pagoPrevio) return false;
+  const r=rows.find(x=>x.id===i.rowId); return !!r&&r.tipo==='gasto'&&!filaAbonada(r);
+}
 // Sugerencia al generar una orden: todo pago pendiente que no esté pospuesto; de los pospuestos, los que vencen (o terminan su pospuesto)
 // en la semana corriente o vencen antes del próximo jueves (hasta el miércoles de la semana próxima inclusive). Queda tildado y se puede cambiar.
 function aplicarSugerenciaOrden(f){
@@ -4831,6 +4952,7 @@ function notificacionesOrdenes(){
     }
     if(vencimientoSinLeer(o)) lista.push({id:o.id,texto:`${o.id} venció sin resolverse por completo (${itemsResueltos(o)} de ${n} resueltos)`,ts:venceTsISO(o),fuerte:true,k:'venc',titulo:'Venció sin resolverse',detalle:`${itemsResueltos(o)} de ${n} movimientos resueltos`});
     if(o.pospuestaTs&&soyEmi&&ordenAbierta(o)&&o.pospuestaTs>lecturaMia(o)) lista.push({id:o.id,texto:`${o.id} fue pospuesta: vence ${venceDiaTxt(o)} a las 23:59hs`,ts:o.pospuestaTs,fuerte:false,k:'mod',titulo:'Orden pospuesta',detalle:`Vence ${venceDiaTxt(o)} a las 23:59hs`});
+    if(o.restablecidaTs&&(soyEmi||soyRec)&&ordenAbierta(o)&&o.restablecidaTs>lecturaMia(o)) lista.push({id:o.id,texto:`${o.id} fue restablecida${o.restablecidaPor?' por '+o.restablecidaPor.nombre:''}: vence ${venceDiaTxt(o)} a las 23:59hs`,ts:o.restablecidaTs,fuerte:soyRec,k:'mod',titulo:'Orden restablecida',detalle:`Vence ${venceDiaTxt(o)} a las 23:59hs`});
     if(o.editadaTs&&soyRec&&ordenAbierta(o)&&o.editadaTs>lecturaMia(o)) lista.push({id:o.id,texto:`${o.id} fue modificada por ${o.emisor.nombre}`,ts:o.editadaTs,fuerte:true,k:'mod',titulo:'Orden modificada',detalle:`Por ${o.emisor.nombre}`});
   });
   return lista;
@@ -5014,16 +5136,18 @@ function estadoOrdenTxt(o){
   if(est==='resuelta') return `<span class="ord-estado aut">Resuelta: ${itemsAutorizados(o)} autorizados · ${itemsRechazados(o)} rechazados</span>`;
   if(est==='rechazada') return `<span class="ord-estado venc rech">Rechazada por completo</span>`;
   if(est==='programada') return `<span class="ord-estado prog">Programada para ${fmtFechaHora(o.emitidaTs)}</span>`;
-  if(est==='vencida') return `<span class="ord-estado venc exp">Vencida ${fmtFechaHora(venceTsISO(o))}${itemsResueltos(o)?` · ${itemsResueltos(o)} de ${n} resueltos`:''}</span>`;
+  if(est==='vencida') return `<span class="ord-estado venc exp">Vencida ${fmtFechaHora(venceTsISO(o))}${itemsResueltos(o)?` · ${itemsResueltos(o)} de ${n} resueltos`:''}</span>${puedeRestablecer(o)?`<span class="ord-estado pend" title="Se puede restablecer hasta el ${limiteRestablecerTxt(o)} a las 23:59hs">Se puede restablecer hasta el ${limiteRestablecerTxt(o)}</span>`:''}`;
   if(est==='parcial') return `<span class="ord-estado pend">Parcial: ${itemsResueltos(o)} de ${n} resueltos</span>`;
   return `<span class="ord-estado pend">Pendiente de autorización</span>`;
 }
-const itemsActivos=o=>(o.items||[]).filter(i=>!i.rech);   // lo que realmente se paga: los rechazados no suman
+const itemsActivos=o=>(o.items||[]).filter(i=>!i.rech&&!i.pagoPrevio);   // lo que realmente se paga: los rechazados no suman
 const ordFilasAbiertas=new Set();
 const ORD_VACIO={recibidas:'No tenés órdenes de pago pendientes de autorización.',emitidas:'Todavía no emitiste ninguna orden de pago.',autorizadas:'Todavía no hay órdenes de pago autorizadas.',todas:'Todavía no hay órdenes de pago.'};
 function filtrarOrdenes(){
   const e=miEmail();
   let l=misOrdenes();
+  // las órdenes vencidas que todavía se pueden restablecer las ve cualquier usuario (en "Todas"), para poder reactivarlas
+  if(ordenesFiltro==='todas'){ const ya=new Set(l.map(o=>o.id)); OrdenesDB.lista.forEach(o=>{ if(!ya.has(o.id)&&puedeRestablecer(o)) l.push(o); }); }
   if(ordenesFiltro==='recibidas') l=l.filter(ordenAbierta);
   else if(ordenesFiltro==='emitidas') l=l.filter(o=>o.emisor.email===e);
   else if(ordenesFiltro==='autorizadas') l=l.filter(o=>['autorizada','resuelta'].includes(estadoOrden(o)));
@@ -5204,11 +5328,13 @@ function renderOrdenDetalle(){
   const hallazgos={}; if(buscando) items.forEach(i=>{ const d=ordDondeCoincide(o,i); if(d.length) hallazgos[i.rowId]=d; });
   const itemsVista=buscando?items.filter(i=>hallazgos[i.rowId]):items;
   const nGenHit=buscando?mensajesG(o).filter(ordMsgCoincide).length:0;
-  const grupos=agruparPorMetodo(itemsVista,ordenDetalleOrden);
+  const itemsPagados=itemsVista.filter(esItemPagado);
+  const grupos=agruparPorMetodo(itemsVista.filter(i=>!esItemPagado(i)),ordenDetalleOrden);
   const abierta=ordenAbierta(o);
   const pendientes=items.filter(itemPendiente);
   const acciones=[];
   const btnPosponer=puedePosponer(o)?`<button type="button" class="ghost ord-mod-accion" data-ord-accion="posponer" title="La orden sigue vigente hasta ${destinoPosponerTxt(o)} a las 23:59hs">${diasPosponer(o)===3?'Posponer al lunes':'Posponer a mañana'}</button>`:'';
+  const btnRestablecer=puedeRestablecer(o)?`<button type="button" class="ghost ord-mod-accion ord-rest-btn" data-ord-accion="restablecer" title="La orden vuelve a estar vigente hasta hoy a las 23:59hs">Restablecer orden</button>`:'';
   const btnModificar=puedeModificar(o)?`<button type="button" class="ghost ord-mod-accion" data-ord-accion="editar">Modificar</button>`:'';
   const info=[];
   const venceTxt=ordenAbierta(o)?`<span class="ord-sep">|</span>Vence ${venceDiaTxt(o)} 23:59hs`:(est==='programada'?`<span class="ord-sep">|</span>Vence el ${new Date(o.emitidaTs).toLocaleDateString('es-AR',{day:'numeric',month:'numeric'})} 23:59hs`:'');
@@ -5216,17 +5342,18 @@ function renderOrdenDetalle(){
   if(est==='programada') info.push(`Hasta que llegue esa fecha y hora solo la ves vos; quien debe autorizarla no recibe ninguna notificación.`);
   const txtModificada=o.editadaTs?`<button type="button" class="ord-mod-btn" data-ord-cambios="${esc(o.id)}" title="Ver los cambios realizados">Modificada a las ${fmtHora24(o.editadaTs)}</button>`:'';
   const txtPosp=o.pospuestaTs?`<span class="ord-mod-btn ord-posp-txt" title="Quien autoriza pospuso el vencimiento de esta orden">Pospuesta a las ${fmtHora24(o.pospuestaTs)}</span>`:'';
-  if(btnModificar||btnPosponer||txtModificada||txtPosp) info[0]=`<div class="ord-info-l1"><span>${info[0]}</span><span class="ord-info-acc">${btnPosponer}${btnModificar}${txtModificada}${txtPosp}</span></div>`;
+  const txtRest=o.restablecidaTs?`<span class="ord-mod-btn ord-posp-txt" title="La orden había vencido y se volvió a habilitar${o.restablecidaPor?' ('+esc(o.restablecidaPor.nombre)+')':''}">Restablecida a las ${fmtHora24(o.restablecidaTs)}</span>`:'';
+  if(btnRestablecer||btnModificar||btnPosponer||txtModificada||txtPosp||txtRest) info[0]=`<div class="ord-info-l1"><span>${info[0]}</span><span class="ord-info-acc">${btnRestablecer}${btnPosponer}${btnModificar}${txtModificada}${txtPosp}${txtRest}</span></div>`;
   if(est==='autorizada') info.push(`<b>Autorizada por completo${o.autorizadaPor?' por '+esc(o.autorizadaPor.nombre):''} el ${fmtFechaHora(o.autorizadaTs||ultimaActividad(o))}</b> — ya no se puede modificar ni eliminar.`);
   else if(est==='resuelta') info.push(`<b>Resuelta:</b> ${itemsAutorizados(o)} movimientos autorizados y ${itemsRechazados(o)} rechazados. Los rechazados quedaron libres para otra orden.`);
   else if(est==='rechazada') info.push(`<b>Se rechazaron todos los movimientos.</b> Quedaron libres para otra orden.`);
-  else if(est==='vencida') info.push(`<b>Venció el ${fmtFechaHoraCorta(venceTsISO(o))}</b> sin resolverse por completo${itemsResueltos(o)?` (${itemsAutorizados(o)} autorizados, ${itemsRechazados(o)} rechazados)`:''}. Los movimientos sin autorizar quedaron libres para otra orden.`);
-  const itemHtml=i=>`<div class="ord-item${i.aut?' autorizado':''}${i.rech?' rechazado':''}">
-        <div class="ord-fila-det${notaAbierta(i)?' con-nota':''}"><div class="ord-tit"><button type="button" class="ord-nombre" data-ord-info="${esc(i.rowId)}" title="Ver toda la información del movimiento (vencimiento, mes, factura…)">${esc(i.item)}</button> <span class="ord-rubro">${esc(i.rubro)}</span>${i.comentario?`<button type="button" class="ord-nota-btn${notaAbierta(i)?' on':''}" data-ord-nota="${esc(i.rowId)}" title="${notaAbierta(i)?'Ocultar el comentario':'Ver el comentario de este ítem'}" aria-expanded="${notaAbierta(i)}">${ICO_NOTA}</button>`:''}${hallazgos[i.rowId]&&hallazgos[i.rowId][0]!=='ítem'?` <span class="ord-hit-tag" title="La búsqueda coincide en ${esc(hallazgos[i.rowId].join(' y '))}">coincide en ${esc(hallazgos[i.rowId].join(' y '))}</span>`:''}${i.dividido?' <span class="tag">pago dividido (saldo)</span>':''}${i.pospuesto?' <span class="tag pp">pospuesto</span>':''}</div>
+  else if(est==='vencida') info.push(`<b>Venció el ${fmtFechaHoraCorta(venceTsISO(o))}</b> sin resolverse por completo${itemsResueltos(o)?` (${itemsAutorizados(o)} autorizados, ${itemsRechazados(o)} rechazados)`:''}. Los movimientos sin autorizar quedaron libres para otra orden.${puedeRestablecer(o)?` <b>Se puede restablecer hasta el ${limiteRestablecerTxt(o)} a las 23:59hs</b> (cualquier usuario).`:''}`);
+  const itemHtml=i=>`<div class="ord-item${i.aut?' autorizado':''}${i.rech?' rechazado':''}${esItemPagado(i)?' pagado':''}">
+        <div class="ord-fila-det${notaAbierta(i)?' con-nota':''}"><div class="ord-tit"><button type="button" class="ord-nombre" data-ord-info="${esc(i.rowId)}" title="Ver toda la información del movimiento (vencimiento, mes, factura…)">${esc(i.item)}</button> <span class="ord-rubro">${esc(i.rubro)}</span>${esItemPagado(i)?` <span class="tag pagado" title="Este movimiento ya figura como pago">${esc(textoPagoItem(i))}</span>`:''}${i.comentario?`<button type="button" class="ord-nota-btn${notaAbierta(i)?' on':''}" data-ord-nota="${esc(i.rowId)}" title="${notaAbierta(i)?'Ocultar el comentario':'Ver el comentario de este ítem'}" aria-expanded="${notaAbierta(i)}">${ICO_NOTA}</button>`:''}${hallazgos[i.rowId]&&hallazgos[i.rowId][0]!=='ítem'?` <span class="ord-hit-tag" title="La búsqueda coincide en ${esc(hallazgos[i.rowId].join(' y '))}">coincide en ${esc(hallazgos[i.rowId].join(' y '))}</span>`:''}${i.dividido?' <span class="tag">pago dividido (saldo)</span>':''}${i.pospuesto?' <span class="tag pp">pospuesto</span>':''}</div>
           <div class="ord-venc">${i.venc?'Vence '+fmtFechaCorta(i.venc):''}</div>
           ${i.comentario&&notaAbierta(i)?`<div class="ord-com-item" data-ord-nota-txt="${esc(i.rowId)}" title="Un clic: ocultar · doble clic: preguntar sobre este ítem">${ICO_CHAT} ${esc(i.comentario)}</div>`:''}
           <div class="ord-imp">${montoFmt(i.importe,i.moneda)}</div>
-          <div class="ord-acc-item">${botonesItem(o,i,soyRec,abierta)}</div></div>
+          <div class="ord-acc-item">${puedeAbonar(o,i)?`<button type="button" class="ord-sq pg" data-ord-abonar="${esc(i.rowId)}" title="Marcar como abonado (completa el pago en Movimientos)">$</button>`:''}${botonesItem(o,i,soyRec,abierta)}</div></div>
       </div>`;
   const gen=mensajesG(o), nG=sinLeerG(o), nI=sinLeerI(o);
   const conItem=[...new Set((o.mensajes||[]).filter(m=>m.rowId).map(m=>m.rowId))];
@@ -5254,7 +5381,7 @@ function renderOrdenDetalle(){
     </div>
     <div class="ord-orden-barra"><input type="search" id="ord-det-busq" class="ord-busq" placeholder="Buscar por palabra (ítem, notas, comentarios y preguntas)…" value="${esc(ordenBusqueda)}" autocomplete="off"><label for="ord-det-orden">Ordenar dentro de cada método:</label><select id="ord-det-orden"><option value="alfa"${ordenDetalleOrden==='alfa'?' selected':''}>Alfabético (A–Z)</option><option value="importe"${ordenDetalleOrden==='importe'?' selected':''}>Por importe (mayor a menor)</option><option value="importe-asc"${ordenDetalleOrden==='importe-asc'?' selected':''}>Por importe (menor a mayor)</option></select></div>
     ${buscando?`<div class="ord-busq-res">${itemsVista.length} de ${n} ítem${n===1?'':'s'} coinciden con «${esc(ordenBusqueda.trim())}»${nGenHit?` · <button type="button" class="ord-busq-gen" data-ord-sec="G" data-ord-donde="arriba">${nGenHit} comentario${nGenHit===1?'':'s'} general${nGenHit===1?'':'es'} coincide${nGenHit===1?'':'n'}</button>`:''}${!itemsVista.length?'<div class="ord-vacio">Ningún ítem coincide con la búsqueda.</div>':''}</div>`:''}
-    <div class="ord-grupos" style="--met-n:${Math.max(8,...grupos.map(g=>etiquetaMetodo(g.metodo).length))}">${grupos.map(g=>{ const act=g.items.filter(i=>!i.rech); return `<div class="ord-grupo lado"><div class="ord-grupo-tit"><div class="ogt-ico">${metodoChip(g.metodo)}</div><div class="ogt-met">${esc(etiquetaMetodo(g.metodo))}</div><div class="ogt-n">${act.length} ítem${act.length===1?'':'s'}</div><div class="ogt-tot"><small>Total del método</small><b>${totalesTxt(act)}</b></div></div><div class="ord-grupo-items">${g.items.map(itemHtml).join('')}</div></div>`; }).join('')}</div>
+    <div class="ord-grupos" style="--met-n:${Math.max(8,...grupos.map(g=>etiquetaMetodo(g.metodo).length))}">${grupos.map(g=>{ const act=g.items.filter(i=>!i.rech); return `<div class="ord-grupo lado"><div class="ord-grupo-tit"><div class="ogt-ico">${metodoChip(g.metodo)}</div><div class="ogt-met">${esc(etiquetaMetodo(g.metodo))}</div><div class="ogt-n">${act.length} ítem${act.length===1?'':'s'}</div><div class="ogt-tot"><small>Total del método</small><b>${totalesTxt(act)}</b></div></div><div class="ord-grupo-items">${g.items.map(itemHtml).join('')}</div></div>`; }).join('')}${itemsPagados.length?`<div class="ord-grupo lado pagado-grupo"><div class="ord-grupo-tit"><div class="ogt-ico">${ICO_CHECK}</div><div class="ogt-met">Estado: Pagado</div><div class="ogt-n">${itemsPagados.filter(i=>!i.rech).length} ítem${itemsPagados.filter(i=>!i.rech).length===1?'':'s'}</div><div class="ogt-tot"><small>Total pagado</small><b>${totalesTxt(itemsPagados.filter(i=>!i.rech))}</b></div></div><div class="ord-grupo-items">${ordenarItems(itemsPagados,ordenDetalleOrden).map(itemHtml).join('')}</div></div>`:''}</div>
     ${abierta&&soyRec&&pendientes.length>1?`<div class="ord-aut-todos"><button type="button" class="ord-btn-aut" data-ord-accion="autorizar-todos">Autorizar todos (${pendientes.length})</button></div>`:''}
     <div class="ord-pie" hidden>
       <div class="ord-top"><div class="ord-cab det ord-cab-pie"><div class="ord-cab-top"><h3 class="ord-titulo">${esc(o.id)} ${nItemsTxt}</h3><div class="ord-total">${totalTxt}</div></div></div>
@@ -5387,8 +5514,9 @@ function abrirPanelOrdenesYMostrar(){
 }
 function resumenSeleccionOrden(){
   const f=ordenForm, ids=Object.keys(f.sel);
-  const items=ids.map(id=>({...f.meta[id],importe:f.meta[id].importe,moneda:f.meta[id].moneda}));
-  const el=$('ord-resumen-sel'); if(el) el.innerHTML=`Seleccionados: <b>${ids.length}</b> · Total: <b>${totalesTxt(items)}</b>`;
+  const items=ids.filter(id=>!f.meta[id].pagoPrevio).map(id=>({...f.meta[id],importe:f.meta[id].importe,moneda:f.meta[id].moneda}));
+  const nPag=ids.length-items.length;
+  const el=$('ord-resumen-sel'); if(el) el.innerHTML=`Seleccionados: <b>${items.length}</b>${nPag?` (+${nPag} ya pagado${nPag===1?'':'s'})`:''} · Total: <b>${totalesTxt(items)}</b>`;
   pintarAfuera();
 }
 function filaCandidato(c,bloq,f){
@@ -5396,14 +5524,15 @@ function filaCandidato(c,bloq,f){
   const venc=i.venc?(i.venc<hoy?`<span class="ord-vencido">vencido ${fmtFechaCorta(i.venc)}</span>`:'vence '+fmtFechaCorta(i.venc)):'sin fecha';
   const enOtra=bloq[i.rowId];
   const metodoSel=(f.sel[i.rowId]||{}).metodo!==undefined?(f.sel[i.rowId]||{}).metodo:i.metodo;
-  return `<div class="ord-fila${sel?' sel':''}${enOtra?' bloq':''}${c.gris?' serv-bloq':''}" data-ord-fila="${esc(i.rowId)}">
+  const pag=!!(i.pagoPrevio||i.abonadoTs);
+  return `<div class="ord-fila${sel?' sel':''}${pag?' ya-pagado':''}${enOtra?' bloq':''}${c.gris?' serv-bloq':''}" data-ord-fila="${esc(i.rowId)}">
     <label class="ord-check"><input type="checkbox" data-ord-sel="${esc(i.rowId)}"${sel?' checked':''}${enOtra?' disabled':''}></label>
     <div class="ord-main"><b>${esc(i.item)}</b> <span class="ord-rubro">${esc(i.rubro)}</span>
-      ${i.dividido?'<span class="tag">pago dividido (saldo)</span>':''}${i.pospuesto?'<span class="tag pp">pospuesto</span>':''}${enOtra?`<span class="tag">ya está en ${esc(enOtra)}</span>`:''}${c.nota?`<span class="tag">${esc(c.nota)}</span>`:''}${c.grupo==='semana'?'<span class="tag pp">esta semana</span>':(c.grupo==='viejos'&&!c.nota?'<span class="tag">mes anterior</span>':'')}
+      ${pag?`<span class="tag pagado">${esc(textoPagoItem(i))}</span>`:''}${i.dividido&&!pag?'<span class="tag">pago dividido (saldo)</span>':''}${i.pospuesto?'<span class="tag pp">pospuesto</span>':''}${enOtra?`<span class="tag">ya está en ${esc(enOtra)}</span>`:''}${c.nota?`<span class="tag">${esc(c.nota)}</span>`:''}${c.grupo==='semana'?'<span class="tag pp">esta semana</span>':(c.grupo==='viejos'&&!c.nota?'<span class="tag">mes anterior</span>':'')}
       ${i.detalle?`<div class="ord-det-mov">${esc(i.detalle)}</div>`:''}</div>
     <div class="ord-venc">${venc}</div><div class="ord-imp">${montoFmt(i.importe,i.moneda)}</div>
     <div class="ord-extra"${sel?'':' hidden'}>
-      <select data-ord-metodo="${esc(i.rowId)}" title="Método de pago con el que se abonaría"><option value="">Sin método definido</option>${metodosLista().map(m=>`<option${m===metodoSel?' selected':''}>${esc(m)}</option>`).join('')}</select>
+      ${pag?'':`<select data-ord-metodo="${esc(i.rowId)}" title="Método de pago con el que se abonaría"><option value="">Sin método definido</option>${metodosLista().map(m=>`<option${m===metodoSel?' selected':''}>${esc(m)}</option>`).join('')}</select>`}
       <input type="text" data-ord-com="${esc(i.rowId)}" placeholder="Comentario para quien autoriza (opcional)" value="${esc((f.sel[i.rowId]||{}).comentario||'')}">
     </div></div>`;
 }
@@ -5412,7 +5541,13 @@ function renderOrdenForm(){
   const bloq=itemsEnOrdenesActivas(f.editId);
   const mapaOP=mapaOrdenesServicios();
   let cands=candidatosOrden();
-  Object.keys(f.meta).forEach(id=>{ if(f.sel[id] && !cands.some(c=>c.it.rowId===id)) cands.push({it:f.meta[id],grupo:'viejos',nota:'ya no figura pendiente'}); });
+  const pagCands=candidatosPagados();
+  Object.keys(f.meta).forEach(id=>{
+    if(!f.sel[id]||cands.some(c=>c.it.rowId===id)||pagCands.some(c=>c.it.rowId===id)) return;
+    const m=f.meta[id];
+    if(m.pagoPrevio||m.abonadoTs) pagCands.push({it:m,grupo:'pagado',pagado:true});
+    else cands.push({it:m,grupo:'viejos',nota:'ya no figura pendiente'});
+  });
   cands.forEach(c=>{ if(!c.nota) f.meta[c.it.rowId]=c.it; });
   // el método elegido en la orden manda sobre el tentativo del movimiento
   const efectivo=c=>({...c.it,metodo:(f.sel[c.it.rowId]&&f.sel[c.it.rowId].metodo!==undefined)?f.sel[c.it.rowId].metodo:c.it.metodo});
@@ -5423,9 +5558,9 @@ function renderOrdenForm(){
   const mapa={}; cands.filter(c=>!c.gris).forEach(c=>{ const it=efectivo(c); (mapa[it.metodo||'']=mapa[it.metodo||'']||[]).push(c); });
   const metN=Math.max(8,...Object.keys(mapa).map(k=>etiquetaMetodo(k).length));
   const cuerpo=`<div class="ord-grupos" style="--met-n:${metN}">`+Object.keys(mapa).sort((a,b)=>a===''?1:b===''?-1:a.localeCompare(b,'es')).map(k=>{
-    const arr=mapa[k].slice().sort((x,y)=>x.it.item.localeCompare(y.it.item,'es'));
+    const arr=tasasAlFinal(mapa[k].slice().sort((x,y)=>x.it.item.localeCompare(y.it.item,'es')),c=>{ const r=rows.find(x=>x.id===c.it.rowId); return !!r&&esTasaAlFinal(r); });
     return `<div class="ord-grupo"><div class="ord-grupo-tit"><span>${esc(etiquetaMetodo(k))}</span><span>${arr.length} movimiento${arr.length===1?'':'s'}</span><span>${totalesTxt(arr.map(c=>c.it))}</span></div>${arr.map(c=>filaCandidato(c,bloq,f)).join('')}</div>`;
-  }).join('')+(grises.length?`<div class="ord-grupo serv-aparte"><div class="ord-grupo-tit"><span>Servicios sin fecha de vencimiento</span><span>${grises.length} movimiento${grises.length===1?'':'s'}</span><span>${totalesTxt(grises.map(c=>c.it))}</span></div>${grises.sort((x,y)=>x.it.item.localeCompare(y.it.item,'es')).map(c=>filaCandidato(c,bloq,f)).join('')}</div>`:'')+'</div>';
+  }).join('')+(grises.length?`<div class="ord-grupo serv-aparte"><div class="ord-grupo-tit"><span>Servicios sin fecha de vencimiento</span><span>${grises.length} movimiento${grises.length===1?'':'s'}</span><span>${totalesTxt(grises.map(c=>c.it))}</span></div>${grises.sort((x,y)=>x.it.item.localeCompare(y.it.item,'es')).map(c=>filaCandidato(c,bloq,f)).join('')}</div>`:'')+(pagCands.length?`<div class="ord-grupo pagado-aparte"><div class="ord-grupo-tit"><span>Estado: Pagado</span><span>${pagCands.length} movimiento${pagCands.length===1?'':'s'}</span><span>${totalesTxt(pagCands.map(c=>c.it))}</span></div><div class="ord-pag-nota">Movimientos que ya figuran como pagos (marcados en los últimos ${PAGADO_DIAS} días). Se muestran en la orden como "Pagado" y no suman al total a pagar.</div>${pagCands.sort((x,y)=>x.it.item.localeCompare(y.it.item,'es')).map(c=>filaCandidato(c,bloq,f)).join('')}</div>`:'')+'</div>';
   const destinatarios=usuarios.filter(u=>u.activo!==false&&(u.email||'').toLowerCase()!==e);
   $('ord-zona').innerHTML=`
     <div class="ord-cab">
@@ -5446,7 +5581,7 @@ function renderOrdenForm(){
       <div class="ord-barra"><span id="ord-resumen-sel"></span>
         <span><button type="button" data-ord-accion="${f.editId?'guardar-edicion':'emitir'}">${f.editId?'Guardar cambios':'Emitir orden de pago'}</button></span></div>
     </div>
-    ${cands.length?cuerpo:'<div class="empty">No hay movimientos pendientes de pago para incluir en una orden.</div>'}
+    ${(cands.length||pagCands.length)?cuerpo:'<div class="empty">No hay movimientos pendientes de pago para incluir en una orden.</div>'}
     <div class="ord-barra"><span></span><span><button type="button" data-ord-accion="${f.editId?'guardar-edicion':'emitir'}">${f.editId?'Guardar cambios':'Emitir orden de pago'}</button></span></div>`;
   resumenSeleccionOrden();
 }
@@ -5456,6 +5591,7 @@ async function guardarOrdenForm(){
   const f=ordenForm; if(!f) return;
   const ids=Object.keys(f.sel);
   if(!ids.length){ toast('Tildá al menos un movimiento.'); return; }
+  if(!ids.some(id=>!(f.meta[id]||{}).pagoPrevio)){ toast('Incluí al menos un movimiento pendiente de pago: los que ya están pagos solos no alcanzan para una orden.'); return; }
   if(esAutorizador()){ toast('Quien autoriza las órdenes no puede crearlas.'); return; }
   let programadaTs='';
   if(f.programable && f.cuando==='programar'){
@@ -5525,6 +5661,32 @@ async function posponerOrden(id){
   notificarOrdenMail('pospuesta',id);
   toast('Orden '+id+' pospuesta: sigue vigente hasta '+destino+' a las 23:59hs.');
 }
+// Restablecer una orden vencida (cualquier usuario, hasta 3 días después del vencimiento): vuelve a estar vigente hasta las 23:59 de hoy.
+// Los movimientos que mientras tanto se pagaron o pasaron a otra orden vigente quedan afuera de esta.
+async function restablecerOrden(id,desdeEnlace){
+  const o0=ordenPorId(id); if(!o0) throw new Error('La orden ya no existe.');
+  if(!puedeRestablecer(o0)) throw new Error(estadoOrden(o0)==='vencida'?'Pasaron más de '+RESTABLECER_DIAS+' días desde el vencimiento: ya no se puede restablecer.':'La orden no está vencida: no hace falta restablecerla.');
+  const pend=(o0.items||[]).filter(itemPendiente).length;
+  if(!confirm('¿Restablecer la orden '+id+'?\n\nVuelve a estar vigente hasta hoy a las 23:59hs, con '+pend+' movimiento'+(pend===1?'':'s')+' pendiente'+(pend===1?'':'s')+' de autorización.')) return;
+  const yo=miPersona(), k=claveUsuario(yo.email); let excluidos=[];
+  await OrdenesDB.mutar(id,x=>{
+    if(!puedeRestablecer(x)) throw new Error('La orden ya no se puede restablecer (se restableció antes o pasó el plazo).');
+    const otras=itemsEnOrdenesActivas(x.id), fuera=[];
+    const items=(x.items||[]).filter(i=>{
+      if(!itemPendiente(i)) return true;
+      const r=rows.find(rr=>rr.id===i.rowId);
+      const motivo=!r?'ya no existe':(r.pago?'ya está pagado':(otras[i.rowId]?'ya está en la orden '+otras[i.rowId]:''));
+      if(motivo){ fuera.push({rowId:i.rowId,item:i.item,motivo}); return false; }
+      return true;
+    });
+    if(!items.some(itemPendiente)) throw new Error('No se puede restablecer: todos los movimientos pendientes ya se pagaron o están en otra orden.');
+    excluidos=fuera;
+    const ts=ahoraISO(), hasta=new Date(finDelDiaTs(ts)).toISOString();
+    return {set:{items,vencePosp:hasta,restablecidaTs:ts,restablecidaPor:yo,mailVencidaTs:'',['lecturas.'+k]:ts},union:{eventos:[{ts,tipo:'restablecida',por:yo,hasta,excluidos:fuera}]}};
+  });
+  notificarOrdenMail('restablecida',id);
+  toast('Orden '+id+' restablecida: vigente hasta hoy a las 23:59hs.'+(excluidos.length?' Quedaron afuera '+excluidos.length+' movimiento'+(excluidos.length===1?'':'s')+' (ya pagados o en otra orden).':''));
+}
 const ORD_UNDO_MS=15*60*1000;
 function puedeDeshacer(o,i){ const d=i.aut||i.rech; return !!d && d.por.email===miEmail() && Date.now()-Date.parse(d.ts)<=ORD_UNDO_MS && estadoOrden(o)!=='programada'; }
 async function deshacerItemOrden(id,rowId){
@@ -5584,6 +5746,7 @@ async function accionOrden(accion,el){
     }
     if(!o) return;
     if(accion==='posponer'){ posponerOrden(o.id).catch(err=>toast(err.message||'No se pudo posponer la orden.')); return; }
+    if(accion==='restablecer'){ restablecerOrden(o.id).catch(err=>toast(err.message||'No se pudo restablecer la orden.')); return; }
     if(accion==='editar'){ if(!puedeModificar(o)){ toast('Esta orden ya no se puede modificar.'); renderOrdenes(); return; } abrirEdicionOrden(o); return; }
     if(accion==='eliminar'){
       if(!puedeModificar(o)){ toast('Esta orden ya no se puede eliminar.'); renderOrdenes(); return; }
@@ -5693,14 +5856,14 @@ function categoriaBanco(m){
   return null;
 }
 function bancoHtml(o){
-  const act=itemsActivos(o), cats=[['pse','Pago de servicios'],['tra','Transferencia'],['tdb','Tarjeta de débito'],['dau','Débito automático'],['mph','Mercado Pago hotel']];
+  const act=itemsActivos(o).filter(i=>!esItemPagado(i)), cats=[['pse','Pago de servicios'],['tra','Transferencia'],['tdb','Tarjeta de débito'],['dau','Débito automático'],['mph','Mercado Pago hotel']];
   const filas=cats.map(([k,lbl])=>({k,lbl,its:act.filter(i=>categoriaBanco(i.metodo)===k)}));
   const dentro=filas.flatMap(f=>f.its), fuera=act.filter(i=>!categoriaBanco(i.metodo));
   return `<div class="ofl-h">${ICO_M.tra}<span>Necesario en la cuenta bancaria</span></div>`
     +filas.map(f=>`<div class="ofl-f${f.its.length?'':' vacio'}"><span>${f.lbl}${f.its.length?` <small>${f.its.length} ítem${f.its.length===1?'':'s'}</small>`:''}</span><b>${totalesTxt(f.its)}</b></div>`).join('')
     +`<div class="ofl-tot"><span>Total a tener en la cuenta</span><b>${totalesTxt(dentro)}</b></div>`
     +(fuera.length?`<div class="ofl-n">No pasa por la cuenta: ${totalesTxt(fuera)} (efectivo, tarjetas de crédito, e-cheq u otros métodos)</div>`:'')
-    +`<div class="ofl-n">No incluye los ítems rechazados.</div>`;
+    +`<div class="ofl-n">No incluye los ítems rechazados ni los que ya están pagados.</div>`;
 }
 function ordDeBoton(el){ return ordenPorId(el.dataset.ordDe||ordenAbiertaId); }
 document.addEventListener('mouseover',e=>{
@@ -5734,6 +5897,7 @@ $('ord-zona').addEventListener('dblclick',e=>{
 $('ord-zona').addEventListener('click',e=>{
   const fl=e.target.closest('[data-ord-flecha]');
   if(fl){ const id=fl.dataset.ordFlecha; ordFilasAbiertas.has(id)?ordFilasAbiertas.delete(id):ordFilasAbiertas.add(id); renderOrdenes(); return; }
+  const ab=e.target.closest('[data-ord-abonar]'); if(ab){ abrirAbonar(ordenAbiertaId,ab.dataset.ordAbonar); return; }
   const cb=e.target.closest('[data-ord-cambios]'); if(cb){ abrirModalOrden({tipo:'cambios',ordId:cb.dataset.ordCambios}); return; }
   const inf=e.target.closest('[data-ord-info]'); if(inf){ abrirModalOrden({tipo:'info',rowId:inf.dataset.ordInfo,ordId:inf.dataset.ordDe||ordenAbiertaId}); return; }
   const nb=e.target.closest('[data-ord-nota]');
@@ -5804,7 +5968,7 @@ $('ord-zona').addEventListener('change',e=>{
   else if(t.id==='ord-programar') f.programar=t.value;
   else if(t.dataset.ordSel){
     const id=t.dataset.ordSel;
-    if(t.checked){ const base=f.meta[id]||(candidatosOrden().find(c=>c.it.rowId===id)||{}).it; if(!base){ t.checked=false; return; } f.meta[id]=base; f.sel[id]={comentario:'',metodo:base.metodo||''}; }
+    if(t.checked){ const base=f.meta[id]||(candidatosOrden().concat(candidatosPagados()).find(c=>c.it.rowId===id)||{}).it; if(!base){ t.checked=false; return; } f.meta[id]=base; f.sel[id]={comentario:'',metodo:base.metodo||''}; }
     else delete f.sel[id];
     const fila=t.closest('.ord-fila'); fila.classList.toggle('sel',t.checked); fila.querySelector('.ord-extra').hidden=!t.checked;
     resumenSeleccionOrden();
@@ -5846,7 +6010,7 @@ const ENLACE_PROFUNDO=(()=>{
     const q=new URLSearchParams(location.search), op=q.get('op')||'', area=q.get('area')||'';
     if(!op&&area!=='ordenes') return null;
     history.replaceState(null,'',location.pathname+location.hash);   // el enlace se usa una sola vez
-    return {op,sec:q.get('sec')||'',fila:q.get('fila')||''};
+    return {op,sec:q.get('sec')||'',fila:q.get('fila')||'',restablecer:q.get('restablecer')==='1'};
   }catch(e){ return null; }
 })();
 (function(){
@@ -5862,6 +6026,7 @@ const ENLACE_PROFUNDO=(()=>{
     setTimeout(()=>{
       if(!o){ if(e.op) toast('La orden '+e.op+' ya no existe.'); return; }
       abrirOrdenDetalle(o.id);
+      if(e.restablecer) setTimeout(()=>{ const x=ordenPorId(o.id); if(!x) return; if(puedeRestablecer(x)) restablecerOrden(x.id).catch(err=>toast(err.message||'No se pudo restablecer la orden.')); else toast(estadoOrden(x)==='vencida'?'Pasaron más de '+RESTABLECER_DIAS+' días desde el vencimiento de '+x.id+': ya no se puede restablecer.':(x.restablecidaTs&&ordenAbierta(x)?x.id+' ya fue restablecida: vence '+venceDiaTxt(x)+' a las 23:59hs.':x.id+' no está vencida: no hace falta restablecerla.')); },450);
       if(e.sec==='G'||e.sec==='I'){ ordSecAbiertas[e.sec]=true; renderOrdenes(); }
       if(e.fila&&(o.items||[]).some(i=>i.rowId===e.fila)) abrirModalOrden({tipo:'preg',rowId:e.fila,ordId:o.id});
     },500);
@@ -6999,11 +7164,15 @@ function ordenarSemana(lista,sortState){
   const o=ordenar(lista,sortState);
   return o.filter(r=>!esTasaPospuesta(r)).concat(o.filter(esTasaPospuesta));
 }
+// Tasas municipales, servicios públicos urbanos y servicios sanitarios medidos: en TODAS las listas van al final de todo, sea cual sea el
+// orden elegido; ningún otro rubro puede quedar debajo de ellas. Entre sí conservan el orden elegido.
+const esTasaAlFinal=r=>!!r&&r.tipo==='gasto'&&(esServicioTasa(r)||esTasaMunicipalTexto(r));
+const tasasAlFinal=(lista,esT)=>{ const f=esT||esTasaAlFinal; return lista.filter(r=>!f(r)).concat(lista.filter(f)); };
 function ordenar(lista,sortState){
-  return lista.slice().sort((a,b)=>{
+  return tasasAlFinal(lista.slice().sort((a,b)=>{
     const c=comparar(a,b,sortState.col);
     return sortState.dir==='asc'?c:-c;
-  });
+  }));
 }
 // clic en un título de columna: ordena por esa columna, o invierte el orden si ya estaba activa
 // (la misma tabla se reutiliza en Registrados y en el Detalle del período del dashboard;
@@ -7490,7 +7659,7 @@ function sugerenciaFijo(item,mesDestino){
   }
   return {venc, metodo: ult.metodoPago||''};
 }
-function fijosTodos(){ return fijosExtra.slice().sort((a,b)=>(a.item||'').localeCompare(b.item||'','es')); }
+function fijosTodos(){ return tasasAlFinal(fijosExtra.slice().sort((a,b)=>(a.item||'').localeCompare(b.item||'','es')),f=>esServicioTasa({tipo:'gasto',item:f.item})||esTasaMunicipalTexto(f)); }
 function syncSelect(id,field,plain,soloTipo,num){
   const sel=$(id),cur=sel.value;
   const base = soloTipo ? rows.filter(r=>r.tipo===soloTipo) : rows;
@@ -7967,10 +8136,12 @@ function ajustarAtajos(){
   if(!header) return;
   const top=Math.max(0, header.getBoundingClientRect().bottom);
   document.documentElement.style.setProperty('--atajos-top', top+'px');
+  const rl=document.getElementById('rail'); if(rl&&rl.offsetHeight) document.documentElement.style.setProperty('--rail-h', rl.offsetHeight+'px');
 }
 ajustarAtajos();
 if(window.ResizeObserver){ new ResizeObserver(()=>{ ajustarAtajos(); if(typeof posicionarRiel==='function'&&areaActual) posicionarRiel(false); }).observe(document.querySelector('header.masthead')); }
 window.addEventListener('resize',ajustarAtajos);
+if(window.ResizeObserver&&document.getElementById('rail')) new ResizeObserver(ajustarAtajos).observe(document.getElementById('rail'));
 window.addEventListener('scroll',ajustarAtajos,{passive:true});
 // La ventana abierta se estira hasta los bordes reales de la pantalla (a la izquierda con un
 // pequeño margen y a la derecha hasta el riel de áreas) en vez de quedar acotada por el ancho
@@ -8134,6 +8305,7 @@ function irArea(id,o={}){
   if(id===areaActual && !o.forzar) return;
   const prev=areaActual; areaActual=id;
   if(id==='resultados'&&prev!=='resultados') armarGraficosDash();
+  if(id==='panel-movs'&&prev!=='panel-movs'&&vistaMovActual==='registrados'&&filtroMesEnCurso()){ try{ renderTabla(filteredTabla()); }catch(e){} }
   const inicio=$('inicio'), rail=$('rail');
   $('rail-puente').classList.remove('on');
   const instant=!!o.instant || reducirMov();
@@ -8318,8 +8490,19 @@ function cerrarCarga(){
   if(window.cerrarSugerencias) cerrarSugerencias();
 }
 let vistaPrev=null;
+// Al entrar a Movimientos registrados, el filtro de mes de pago (desde / hasta) queda en el mes en curso.
+// Devuelve true si cambió algún valor (entonces la tabla se vuelve a dibujar).
+function filtroMesEnCurso(){
+  const m=mesActual(), d=$('qt-pago-desde'), h=$('qt-pago-hasta');
+  if(!d||!h) return false;
+  const cambio=d.value!==m||h.value!==m;
+  d.value=m; h.value=m;
+  return cambio;
+}
 function setVistaMov(v){
   if(v==='cargar'){ abrirCarga(); return; }
+  const entrando=(v==='registrados'&&vistaMovActual!=='registrados');
+  if(entrando) filtroMesEnCurso();
   vistaMovActual=v;
   $('vista-cargar').hidden=true; document.body.classList.remove('carga-abierta');
   const antes=vistaPrev; vistaPrev=v;
@@ -8963,16 +9146,17 @@ function refrescarTrasAccion(e){
 }
 // Tablas largas: se pintan primero las primeras filas (el cambio de ventana es inmediato) y el resto se completa en segundo plano
 // por tandas. Los totales siempre son los de la lista completa. completarVolcados() termina todo al instante (p. ej. para resaltar una fila).
-const VOLCADO_PRIMERAS=45, VOLCADO_TANDA=70, _volcadosPend=new Map();
+const VOLCADO_PRIMERAS=24, VOLCADO_TANDA=50, _volcadosPend=new Map();
 function volcarTabla(el,html){
   if(!el) return;
   const prev=_volcadosPend.get(el); if(prev){ prev.cancel=true; _volcadosPend.delete(el); }
   const i0=html.indexOf('<tbody>'), i1=html.indexOf('</tbody>');
   if(i0<0||i1<0){ el.innerHTML=html; return; }
   const filas=html.slice(i0+7,i1).split(/(?=<tr[\s>])/);
-  if(filas.length<=VOLCADO_PRIMERAS+20){ el.innerHTML=html; return; }
+  if(filas.length<=VOLCADO_PRIMERAS+12){ el.innerHTML=html; return; }
   el.innerHTML=html.slice(0,i0+7)+filas.slice(0,VOLCADO_PRIMERAS).join('')+html.slice(i1);
-  const wrap=el.querySelector('.tablewrap'); if(wrap){ wrap.dataset.fitkey=filas.length+'|'+html.length; if(window.preajustarTabla) window.preajustarTabla(wrap); }   // la medida de columnas no cambia mientras se completa
+  const wrap=el.querySelector('.tablewrap'); if(wrap){ { const M=60, paso=filas.length/M; wrap._muestra=[]; for(let k=0;k<M;k++) wrap._muestra.push(filas[Math.floor(k*paso)]); }   // muestra repartida entre TODAS las filas, para medir las columnas aunque todavía no estén dibujadas
+    wrap.dataset.fitkey=filas.length+'|'+html.length; if(window.preajustarTabla) window.preajustarTabla(wrap); }   // la medida de columnas no cambia mientras se completa
   const tb=el.querySelector('tbody'); if(!tb) return;
   const est={cancel:false,pos:VOLCADO_PRIMERAS};
   const tanda=()=>{
@@ -9457,6 +9641,22 @@ document.addEventListener('click',e=>{
   pintarCpCuotas(cont,r);
 });
 
+// Editor "Pagar" de un movimiento (fecha, método, e-cheq diferido / dividido): el mismo en Movimientos y al marcar abonado desde una orden.
+function cpEditorHtml(r){
+  const esGasto=r.tipo==='gasto';
+  const esEcheq=r.metodoPago==='E-cheq';
+  const puedeDividir = esGasto && r.moneda!=='USD' && (+r.bruto||0)>0 && !r.dividido;
+  return `<div class="cp-editor">
+      <div class="cp-row">
+        <input type="date" class="cp-fecha-input" value="${r.fechaPago||hoyISO()}">
+        ${esGasto?`<select class="cp-metodo-input">${metodosPagoOptionsHtml(r.metodoPago||r.metodoTentativo||'')}</select>`:''}
+        ${esGasto?`<input type="date" class="cp-diferida-input" title="Fecha diferida del cheque (cuándo se puede depositar)" value="${r.fechaDiferida||''}" ${esEcheq?'':'hidden'}>`:''}
+        <button type="button" class="cp-ok" data-cp-ok="${r.id}" title="Confirmar">${ICO_CHECK}</button>
+        <button type="button" class="cp-cancel" data-cp-cancel="1" title="Cancelar">${ICO_X}</button>
+      </div>
+      ${puedeDividir?`<div class="cp-div-fila" ${esEcheq?'':'hidden'}><label class="cp-div-chk"><input type="checkbox" class="cp-dividido-chk"> Pago dividido</label><button type="button" class="cp-cuota-add cp-div-agregar" data-cp-div-agregar="1">+ Agregar pago dividido</button></div><div class="cp-cuotas" hidden></div>`:''}
+    </div>`;
+}
 /* ---------- Acciones ---------- */
 document.addEventListener('click',async e=>{
   const d=e.target.dataset||{};
@@ -9545,19 +9745,7 @@ document.addEventListener('click',async e=>{
       r.pago=false; if(r.tipo==='gasto') r.metodoPago=''; delete r.echeqEmitido; delete r.mesPagoAntesEcheq; delete r.mesAutEcheq; registrarHistorial('Desmarcó el pago/cobro',r); save(); render(); return;
     }
     const td=e.target.closest('td.cp'); if(!td) return;
-    const esGasto=r.tipo==='gasto';
-    const esEcheq=r.metodoPago==='E-cheq';
-    const puedeDividir = esGasto && r.moneda!=='USD' && (+r.bruto||0)>0 && !r.dividido;
-    td.innerHTML=`<div class="cp-editor">
-      <div class="cp-row">
-        <input type="date" class="cp-fecha-input" value="${r.fechaPago||hoyISO()}">
-        ${esGasto?`<select class="cp-metodo-input">${metodosPagoOptionsHtml(r.metodoPago||r.metodoTentativo||'')}</select>`:''}
-        ${esGasto?`<input type="date" class="cp-diferida-input" title="Fecha diferida del cheque (cuándo se puede depositar)" value="${r.fechaDiferida||''}" ${esEcheq?'':'hidden'}>`:''}
-        <button type="button" class="cp-ok" data-cp-ok="${r.id}" title="Confirmar">${ICO_CHECK}</button>
-        <button type="button" class="cp-cancel" data-cp-cancel="1" title="Cancelar">${ICO_X}</button>
-      </div>
-      ${puedeDividir?`<div class="cp-div-fila" ${esEcheq?'':'hidden'}><label class="cp-div-chk"><input type="checkbox" class="cp-dividido-chk"> Pago dividido</label><button type="button" class="cp-cuota-add cp-div-agregar" data-cp-div-agregar="1">+ Agregar pago dividido</button></div><div class="cp-cuotas" hidden></div>`:''}
-    </div>`;
+    td.innerHTML=cpEditorHtml(r);
     const inp=td.querySelector('.cp-fecha-input');
     inp.focus();
     return;
@@ -9638,6 +9826,49 @@ document.addEventListener('click',async e=>{
   }
   if(d.cpCancel){ render(); return; }
 });
+
+// ---- Marcar abonado desde una orden de pago (solo giuliano.zolvini@hotelcopahue.com) ----
+let abonarCtx=null;
+const firmaPagoFila=r=>JSON.stringify([!!r.pago,!!r.echeqEmitido,!!r.dividido,r.metodoPago||'',r.fechaPago||'',(r.cuotas||[]).length]);
+function cerrarAbonar(){ const m=document.getElementById('abonar-modal'); if(m) m.remove(); abonarCtx=null; }
+function abrirAbonar(ordId,rowId){
+  const r=rows.find(x=>x.id===rowId), o=ordenPorId(ordId); if(!r||!o) return;
+  cerrarAbonar();
+  const m=document.createElement('div'); m.id='abonar-modal'; m.className='ord-modal ord-popup';
+  m.innerHTML=`<div class="ord-modal-box abonar-box" role="dialog" aria-modal="true" aria-label="Marcar abonado"><div class="om-cab"><h3>Marcar abonado <small>(${esc(o.id)})</small></h3><button type="button" class="om-x" data-abonar-cerrar="1" aria-label="Cerrar">✕</button></div>
+    <div class="om-cuerpo"><div class="abonar-res"><b>${esc(nombreDe(r))}</b> <span class="ord-rubro">${esc(r.rubro||'')}</span><div class="abonar-imp">${montoFmt(+r.bruto||0,r.moneda||'ARS')}</div></div>
+    <p class="note">Completá el pago igual que en Movimientos: queda registrado también allá.</p>
+    <table class="abonar-tabla"><tbody><tr><td class="cp">${cpEditorHtml(r)}</td></tr></tbody></table></div></div>`;
+  document.body.appendChild(m);
+  abonarCtx={ordId,rowId,antes:firmaPagoFila(r)};
+  const inp=m.querySelector('.cp-fecha-input'); if(inp) inp.focus();
+}
+async function registrarAbonoEnOrden(ordId,rowId){
+  const r=rows.find(x=>x.id===rowId); if(!r) return;
+  const yo=miPersona(), ts=ahoraISO();
+  try{
+    await OrdenesDB.mutar(ordId,x=>{
+      const items=(x.items||[]).map(i=>i.rowId===rowId?{...i,abonadoTs:ts,abonadoPor:yo,pagoFecha:r.fechaPago||hoyISO(),pagoMetodo:r.metodoPago||'',metodo:r.metodoPago||i.metodo||''}:i);
+      return {set:{items},union:{eventos:[{ts,tipo:'abonado',por:yo,rowId,item:nombreDe(r)}]}};
+    });
+    toast('Marcado como abonado: '+nombreDe(r));
+  }catch(err){ toast('El movimiento quedó pago, pero no se pudo registrar en la orden: '+(err.message||err)); }
+  renderOrdenes();
+}
+document.addEventListener('click',e=>{
+  const m=document.getElementById('abonar-modal'); if(!m||!abonarCtx) return;
+  const t=e.target;
+  if(t===m||t.closest('[data-abonar-cerrar]')){ cerrarAbonar(); return; }
+  if(!m.contains(t)) return;
+  const ca=t.closest('[data-cp-cancel]'), ok=t.closest('[data-cp-ok]'); if(!ca&&!ok) return;
+  setTimeout(()=>{
+    const c=abonarCtx; if(!c) return;
+    const r=rows.find(x=>x.id===c.rowId);
+    if(ca||!r){ cerrarAbonar(); return; }
+    if(firmaPagoFila(r)!==c.antes){ cerrarAbonar(); registrarAbonoEnOrden(c.ordId,c.rowId); }
+  },40);
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&abonarCtx) cerrarAbonar(); });
 document.addEventListener('change',async e=>{
   const dzTipoId=e.target.dataset&&e.target.dataset.dzTipo;
   if(dzTipoId){
@@ -9945,6 +10176,15 @@ $('btn-export-movs').addEventListener('click',exportarMovsExcel);
 (function(){
   const CAP={item:250,rubro:150}, MUESTRA_FILAS=140, _fitCache=new Map(), _ultimoW=new Map();
   const escritorio=()=>window.matchMedia('(min-width:701px)').matches;
+  // Última medida de columnas de cada tabla (por ancho de ventana): al volver a entrar se usa de entrada, sin copiar la tabla fuera de pantalla,
+  // y recién después, cuando el navegador está libre, se afina con las filas reales.
+  const hintClave=(tabla,ncols)=>'cop:fit:'+tabla+'|'+window.innerWidth+'|'+ncols;
+  const hintLeer=(tabla,ncols)=>{ try{ const v=JSON.parse(localStorage.getItem(hintClave(tabla,ncols))||'null'); return v&&v.nat&&v.nat.length===ncols&&v.W?v:null; }catch(e){ return null; } };
+  const hintGuardar=(tabla,ncols,W,nat)=>{ try{ localStorage.setItem(hintClave(tabla,ncols),JSON.stringify({W,nat})); }catch(e){} };
+  function programarAfinado(wrap){
+    const ir=()=>{ if(!wrap.isConnected) return; if(_volcadosPend.size){ setTimeout(()=>programarAfinado(wrap),250); return; } wrap._fit=''; wrap._afinar=true; ajustar(wrap); };
+    if(window.requestIdleCallback) requestIdleCallback(ir,{timeout:2500}); else setTimeout(ir,600);
+  }
   function ajustar(wrap){
     if(!wrap||!wrap.isConnected||!escritorio()) return;
     const table=wrap.querySelector(':scope>table'); if(!table||!table.tHead||!table.tBodies[0]) return;
@@ -9956,7 +10196,7 @@ $('btn-export-movs').addEventListener('click',exportarMovsExcel);
     if(!cols.length||cols.length!==ths.length) return;
     const tb=table.tBodies[0];
     const sig=W+'|'+cols.length+'|'+(wrap.dataset.tabla||'')+'|'+(wrap.dataset.fitkey||(tb.rows.length+'|'+tb.textContent.length));
-    if(wrap._fit===sig) return;
+    if(wrap._fit===sig){ if(wrap._hint){ wrap._hint=false; programarAfinado(wrap); } return; }
     // Cache: si la tabla se vuelve a armar con los mismos datos y el mismo ancho, se reutilizan las medidas (cambiar de solapa deja de re-medir todo)
     let nat=_fitCache.get(sig);
     if(!nat){
@@ -9967,12 +10207,19 @@ $('btn-export-movs').addEventListener('click',exportarMovsExcel);
       t2.appendChild(table.tHead.cloneNode(true));
       const cg=table.querySelector(':scope>colgroup'); if(cg){ const c2=cg.cloneNode(true); [...c2.children].forEach(c=>{ c.style.width=''; }); t2.insertBefore(c2,t2.firstChild); }
       const tb2=document.createElement('tbody'); t2.appendChild(tb2);
-      let n=0; for(const r of tb.rows){ if(!r.hasAttribute('data-row-id')) continue; tb2.appendChild(r.cloneNode(true)); if(++n>=MUESTRA_FILAS) break; }
+      if(wrap._muestra) tb2.innerHTML=wrap._muestra.join('');
+      else { let n=0; for(const r of tb.rows){ if(!r.hasAttribute('data-row-id')) continue; tb2.appendChild(r.cloneNode(true)); if(++n>=MUESTRA_FILAS) break; } }
       box.appendChild(t2); wrap.parentNode.insertBefore(box,wrap);
       nat=[...t2.tHead.rows[0].cells].map(th=>Math.ceil(th.getBoundingClientRect().width));
       box.remove();
       if(_fitCache.size>40) _fitCache.clear();
       _fitCache.set(sig,nat);
+      hintGuardar(wrap.dataset.tabla||'',cols.length,W,nat);
+    }
+    // Afinado posterior a un arranque con la medida guardada: solo se tocan las columnas si la diferencia se nota
+    if(wrap._afinar){
+      wrap._afinar=false; const h=wrap._hintNat;
+      if(h&&h.length===nat.length&&nat.every((n,i)=>Math.abs(n-h[i])<=Math.max(10,h[i]*.08))){ wrap._fit=sig; return; }
     }
     aplicarAnchos(wrap,cols,nat,W,sig);
   }
@@ -10001,13 +10248,16 @@ $('btn-export-movs').addEventListener('click',exportarMovsExcel);
   window.preajustarTabla=function(wrap){
     try{
       if(!wrap||!wrap.dataset.fitkey||!escritorio()) return;
-      const W=_ultimoW.get(wrap.dataset.tabla||''); if(!W) return;
       const g=grupoColDe(wrap.dataset.tabla); if(g&&leerAnchosCol(g)) return;
       const table=wrap.querySelector(':scope>table'); if(!table) return;
       const cols=[...table.querySelectorAll(':scope>colgroup>col')];
-      const sig=W+'|'+cols.length+'|'+(wrap.dataset.tabla||'')+'|'+wrap.dataset.fitkey;
-      const nat=_fitCache.get(sig); if(!nat||nat.length!==cols.length) return;
-      aplicarAnchos(wrap,cols,nat,W,sig);
+      let W=_ultimoW.get(wrap.dataset.tabla||'');
+      let sig=W?W+'|'+cols.length+'|'+(wrap.dataset.tabla||'')+'|'+wrap.dataset.fitkey:'';
+      let nat=sig?_fitCache.get(sig):null;
+      if(nat&&nat.length===cols.length){ aplicarAnchos(wrap,cols,nat,W,sig); return; }
+      const h=hintLeer(wrap.dataset.tabla||'',cols.length); if(!h) return;
+      W=h.W; sig=W+'|'+cols.length+'|'+(wrap.dataset.tabla||'')+'|'+wrap.dataset.fitkey;
+      aplicarAnchos(wrap,cols,h.nat,W,sig); wrap._hint=true; wrap._hintNat=h.nat;
     }catch(e){}
   };
 

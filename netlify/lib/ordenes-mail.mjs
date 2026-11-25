@@ -10,6 +10,7 @@ import { REMITENTE, partesAR, fechaHoraAR, AVISO_AUTO, CABECERAS_AUTO } from "./
 
 export const AUTORIZADOR = (process.env.ORD_AUTORIZADOR || "jose.bazzani@hotelcopahue.com").toLowerCase();
 export const ADMIN_FIJO = (process.env.ORD_ADMIN || "giuliano.zolvini@hotelcopahue.com").toLowerCase();
+export const RESTABLECER_DIAS = 3;   // una orden vencida se puede restablecer (por cualquier usuario) durante los 3 días siguientes a su vencimiento
 const RE_ULTIMAS_HORAS = 48 * 3600 * 1000;   // los avisos "atrasados" solo se mandan para órdenes de las últimas 48 hs (no se re-avisa el historial)
 
 // ───────── utilidades ─────────
@@ -25,7 +26,7 @@ export function totalesPorMetodo(items) {
 // Lo que sale de la cuenta bancaria: transferencias, tarjeta de débito, débito automático y pago de servicios (efectivo, e-cheq, tarjetas de crédito, etc. no).
 const sinTild = (t) => String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 const METODOS_BANCO = ["transferencia", "tarjeta de debito", "debito automatico", "pago de servicios"].map(sinTild);
-export const sale = (i) => METODOS_BANCO.includes(sinTild(i.metodo));
+export const sale = (i) => !i.pagoPrevio && !i.abonadoTs && METODOS_BANCO.includes(sinTild(i.metodo));
 export function totalBanco(items) { const l = (items || []).filter(sale); return { lista: l, txt: totalTxt(totalesPorMoneda(l)), sinMetodo: (items || []).filter((i) => !i.metodo).length }; }
 const notaSinMetodo = (b) => (b.sinMetodo ? `No incluye ${b.sinMetodo} movimiento${b.sinMetodo === 1 ? "" : "s"} sin método de pago definido.` : "");
 const lineaBanco = (items) => { const b = totalBanco(items); return [`>>> TOTAL NECESARIO EN LA CUENTA BANCARIA: ${b.txt}`, "    (transferencias, tarjeta de débito, débito automático y pago de servicios)", ...(notaSinMetodo(b) ? ["    " + notaSinMetodo(b)] : [])]; };
@@ -33,7 +34,7 @@ function bancoBloque(items, titulo = "Total necesario en la cuenta bancaria") {
   const b = totalBanco(items);
   return `<div style="margin:6px 0 16px;padding:14px 16px;background:#fff6e0;border:1px solid #b0791c;border-left:5px solid #b0791c;border-radius:14px"><div style="font-size:11px;font-weight:700;color:#4a5a54;text-transform:uppercase;letter-spacing:.08em">${esc(titulo)}</div><div style="font-family:${FUENTE_TIT};font-size:27px;font-weight:700;color:#16211e;margin:3px 0 4px">${esc(b.txt)}</div><div style="font-size:12px;color:#4a5a54">Transferencias, tarjeta de débito, débito automático y pago de servicios.${notaSinMetodo(b) ? "<br>" + esc(notaSinMetodo(b)) : ""}</div></div>`;
 }
-const activos = (o) => (o.items || []).filter((i) => !i.rech);
+const activos = (o) => (o.items || []).filter((i) => !i.rech && !i.pagoPrevio);   // lo que ya estaba pago al sumarse a la orden no cuenta como "a pagar"
 const nAut = (o) => (o.items || []).filter((i) => i.aut).length;
 const nRech = (o) => (o.items || []).filter((i) => i.rech).length;
 const pendientes = (o) => (o.items || []).filter((i) => !i.aut && !i.rech);
@@ -55,6 +56,10 @@ export function estadoOrden(o, ahora = Date.now()) {
   if (ahora > venceAR(o)) return "vencida";
   return a + r ? "parcial" : "pendiente";
 }
+
+export const limiteRestablecer = (o) => venceAR(o) + RESTABLECER_DIAS * 24 * 3600 * 1000;   // 23:59 del tercer día
+export const puedeRestablecer = (o, ahora = Date.now()) => estadoOrden(o, ahora) === "vencida" && ahora <= limiteRestablecer(o) && pendientes(o).length > 0;
+const fechaCorta = (ms) => { const f = partesAR(new Date(ms)); return `${f.day}/${f.month}`; };
 
 // ───────── plantilla ─────────
 // Estética del sitio: verde oscuro del encabezado, título en un flotante redondeado, tarjeta clara con bordes suaves y los mismos tonos de acento.
@@ -95,6 +100,9 @@ export function enlaceOp(id, extra) {
 const enlaceBloque = (url, etiqueta) => (url
   ? `<div style="margin:16px 0 6px"><a href="${esc(url)}" style="display:inline-block;background:#2f6b4f;color:#ffffff;font-family:${FUENTE};font-size:14px;font-weight:700;letter-spacing:.04em;text-decoration:none;padding:12px 24px;border-radius:999px">${esc(etiqueta)} →</a></div><div style="font-size:12px;color:#4a5a54;margin:8px 0 0;word-break:break-all">Si el botón no se abre, copiá este enlace: <a href="${esc(url)}" style="color:#3b5f86">${esc(url)}</a></div>`
   : "");
+const enlaceBloqueAlt = (url, etiqueta) => (url
+  ? `<div style="margin:10px 0 6px"><a href="${esc(url)}" style="display:inline-block;background:#b0791c;color:#ffffff;font-family:${FUENTE};font-size:14px;font-weight:700;letter-spacing:.04em;text-decoration:none;padding:12px 24px;border-radius:999px">${esc(etiqueta)}</a></div>`
+  : "");
 const enlaceTxt = (url, etiqueta) => (url ? ["", `${etiqueta}: ${url}`] : []);
 function textoDe(titulo, partes) { return [titulo, "", ...partes, "", "—", "CORREO AUTOMÁTICO — NO RESPONDER.", AVISO_AUTO].join("\n"); }
 const lineasMetodos = (items) => totalesPorMetodo(items).map((m) => `  · ${m.metodo}: ${m.total}`);
@@ -113,11 +121,13 @@ export function mailEmitida(o, tipo) {   // tipo: 'creada' | 'editada'
   const titulo = tipo === "editada" ? `${o.id} fue modificada` : `Nueva orden de pago ${o.id}`;
   const quien = tipo === "editada" ? `${nom} modificó la orden ${o.id}.` : `${nom} emitió la orden ${o.id} (${fechaHoraAR(o.emitidaTs)} hs).`;
   const vence = "Vence hoy a las 23:59 hs si no se autoriza por completo.";
+  const nPrev = (o.items || []).filter((i) => i.pagoPrevio && !i.rech).length;
+  const notaPrev = nPrev ? `Incluye ${nPrev} movimiento${nPrev === 1 ? "" : "s"} que ya figura${nPrev === 1 ? "" : "n"} como pago (sección "Estado: Pagado"); no suma${nPrev === 1 ? "" : "n"} al total.` : "";
   return {
     to: DESTINATARIOS(),
     subject: `${tipo === "editada" ? "OP modificada" : "Nueva OP"} ${o.id} — pendiente de tu autorización — Total ${tot}`,
-    text: textoDe(titulo, [quien, vence, "", `Total de la orden: ${tot}`, ...lineaBanco(it), "", "Total por método de pago:", ...lineasMetodos(it), ...enlaceTxt(enlaceOp(o.id), `Abrir la orden ${o.id} en el sistema`)]),
-    html: html(titulo, [p(esc(quien)), p(esc(vence)), totalesBloque(it), enlaceBloque(enlaceOp(o.id), `Abrir la orden ${o.id}`)]),
+    text: textoDe(titulo, [quien, vence, ...(notaPrev ? [notaPrev] : []), "", `Total de la orden: ${tot}`, ...lineaBanco(it), "", "Total por método de pago:", ...lineasMetodos(it), ...enlaceTxt(enlaceOp(o.id), `Abrir la orden ${o.id} en el sistema`)]),
+    html: html(titulo, [p(esc(quien)), p(esc(vence)), ...(notaPrev ? [p(esc(notaPrev))] : []), totalesBloque(it), enlaceBloque(enlaceOp(o.id), `Abrir la orden ${o.id}`)]),
   };
 }
 export function mailEliminada(r) {   // r: {id, emisorNombre, items:[{metodo,importe,moneda}]}
@@ -219,16 +229,30 @@ export function mailVencida(o) {
     ? `La orden de pago ${o.id} (emitida el ${fechaHoraAR(o.emitidaTs)} hs) se venció sin que se aprobara ningún movimiento. Ítems que estaban dentro:`
     : `La orden de pago ${o.id} (emitida el ${fechaHoraAR(o.emitidaTs)} hs) se venció parcialmente: ${nAut(o)} movimientos autorizados${nRech(o) ? `, ${nRech(o)} rechazados` : ""} y ${pend.length} sin aprobar antes del vencimiento. Ítems NO aprobados:`;
   const pie = "Los movimientos sin autorizar quedaron libres para incluirlos en otra orden.";
+  // Opción de restablecer: durante los 3 días siguientes al vencimiento cualquier usuario puede volver a habilitarla (vigente hasta las 23:59 del día en que se restablece)
+  const hasta = fechaCorta(limiteRestablecer(o));
+  const rest = `Podés restablecer esta orden hasta el ${hasta} a las 23:59 hs (${RESTABLECER_DIAS} días desde su vencimiento). Al restablecerla vuelve a estar vigente hasta las 23:59 hs de ese mismo día, y cualquier usuario del sistema puede hacerlo.`;
+  const urlRest = enlaceOp(o.id, { restablecer: "1" });
   return {
     to: DESTINATARIOS(), subject: titulo,
-    text: textoDe(titulo, [intro, ...lista.map((i) => `  · ${i.item} — ${monto(i.importe, i.moneda)}${i.metodo ? " (" + i.metodo + ")" : ""}`), "", `Total no aprobado: ${totalTxt(totalesPorMoneda(lista))}`, pie, ...enlaceTxt(enlaceOp(o.id), `Abrir la orden ${o.id}`)]),
-    html: html(titulo, [p(esc(intro)), tabla(listaItems(lista), ["Movimiento", "Importe"]), p(`<b>Total no aprobado: ${esc(totalTxt(totalesPorMoneda(lista)))}</b>`), p(esc(pie)), enlaceBloque(enlaceOp(o.id), `Abrir la orden ${o.id}`)]),
+    text: textoDe(titulo, [intro, ...lista.map((i) => `  · ${i.item} — ${monto(i.importe, i.moneda)}${i.metodo ? " (" + i.metodo + ")" : ""}`), "", `Total no aprobado: ${totalTxt(totalesPorMoneda(lista))}`, pie, "", rest, ...enlaceTxt(urlRest, `RESTABLECER la orden ${o.id}`), ...enlaceTxt(enlaceOp(o.id), `Abrir la orden ${o.id}`)]),
+    html: html(titulo, [p(esc(intro)), tabla(listaItems(lista), ["Movimiento", "Importe"]), p(`<b>Total no aprobado: ${esc(totalTxt(totalesPorMoneda(lista)))}</b>`), p(esc(pie)), cita(esc(rest)), enlaceBloqueAlt(urlRest, `Restablecer la orden ${o.id}`), enlaceBloque(enlaceOp(o.id), `Abrir la orden ${o.id}`)]),
+  };
+}
+export function mailRestablecida(o, actorNombre) {
+  const pend = pendientes(o), hasta = fechaCorta(o.vencePosp ? Date.parse(o.vencePosp) : Date.now());
+  const titulo = `${o.id} entró en vigencia nuevamente`, linea = `${actorNombre} restableció la orden ${o.id}, que se había vencido: entró en vigencia nuevamente y está vigente hasta hoy (${hasta}) a las 23:59 hs, con ${pend.length} movimiento${pend.length === 1 ? "" : "s"} pendiente${pend.length === 1 ? "" : "s"} de autorización.`;
+  return {
+    to: DESTINATARIOS(), subject: `OP restablecida ${o.id} — vigente nuevamente hasta hoy 23:59 hs`,
+    text: textoDe(titulo, [linea, "", `Total pendiente: ${totalTxt(totalesPorMoneda(pend))}`, ...lineaBanco(pend), ...enlaceTxt(enlaceOp(o.id), `Abrir la orden ${o.id}`)]),
+    html: html(titulo, [p(esc(linea)), totalesBloque(pend), enlaceBloque(enlaceOp(o.id), `Abrir la orden ${o.id}`)]),
   };
 }
 
 // ───────── envío con "reclamo" para no duplicar ─────────
-export async function enviar(transporte, m) {
-  return transporte.sendMail({ from: REMITENTE(), to: DESTINATARIOS().join(", "), subject: m.subject, text: m.text, html: m.html, headers: CABECERAS_AUTO });
+export async function enviar(transporte, m, extra = []) {   // extra: otras personas involucradas que también reciben este correo (además de las dos de siempre)
+  const para = unicos([...DESTINATARIOS(), ...extra.filter((x) => /^[^\s@,;<>]+@[^\s@,;<>]+\.[^\s@,;<>]+$/.test(String(x || "")))]);
+  return transporte.sendMail({ from: REMITENTE(), to: para.join(", "), subject: m.subject, text: m.text, html: m.html, headers: CABECERAS_AUTO });
 }
 // Marca un campo en la orden solo si todavía no estaba (transacción): quien lo logra es el único que manda el aviso.
 export async function reclamar(db, id, campo) {

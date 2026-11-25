@@ -3,7 +3,7 @@
 // Pide el "ID token" de Firebase de quien está usando el sistema (Authorization: Bearer …), lo verifica, lee la orden de Firestore
 // y manda el correo que corresponda. Nunca confía en el contenido: arma el correo con lo que figura en la base.
 import { conectarFirestore, crearTransporte, verificarToken, FieldValue } from "../lib/comun.mjs";
-import { AUTORIZADOR, mailEmitida, mailEliminada, mailPospuesta, enviar, reclamar, soltar, estadoOrden, encolarMensaje, encolarDecision, despacharDecision } from "../lib/ordenes-mail.mjs";
+import { AUTORIZADOR, mailEmitida, mailEliminada, mailPospuesta, mailRestablecida, enviar, reclamar, soltar, estadoOrden, encolarMensaje, encolarDecision, despacharDecision } from "../lib/ordenes-mail.mjs";
 
 const json = (c, o) => new Response(JSON.stringify(o), { status: c, headers: { "Content-Type": "application/json; charset=utf-8" } });
 
@@ -32,7 +32,7 @@ export async function manejar(req, deps) {
     const snap = await db.collection("ordenes_pago").doc(String(ordenId || "")).get();
     if (!snap.exists) return json(404, { error: "La orden no existe." });
     const o = snap.data(), soyEmisor = (o.emisor.email || "").toLowerCase() === email, soyAut = email === AUTORIZADOR;
-    if (!soyEmisor && !soyAut) return json(403, { error: "No participás de esta orden." });
+    if (!soyEmisor && !soyAut && tipo !== "restablecida") return json(403, { error: "No participás de esta orden." });   // restablecer una orden vencida lo puede hacer cualquier usuario
     const est = estadoOrden(o);
     if (tipo === "editada" || tipo === "deshizo") {
       return json(200, { ok: true, omitido: "las modificaciones y deshacer decisiones ya no generan correo" });   // un correo por cada cambio ya no se manda
@@ -48,6 +48,12 @@ export async function manejar(req, deps) {
       const marca = "mailPosp_" + String(o.vencePosp).slice(0, 10).replace(/[^0-9]/g, "");
       if (!(await reclamar(db, o.id, marca))) return json(200, { ok: true, omitido: "ya avisada" });
       try { await enviar(t, mailPospuesta(o, nombre)); } catch (e) { await soltar(db, o.id, marca, FV); throw e; }
+    } else if (tipo === "restablecida") {
+      if (!o.restablecidaTs || !o.vencePosp) return json(200, { ok: true, omitido: "la orden no fue restablecida" });
+      const marca = "mailRest_" + String(o.restablecidaTs).replace(/[^0-9]/g, "");
+      if (!(await reclamar(db, o.id, marca))) return json(200, { ok: true, omitido: "ya avisada" });
+      // sale a las dos personas de siempre + quien emitió la orden + quien la restableció
+      try { await enviar(t, mailRestablecida(o, (o.restablecidaPor && o.restablecidaPor.nombre) || nombre), [o.emisor && o.emisor.email, o.restablecidaPor && o.restablecidaPor.email, email]); } catch (e) { await soltar(db, o.id, marca, FV); throw e; }
     } else if (tipo === "decision") {
       if (!soyAut) return json(403, { error: "Solo quien autoriza." });
       // Un solo correo con el resumen: sale ya si la orden quedó resuelta; si no, lo despacha la cola 1 minuto después de la última decisión.

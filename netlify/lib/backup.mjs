@@ -8,8 +8,8 @@ const PIE = `\n\n—\nCORREO AUTOMÁTICO — NO RESPONDER.\n${AVISO_AUTO}`;
 
 export const BK_APP = "devengamiento-hotel-copahue";
 export const BK_VERSION = 1;
-// La copia de seguridad (y su aviso de falla) sale a la casilla de respaldo y también a las dos personas de siempre.
-export const DESTINO = [...new Set([process.env.BACKUP_TO || "copahueadmin@gmail.com", process.env.ORD_ADMIN || "giuliano.zolvini@hotelcopahue.com", process.env.ORD_AUTORIZADOR || "jose.bazzani@hotelcopahue.com"].map((x) => x.toLowerCase()))].join(", ");
+// La copia de seguridad (y su aviso de falla) sale ÚNICAMENTE a la casilla de respaldo copahueadmin@gmail.com (fija en el código a propósito: no se envía a ningún usuario).
+export const DESTINO = ["copahueadmin@gmail.com"];
 const LIMITE_ADJUNTO = 24 * 1024 * 1024; // Gmail admite hasta 25 MB por mensaje
 export { conectarFirestore, crearTransporte };
 
